@@ -663,6 +663,7 @@ namespace SimulationDAL
       scriptRunner.AddVariable("RunIdx", typeof(int));
       scriptRunner.AddVariable("ExtSimStartTime", typeof(double));
       scriptRunner.AddVariable("RootPath", typeof(string));
+      scriptRunner.AddVariable("OrigRootPath", typeof(string));
 
       //add all the variables needed
       if (codeVariables != null)
@@ -677,6 +678,7 @@ namespace SimulationDAL
           if ((varName != "CurTime") &&
               (varName != "ExtSimStartTime") &&
               (varName != "RunIdx") &&
+              (varName != "OrigRootPath") &&
               (varName != "RootPath"))
           {
             scriptRunner.AddVariable(varName, var.dType);
@@ -854,6 +856,8 @@ namespace SimulationDAL
         scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
         scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
         scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
+        scriptRunner.SetVariable("RootPath", typeof(string), lists.rootPath);
+        scriptRunner.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
 
         if (codeVariables != null)
         {

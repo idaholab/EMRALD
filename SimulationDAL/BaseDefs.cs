@@ -398,14 +398,16 @@ namespace SimulationDAL
       }
     }
 
-    public static void Reset()
+    public static void Reset(int? seedOverride = null)
     {
       _threadLocalRandom = new ThreadLocal<Random>(() =>
       {
-        if ((ConfigData.seed == null) || (ConfigData.seed == 0))
+        int? effectiveSeed = seedOverride ?? ConfigData.seed;
+
+        if (effectiveSeed == null)
           return new Random();
         else
-          return new Random((int)ConfigData.seed);
+          return new Random((int)effectiveSeed);
       });
     }
   }

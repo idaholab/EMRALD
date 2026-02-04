@@ -136,14 +136,7 @@ namespace SimulationEngine
       ConfigData.seed = options.seed;
       ConfigData.threads = options.threads;
       ConfigData.threads = ConfigData.threads != 0 ? ConfigData.threads : null; //don't allow 0 for threads.
-      if((ConfigData.threads != null) && (ConfigData.threads > 1))
-        ConfigData.seed = 0;
-
-      // Reset RNG once up front so all worker threads get seeded thread-local instances without fighting over Reset()
-      if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
-        SingleRandom.Reset();
-
-
+     
       //Assign any coupling data from JSON file
       //start connectons needed
       if (options.couplingInfo != null)
@@ -234,6 +227,9 @@ namespace SimulationEngine
           // Start the first thread immediately so it can set up the files needed by the others
           var task = Task.Factory.StartNew(() =>
           {
+            if (ConfigData.seed != null)
+              SingleRandom.Reset((int)ConfigData.seed + threadIndex);
+
             _simRuns[threadIndex].RunBatch();
             if (_simRuns[threadIndex].error != "")
               _error += _simRuns[threadIndex].error + Environment.NewLine;
@@ -247,6 +243,9 @@ namespace SimulationEngine
           // Delay the start of all but first thread so that it has time to write so others have time to copy data
           var task = Task.Factory.StartNew(() =>
           {
+            if (ConfigData.seed != null)
+              SingleRandom.Reset((int)ConfigData.seed + threadIndex);
+
             //wait until first thread is done writing temp tread files.
             while (!_simRuns[0].tempThreadFilesWriten)
               Thread.Sleep(10);  // Adjust the delay as needed
