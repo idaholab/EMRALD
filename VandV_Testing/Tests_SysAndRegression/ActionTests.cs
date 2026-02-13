@@ -35,7 +35,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("General test of several actions single option transition action, Change Var value action, and run application action.")]
-    public async void ActionsTest()
+    public async Task ActionsTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -60,7 +60,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test transition acions that have multiple to states and a variable for one of the % Starts with 50% for S4 then 25% of remaining to 55")]
-    public async void TransitionPercentTest()
+    public async Task TransitionPercentTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -86,7 +86,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test changing of a variable value using the math library MathNet.Numerics")]
-    public async void ChangeVarTest()
+    public async Task ChangeVarTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -111,7 +111,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test changing of a variable value using the math library MathNet.Numerics and Multi threading")]
-    public async void ChangeVarTestMulti()
+    public async Task ChangeVarTestMulti()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -139,7 +139,7 @@ namespace SysAndRegressionTesting
 
     [Fact(Skip = "DLL Value not fully implmented yet, will allow users to update a variable through a DLL call")]
     [Description("Test the use of executing dll functions with ")]
-    public async void DllValueTest()
+    public async Task DllValueTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -168,7 +168,7 @@ namespace SysAndRegressionTesting
     // Current Result: An error, it cannot find the string in the path to MultithreadWrite.txt
     [Fact]
     [Description("Test pathing in the change variable action when running in multi thread")]
-    public async void MultiThreadVarChange()
+    public async Task MultiThreadVarChange()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -198,7 +198,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test pathing in the change variable action when running in multi thread")]
-    public async void MultiThreadExeTest()
+    public async Task MultiThreadExeTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -225,7 +225,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that runApplication acion runs correctuly and uses JSON document variables for input and output ")]
-    public async void JsonVarExeTest()
+    public async Task JsonVarExeTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 

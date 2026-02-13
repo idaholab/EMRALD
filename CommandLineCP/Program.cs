@@ -76,7 +76,6 @@ namespace CommandLineCP
   {
     static int[] threadRunCnt; // runs each thread has done
     static int numRuns = 0; // total runs to do
-    static bool done = false;
     static int numThreads = 1; // number of threads being used
     static object lockObj = new object(); // for thread-safe console updates
 

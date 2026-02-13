@@ -34,7 +34,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the logic tree is being evaluated correctly with the different gate types.")]
-    public async void LogicGateTest()
+    public async Task LogicGateTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -61,7 +61,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that an evaluation used in two differnt states triggeres the actions for both events.")]
-    public async void CommonLogicEventTest()
+    public async Task CommonLogicEventTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -88,7 +88,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that an evaluation of a logic tree for both success and fail matches the equivolent of using state change events.")]
-    public async void LogicAndStateCheckCommonRefs()
+    public async Task LogicAndStateCheckCommonRefs()
     {
       //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -115,7 +115,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that an if the initial evaluation of a logic tree is a success it triggers the event on entering the state for multiple runs.")]
-    public async void InitialTrueCompLogic()
+    public async Task InitialTrueCompLogic()
     {
       //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
