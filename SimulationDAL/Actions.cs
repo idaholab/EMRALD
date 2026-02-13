@@ -2417,7 +2417,7 @@ namespace SimulationDAL
 
         catch (Exception e)
         {
-          throw new Exception("On Action named " + curItem.name + ". " + e.Message);
+          throw new Exception("On Action named " + curItem!.name + ". " + e.Message);
         }
       }  
 

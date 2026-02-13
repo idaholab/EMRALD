@@ -166,7 +166,7 @@ namespace SimulationEngine
 
         // Determine coupling type (default XMPP)
         string couplingType =
-          (string?)oldOptions["couplingType"] ??
+          (string)oldOptions["couplingType"] ??
           // If we see XMPP-specific fields, assume XMPP
           (oldOptions.ContainsKey("xmppPassword") || oldOptions.ContainsKey("xmppLinks") ? "XMPP" : "XMPP");
 
@@ -178,11 +178,11 @@ namespace SimulationEngine
 
         // User name for coupling (if not present, default matches CouplingData default)
         string user =
-          (string?)oldOptions["user"] ?? "user";
+          (string)oldOptions["user"] ?? "user";
 
         // Coupling URL:
         // In older JSON this may have been an array (for WebSocket) or missing. New schema expects a string or null.
-        JToken? couplingUrlToken = null;
+        JToken couplingUrlToken = null!;
         if (oldOptions.ContainsKey("couplingURL"))
         {
           var urlToken = oldOptions["couplingURL"];

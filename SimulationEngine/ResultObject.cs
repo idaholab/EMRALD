@@ -318,10 +318,8 @@ namespace SimulationEngine
     protected double _rate95th = 0;
     protected TimeSpan _timeMin = TimeSpan.FromSeconds(0);
     protected TimeSpan _timeMax = TimeSpan.FromSeconds(0);
-    private bool statsDone = false;
     protected TimeSpan? _stdDev = null;
-    private bool _mergedResults = false;
-
+    
     public ResultStateBase(string name, bool inKeyPath)
     {
       this.name = name;
@@ -485,7 +483,6 @@ namespace SimulationEngine
     //public virtual void Merge(ResultStateBase other, int curBatchCnt, int totCnt)
     public virtual void Merge(ResultStateBase other, int curBatchCnt, int totCnt)
     {
-      _mergedResults = true;
       _totalTime += other._totalTime;
       _extraDays += other._extraDays;
       _count += other._count;

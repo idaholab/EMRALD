@@ -74,7 +74,7 @@ namespace SimulationTracking
     public MyBitArray bitMap { get { return _bitMap; } }
     //public bool trackStateMovement = true;
 
-    public void Clear()
+    public new void Clear()
     {
       base.Clear();
       this._bitMap = new MyBitArray(_bitMap.Length);
@@ -337,7 +337,7 @@ namespace SimulationTracking
           SimulationEngine.ResultState curResState = null;
           SimulationEngine.EnterExitCause curCause = null;
           SimulationEngine.ResultState updateItem = null;
-          string causeKey = "";
+          //string causeKey = "";
           string evName = "";
           string actName = "";
 
