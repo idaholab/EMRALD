@@ -44,6 +44,20 @@
     <!--<EmbeddedResource Include="..\EMRALD_Sim\**\*.resx" />-->
   </ItemGroup>
 
+	<ItemGroup>
+		<Compile Update="FormMain.cs">
+			<SubType>Form</SubType>
+		</Compile>
+
+		<Compile Update="FormMain.Designer.cs">
+			<DependentUpon>FormMain.cs</DependentUpon>
+		</Compile>
+
+		<EmbeddedResource Update="FormMain.resx">
+			<DependentUpon>FormMain.cs</DependentUpon>
+		</EmbeddedResource>
+	</ItemGroup>
+	
   <PropertyGroup>
     <RootNamespace>EMRALD_Sim</RootNamespace>
     <AssemblyName>EMRALD_Sim</AssemblyName>

@@ -27,25 +27,6 @@ using static EMRALD_Sim.UISettings;
 
 namespace EMRALD_Sim
 {
-  class ConsoleHelper
-  {
-    [DllImport("kernel32.dll")]
-    private static extern bool AllocConsole();
-
-    [DllImport("kernel32.dll")]
-    private static extern bool FreeConsole();
-
-    public static void Show()
-    {
-      AllocConsole();
-    }
-
-    public static void Hide()
-    {
-      FreeConsole();
-    }
-  }
-
   public partial class FormMain : Form, IMessageDispHandling
   {
     private readonly IAppSettingsService _appSettingsService;
