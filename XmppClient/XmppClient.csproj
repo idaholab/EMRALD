@@ -22,10 +22,12 @@
     <Content Include="favicon.ico" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MatriX" Version="2.1.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.4" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MatriX" Version="2.1.0.8">
+			<NoWarn>NU1701</NoWarn>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.4" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MessageDefLib\MessageDefLib.csproj" />

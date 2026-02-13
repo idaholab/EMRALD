@@ -67,7 +67,7 @@ namespace Sop.Collections.Generic.BTree
 			return Dictionary.btree.Remove(item);
 		}
 
-		IEnumerator<TKey> enumerator;
+		IEnumerator<TKey>? enumerator;
 		public IEnumerator<TKey> GetEnumerator()
 		{
 			if (enumerator == null)

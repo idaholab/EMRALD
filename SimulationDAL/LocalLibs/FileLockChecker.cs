@@ -46,7 +46,7 @@ namespace SimulationDAL.LocalLibs
 
     public static bool IsDirectoryLocked(string directoryPath, out string lockedFilePath)
     {
-      lockedFilePath = null;
+      lockedFilePath = null!;
 
       if (!Directory.Exists(directoryPath))
         return false;

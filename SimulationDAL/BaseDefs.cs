@@ -129,8 +129,8 @@ namespace SimulationDAL
     protected int _id; //ids are local only, to be used for lookups where names can't be used like bitsets
 
     public int id { get {return _id; } }
-    public string name { get; set; }
-    public string desc { get; set; }
+    public string name { get; set; } = "";
+    public string desc { get; set; } = "";
     public bool processed = false;
 
 
@@ -166,6 +166,8 @@ namespace SimulationDAL
       if (!string.IsNullOrEmpty(json))
       {
         var dynamicObj = JsonConvert.DeserializeObject(json);// Json.Decode(json);
+        if (dynamicObj == null)
+          return false;
         return DeserializeDerived(dynamicObj, true, lists, useGivenIDs) && LoadObjLinks(dynamicObj, true, lists);
 
       }
@@ -383,7 +385,7 @@ namespace SimulationDAL
     //{
     //  _Instance = null;
     //}
-    private static ThreadLocal<Random> _threadLocalRandom;
+    private static ThreadLocal<Random>? _threadLocalRandom = null;
 
     static SingleRandom()
     {
@@ -394,7 +396,10 @@ namespace SimulationDAL
     {
       get
       {
-        return _threadLocalRandom.Value;
+        if (_threadLocalRandom == null)
+          Reset();
+        var local = _threadLocalRandom;
+        return local!.Value ?? throw new Exception("ThreadLocal value is null"); //has null check, but still getting warning.
       }
     }
 
@@ -420,16 +425,9 @@ namespace SimulationDAL
     public Dictionary<string, int> comp_fails = new Dictionary<string, int>();
     public int sampleCnt = 0;
 
+    private static readonly Lazy<Stats> _Instance = new Lazy<Stats>(() => new Stats());
 
-    static Stats _Instance;
-    public static Stats Instance
-    {
-      get
-      {
-        if (_Instance == null) _Instance = new Stats();
-        return _Instance;
-      }
-    }
+    public static Stats Instance => _Instance.Value;
 
     private Stats() { }
   }
@@ -517,9 +515,9 @@ namespace SimulationDAL
 
   public class SingleNextIDs
   {
-    private int[] curMaxID;
+    private int[] curMaxID = null!;
 
-    private static ThreadLocal<SingleNextIDs> _Instance = new ThreadLocal<SingleNextIDs>(() =>
+    private static readonly ThreadLocal<SingleNextIDs> _Instance = new ThreadLocal<SingleNextIDs>(() =>
     {
       var instance = new SingleNextIDs();
       int aSize = 1 + Enum.GetValues(typeof(EnIDTypes)).Cast<int>().Max();
@@ -531,7 +529,7 @@ namespace SimulationDAL
       return instance;
     });
 
-    public static SingleNextIDs Instance => _Instance.Value;
+    public static SingleNextIDs Instance => _Instance.Value!;
 
     private SingleNextIDs() { }
 
@@ -622,23 +620,23 @@ namespace SimulationDAL
         {
           if (value.Type == JTokenType.Object)
           {
-            root = JToken.Parse(newValue.ToString());
+            root = JToken.Parse(newValue?.ToString() ?? "null");
           }
           else
           {
-            root = JToken.FromObject(newValue);
+            root = JToken.FromObject(newValue ?? (object)JValue.CreateNull());
           }
         }
         else
         {
           if (value.Type == JTokenType.Object)
           {
-            value.Replace(JToken.Parse(newValue.ToString()));
+            value.Replace(JToken.Parse(newValue?.ToString() ?? "null"));
           }
           else
           {
-            value.Replace(JToken.FromObject(newValue));
-          }          
+            value.Replace(JToken.FromObject(newValue ?? (object)JValue.CreateNull()));
+          }
         }
       }
 
@@ -667,7 +665,10 @@ namespace SimulationDAL
       if (path == "")
         return "";
 
-      string full = Path.GetDirectoryName(path);
+      string? full = Path.GetDirectoryName(path);
+
+      if (full == null)
+        return "";
 
       return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
           ? full.Replace('\\', '/')
@@ -685,8 +686,12 @@ namespace SimulationDAL
 
     public static string NormalizeGetParent(string path)
     {
-      string full = Directory.GetParent(path).FullName;
+      DirectoryInfo? parent = Directory.GetParent(path);
 
+      if (parent == null)
+        return "";
+
+      string full = parent.FullName;
       return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
           ? full.Replace('\\', '/')
           : full;
@@ -702,7 +707,7 @@ namespace SimulationDAL
     }
 
 
-    public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
+    public static List<string> FindFilePathReferences(ref string code, string? oldPath = null, string? newPath = null)
     {
       // Define a regular expression pattern to match file paths, including paths separated by spaces
       string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$|(?=""))";
@@ -759,7 +764,7 @@ namespace SimulationDAL
           code = code.Replace(oldPath, newPath);
 
           // Add the newPath to the list
-          filePaths.Add(newPath);
+          filePaths.Add(newPath!);
         }
         else if (oldPath == null)
         {
@@ -939,12 +944,12 @@ namespace SimulationDAL
 
   public class ToCopyForRef
   {
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } = "";
     [JsonConverter(typeof(StringEnumConverter))]
     public EnIDTypes ItemType { get; set; }  //type of item reference is in
-    public string RefPath { get; set; } //reference string in the item
-    public List<string> ToCopy { get; set; } //list if items to copy, path is relative to the EMRALD model 
-    public string RelPath { get; set; } //relative path to replace RefPath in the model
+    public string RefPath { get; set; } = ""; //reference string in the item
+    public List<string>? ToCopy { get; set; } //list if items to copy, path is relative to the EMRALD model 
+    public string RelPath { get; set; } = ""; //relative path to replace RefPath in the model
     public string AdjRelRoot { get; set; } = ""; //if the relative path (RelPath) is not relative to the model location but another loc this is the adjustment. example would be an RunExe where the paths are relative to the exe location. 
     
 

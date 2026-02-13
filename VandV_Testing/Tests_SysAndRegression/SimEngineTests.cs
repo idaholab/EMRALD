@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimulationEngine;
 using MathNet.Numerics;
-//using Ewk.Math.Numerics;
 using System.Reflection;
 using System.Diagnostics;
 using NLog;

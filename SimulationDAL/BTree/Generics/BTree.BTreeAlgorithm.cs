@@ -17,11 +17,11 @@ namespace Sop.Collections.Generic.BTree
 			KeyComparer = Comparer;
 		}
 		public System.Collections.Generic.IComparer<TKey> KeyComparer;
-		public int Compare(BTreeItem<TKey, TValue> x, BTreeItem<TKey, TValue> y)
-		{
-			return KeyComparer.Compare(x.Key, y.Key);
-		}
-	}
+    public int Compare(BTreeItem<TKey, TValue>? x, BTreeItem<TKey, TValue>? y)
+    {
+      return KeyComparer.Compare(x!.Key, y!.Key);
+    }
+  }
 	/// <summary>
     /// BTreeAlgorithm is the core BTree class wrapper and implements BTree Collection interface.
     /// B-Tree data structure and algorithm are implemented in <see cref="BTreeAlgorithm.TreeNode">"TreeNode"</see> class
@@ -90,7 +90,7 @@ namespace Sop.Collections.Generic.BTree
 		}
 		internal TreeNode GetRecycleNode(TreeNode Parent)
 		{
-			TreeNode r = null;
+			TreeNode r = null!;
 			if (RecycledNodes.Count == 0)
 				r = new TreeNode(this, Parent);
 			else
@@ -143,7 +143,7 @@ namespace Sop.Collections.Generic.BTree
 		{
 			if (Count > 0)
 			{
-				BTreeItem<TKey, TValue> Item = new BTreeItem<TKey, TValue>(Key, default(TValue));
+				BTreeItem<TKey, TValue> Item = new BTreeItem<TKey, TValue>(Key, default(TValue)!);
 				if (CurrentEntry == null)
 				{
 					if (Root.Search(this, Item, false))
@@ -176,11 +176,11 @@ namespace Sop.Collections.Generic.BTree
 			if (Root != null)
 			{
 				Root.Clear();
-				SetCurrentItemAddress(null, 0);
+				SetCurrentItemAddress(null!, 0);
 				Root.Count = 0;
 				if (TempChildren != null)
 					TreeNode.ResetArray(TempChildren, null);
-				TempParent = null;
+				TempParent = null!;
 				if (TempParentChildren != null)
 					TreeNode.ResetArray(TempParentChildren, null);
 				if (TempSlots != null)
@@ -213,10 +213,10 @@ namespace Sop.Collections.Generic.BTree
 				if (CurrentEntry == null || Comparer.Compare(CurrentEntry.Key, Key) != 0 ||
 					GoToFirstInstance)
 				{
-					BTreeItem<TKey, TValue> Item = new BTreeItem<TKey, TValue>(Key, default(TValue));
+					BTreeItem<TKey, TValue> Item = new BTreeItem<TKey, TValue>(Key, default(TValue)!);
 					bool r = Root.Search(this, Item, GoToFirstInstance);
-					TreeNode.ResetArray(TempSlots, null);
-					TempParent = null;
+					TreeNode.ResetArray(TempSlots!, null);
+					TempParent = null!;
 					return r;
 				}
 				return true;	// current entry is equal to ObjectToSearch!!
@@ -288,20 +288,20 @@ namespace Sop.Collections.Generic.BTree
 			while (PromoteParent != null)
 			{
 				TreeNode n = PromoteParent;
-				PromoteParent = null;
+				PromoteParent = null!;
 				n.Promote(this, (byte)PromoteIndexOfNode);
 			}
-			PromoteParent = null;
+			PromoteParent = null!;
 			PromoteIndexOfNode = 0;
 
 			// Make the current item pointer point to null since we will add an item and addition to a
 			// balanced Btree will re-arrange the slots and nodes thereby invalidating the current item pointer.
 			// nullifying it is the simpler behavior. The higher level code will have to implement a different
 			// approach to updating the current item pointer if it needs to.
-			SetCurrentItemAddress(null, 0);
+			SetCurrentItemAddress(null!, 0);
 			Root.Count++;
-			TreeNode.ResetArray(TempSlots, null);
-			TempParent = null;
+			TreeNode.ResetArray(TempSlots!, null);
+			TempParent = null!;
 		}
 
 		// Needed for cloning (shallow copy) this BTree.
@@ -331,9 +331,9 @@ namespace Sop.Collections.Generic.BTree
 					if (CurrentItem.Node.Slots[CurrentItem.NodeItemIndex] != null)
 						return CurrentItem.Node.Slots[CurrentItem.NodeItemIndex];
 					else
-						SetCurrentItemAddress(null, 0);
+						SetCurrentItemAddress(null!, 0);
 				}
-				return null;
+				return null!;
 			}
 		}
 
@@ -342,12 +342,12 @@ namespace Sop.Collections.Generic.BTree
 		/// </summary>
 		internal protected void Remove()
 		{
-			BTreeItem<TKey, TValue> Temp = null;
+			BTreeItem<TKey, TValue> Temp = null!;
 			if (CurrentItem.Node != null)
 				Temp = CurrentItem.Node.Slots[CurrentItem.NodeItemIndex];
-			if (Temp != null)
+			if (Temp != null!)
 			{
-				CurrentItem.Node.Remove(this);
+				CurrentItem.Node!.Remove(this);
 				do
 				{
 					FixVacatedSlot = false;
@@ -356,12 +356,12 @@ namespace Sop.Collections.Generic.BTree
 
 				// Make the current item pointer point to null since we just deleted the current item. There is no efficient way to point the current item
 				// pointer to point to the next or previous item. In BPlus this is possible but since this is not BPLus..
-				SetCurrentItemAddress(null, 0);
+				SetCurrentItemAddress(null!, 0);
 				Root.Count--;
-				Temp = null;
+				Temp = null!;
 
-				TreeNode.ResetArray(TempSlots, null);
-				TempParent = null;
+				TreeNode.ResetArray(TempSlots!, null);
+				TempParent = null!;
 			}
 		}
 
@@ -384,7 +384,7 @@ namespace Sop.Collections.Generic.BTree
 		{
 			get
 			{
-				return comparer;
+				return comparer!;
 			}
 			set
 			{
@@ -400,7 +400,7 @@ namespace Sop.Collections.Generic.BTree
 		/// <summary>
 		/// This holds the Root Node (parentmost) of the TreeNodes
 		/// </summary>
-		internal TreeRootNode Root = null;
+		internal TreeRootNode Root = null!;
 
 		/// <summary>
 		/// Utility function to assign/replace current item w/ a new item.
@@ -413,13 +413,13 @@ namespace Sop.Collections.Generic.BTree
 			CurrentItem.NodeItemIndex = ItemIndex;
 		}
 
-		System.Collections.Generic.IComparer<TKey> comparer;
-		internal System.Collections.Generic.IComparer<BTreeItem<TKey, TValue>> SlotsComparer;
+		System.Collections.Generic.IComparer<TKey>? comparer;
+		internal System.Collections.Generic.IComparer<BTreeItem<TKey, TValue>>? SlotsComparer;
 		private byte slotLength = DefaultSlotLength;
-		private BTreeItem<TKey, TValue>[] TempSlots;
-		private BTreeItem<TKey, TValue> TempParent;
+		private BTreeItem<TKey, TValue>[] TempSlots = null!;
+		private BTreeItem<TKey, TValue> TempParent = null!;
 		// Temp Children nodes. Only 2 since only left & right child nodes will be handled.
-		private TreeNode[] TempChildren;
+		private TreeNode[] TempChildren = null!;
 		private TreeNode[] TempParentChildren = new TreeNode[2];
 	}
 }

@@ -445,7 +445,7 @@ namespace SimulationEngine
             break;
           default:
             throw new Exception("Coupling Type not implemeted");
-            break;
+            
         }
       }
 

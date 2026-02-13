@@ -21,8 +21,8 @@ namespace MultiKeyDict
 	/// <typeparam name="K">Primary Key Type</typeparam>
 	/// <typeparam name="L">Sub Key Type</typeparam>
 	/// <typeparam name="V">Value Type</typeparam>
-	public class MultiKeyDictionary<K, L, V>
-	{
+	public class MultiKeyDictionary<K, L, V> where K : notnull where L : notnull
+  {
 		internal readonly Dictionary<K, V> baseDictionary = new Dictionary<K, V>();
 		internal readonly Dictionary<L, K> subDictionary = new Dictionary<L, K>();
 		internal readonly Dictionary<K, L> primaryToSubkeyMapping = new Dictionary<K, L>();
@@ -92,7 +92,7 @@ namespace MultiKeyDict
 
 		public bool TryGetValue(L subKey, out V val)
 		{
-			val = default(V);
+			val = default(V)!;
 
 			K primaryKey;
 
@@ -100,9 +100,9 @@ namespace MultiKeyDict
 
 			try
 			{
-				if (subDictionary.TryGetValue(subKey, out primaryKey))
+				if (subDictionary.TryGetValue(subKey, out primaryKey!))
 				{
-					return baseDictionary.TryGetValue(primaryKey, out val);
+					return baseDictionary.TryGetValue(primaryKey, out val!);
 				}
 			}
 			finally
@@ -119,7 +119,7 @@ namespace MultiKeyDict
 
 			try
 			{
-				return baseDictionary.TryGetValue(primaryKey, out val);
+				return baseDictionary.TryGetValue(primaryKey, out val!);
 			}
 			finally
 			{

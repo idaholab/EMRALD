@@ -13,15 +13,15 @@ namespace CouplingWebSocket
   public class WebApiCoupling : ISimMessaging, IDisposable
   {
     private WebSocketClient _client;
-    private TEventCallBack _evCallBackFunc = null;
-    private IMessageDispHandling _form = null;
+    private TEventCallBack? _evCallBackFunc = null;
+    private IMessageDispHandling? _form = null;
     private List<string> _resourceOptions = new List<string>();
     private Dictionary<Guid, string> _connectedApps = new Dictionary<Guid, string>(); //connectionID to current connected app name in EMRALD
     private Dictionary<string, Guid> _connectedIDs = new Dictionary<string, Guid>(); //current connected app names in EMRALD to connectionID
-    private string _serverUrl;
-    private bool _isConnected;
-    private string _connectionPassword;
-    private int _frameRate;
+    private string _serverUrl = "";
+    private bool _isConnected = false;
+    private string _connectionPassword = "";
+    private int _frameRate = 0;
 
     // Interface property implementations
     public string connectionPassword
@@ -179,7 +179,7 @@ namespace CouplingWebSocket
     /// <summary>
     /// Handle incoming raw messages and deserialize
     /// </summary>
-    private async void OnMessageReceived(object sender, (Guid conID, string message) e)
+    private async void OnMessageReceived(object? sender, (Guid conID, string message) e)
     {
       // Wait for the connection to be registered in _connectedApps
       const int maxWaitMs = 5000; // 5 second timeout
@@ -259,7 +259,7 @@ namespace CouplingWebSocket
       }
     }
 
-    private void OnErrorOccurred(object sender, string error)
+    private void OnErrorOccurred(object? sender, string error)
     {
       // Notify form of errors if set
       if (_form != null)
@@ -268,7 +268,7 @@ namespace CouplingWebSocket
       }
     }
 
-    private void OnConnected(object sender, EventArgs e)
+    private void OnConnected(object? sender, EventArgs e)
     {
       _isConnected = true;
 
@@ -278,7 +278,7 @@ namespace CouplingWebSocket
       }
     }
 
-    private void OnDisconnected(object sender, EventArgs e)
+    private void OnDisconnected(object? sender, EventArgs e)
     {
       _isConnected = false;
 

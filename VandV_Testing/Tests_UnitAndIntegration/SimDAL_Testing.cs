@@ -483,10 +483,7 @@ namespace UnitAndIntegrationTesting
       act.LoadObjLinks(jsonObj, true, mainModel);
 
       //make sure the JSON returned for the item is good 
-      string retJsonStr = act.GetJSON(true, mainModel);
-
-      //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      string retJsonStr = act.GetJSON(true, mainModel);      
 
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }

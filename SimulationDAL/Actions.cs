@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Scripting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -115,7 +116,7 @@ namespace SimulationDAL
   {
     private List<State> _newStateIDs = new List<State>(); //possible states to travel to for this transition     
     private List<Double> _toStateProb = new List<double>();
-    private List<SimVariable> _toStateVarProb = new List<SimVariable>();
+    private List<SimVariable?> _toStateVarProb = new List<SimVariable?>();
     private List<string> _failDesc = new List<string>();
     protected bool mutExcl = true;
 
@@ -135,27 +136,28 @@ namespace SimulationDAL
     public override string GetDerivedJSON(EmraldModel lists)
     {
       string retStr = "";
-      retStr = retStr + "\"mutExcl\": \"" + this.mutExcl.ToString().ToLower() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"newStates\": [";
-      string varProbStr;
+      retStr += "\"mutExcl\": \"" + this.mutExcl.ToString().ToLower() + "\"";
+      retStr += "," + Environment.NewLine + "\"newStates\": [";
+
       for (int i = 0; i < this._newStateIDs.Count; ++i)
       {
-        varProbStr = this._toStateVarProb[i] == null ? null : this._toStateVarProb[i].name;
-        //retStr = retStr + Environment.NewLine + "{" + this._newStateIDs[i].GetJSON(false, false) + ",";
-        retStr = retStr + Environment.NewLine + "{\"toState\": \"" + this._newStateIDs[i].name + "\",";
-        retStr = retStr + Environment.NewLine + "\"prob\":" + this._toStateProb[i].ToString() + ",";
-        if (this._toStateVarProb[i] != null)
-          retStr = retStr + Environment.NewLine + "\"varProb\": \"" + this._toStateVarProb[i].name + "\",";
-        else
-          retStr = retStr + Environment.NewLine + "\"varProb\": null,";
-        retStr = retStr + Environment.NewLine + "\"failDesc\":\"" + this._failDesc[i] + "\"}";
+        var varProb = this._toStateVarProb[i];   // cache once
+
+        retStr += Environment.NewLine + "{\"toState\": \"" + this._newStateIDs[i].name + "\",";
+        retStr += Environment.NewLine + "\"prob\":" + this._toStateProb[i].ToString() + ",";
+
+        // use cached varProb safely
+        retStr += Environment.NewLine + "\"varProb\": "
+               + (varProb is null ? "null" : "\"" + varProb.name + "\"")
+               + ",";
+
+        retStr += Environment.NewLine + "\"failDesc\":\"" + this._failDesc[i] + "\"}";
+
         if (i < this._newStateIDs.Count - 1)
-        {
-          retStr = retStr + "," + Environment.NewLine;
-        }
+          retStr += "," + Environment.NewLine;
       }
 
-      retStr = retStr + "]";
+      retStr += "]";
       return retStr;
     }
 
@@ -446,13 +448,19 @@ namespace SimulationDAL
       {
         for (int i = 0; i < _toStateVarProb.Count; ++i)
         {
-          if (_toStateVarProb[i] != null)
-          {
-            if (_toStateVarProb[i].dblValue < 0.0)
-              throw new Exception(this.name + " - Invalid variable value used for a transition % [" + _toStateVarProb[i].name + "] = " + _toStateVarProb[i].dblValue);
-            _toStateProb[i] = _toStateVarProb[i].dblValue;
-          }
+          var varProb = _toStateVarProb[i];   // <-- read once
+
+          if (varProb is null)
+            continue;
+
+          if (varProb.dblValue < 0.0)
+            throw new Exception(
+                $"{name} - Invalid variable value used for a transition % [{varProb.name}] = {varProb.dblValue}"
+            );
+
+          _toStateProb[i] = varProb.dblValue;
         }
+
       }
 
       List<IdxAndStr> retStateIDs = new List<IdxAndStr> { };
@@ -540,7 +548,7 @@ namespace SimulationDAL
 
   public abstract class ScriptAct : Action
   {
-    protected ScriptEngine scriptRunner = null;
+    protected ScriptEngine scriptRunner;
     protected List<String> codeVariables = new List<String>();
     protected bool compiled = false;
     protected Type _retType = typeof(double);
@@ -749,7 +757,7 @@ namespace SimulationDAL
   {
     private readonly object _executionLock = new object();
 
-    public SimVariable simVar = null;
+    public SimVariable? simVar = null;
     //public int varID { get { return simVar.id; } }
     public int varID { get { return (simVar != null) ? simVar.id : 0; } }
     //public bool isTimeStateVar { get { return this.simVar is TimeStateVariable; } }  
@@ -764,7 +772,7 @@ namespace SimulationDAL
     // : this(inName, inSimVar, "", typeof(double), null)
     //{ }
 
-    public VarValueAct(string inName, SimVariable inSimVar, string inNewValCode, Type inRetType, List<String> inCodeVars)
+    public VarValueAct(string inName, SimVariable? inSimVar, string inNewValCode, Type inRetType, List<String> inCodeVars)
       : base(inName, inNewValCode, inCodeVars, EnActionType.atCngVarVal)
     {
       this.simVar = inSimVar;
@@ -819,16 +827,19 @@ namespace SimulationDAL
         simVar = lists.allVariables.FindByName((string)dynObj.variableName);
         if (simVar == null)
         {
-          throw new Exception("Failed to find the Variable " + simVar.name);
+          throw new Exception("Failed to find the Variable " + simVar?.name);
         }
 
         this._retType = simVar.dType;
       }
 
       base.LoadObjLinks(obj, wrapped, lists);
-      if (!codeVariables.Contains(simVar.name))
+      if (simVar != null)
       {
-        this.codeVariables.Add(simVar.name);
+        if (!codeVariables.Contains(simVar.name))
+        {
+          codeVariables.Add(simVar.name);
+        }
       }
 
       return true;
@@ -882,10 +893,10 @@ namespace SimulationDAL
     public class DllParamInfo
     {
       public bool emraldVar { get; set; } = false;
-      public string name { get; set; } //name of input
-      public string dTypeStr { get; set; } //type of the value if not an emrald variable
-      
-      public string value { get; set; } //value for the parameter if not a variable from EMRALD
+      public string name { get; set; } = ""; //name of input
+      public string dTypeStr { get; set; } = ""; //type of the value if not an emrald variable
+
+      public string value { get; set; } = "";//value for the parameter if not a variable from EMRALD
 
     }
 
@@ -898,7 +909,7 @@ namespace SimulationDAL
     private const string mainCallCode2 = "\";  \r\n      IntPtr dllHandle = LoadLibrary(dllPath);\r\n      IntPtr functionAddress = GetProcAddress(dllHandle, functionName);\r\n     ";
 
 
-    public int varID { get { return (simVar != null) ? simVar.id : 0; } }
+    public new int varID { get { return (simVar != null) ? simVar.id : 0; } }
     //public bool isTimeStateVar { get { return this.simVar is TimeStateVariable; } }  
 
     public VarValueDLLAct()
@@ -964,10 +975,6 @@ namespace SimulationDAL
 
           libPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(libPath + pathRef));
         }
-        else
-        {
-          libPath = this.libPath;
-        }
 
         if (!File.Exists(libPath))
         {
@@ -977,7 +984,8 @@ namespace SimulationDAL
 
         callParams.Add(new DllParamInfo() { dTypeStr = "atCngVarDll", emraldVar = true, name = "varName", value = "5" });
         String test = JsonConvert.SerializeObject(callParams);
-        callParams = JsonConvert.DeserializeObject<List<DllParamInfo>>(callParamJson);
+        callParams = JsonConvert.DeserializeObject<List<DllParamInfo>>(callParamJson)
+             ?? new List<DllParamInfo>();
       }
       catch
       {
@@ -1026,6 +1034,8 @@ namespace SimulationDAL
 
       //string functionCall = functionName + "(";
       string functionCall = "myFunction(";
+      if (simVar == null)
+        throw new InvalidOperationException("simVar was null when building delegate.");
       string fullPreClassCode = preClassCode + Environment.NewLine + "private delegate " + simVar.dType.ToString() + " " + functionName + "(";
       
 
@@ -1237,20 +1247,21 @@ namespace SimulationDAL
   public class RunExtAppAct : Action //atRunExtApp
   {
     private string exePath = "";
-    private ScriptEngine makeInputFileCompEval = null;
-    private ScriptEngine processOutputFileCompEval = null;
+    private ScriptEngine? makeInputFileCompEval;
+    private ScriptEngine? processOutputFileCompEval;
     public List<String> codeVariables = new List<String>();
     private bool compiled;
-    private ProcessStartInfo extApp = null;
-    private Process proc = null;
+    private ProcessStartInfo? extApp;
+    private Process? proc;
     private string exeOutputPath = "";
     public string makeInputFileCode = "";
     public string processOutputFileCode = "";
     public ReturnType returnProcess = ReturnType.rtStateList;
-    public SimVariable assignVariable = null;
+    public SimVariable? assignVariable;
     private Dictionary<string, bool> stateVarsAddedPre = new Dictionary<string, bool>();
     private Dictionary<string, bool> stateVarsAddedPost = new Dictionary<string, bool>();
     private string customFormName = ""; //custom form  
+    private bool useProjPathExeWorkingDir = false;
     
 
 
@@ -1273,9 +1284,8 @@ namespace SimulationDAL
       if (inExeOutputPath != "")
         this.exeOutputPath = inExeOutputPath;
       else
-        this.exeOutputPath = CommonFunctions.NormalizeGetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-
-
+        this.exeOutputPath = CommonFunctions.NormalizeGetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location
+            ?? AppDomain.CurrentDomain.BaseDirectory);
     }
 
     public override string GetDerivedJSON(EmraldModel lists)
@@ -1352,7 +1362,7 @@ namespace SimulationDAL
 
       if ((returnProcess == ReturnType.rtVar) && (dynObj.variableName == null))
       {
-        throw new Exception("missing variable definition  " + exePath);
+        throw new Exception("missing assign variable definition.");
       }
 
       if ((exePath != "") && Path.IsPathRooted(exePath))
@@ -1384,6 +1394,8 @@ namespace SimulationDAL
       if (dynObj.caType != null) //get custom form type name if exists
         this.customFormName = (string)dynObj.caType;
 
+      if (dynObj.useProjPathExeWorkingDir != null)
+        this.useProjPathExeWorkingDir = (bool)dynObj.useProjPathExeWorkingDir;
       processed = true;
       return true;
     }
@@ -1579,6 +1591,8 @@ namespace SimulationDAL
 
     private void WriteStandardOutput()
     {
+      if(proc?.StandardOutput == null) return;
+
       using (StreamWriter writer = File.CreateText(exeOutputPath + Path.AltDirectorySeparatorChar + "_out.txt"))
       using (StreamReader reader = proc.StandardOutput)
       {
@@ -1586,8 +1600,8 @@ namespace SimulationDAL
 
         for (; ; )
         {
-          string textLine = reader.ReadLine();
-
+          string? textLine = reader.ReadLine();
+          
           if (textLine == null)
             break;
 
@@ -1619,6 +1633,9 @@ namespace SimulationDAL
             throw new Exception("ProcessOutputFile Code failed compile, can not evaluate");
         }
       }
+
+      if (makeInputFileCompEval == null)
+        throw new Exception("Script engine not assigned should not happen.");
 
       //Set all the variable values
       if (codeVariables != null)
@@ -1722,18 +1739,19 @@ namespace SimulationDAL
       {
         if (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe"))
           throw new Exception("No executable specified for RunExtApp - " + this.name);
-        bool setWKDir = true;
         if (locExePath.Contains("cmd.exe"))
         {
           runParams = "/C " + runParams;
-          setWKDir = false;
         }
 
         //Start the executable
         extApp = new ProcessStartInfo();
         extApp.Arguments = runParams;
         extApp.FileName = fullExePath; // Path.GetFileName(exePath);
-        extApp.WorkingDirectory = CommonFunctions.NormalizeGetDirectoryName(fullExePath);
+        if(useProjPathExeWorkingDir)
+          extApp.WorkingDirectory = lists.rootPath;
+        else
+          extApp.WorkingDirectory = CommonFunctions.NormalizeGetDirectoryName(fullExePath);
         extApp.UseShellExecute = false;
         extApp.RedirectStandardOutput = false;
         extApp.RedirectStandardError = false;
@@ -1745,6 +1763,9 @@ namespace SimulationDAL
         // Run the external process & wait for it to finish
         using (proc = Process.Start(extApp))
         {
+          if (proc == null)
+            return; //should never happen, declared at top for optimization.
+
           proc.WaitForExit();
 
           // Retrieve the app's exit code
@@ -1784,6 +1805,8 @@ namespace SimulationDAL
         }
       }
 
+      if (processOutputFileCompEval == null)
+        throw new Exception("Script engine not assigned should not happen.");
 
       switch (this.returnProcess)
       {
@@ -1830,7 +1853,8 @@ namespace SimulationDAL
           }
           break;
         case ReturnType.rtVar:
-          assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric()); 
+          if(assignVariable != null)
+            assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric()); 
           break;
 
         default: //do nothing
@@ -1936,21 +1960,21 @@ namespace SimulationDAL
     //Sim3DInfo sim3D;
     public SimActionType sim3DMessage = SimActionType.atOpenSim;
 
-    public Sim3DVariable simVar = null;
+    public Sim3DVariable? simVar = null;
     public int? varID { get { return simVar == null ? 0 : simVar.id; } }
     //public String modelRef = null;
     //public String configData = null;
-    private ExternalSim _extSim;
+    private ExternalSim? _extSim;
     public bool openSimVarParams = false;
-    public TimeSpan simMaxTime { get { return _extSim.simMaxTime; } }
-    public String resourceName { get { return _extSim.resourceName; } }
+    public TimeSpan simMaxTime { get { return _extSim?.simMaxTime ?? TimeSpan.Zero; } }
+    public String resourceName { get { return _extSim?.resourceName ?? ""; } }
 
 
 
     public Sim3DAction()
       : base("", EnActionType.at3DSimMsg) { }
 
-    public Sim3DAction(string inName, SimActionType message, ExternalSim simData, SimVariable inSimVar = null, String inParams = "")
+    public Sim3DAction(string inName, SimActionType message, ExternalSim simData, SimVariable? inSimVar = null, String inParams = "")
       : base(inName, EnActionType.at3DSimMsg)
     {
       sim3DMessage = message;
@@ -1974,7 +1998,7 @@ namespace SimulationDAL
     {
 
       string retStr = Environment.NewLine + "\"sim3DMessage\":" + "\"" + sim3DMessage.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"extSim\":" + "\"" + _extSim.name + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"extSim\":\"" + (_extSim?.name ?? "") + "\"";
       if (this.simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"sim3DVariable\":" + "\"" + simVar.name + "\"";
       return retStr;
@@ -2081,6 +2105,8 @@ namespace SimulationDAL
 
     public string ModelRef(EmraldModel lists)
     {
+      if (_extSim == null)
+        throw new Exception("_estSim null should not happen.");
       string retVal = _extSim.modelRef;
       if (openSimVarParams)
       {
@@ -2092,6 +2118,8 @@ namespace SimulationDAL
 
     public string ConfigData(EmraldModel lists)
     {
+      if (_extSim == null)
+        throw new Exception("_estSim null should not happen.");
       string retVal = _extSim.configData;
       if (openSimVarParams)
       {
@@ -2163,7 +2191,7 @@ namespace SimulationDAL
       {
         foreach (var toActName in dynObj.actions)
         {
-          Action curAct = lists.allActions.FindByName((string)toActName);
+          Action? curAct = lists.allActions.FindByName((string)toActName);
 
           if (curAct == null)
           {
@@ -2250,7 +2278,7 @@ namespace SimulationDAL
       }
     }    
 
-    public Action FindByName(string name, bool exception = true)
+    public Action? FindByName(string name, bool exception = true)
     {
       try
       {
@@ -2275,9 +2303,9 @@ namespace SimulationDAL
       }      
     }
 
-    public static Action CreateNewAction(EnActionType actType)
+    public static Action? CreateNewAction(EnActionType actType)
     {
-      Action retAct = null;
+      Action? retAct = null;
 
       switch (actType)
       {
@@ -2332,7 +2360,7 @@ namespace SimulationDAL
         foreach (var wrapper in dynamicObj)
         {
           var item = wrapper;
-          Action curItem = null;
+          Action? curItem = null;
           curName = (string)item.name;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
@@ -2354,7 +2382,7 @@ namespace SimulationDAL
             curItem = CreateNewAction(actType);
           }
 
-          if (!curItem.DeserializeDerived((object)item, false, lists, useGivenIDs))
+          if ((curItem == null) || (!curItem.DeserializeDerived((object)item, false, lists, useGivenIDs)))
             throw new Exception("Failed to deserialize Action List JSON");
         }
       }
@@ -2371,13 +2399,16 @@ namespace SimulationDAL
       foreach (var wrapper in dynamicObj)
       {
         var item = wrapper;
-        
-        Action curItem = this.FindByName((string)item.name);
+        if (item == null)
+          throw new Exception("LoadLinks item is null should not be.");
+
+        string itemName = (string)item.name; // Explicit cast to string
+        Action? curItem = this.FindByName(itemName);
         try
         { 
           if (curItem == null)
           {
-            throw new Exception("Failed to find Action with the name of " + (string)item.name);
+            throw new Exception("Failed to find Action with the name of " + (string)item!.name);
           }
 
           if (!curItem.LoadObjLinks((object)item, false, lists))

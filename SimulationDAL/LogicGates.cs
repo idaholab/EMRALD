@@ -21,7 +21,7 @@ namespace SimulationDAL
 
   public class compChild
   {
-    public EvalDiagram diagram = null;
+    public EvalDiagram diagram = null!;
     public Dictionary<int, int> stateValues = new Dictionary<int, int>(); //stateID and then value for the state
   }
 
@@ -80,10 +80,8 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"gateType\": \"" + this.gateType.ToString() + "\"";
-      if(this._isTop != null)
-      {
-        retStr = retStr + "," + Environment.NewLine + "\"isTop\": \"" + _isTop.ToString() + "\"";
-      }
+      retStr = retStr + "," + Environment.NewLine + "\"isTop\": \"" + _isTop.ToString() + "\"";
+      
 
 
       
@@ -233,7 +231,6 @@ namespace SimulationDAL
 
     public int Evaluate(MyBitArray curStates, bool success)
     {
-      int retVal = 0;
       int evalSum = 0;
       int unknownCnt = 0;
       //go through all the child item both components and gates
@@ -273,11 +270,11 @@ namespace SimulationDAL
       {
         case EnGateType.gtAnd:
           return (_compChildren.Count + _subGates.Count) == (evalSum + unknownCnt) ? 1 : 0; //if all 1's or unknown then 1. Treat unknowns as true so the are ignored
-          break;
+          
 
         case EnGateType.gtOr:
           return evalSum > 0 ? 1 : 0; //if no 1's return false. Treat unknowns as false so they are ignored
-          break;
+          
 
         case EnGateType.gtNot:
           return evalSum > 0 ? 1 : 0; //Should only be one so just return 1 if greater than 0.
@@ -450,7 +447,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find LogicGate - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -458,7 +455,7 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find LogicGate - " + name);
         else  
-          return null;
+          return null!;
       }
     }
 
@@ -500,7 +497,7 @@ namespace SimulationDAL
         foreach (var wrapper in dynamicObj)
         {
           var item = wrapper;
-          LogicNode curItem = null;
+          LogicNode curItem = null!;
           curName = (string)item.name;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
