@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SimulationDAL\SimulationDAL.csproj" />
     <ProjectReference Include="..\SimulationEngine\SimulationEngine.csproj" />
+    <ProjectReference Include="..\WebSocketTestServer\WebSocketTestServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

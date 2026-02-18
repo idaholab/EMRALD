@@ -70,6 +70,9 @@ namespace SimulationEngine
     {
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
+      _error = LoadJson(_optsJsonStr, ref options);
+      if (_error != "")
+        throw new Exception("Error Loading JSON run options - " + error);
       _modelJsonStr = modelJsonStr;
       _progressCallBack = progressCallBack;
     }
