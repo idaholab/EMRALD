@@ -17,6 +17,9 @@ namespace CouplingWebSocket
     private CancellationTokenSource _cancellationTokenSource;
     private Task? _receiveTask;
 
+    // Configurable timeout in milliseconds
+    public int RequestTimeoutMs { get; set; } = 5000; //set by WebApiCoupling constructor
+
     // Event for incoming messages - now includes the GUID
     public event EventHandler<(Guid conID, string message)>? MessageReceived;
     public event EventHandler<string>? ErrorOccurred;
@@ -151,11 +154,11 @@ namespace CouplingWebSocket
       }
     }
 
-    private async Task<string> SendRequestAsync(object request, int timeoutMs = 5000)
+    private async Task<string> SendRequestAsync(object request, int? timeoutMs = null)
     {
       var json = JsonConvert.SerializeObject(request);
       await SendMessageAsync(json);
-      return await WaitForResponse(timeoutMs);
+      return await WaitForResponse(timeoutMs ?? RequestTimeoutMs);
     }
 
     private async Task SendMessageAsync(string message)
@@ -172,7 +175,7 @@ namespace CouplingWebSocket
 
     private TaskCompletionSource<string>? _responseWaiter;
 
-    private async Task<string> WaitForResponse(int timeoutMs = 5000)
+    private async Task<string> WaitForResponse(int timeoutMs)
     {
       _responseWaiter = new TaskCompletionSource<string>();
 
@@ -182,7 +185,7 @@ namespace CouplingWebSocket
       if (completedTask == timeoutTask)
       {
         _responseWaiter = null;
-        throw new TimeoutException("Timeout waiting for server response");
+        throw new TimeoutException($"Timeout waiting for server response after {timeoutMs}ms");
       }
 
       var result = await _responseWaiter.Task;

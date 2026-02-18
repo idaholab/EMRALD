@@ -23,7 +23,6 @@ namespace MessageDefLib
   //{
   //  public string info { get; set; } //JSON string of data specifications by the external code
   //}
-
   public class ItemData
   {
     public ItemData(string inNameId, string inValue)//, CompMsgType type)
@@ -91,11 +90,12 @@ namespace MessageDefLib
       simInfo = null;
       itemData = null;
     }
-    public SimAction(SimInfo startupInfo)
+    public SimAction(SimInfo startupInfo, TimeSpan actTime)
     {
       actType = SimActionType.atOpenSim;
       simInfo = startupInfo;
       itemData = null;
+      time = actTime;
     }
     public SimAction(SimActionType type, TimeSpan actTime, ItemData compModData)
     {

@@ -78,7 +78,7 @@ namespace SimulationTracking
   {
     public ConditionMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData)
       : base(name, inStEvID, inEventData)
-    {}
+    { }
 
     //placeholder for any extra info for condition events;
   }
@@ -129,7 +129,7 @@ namespace SimulationTracking
 
         if (evLists[(int)itemType] != null)
         {
-          evLists[(int)itemType].Clear();          
+          evLists[(int)itemType].Clear();
         }
         if (stateRefLookups[(int)itemType] != null)
         {
@@ -254,7 +254,7 @@ namespace SimulationTracking
                   break;
                 default:
                   break;
-              }              
+              }
               initialCondEvalNotDone.Remove(item);
             }
             else
@@ -263,20 +263,20 @@ namespace SimulationTracking
               {
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
-                  if((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) && 
+                  if ((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
                      ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                     retList.Add(item);
                   break;
 
                 default:
                   //if logic we need to make sure if we not evauating if we are about to move into a new state that is in the logic tree component evaluation
-                  if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0)) 
+                  if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0))
                   {
                     if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
                           ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                       retList.Add(item);
                   }
-                  
+
                   break;
               }
             }
@@ -286,7 +286,7 @@ namespace SimulationTracking
             //{
             //  retList.Add(item);
             //}
-                  
+
           }
         }
       }
@@ -347,7 +347,7 @@ namespace SimulationTracking
                 List<TimeSpan> times2;
                 if (eventRefLookup.TryGetValue(rem.eventID, out times2))
                 {
-                  if(times2.Count > 1)
+                  if (times2.Count > 1)
                   {
                     times2.Remove(refTime);
                   }
@@ -358,7 +358,7 @@ namespace SimulationTracking
                 }
                 if (rem.statesAndActions.Count == 1)
                 {
-                  timedEvQue.Remove();                  
+                  timedEvQue.Remove();
                 }
 
                 else
@@ -711,6 +711,8 @@ namespace SimulationTracking
     private bool extSimRunning = false;
     private bool emraldStopping3D = false;
     private bool extSimStarting = false;
+    private StatusType prevExtSimState = StatusType.stIdle;
+    private StatusType curExtSimState = StatusType.stIdle;
     private List<string> stopped3DSims = new List<string>();
     private bool inProcessingLoop = false;
     private TimeSpan sim3DStartTime;
@@ -808,8 +810,8 @@ namespace SimulationTracking
         tempVar.SetValue(0.0);
       }
 
-      SingleNextIDs.Instance.ResetTimerIDs();      
-      
+      SingleNextIDs.Instance.ResetTimerIDs();
+
       allLists.allEvents.Reset();
     }
 
@@ -817,7 +819,7 @@ namespace SimulationTracking
     public List<int> StartTracker()
     {
       this.Reset();
-      
+
       terminated = false;
       this.allLists.curRunIdx++;
       List<int> retResults = null;
@@ -847,18 +849,6 @@ namespace SimulationTracking
         ranXMPPSim = true;
         System.Threading.Thread.Sleep(10);
       }
-
-      if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
-      {
-        TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
-        foreach (var name in stopped3DSims)
-        {
-          msg2.simAction = new SimAction(SimActionType.atContinue);
-          sim3DServer.SendMessage(msg2, name);
-        }
-
-      }
-
 
       //do the process while there are still time events in the que and a terminal state is not met
       while ((timeEvList.cnt > 0) && !terminated)
@@ -930,6 +920,7 @@ namespace SimulationTracking
         sim3DServer.SendMessage(msg, name);
       }
     }
+
     /// <summary>
     /// An external simulation event occurred so process the event
     /// </summary>
@@ -939,13 +930,12 @@ namespace SimulationTracking
     {
 
       TimeSpan shiftTimeTo = new TimeSpan();
-      bool sendTimers = false;
-      
+
       int i = 0;
       //clear the tracking of last events recieved
       lastExtEvTypes.Clear();
       bool doProcessLoop = false;
-      
+
       foreach (var ev in evData.simEvents)
       {
         tempStateCngCheck = false;
@@ -976,6 +966,11 @@ namespace SimulationTracking
               this.extSimStarting = false;
               this.emraldStopping3D = false; //Stopping call from EMRALD processed by ext sim now. 
               this.extSimRunning = false;
+
+              // Track status change from event
+              prevExtSimState = curExtSimState;
+              curExtSimState = ev.status;
+
               return;
 
             case SimEventType.etTimer: // if the event is a timer then just pop the next time event and let state tracker continue.
@@ -986,15 +981,20 @@ namespace SimulationTracking
               }
 
               PopNextTimeEvent();// TODO : evData.itemID);
-              sendTimers = true;
+                                 //sendTimers = true;
               doProcessLoop = true;
               break;
 
             case SimEventType.etSimLoaded:
               this.sim3DStartTime = this.curTime;
-              sendTimers = true;
+              //sendTimers = true;
               this.extSimRunning = true;
               this.extSimStarting = false;
+
+              // Track status change from event
+              prevExtSimState = curExtSimState;
+              curExtSimState = ev.status;
+
               break;
 
             case SimEventType.etPing:
@@ -1010,6 +1010,10 @@ namespace SimulationTracking
               return;
 
             case SimEventType.etStatus:
+              // Track status change
+              prevExtSimState = curExtSimState;
+              curExtSimState = ev.status;
+
               if (ev.status == StatusType.stError)
               {
                 logger.Info("Coupled App XMPP Error: " + evData.desc + ", time: " + curTime.ToString(@"d\.hh\:mm\:ss\.f"));
@@ -1076,33 +1080,40 @@ namespace SimulationTracking
       }
 
 
-      //Look for events that now meet conditions
-      ScanCondEvList();
-      lastExtEvTypes.Clear();
-      //start a new round of processing
-      if (doProcessLoop && !ProcessActiveLoop())
+      if (this.curExtSimState == StatusType.stRunning)
       {
-        //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atReset))); //let the simulation run.
-        TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Reset", curTime, "Reset External Sim");
-        msg.simAction = new SimAction(SimActionType.atCancelSim);
-        sim3DServer.SendMessage(msg, fromClient);
-        this.emraldStopping3D = true;  //telling ext sim to stop
+        //Look for events that now meet conditions
+        ScanCondEvList();
+      
+        lastExtEvTypes.Clear();
+        //start a new round of processing
+        if (doProcessLoop && !ProcessActiveLoop())
+        {
+          //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atReset))); //let the simulation run.
+          TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Reset", curTime, "Reset External Sim");
+          msg.simAction = new SimAction(SimActionType.atCancelSim);
+          sim3DServer.SendMessage(msg, fromClient);
+          this.emraldStopping3D = true;  //telling ext sim to stop
+        }
       }
 
 
 
       if (!this.emraldStopping3D)
       {
-        if (sendTimers || tempStateCngCheck)
+        if (curExtSimState == StatusType.stWaiting)// || tempStateCngCheck)
         {
           Send3DNextEvTimers(fromClient);
         }
 
-        //send the continue event to the 3D simulation
-        //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atContinue)));
-        TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
-        msg.simAction = new SimAction(SimActionType.atContinue);
-        sim3DServer.SendMessage(msg, fromClient);
+        //send the continue event to the 3D simulation if in waiting state or done, 
+        if ((curExtSimState == StatusType.stWaiting) ||
+            ((curExtSimState == StatusType.stDone) && (this.allLists.curRunIdx < this.allLists.totRunsReq)))
+        {
+          TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
+          msg.simAction = new SimAction(SimActionType.atContinue);
+          sim3DServer.SendMessage(msg, fromClient);
+        }
       }
 
     }
@@ -1120,13 +1131,13 @@ namespace SimulationTracking
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem == null)
         return false;
-      
+
       if ((idMatch > -1) && (idMatch != nextItem.id))
       {
         return false;
       }
       //if item is greater then max time then done and clear out rest of the items
-      if(nextItem.time > maxTime)
+      if (nextItem.time > maxTime)
       {
         timeEvList.Clear();
         return false;
@@ -1179,7 +1190,7 @@ namespace SimulationTracking
         //process all the events in the list before processing the next state
 
         while ((!terminated) && (processEventList.Count > 0))
-        {      
+        {
           //process the event list in batches
           while ((!terminated) && (processEventList.Count > 0))
           {
@@ -1190,7 +1201,7 @@ namespace SimulationTracking
           }
 
           //get the next batch of condition events to process
-          ScanCondEvList();          
+          ScanCondEvList();
         }
 
         //while there are items in the Next State Queue, process them.
@@ -1351,7 +1362,7 @@ namespace SimulationTracking
             bool savePersistent = true;
             evTime = timeEv.NextTime(curTime);
             createTime = curTime;
-            
+
             //if persistent and time not expired then reuse the saved TimeMoveEvent info
             if (this.PersistentEvs.ContainsKey(curEv.name))
             {
@@ -1360,7 +1371,7 @@ namespace SimulationTracking
               TimeSpan combiedTime = overMaxTime
                 ? TimeSpan.MaxValue
                 : (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time);
-              
+
               if (combiedTime >= curTime)
               {
                 savePersistent = false; //saved here so dont do the save later.
@@ -1420,23 +1431,23 @@ namespace SimulationTracking
       if (nextStateQue.Count > 0)
       {
         int maxID = nextStateQue.Max(st => st.StateId);
-        toStateIDsBS = new MyBitArray(maxID+1); // store a bitset of the items that will be transitioned into
+        toStateIDsBS = new MyBitArray(maxID + 1); // store a bitset of the items that will be transitioned into
       }
-      
-      foreach(var nextState in nextStateQue)
+
+      foreach (var nextState in nextStateQue)
       {
         toStateIDsBS.Set(nextState.StateId, true);
       }
-      
+
       List<ConditionMoveEvent> matchedEvs = null;
       //Look for events that now meet conditions and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem != null)
         matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx, toStateIDsBS);
-        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
+      //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
       else
         matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx, toStateIDsBS);
-        //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
+      //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
       this.processEventList.AddRange(matchedEvs);
       changedItems.Clear();
     }
@@ -1460,7 +1471,7 @@ namespace SimulationTracking
       {
         switch (curAct.actType)
         {
-          case EnActionType.atTransition:            
+          case EnActionType.atTransition:
             TransitionAct tCurAct = (curAct as TransitionAct);
 
             //ProcessTransition((Transition)curAct);
@@ -1486,7 +1497,7 @@ namespace SimulationTracking
             logger.Debug("DoChangeVarValueAction: " + curAct.name);
             //change Var values or add states depending on the action.
             SimVariable varItem = null;
-           
+
             VarValueAct curVarAct = (curAct as VarValueAct);
             try
             {
@@ -1517,8 +1528,8 @@ namespace SimulationTracking
                   System.Threading.Thread.Sleep(10);
                 }
 
-               Sim3DVariable simVar = varItem as Sim3DVariable;
-                                
+                Sim3DVariable simVar = varItem as Sim3DVariable;
+
                 string setValue;
                 switch (simVar.dType.Name.ToUpper().Substring(0, 4))
                 {
@@ -1558,10 +1569,10 @@ namespace SimulationTracking
                 if (curTimeEv.relatedIDs.Contains(varItem.id))
                 {
                   //get a new time for the event.
-                  TimeSpan lastSampledTime = ev.Key;                  
+                  TimeSpan lastSampledTime = ev.Key;
 
                   TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
-                  if (regotTime < TimeSpan.Zero) 
+                  if (regotTime < TimeSpan.Zero)
                     regotTime = TimeSpan.Zero;
 
                   timeEvList.ChangeEventTime(regotTime, ev.Value.eventStateActions.eventID);
@@ -1581,15 +1592,16 @@ namespace SimulationTracking
             foreach (var persEvItem in this.PersistentEvs.Values)
             {
               TimeBasedEvent curTimeEv = (TimeBasedEvent)persEvItem.eventData;
-              if (!timeEvList.HasEvent(curTimeEv.id))                {
-                  
-                  if (curTimeEv.relatedIDs.Contains(varItem.id))
-                  { 
-                    if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocAdjust)
-                    {
-                      throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
-                    }
-                    
+              if (!timeEvList.HasEvent(curTimeEv.id))
+              {
+
+                if (curTimeEv.relatedIDs.Contains(varItem.id))
+                {
+                  if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocAdjust)
+                  {
+                    throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
+                  }
+
                   TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
                   if (regotTime < TimeSpan.Zero)
                     regotTime = TimeSpan.Zero;
@@ -1599,9 +1611,9 @@ namespace SimulationTracking
                 }
               }
             }
-            
 
-            
+
+
 
             //add the ID to the changed list
             changedItems.AddChangedID(EnModifiableTypes.mtVar, varItem.id);
@@ -1746,8 +1758,8 @@ namespace SimulationTracking
               case SimActionType.atOpenSim:
                 //stop3DInEv = false;
                 msg = new TMsgWrapper(MessageType.mtSimAction, "OpenSim", curTime, "Start External Sim");
-                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists), SingleRandom.Instance.Next(), this.allLists.totRunsReq, this.allLists.curRunIdx));
-                
+                msg.simAction = new SimAction(new SimInfo(cur3DAct.ModelRef(allLists), cur3DAct.simMaxTime, cur3DAct.ConfigData(allLists), SingleRandom.Instance.Next(), this.allLists.totRunsReq, this.allLists.curRunIdx), curTime);
+
                 if (sim3DServer == null)
                   throw new Exception("External Simulation not assigned.");
 
@@ -1767,7 +1779,7 @@ namespace SimulationTracking
                     }
 
                     //give time to establish a new connection
-                    System.Threading.Thread.Sleep(1000);                    
+                    System.Threading.Thread.Sleep(1000);
                   }
                   else
                   {
@@ -1778,7 +1790,7 @@ namespace SimulationTracking
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
                 sim3DServer.evCallBackFunc = Sim3DEventOccurred;
 
-                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName)) 
+                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
                 {
                   extSimStarting = true;
                   emraldStopping3D = false;
@@ -1893,13 +1905,13 @@ namespace SimulationTracking
         TimeMoveEvent nextTimeItem = timeEvList.LookNextTimedEvent();
 
         //int nextItemTime = Convert.ToInt32(((nextTimeItem.time + this.curTime) - this.sim3DStartTime).TotalSeconds * sim3DFameRate);
-        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);        
+        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);
         msg.simAction = new SimAction(SimActionType.atTimer, nextItemTime, new ItemData(nextTimeItem.name, nextTimeItem.id.ToString()));
       }
       else
       {
         msg.simAction = new SimAction(SimActionType.atTimer, maxTime, new ItemData("MaxSimTime", "0"));
-      }        
+      }
 
       //make sure the 3DSim is fully started before the message is sent.
       while (!this.extSimRunning)
@@ -1910,7 +1922,7 @@ namespace SimulationTracking
 
       //sim3DServer.SendAction(new TActionPacketData(new TActionData(T3DActionType.atTimer, nextTimeItem.name, nextTimeItem.id, nextItemTime)));
       sim3DServer.SendMessage(msg, toClient);
-      
+
     }
 
     /// <summary>

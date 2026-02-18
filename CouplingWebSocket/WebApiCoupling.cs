@@ -23,6 +23,9 @@ namespace CouplingWebSocket
     private string _connectionPassword = "";
     private int _frameRate = 0;
 
+    // Single configurable timeout for all coupling operations
+    public int TimeoutMs { get; set; } = 5000;  // 5 sec normally
+
     // Interface property implementations
     public string connectionPassword
     {
@@ -46,6 +49,9 @@ namespace CouplingWebSocket
     {
       _serverUrl = serverUrl;
       _client = new WebSocketClient();
+
+      // Set timeout from property
+      _client.RequestTimeoutMs = TimeoutMs;
 
       // Subscribe to client events
       _client.MessageReceived += OnMessageReceived;
@@ -91,21 +97,21 @@ namespace CouplingWebSocket
     /// <returns>GUID of the created connection</returns>
     public async Task<Guid> StartupApp(string appName, List<string> watchItems)
     {
-      Guid retGuid;
-
-      // Create connection with the app name
-      if (_resourceOptions.Contains(appName))
-      {
-        retGuid = await _client.CreateConnection(appName, watchItems);
-        _connectedApps.Add(retGuid, appName);
-        _connectedIDs.Add(appName, retGuid);
-        _isConnected = true;
-        return retGuid;
-      }
-      else
+      // Verify the app is available
+      if (!_resourceOptions.Contains(appName))
       {
         throw new Exception("Invalid app name or unavailable to couple with");
       }
+
+      // Request connection from server and wait for the GUID response
+      Guid retGuid = await _client.CreateConnection(appName, watchItems);
+
+      // Now add to dictionaries with the server-provided GUID
+      _connectedApps.Add(retGuid, appName);
+      _connectedIDs.Add(appName, retGuid);
+      _isConnected = true;
+
+      return retGuid;
     }
 
     /// <summary>
@@ -182,11 +188,10 @@ namespace CouplingWebSocket
     private async void OnMessageReceived(object? sender, (Guid conID, string message) e)
     {
       // Wait for the connection to be registered in _connectedApps
-      const int maxWaitMs = 5000; // 5 second timeout
       const int checkIntervalMs = 50; // Check every 50ms
       int elapsedMs = 0;
 
-      while (!_connectedApps.ContainsKey(e.conID) && elapsedMs < maxWaitMs)
+      while (!_connectedApps.ContainsKey(e.conID) && elapsedMs < TimeoutMs)
       {
         await Task.Delay(checkIntervalMs);
         elapsedMs += checkIntervalMs;
@@ -195,7 +200,7 @@ namespace CouplingWebSocket
       // If still not found, handle the error
       if (!_connectedApps.ContainsKey(e.conID))
       {
-        string errorMsg = $"Connection ID {e.conID} not found after {maxWaitMs}ms timeout";
+        string errorMsg = $"Connection ID {e.conID} not found after {TimeoutMs}ms timeout";
         if (_form != null)
         {
           _form.IncomingOtherMsg("", $"Error: {errorMsg}");
