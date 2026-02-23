@@ -1,24 +1,48 @@
-# External Coupling using XMPP
+﻿# External Coupling using XMPP or WebSocket
 <img src="/images/Modeling/XMPPProtocol/XMPP_logo.png" width="300" />
 # Overview
-The XMPP message passing protocol in EMRALD makes it possible to do two-way coupling where the events in another simulation affect what happens in the EMRALD model and the events in the EMRALD model can change the other simulation, all in real time. To do this, you must either have access to the source of the coupling simulation or write a wrapper for an API of the other application. This section covers the message structure and minimum requirements. 
-Notice - This is feature is still in beta development and subject to change.
+EMRALD supports two transports for two-way coupling where events in an external simulation affect EMRALD and vice versa:
+- **XMPP** (original) using an XMPP server/broker.
+- **WebSocket** (new) using a lightweight TCP WebSocket endpoint.
+
+Both transports carry the same action/event payloads defined in `MessageProtocol.json` (`MessageDefLib`). Choose the option that best fits your network and deployment needs. A reference WebSocket host is provided in the `CouplingWebSocket` and `WebSocketTestServer` projects.
+
+Notice - These coupling features are still in active development and subject to change.
 
 ## XMPP Protocol
 For XMPP message passing a server is used to send messages from one client to another. The server handles the message authentication and send/receive verification. EMRALD has a built in XMPP Server and automatically runs it if the model contains a reference to an external application. See [External Simulations](/Modeling/externalSims.md). To couple with another application requires some software development, you must add an XMPP package suitable for the source code of the application or write a wrapper that is able to handle the message requirements and call the applications API.
+
+## WebSocket Protocol (new)
+WebSocket coupling removes the XMPP dependency and communicates directly over a WebSocket endpoint. EMRALD's WebSocket client helper (`WebApiCoupling` in the `CouplingWebSocket` project) sends and receives the same EMRALD action/event payloads as XMPP. A sample host implementation lives in `WebSocketTestServer`.
+
+Typical flow:
+1. Client connects to `ws://<host>:<port>/` (sample server defaults to `ws://localhost:8465/`).
+2. Client sends `{"command":"GetAppOptions"}` to discover available app names.
+3. Client sends `{"command":"CreateConnection","appName":"<name>","watchItems":["var1","var2"]}`; server returns a `conID` (GUID).
+4. Client sends actions with `{"command":"SendActionMsg","conID":"<conID>","action":<TMsgWrapper JSON>}`.
+5. Server returns EMRALD event messages that include `conID` and `message` (the `TMsgWrapper` JSON).
+
+See **[Building a WebSocket Coupling](./webSocketCoupling.md)** for a step-by-step guide to adapting the sample server to your own simulation.
 
 ## Linking Process
 When opening an EMRALD model with containing a reference to and external application, you must establish a connection to that application before you can run the model, see [Linking Process](#linking-process). Every message specified in EMRALD for that reference will be sent to the assigned XMPP connection and for each event received from that application EMRALD will see if the name matches a linked variable specified for it. If there is a match, that variable will be updated with the value from the event. 
 
 # Message Requirements
 The following outlines what is used to connect, the messages passed between EMRALD and the simulation client, and a recommendation on the structure for processing and sending messages. 
-## Connecting
-The connection parameters for linking to the XMPP server are as follows:
+## Connecting (choose one transport)
+### XMPP
 User - unique identifier for the external application. If more than one application is linked to EMRALD each must have a different user.
 Domain - the domain location where EMRALD is running from typically this will stay as "localhost" when running on a single machine. If EMRALD is on a different machine, then this is the IP address of the machine running EMRALD. 
 Host - currently a constant set to "localhost"
 Resource - This is the connection group for the messaging. When EMRALD features allow multiprocessing, there will need to be multiple instances of the external application with incremental values for each thread.
 Password - Default is "secret" this can be assigned in EMRALD when starting up through command line. Run -help after the EXE to see command line options.
+
+### WebSocket
+Endpoint - WebSocket URL, e.g., `ws://localhost:8465/` for the sample server.
+App name - select one of the names returned by `GetAppOptions`.
+conID - GUID returned by `CreateConnection` and echoed in all subsequent messages.
+Watch items - optional list of variable IDs you want the server to monitor and send back via `etCompEv`.
+Authentication - handled by your WebSocket host (for example, shared secret or network ACLs). EMRALD does not send XMPP-style credentials on this transport.
 
 
 ## Message Format
@@ -184,7 +208,7 @@ This state diagram shows the recommended design flow for reacting to EMRALD mess
 This sequence diagram shows the flow of messages between the two applications.
 
 # Testing
-The EMRALD simulation engine UI has a tab for testing the XMPP messaging. There also a demo client project in the source written in C#. 
+The EMRALD simulation engine UI has a tab for testing the XMPP messaging. There is also a demo XMPP client project in the source written in C#. For WebSocket, a sample host is available for quick end-to-end checks.
 
 ## EMRALD UI
 To couple with an external application first load a model. If it loads with no errors, then go to the simulate tab.
@@ -236,6 +260,14 @@ Each message received is posted in the tabs list.
 <img src="/images/Modeling/XMPPProtocol/ClientMsglog.png" style="width:300px">
 <br>
 
+## WebSocket Sample Host
+- Example server: `WebSocketTestServer` (defaults to `ws://localhost:8465/`).
+- Client helper used by EMRALD: `WebApiCoupling` in the `CouplingWebSocket` project.
+- To try it:
+  - Build and run `WebSocketTestServer`.
+  - In EMRALD, set the external simulation's coupling type to **WebSocket** and enter the server URL.
+  - Use the same action/event messages described above; only the transport changes.
+
 
 
 
@@ -246,3 +278,5 @@ Each message received is posted in the tabs list.
  
 
 <!--Copyright 2021 Battelle Energy Alliance-->
+
+

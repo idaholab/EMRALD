@@ -57,7 +57,14 @@ export default defineConfig({
               { text: 'Multi-Thread Solving', link: '/Modeling/multiThread' },
             ],
           },
-          { text: 'XMPP Protocol', link: '/Modeling/xmppProtocol' },
+          {
+            text: 'Coupling',
+            link: '/Modeling/couplingProtocols',
+            items: [
+              { text: 'Protocols', link: '/Modeling/couplingProtocols' },
+              { text: 'WebSocket Instructions', link: '/Modeling/webSocketCoupling' },
+            ],
+          },
         ],
       },
       {

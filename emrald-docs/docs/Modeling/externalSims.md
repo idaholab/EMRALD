@@ -94,6 +94,6 @@ This message is for testing. Could be used to tell the connected simulation to o
 - The connected simulation must wait for a "Continue" message after sending any message to EMRALD.
 - After receiving a "Cancel Sim" message the software must reset the model and be ready for another "Open Sim" message.
 
-See [XMPP communication protocol](/Modeling/xmppProtocol.md) for details on coupling code to EMRALD.
+See [Coupling protocols](/Modeling/couplingProtocols.md) for details on coupling code to EMRALD.
 
 <!--Copyright 2021 Battelle Energy Alliance-->

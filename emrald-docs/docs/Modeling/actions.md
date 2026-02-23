@@ -130,7 +130,7 @@ The value returned by the script is assigned to the variable, so one must be sel
 ### External Simulation Message
 <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/>  
 
-Listed as "Ext. Sim Message" in the dropdown menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./xmppProtocol.md#xmpp-protocol) for details on coupling code to EMRALD.
+Listed as "Ext. Sim Message" in the dropdown menu. This action sends a message to an external code through coupled communication messaging protocol. See [Coupling Protocols](./couplingProtocols.md#xmpp-protocol) for details on coupling code to EMRALD.
 
 <img src="/images/Modeling/actions/ExtSimMessageOptions.png" alt="External Simulation Message Options" width="500"/>
 
