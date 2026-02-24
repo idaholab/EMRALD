@@ -273,7 +273,12 @@ namespace SysAndRegressionTesting
       options.runct = 5;
       options.variables = new List<string>() { "TridiumVal" };
       options.couplingInfo = new CouplingData();
-      options.couplingInfo.couplingType = CouplingType.WebSocket;
+      //options.couplingInfo.couplingType = CouplingType.WebSocket;
+      options.couplingInfo.couplingType = CouplingType.XMPP;
+      //options.couplingInfo.couplingPassword = "secret";
+      //options.couplingInfo.
+
+
       options.couplingInfo.couplingURL = host.WsUri.ToString(); // e.g., "ws://localhost:52743/"
       options.couplingInfo.timeout = 10;
       options.opsVer = 1.02;

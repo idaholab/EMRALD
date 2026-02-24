@@ -23,7 +23,6 @@ using SimulationEngine;
 using Windows.Devices.Geolocation;
 using XmppMessageServer;
 using XmppServer;
-using static EMRALD_Sim.UISettings;
 
 namespace EMRALD_Sim
 {
@@ -36,32 +35,40 @@ namespace EMRALD_Sim
     private bool _validSim = false;
     private string _modelPath = "";
     private string curDir = "c:\\temp";
-    private ModelSettings _currentModelSettings = null;
-    private bool _populatingSettings = false;
     private bool _running = false;
     private string _lastError = "";
     private JSONRun _jsonRunner = null;
     private CancellationTokenSource _cancellationTokenSource = null;
-    private List<string> _monitorVarsFromArgs = new List<string>();
     private int _pathResultsInterval = -1;
+    private List<string> _recentFiles = new List<string>();
+    private bool _skipApplyOptionsOnce = false;
+    private Options_cur _curSimOptions = new Options_cur();
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
     private const int ATTACH_PARENT_PROCESS = -1;
 
+    // Main form constructor: wire services, process args, and open model if provided.
     public FormMain(string[] args, IAppSettingsService appSettingsService, IOptions<UISettings> optionsAccessor)
     {
       _appSettingsService = appSettingsService;
       _optionsAccessor = optionsAccessor;
       InitializeComponent();
+
+
       teModel.SetHighlighting("JSON");
+      tcCouplingTypeInfo.SelectedIndex = 1;
       ResetResults();
+      _curSimOptions.opsVer = 1.02;
+      _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
+      _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
 
 #if DEBUG
       ConsoleHelper.Show();
 #endif
 
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+      LoadRecentFiles();
 
       if (args.Length > 0)
       {
@@ -85,7 +92,16 @@ namespace EMRALD_Sim
 
         if (isJSON)
         {
-          OptionsRunWithNotify(args[0]);
+          try
+          {
+            _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0]));
+            model = _curSimOptions.inpfile;
+            execute = true;
+          }
+          catch
+          {
+            OptionsRunWithNotify(args[0]);
+          }
         }
         else
         {
@@ -93,29 +109,18 @@ namespace EMRALD_Sim
         }
       }
 
-      if (model != null)
+      if (model != null && OpenModel(model))
       {
-        if (OpenModel(model))
-        {
-          tcMain.SelectedTab = tabSimulate;
+        LoadCurSimOptionsFromDisk(model);
+        tcMain.SelectedTab = tabSimulate;
+        AddRecentFile(model);
+      }
 
-          // Apply monitor variables from command-line args
-          if (_monitorVarsFromArgs.Count > 0)
-          {
-            for (int idx = 0; idx < lbMonitorVars.Items.Count; idx++)
-            {
-              if (_monitorVarsFromArgs.Contains(lbMonitorVars.Items[idx].ToString()))
-              {
-                lbMonitorVars.SetItemChecked(idx, true);
-              }
-            }
-          }
+      ApplyOptionsToUI();
 
-          if (execute)
-          {
-            btnStartSims_Click(this, null);
-          }
-        }
+      if (execute && _validSim)
+      {
+        btnStartSims_Click(this, null);
       }
     }
 
@@ -125,9 +130,9 @@ namespace EMRALD_Sim
     /// <param name="args"></param>
     /// <param name="modelPath">Output parameter for model path</param>
     /// <returns>return if to execute the model</returns>
+    // Parse command-line options into _curSimOptions; returns true if execute flag present.
     private bool LoadFromArgs(string[] args, out string modelPath)
     {
-      _populatingSettings = true;
       bool execute = false;
       modelPath = null;
       List<string> monitor = new List<string>();
@@ -139,7 +144,7 @@ namespace EMRALD_Sim
         switch (argument)
         {
           case "-n":
-            tbRunCnt.Text = args[i + 1];
+            _curSimOptions.runct = int.Parse(args[i + 1]);
             ++i;
             break;
 
@@ -153,22 +158,35 @@ namespace EMRALD_Sim
             else
             {
               modelPath = filePath;
+              _curSimOptions.inpfile = filePath;
             }
             ++i;
             break;
 
           case "-r":
-            tbSavePath.Text = args[i + 1];
+            _curSimOptions.resout = args[i + 1];
             ++i;
             break;
 
           case "-o":
-            tbSavePath2.Text = args[i + 1];
+            _curSimOptions.jsonRes = args[i + 1];
             ++i;
             break;
 
           case "-t":
-            tbMaxSimTime.Text = args[i + 1];
+            _curSimOptions.runtime = args[i + 1];
+            ++i;
+            break;
+
+          case "-threads":
+            try
+            {
+              _curSimOptions.threads = int.Parse(args[i + 1]);
+            }
+            catch
+            {
+              Console.WriteLine("Invalid syntax for -threads, must be an integer.");
+            }
             ++i;
             break;
 
@@ -207,7 +225,7 @@ namespace EMRALD_Sim
 
           case "-s":
             if (LoadLib.SetSeed(args[i + 1]))
-              tbSeed.Text = args[i + 1];
+              _curSimOptions.seed = int.Parse(args[i + 1]);
             ++i;
             break;
 
@@ -256,15 +274,13 @@ namespace EMRALD_Sim
             {
               case "basic":
               case "Basic":
-                chkLog.Checked = true;
+                _curSimOptions.debug = "BASIC";
                 ConfigData.debugLev = LogLevel.Info;
                 break;
 
               case "detailed":
               case "Detailed":
-                chkLog.Checked = true;
-                rbDebugBasic.Checked = false;
-                rbDebugDetailed.Checked = true;
+                _curSimOptions.debug = "DETAILED";
                 ConfigData.debugLev = LogLevel.Debug;
                 break;
 
@@ -272,6 +288,8 @@ namespace EMRALD_Sim
                 Console.Write("invalid option for debug must be \"basic\" or \"detailed\". ");
                 break;
             }
+            _curSimOptions.debugStartIdx = ConfigData.debugRunStart;
+            _curSimOptions.debugEndIdx = ConfigData.debugRunEnd;
             ++i;
 
             if (i + 1 < args.Length && args[i + 1][0] == '[')
@@ -283,7 +301,7 @@ namespace EMRALD_Sim
                 if (arg.EndsWith(","))
                   arg = arg.TrimEnd(',');
                 ConfigData.debugRunStart = int.Parse(arg);
-                tbLogRunStart.Text = arg;
+                _curSimOptions.debugStartIdx = ConfigData.debugRunStart;
                 ++i;
 
                 arg = args[i + 1];
@@ -294,7 +312,7 @@ namespace EMRALD_Sim
                 }
                 arg = arg.TrimEnd(']');
                 ConfigData.debugRunEnd = int.Parse(arg);
-                tbLogRunEnd.Text = arg;
+                _curSimOptions.debugEndIdx = ConfigData.debugRunEnd;
                 ++i;
               }
               catch
@@ -313,22 +331,21 @@ namespace EMRALD_Sim
         }
       }
 
-      // Store values for later use after model is loaded
       if (monitor.Count > 0)
       {
-        // Store monitor list to apply after model loads
-        _monitorVarsFromArgs = monitor;
+        _curSimOptions.variables = monitor;
       }
 
       if (pathResultsInterval > 0)
       {
         _pathResultsInterval = pathResultsInterval;
+        _curSimOptions.pathResultsInterval = pathResultsInterval;
       }
 
-      _populatingSettings = false;
       return execute;
     }
 
+    // Print CLI help text and exit.
     private void ShowHelpAndExit()
     {
       Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
@@ -336,6 +353,7 @@ namespace EMRALD_Sim
       Console.WriteLine("-i \"input model path\"");
       Console.WriteLine("-r \"results output file\"");
       Console.WriteLine("-o \"paths output file\"");
+      Console.WriteLine("-threads \"number of threads to use\"");
       Console.WriteLine("-t \"max run time\"");
       Console.WriteLine("-e \"execute\"");
       Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
@@ -350,6 +368,7 @@ namespace EMRALD_Sim
       Environment.Exit(0);
     }
 
+    // Launch a JSON-run with a simple processing dialog.
     private void OptionsRunWithNotify(string jsonPath)
     {
       if (!File.Exists(jsonPath))
@@ -388,6 +407,7 @@ namespace EMRALD_Sim
       });
     }
 
+    // Execute a JSON-defined simulation from console workflow.
     private async void OptionsRun(string optionsJsonStr)
     {
       JSONRun simRun = new JSONRun(optionsJsonStr);
@@ -405,6 +425,7 @@ namespace EMRALD_Sim
       }
     }
 
+    // Clear XMPP display when requested.
     public void Clear()
     {
       if (chkClearOnMsg.Checked)
@@ -413,6 +434,7 @@ namespace EMRALD_Sim
       }
     }
 
+    // Ensure delegate executes on UI thread.
     private void InvokeUIUpdate(MethodInvoker methodInvokerDelegate)
     {
       if (this.InvokeRequired)
@@ -544,72 +566,6 @@ namespace EMRALD_Sim
         cbMsgType.Items.Add(actT.ToString().Substring(2));
       }
       cbMsgType.SelectedIndex = 0;
-      PopulateRecentFileList();
-    }
-
-    private void PopulateRecentFileList()
-    {
-      if (_optionsAccessor.Value.SettingsByModel.Count > 0)
-      {
-        foreach (ModelSettings modelSettings in _optionsAccessor.Value.SettingsByModel)
-        {
-          ToolStripMenuItem fileRecent = new ToolStripMenuItem(modelSettings.Filename, null, RecentFile_click) { Tag = modelSettings };
-          recentToolStripMenuItem.DropDownItems.Add(fileRecent);
-        }
-      }
-      else
-      {
-        recentToolStripMenuItem.Visible = false;
-      }
-    }
-
-    private void AddRecentlyOpenedFileToSettings()
-    {
-      _currentModelSettings = _optionsAccessor.Value.SettingsByModel.SingleOrDefault(m => m.Filename == _modelPath);
-
-      if (_currentModelSettings == null)
-      {
-        _currentModelSettings = new ModelSettings
-        {
-          Filename = _modelPath
-        };
-
-        if (_optionsAccessor.Value.SettingsByModel.Count == 10)
-        {
-          _optionsAccessor.Value.SettingsByModel.RemoveLast();
-          recentToolStripMenuItem.DropDownItems.RemoveAt(recentToolStripMenuItem.DropDownItems.Count - 1);
-        }
-
-        _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
-
-        recentToolStripMenuItem.Visible = true;
-        ToolStripMenuItem fileRecent = new ToolStripMenuItem(_modelPath, null, RecentFile_click) { Tag = _currentModelSettings };
-        recentToolStripMenuItem.DropDownItems.Insert(0, fileRecent);
-
-        PopulateSettingsFromJson();
-        SaveUISettings();
-      }
-    }
-
-    private void RecentFile_click(object sender, EventArgs e)
-    {
-      ToolStripMenuItem toolStripMenuItem = sender as ToolStripMenuItem;
-
-      if (toolStripMenuItem.Text != _modelPath)
-      {
-        _currentModelSettings = toolStripMenuItem.Tag as ModelSettings;
-
-        _optionsAccessor.Value.SettingsByModel.Remove(_currentModelSettings);
-        _optionsAccessor.Value.SettingsByModel.AddFirst(_currentModelSettings);
-        recentToolStripMenuItem.DropDownItems.Remove(toolStripMenuItem);
-        recentToolStripMenuItem.DropDownItems.Insert(0, toolStripMenuItem);
-
-        if (OpenModel(toolStripMenuItem.Text))
-        {
-          PopulateSettingsFromJson();
-          SaveUISettings();
-        }
-      }
     }
 
     private void cbMsgType_SelectedIndexChanged(object sender, EventArgs e)
@@ -760,8 +716,8 @@ namespace EMRALD_Sim
         lblRunTime.Visible = true;
         lbl_ResultHeader.Visible = true;
 
-        // Create Options_cur from UI settings
-        Options_cur options = CreateOptionsFromUI();
+        // Clone the options so runtime changes in the UI don't alter the running sim
+        Options_cur options = JsonConvert.DeserializeObject<Options_cur>(JsonConvert.SerializeObject(_curSimOptions));
 
         // Read model JSON
         string modelJson = teModel.Text;
@@ -811,65 +767,6 @@ namespace EMRALD_Sim
         SetRunningVis();
         MessageBox.Show($"Error starting simulation: {err.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
-    }
-
-    private Options_cur CreateOptionsFromUI()
-    {
-      Options_cur options = new Options_cur();
-
-      // Basic settings
-      options.runct = int.Parse(tbRunCnt.Text);
-      options.runtime = tbMaxSimTime.Text;
-      options.inpfile = _modelPath;
-      options.resout = tbSavePath.Text;
-      options.jsonRes = tbSavePath2.Text;
-
-      // Path results interval
-      options.pathResultsInterval = _pathResultsInterval;
-
-      // Seed
-      if (!string.IsNullOrEmpty(tbSeed.Text))
-      {
-        options.seed = int.Parse(tbSeed.Text);
-      }
-
-      // Thread settings
-      if (cbMultiThreaded.Checked && !string.IsNullOrEmpty(tbThreads.Text))
-      {
-        options.threads = int.Parse(tbThreads.Text);
-      }
-      else
-      {
-        options.threads = 0; // Single threaded
-      }
-
-      // Debug settings
-      if (chkLog.Checked)
-      {
-        if (rbDebugDetailed.Checked)
-          options.debug = "DETAILED";
-        else
-          options.debug = "BASIC";
-
-        options.debugStartIdx = int.Parse(tbLogRunStart.Text);
-        options.debugEndIdx = int.Parse(tbLogRunEnd.Text);
-      }
-      else
-      {
-        options.debug = "OFF";
-      }
-
-      // Variables to monitor
-      options.variables = new List<string>();
-      foreach (var item in lbMonitorVars.CheckedItems)
-      {
-        options.variables.Add(item.ToString());
-      }
-
-      // Initialize variable values (if any)
-      options.initVars = new List<VarInitValue>();
-
-      return options;
     }
 
     private void UIProgressCallback(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
@@ -972,15 +869,18 @@ namespace EMRALD_Sim
       cbMsgType.SelectedIndex = 0;
     }
 
+    // Handle File->Open model and add to recents (without applying saved options).
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       if (openModel.ShowDialog() == DialogResult.OK)
       {
+        _skipApplyOptionsOnce = true;
         if (OpenModel(openModel.FileName))
-          AddRecentlyOpenedFileToSettings();
+          AddRecentFile(openModel.FileName);
       }
     }
 
+    // Load model file, validate, and reset UI/results.
     private bool OpenModel(string path)
     {
       Cursor saveCurs = Cursor.Current;
@@ -992,6 +892,7 @@ namespace EMRALD_Sim
       _sim = null;
       teModel.Text = LoadLib.LoadModel(ref _sim, path, ref errorStr);
       _modelPath = path;
+      _curSimOptions.inpfile = _modelPath;
 
       if (errorStr != "")
       {
@@ -1012,72 +913,162 @@ namespace EMRALD_Sim
       return _validSim;
     }
 
+    // Persist per-model option set to UISettings.json (list).
     private void SaveUISettingsToJson()
     {
-      if (!_populatingSettings && (_currentModelSettings != null))
+      _curSimOptions.inpfile = _modelPath;
+      if (string.IsNullOrWhiteSpace(_modelPath))
+        return;
+
+      List<Options_cur> list;
+      try
       {
-        _currentModelSettings.RunCount = tbRunCnt.Text;
-        _currentModelSettings.MaxRunTime = tbMaxSimTime.Text;
-        _currentModelSettings.BasicResultsLocation = tbSavePath.Text;
-        _currentModelSettings.PathResultsLocation = tbSavePath2.Text;
-        _currentModelSettings.Seed = tbSeed.Text;
-        _currentModelSettings.DebugFromRun = tbLogRunStart.Text;
-        _currentModelSettings.DebugToRun = tbLogRunEnd.Text;
+        list = File.Exists("UISettings.json")
+          ? JsonConvert.DeserializeObject<List<Options_cur>>(File.ReadAllText("UISettings.json")) ?? new List<Options_cur>()
+          : new List<Options_cur>();
+      }
+      catch
+      {
+        list = new List<Options_cur>();
+      }
 
-        _currentModelSettings.CheckedVars.Clear();
-        _currentModelSettings.Threads = tbThreads.Text;
-        foreach (var item in lbMonitorVars.CheckedItems)
-        {
-          _currentModelSettings.CheckedVars.Add(item.ToString());
-        }
+      list.RemoveAll(o => string.Equals(o.inpfile, _modelPath, StringComparison.OrdinalIgnoreCase));
+      list.Add(JsonConvert.DeserializeObject<Options_cur>(JsonConvert.SerializeObject(_curSimOptions)));
 
-        if (chkLog.Checked)
+      File.WriteAllText("UISettings.json", JsonConvert.SerializeObject(list, Formatting.Indented));
+    }
+
+    private void LoadCurSimOptionsFromDisk(string modelPath)
+    {
+      if (string.IsNullOrWhiteSpace(modelPath))
+        return;
+
+      try
+      {
+        if (File.Exists("UISettings.json"))
         {
-          if (ConfigData.debugLev == LogLevel.Info)
+          var list = JsonConvert.DeserializeObject<List<Options_cur>>(File.ReadAllText("UISettings.json")) ?? new List<Options_cur>();
+          var match = list.FirstOrDefault(o => string.Equals(o.inpfile, modelPath, StringComparison.OrdinalIgnoreCase));
+          if (match != null)
           {
-            _currentModelSettings.DebugLevel = "Basic";
-          }
-          else
-          {
-            _currentModelSettings.DebugLevel = "Detailed";
+            _curSimOptions = match;
           }
         }
-        SaveUISettings();
+      }
+      catch { }
+    }
+
+    // Load recents from disk and rebuild Recent menu.
+    private void LoadRecentFiles()
+    {
+      try
+      {
+        if (File.Exists("RecentFiles.json"))
+        {
+          _recentFiles = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("RecentFiles.json")) ?? new List<string>();
+        }
+      }
+      catch { _recentFiles = new List<string>(); }
+
+      PopulateRecentMenu();
+    }
+
+    // Save recents list to disk.
+    private void SaveRecentFiles()
+    {
+      File.WriteAllText("RecentFiles.json", JsonConvert.SerializeObject(_recentFiles, Formatting.Indented));
+    }
+
+    // Rebuild Recent menu from in-memory list.
+    private void PopulateRecentMenu()
+    {
+      recentToolStripMenuItem.DropDownItems.Clear();
+      if (_recentFiles.Count == 0)
+      {
+        recentToolStripMenuItem.Visible = false;
+        return;
+      }
+
+      recentToolStripMenuItem.Visible = true;
+      foreach (var path in _recentFiles)
+      {
+        var item = new ToolStripMenuItem(path, null, RecentFile_Click) { Tag = path };
+        recentToolStripMenuItem.DropDownItems.Add(item);
       }
     }
 
-    private void SaveUISettings()
+    // Insert/trim recents, persist, and refresh menu.
+    private void AddRecentFile(string path)
     {
-      File.WriteAllText("UISettings.json", JsonConvert.SerializeObject(_optionsAccessor.Value, Formatting.Indented));
+      if (string.IsNullOrWhiteSpace(path))
+        return;
+
+      _recentFiles.Remove(path);
+      _recentFiles.Insert(0, path);
+      if (_recentFiles.Count > 10)
+        _recentFiles = _recentFiles.Take(10).ToList();
+
+      SaveRecentFiles();
+      PopulateRecentMenu();
     }
 
-    private void PopulateSettingsFromJson()
+    // Open a recent model and apply saved options.
+    private void RecentFile_Click(object sender, EventArgs e)
     {
-      _populatingSettings = true;
-      tbRunCnt.Text = _currentModelSettings.RunCount.ToString();
-      tbMaxSimTime.Text = _currentModelSettings.MaxRunTime.ToString();
-      tbSavePath.Text = _currentModelSettings.BasicResultsLocation;
-      tbSavePath2.Text = _currentModelSettings.PathResultsLocation;
-      tbSeed.Text = _currentModelSettings.Seed;
+      var menuItem = sender as ToolStripMenuItem;
+      var path = menuItem?.Tag as string;
+      if (string.IsNullOrWhiteSpace(path))
+        return;
+
+      if (!File.Exists(path))
+      {
+        MessageBox.Show($"File not found: {path}");
+        _recentFiles.Remove(path);
+        SaveRecentFiles();
+        PopulateRecentMenu();
+        return;
+      }
+
+      if (OpenModel(path))
+      {
+        LoadCurSimOptionsFromDisk(path);
+        ApplyOptionsToUI();
+        AddRecentFile(path);
+      }
+    }
+
+    // Push _curSimOptions values into UI controls.
+    private void ApplyOptionsToUI()
+    {
+      tbRunCnt.Text = _curSimOptions.runct.ToString();
+      tbMaxSimTime.Text = _curSimOptions.runtime ?? "365.00:00:00";
+      tbSavePath.Text = _curSimOptions.resout ?? @"c:\temp\NewSimResults.txt";
+      tbSavePath2.Text = _curSimOptions.jsonRes ?? @"c:\temp\PathResults.json";
+      tbSeed.Text = _curSimOptions.seed > 0 ? _curSimOptions.seed.ToString() : "";
       LoadLib.SetSeed(tbSeed.Text);
-      LoadLib.SetThreads(_currentModelSettings.Threads);
-      tbLogRunStart.Text = _currentModelSettings.DebugFromRun.ToString();
-      tbLogRunEnd.Text = _currentModelSettings.DebugToRun.ToString();
+      tbThreads.Text = _curSimOptions.threads > 0 ? _curSimOptions.threads.ToString() : "";
+      LoadLib.SetThreads(tbThreads.Text);
+      tbLogRunStart.Text = _curSimOptions.debugStartIdx > 0 ? _curSimOptions.debugStartIdx.ToString() : "1";
+      tbLogRunEnd.Text = _curSimOptions.debugEndIdx > 0 ? _curSimOptions.debugEndIdx.ToString() : tbRunCnt.Text;
 
-      tbThreads.Text = _currentModelSettings.Threads;
-      if (!string.IsNullOrEmpty(_currentModelSettings.Threads) &&
-          int.TryParse(_currentModelSettings.Threads, out int threadCount) &&
-          threadCount > 0)
-      {
-        cbMultiThreaded.Checked = true;
-      }
+      cbMultiThreaded.Checked = _curSimOptions.threads > 0;
 
-      if ((_currentModelSettings.DebugLevel == "Basic") && (!cbMultiThreaded.Checked))
+      // Coupling settings
+      if (_curSimOptions.couplingInfo == null)
+        _curSimOptions.couplingInfo = new CouplingData();
+
+      rbWebSocket.Checked = _curSimOptions.couplingInfo.couplingType == CouplingType.WebSocket;
+      rbXMPP.Checked = _curSimOptions.couplingInfo.couplingType != CouplingType.WebSocket;
+      tbWebSocketURL.Text = _curSimOptions.couplingInfo.couplingURL ?? string.Empty;
+
+      if (_curSimOptions.debug == "BASIC")
       {
         chkLog.Checked = true;
+        rbDebugBasic.Checked = true;
+        rbDebugDetailed.Checked = false;
         ConfigData.debugLev = LogLevel.Info;
       }
-      else if ((_currentModelSettings.DebugLevel == "Detailed") && (!cbMultiThreaded.Checked))
+      else if (_curSimOptions.debug == "DETAILED")
       {
         chkLog.Checked = true;
         rbDebugBasic.Checked = false;
@@ -1094,15 +1085,14 @@ namespace EMRALD_Sim
 
       for (int i = 0; i < lbMonitorVars.Items.Count; i++)
       {
-        if (_currentModelSettings.CheckedVars.Contains(lbMonitorVars.Items[i].ToString()))
-        {
-          lbMonitorVars.SetItemChecked(i, true);
-        }
+        string val = lbMonitorVars.Items[i].ToString();
+        if(_curSimOptions.variables != null)
+          lbMonitorVars.SetItemChecked(i, _curSimOptions.variables.Contains(val));
       }
 
-      SetCurThreadCB();
+      _pathResultsInterval = _curSimOptions.pathResultsInterval;
 
-      _populatingSettings = false;
+      SetCurThreadCB();
     }
 
     private void btnValidateModel_Click(object sender, EventArgs e)
@@ -1114,6 +1104,7 @@ namespace EMRALD_Sim
       Cursor.Current = saveCurs;
     }
 
+    // Validate model text, update status, and refresh sim tab UI.
     private void ValidateModelAndUpdateUI()
     {
       string validationError = LoadLib.ValidateModel(ref _sim, teModel.Text, _modelPath);
@@ -1143,15 +1134,29 @@ namespace EMRALD_Sim
       }
 
       InitSimTabInfo();
+      if (_skipApplyOptionsOnce)
+      {
+        _skipApplyOptionsOnce = false;
+      }
+      else
+      {
+        ApplyOptionsToUI();
+      }
     }
 
+    // Populate simulation tab lists and enable/disable coupling section.
     private void InitSimTabInfo()
     {
       pnlSimulate.Enabled = _validSim;
       pnlSimResults.Enabled = _validSim;
 
       lbExtSimLinks.Items.Clear();
-      if (_validSim)
+      bool hasExtSims = _validSim && _sim != null && _sim.allExtSims.Count > 0;
+      tcCouplingTypeInfo.Enabled = hasExtSims;
+      panel4.Enabled = hasExtSims;
+      gbCoupleType.Enabled = hasExtSims;
+
+      if (_validSim && hasExtSims)
       {
         foreach (var sim in _sim.allExtSims)
         {
@@ -1163,6 +1168,10 @@ namespace EMRALD_Sim
             lbExtSimLinks.SetItemChecked(idx, chk);
           }
         }
+      }
+      else
+      {
+        lbExtSimLinks.Items.Clear();
       }
 
       lbMonitorVars.Items.Clear();
@@ -1221,6 +1230,8 @@ namespace EMRALD_Sim
     private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
     {
       tbSavePath.Text = saveFileDialog1.FileName;
+      SaveUISettingsToJson();
+      _curSimOptions.resout = tbSavePath.Text;
     }
 
     private void button2_Click_1(object sender, EventArgs e)
@@ -1231,13 +1242,15 @@ namespace EMRALD_Sim
     private void saveFileDialog2_FileOk(object sender, CancelEventArgs e)
     {
       tbSavePath2.Text = saveFileDialog2.FileName;
+      SaveUISettingsToJson();
+      _curSimOptions.jsonRes = tbSavePath2.Text;
     }
 
     private void AssignServer()
     {
       if (_server == null)
       {
-        _server = new EMRALDMsgServer("secret", _appSettingsService);
+        _server = new EMRALDMsgServer("secret");
         _server.SetUICallbacks(this);
       }
     }
@@ -1250,6 +1263,7 @@ namespace EMRALD_Sim
         ConfigData.debugLev = LogLevel.Debug;
 
       SaveUISettingsToJson();
+      _curSimOptions.debug = chkLog.Checked ? (rbDebugDetailed.Checked ? "DETAILED" : "BASIC") : "OFF";
     }
 
     private void chkLog_CheckedChanged(object sender, EventArgs e)
@@ -1261,12 +1275,18 @@ namespace EMRALD_Sim
         tbLogRunEnd.Text = tbRunCnt.Text;
         ConfigData.debugRunStart = 1;
         ConfigData.debugRunEnd = int.Parse(tbRunCnt.Text);
+        _curSimOptions.debug = rbDebugDetailed.Checked ? "DETAILED" : "BASIC";
+        _curSimOptions.debugStartIdx = ConfigData.debugRunStart;
+        _curSimOptions.debugEndIdx = ConfigData.debugRunEnd;
       }
       else
       {
         ConfigData.debugLev = LogLevel.Off;
         rbDebugBasic.Checked = false;
         rbDebugDetailed.Checked = false;
+        _curSimOptions.debug = "OFF";
+        _curSimOptions.debugStartIdx = 0;
+        _curSimOptions.debugEndIdx = 0;
       }
       grpDebugOpts.Enabled = chkLog.Checked;
       SaveUISettingsToJson();
@@ -1283,6 +1303,10 @@ namespace EMRALD_Sim
       {
         SaveUISettingsToJson();
       }
+      if (int.TryParse(tbSeed.Text, out int seedVal))
+        _curSimOptions.seed = seedVal;
+      else
+        _curSimOptions.seed = 0;
     }
 
     private void tbLogRunStart_Leave(object sender, EventArgs e)
@@ -1292,6 +1316,7 @@ namespace EMRALD_Sim
       {
         MessageBox.Show("From Run must be a number > 0.");
         tbLogRunStart.Text = "1";
+        _curSimOptions.debugStartIdx = 1;
         return;
       }
 
@@ -1299,6 +1324,7 @@ namespace EMRALD_Sim
         tbLogRunStart.Text = "1";
 
       ConfigData.debugRunStart = int.Parse(tbLogRunStart.Text);
+      _curSimOptions.debugStartIdx = ConfigData.debugRunStart;
       SaveUISettingsToJson();
     }
 
@@ -1309,6 +1335,8 @@ namespace EMRALD_Sim
       {
         MessageBox.Show("To Run must be a number less than or equal to the total runs");
         tbLogRunEnd.Text = tbRunCnt.Text;
+        if (int.TryParse(tbRunCnt.Text, out int totalRuns))
+          _curSimOptions.debugEndIdx = totalRuns;
         return;
       }
 
@@ -1316,6 +1344,7 @@ namespace EMRALD_Sim
         tbLogRunStart.Text = tbRunCnt.Text;
 
       ConfigData.debugRunEnd = int.Parse(tbLogRunEnd.Text);
+      _curSimOptions.debugEndIdx = ConfigData.debugRunEnd;
       SaveUISettingsToJson();
     }
 
@@ -1326,17 +1355,31 @@ namespace EMRALD_Sim
       {
         MessageBox.Show("Run Count must be a number");
         tbRunCnt.Text = "1000";
+        _curSimOptions.runct = 1000;
         return;
       }
       else
       {
         SaveUISettingsToJson();
+        _curSimOptions.runct = parsedValue;
       }
     }
 
     private void Leave_SaveSettings(object sender, System.EventArgs e)
     {
       SaveUISettingsToJson();
+      if (sender == tbMaxSimTime)
+      {
+        _curSimOptions.runtime = tbMaxSimTime.Text;
+      }
+      else if (sender == tbSavePath)
+      {
+        _curSimOptions.resout = tbSavePath.Text;
+      }
+      else if (sender == tbSavePath2)
+      {
+        _curSimOptions.jsonRes = tbSavePath2.Text;
+      }
     }
 
     private void teModel_TextChanged(object sender, EventArgs e)
@@ -1393,6 +1436,7 @@ namespace EMRALD_Sim
         File.Delete(saveLoc);
         File.WriteAllText(saveLoc, teModel.Text);
         _modelPath = saveLoc;
+        _curSimOptions.inpfile = _modelPath;
       }
       catch
       {
@@ -1412,6 +1456,24 @@ namespace EMRALD_Sim
     private void lbMonitorVars_Leave(object sender, EventArgs e)
     {
       SaveUISettingsToJson();
+    }
+
+    private void lbMonitorVars_ItemCheck(object sender, ItemCheckEventArgs e)
+    {
+      var variables = lbMonitorVars.CheckedItems.Cast<object>().Select(i => i.ToString()).ToList();
+      string variableName = lbMonitorVars.Items[e.Index].ToString();
+
+      if (e.NewValue == CheckState.Checked && !variables.Contains(variableName))
+      {
+        variables.Add(variableName);
+      }
+      else if (e.NewValue == CheckState.Unchecked && variables.Contains(variableName))
+      {
+        variables.Remove(variableName);
+      }
+
+      _curSimOptions.variables = variables;
+      BeginInvoke(new System.Action(() => SaveUISettingsToJson()));
     }
 
     private void btn_DebugOpen_Click(object sender, EventArgs e)
@@ -1444,11 +1506,11 @@ namespace EMRALD_Sim
         if (cbMultiThreaded.Checked == false)
         {
           tbThreads.Text = "0";
+          chkLog.Enabled = true;
+          grpDebugOpts.Enabled = chkLog.Checked;
         }
         else
         {
-          tbSeed.Text = "";
-
           if ((tbThreads.Text == "") || (tbThreads.Text == "0"))
           {
             int recommendedThreads = 1;
@@ -1507,6 +1569,14 @@ namespace EMRALD_Sim
       }
       finally
       {
+        if (cbMultiThreaded.Checked && int.TryParse(tbThreads.Text, out int threadCount) && threadCount > 0)
+          _curSimOptions.threads = threadCount;
+        else
+          _curSimOptions.threads = 0;
+
+        _curSimOptions.debug = chkLog.Checked ? (rbDebugDetailed.Checked ? "DETAILED" : "BASIC") : "OFF";
+        if (chkLog.Checked && int.TryParse(tbLogRunStart.Text, out int dbgStart)) _curSimOptions.debugStartIdx = dbgStart;
+        if (chkLog.Checked && int.TryParse(tbLogRunEnd.Text, out int dbgEnd)) _curSimOptions.debugEndIdx = dbgEnd;
         Cursor.Current = Cursors.Default;
       }
     }
@@ -1540,6 +1610,11 @@ namespace EMRALD_Sim
         SetCurThreadCB();
         SaveUISettingsToJson();
       }
+
+      if (cbMultiThreaded.Checked && int.TryParse(tbThreads.Text, out int threadCount) && threadCount > 0)
+        _curSimOptions.threads = threadCount;
+      else
+        _curSimOptions.threads = 0;
     }
 
     private void bttnPathRefs_Click(object sender, EventArgs e)
@@ -1562,6 +1637,34 @@ namespace EMRALD_Sim
           saveStripMenuItem_Click(sender, e);
         }
       }
+    }
+
+    private void rbWebSocket_CheckedChanged(object sender, EventArgs e)
+    {
+      if (_curSimOptions.couplingInfo == null)
+        _curSimOptions.couplingInfo = new CouplingData();
+
+      if (rbWebSocket.Checked)
+      {
+        tcCouplingTypeInfo.SelectedTab = tpWebSocket;
+        _curSimOptions.couplingInfo.couplingType = CouplingType.WebSocket;
+      }
+      else
+      {
+        tcCouplingTypeInfo.SelectedTab = tpXMPP;
+        _curSimOptions.couplingInfo.couplingType = CouplingType.XMPP;
+      }
+
+      SaveUISettingsToJson();
+    }
+
+    private void tbWebSocketURL_TextChanged(object sender, EventArgs e)
+    {
+      if (_curSimOptions.couplingInfo == null)
+        _curSimOptions.couplingInfo = new CouplingData();
+
+      _curSimOptions.couplingInfo.couplingURL = string.IsNullOrWhiteSpace(tbWebSocketURL.Text) ? null : tbWebSocketURL.Text;
+      SaveUISettingsToJson();
     }
   }
 }

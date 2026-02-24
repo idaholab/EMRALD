@@ -422,7 +422,7 @@ namespace SimulationEngine
         optionsOut.debugEndIdx = optionsOut.runct;
       }
 
-      if (optionsOut.debugEndIdx < optionsOut.debugStartIdx)
+      if ((optionsOut.debug.ToUpper() != "OFF") && (optionsOut.debugEndIdx < optionsOut.debugStartIdx))
       {
         return "debugEndIdx must be greater than debugStartIdx";
       }
@@ -445,7 +445,7 @@ namespace SimulationEngine
             break;
           case CouplingType.XMPP:
             //todo figure out where _appSettingsService should come from. 
-            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword, _appSettingsService);
+            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword);
             break;
           default:
             throw new Exception("Coupling Type not implemeted");

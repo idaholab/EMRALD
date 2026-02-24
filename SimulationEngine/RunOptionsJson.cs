@@ -92,7 +92,7 @@ namespace SimulationEngine
     "}";
 
     //version of the options json
-    public double opsVer { get; set; } = 1.01;
+    public double opsVer { get; set; } = 1.02;
 
     // Total number of runs
     public int runct { get; set; } = 100;
