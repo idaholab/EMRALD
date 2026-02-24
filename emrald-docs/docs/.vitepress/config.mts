@@ -80,8 +80,16 @@ export default defineConfig({
       {
         text: 'Validation Cases',
         items: [
-          { text: 'Validation Cases', link: 'validation-cases' },
-          { text: 'Templates', link: 'templates' },
+          { text: 'Validation Methods', link: 'validation-cases' },
+          { text: 'User Validation Setup', link: 'user-validation-setup' },
+          { text: 'Template', link: 'templates' },
+          {
+            text: 'User Validation Cases',
+            items: [
+              // add individual user validation case pages here, e.g.:
+              // { text: 'My Case Name', link: '/validation-cases/my-case' },
+            ],
+          },
         ],
       },
     ],
