@@ -43,6 +43,7 @@ namespace EMRALD_Sim
     private List<string> _recentFiles = new List<string>();
     private bool _skipApplyOptionsOnce = false;
     private Options_cur _curSimOptions = new Options_cur();
+    private ContextMenuStrip _monitorVarsContextMenu = null;
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -69,6 +70,7 @@ namespace EMRALD_Sim
 
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
       LoadRecentFiles();
+      SetupMonitorVarsContextMenu();
 
       if (args.Length > 0)
       {
@@ -122,6 +124,33 @@ namespace EMRALD_Sim
       {
         btnStartSims_Click(this, null);
       }
+    }
+
+    // Create right-click menu for monitor vars to select/unselect all.
+    private void SetupMonitorVarsContextMenu()
+    {
+      _monitorVarsContextMenu = new ContextMenuStrip();
+      var miSelectAll = new ToolStripMenuItem("Select All", null, (s, e) => SetAllMonitorVarsChecked(true));
+      var miUnselectAll = new ToolStripMenuItem("Unselect All", null, (s, e) => SetAllMonitorVarsChecked(false));
+      _monitorVarsContextMenu.Items.Add(miSelectAll);
+      _monitorVarsContextMenu.Items.Add(miUnselectAll);
+      lbMonitorVars.ContextMenuStrip = _monitorVarsContextMenu;
+    }
+
+    private void SetAllMonitorVarsChecked(bool check)
+    {
+      lbMonitorVars.ItemCheck -= lbMonitorVars_ItemCheck; // avoid per-item save spam
+      for (int i = 0; i < lbMonitorVars.Items.Count; i++)
+      {
+        lbMonitorVars.SetItemChecked(i, check);
+      }
+      lbMonitorVars.ItemCheck += lbMonitorVars_ItemCheck;
+
+      _curSimOptions.variables = check
+        ? lbMonitorVars.Items.Cast<object>().Select(o => o.ToString()).ToList()
+        : new List<string>();
+
+      SaveUISettingsToJson();
     }
 
     /// <summary>
