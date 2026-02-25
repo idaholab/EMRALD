@@ -15,6 +15,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using NLog;
 using Sop.Collections.Generic.BTree;
+using static SimulationDAL.AccrualVariable;
 
 namespace SimulationDAL
 {
@@ -175,7 +176,7 @@ namespace SimulationDAL
       try
       {
         //string dType = ((String)dynObj.type);
-        string t = ((String)dynObj.type).ToUpper().Substring(0, 3);
+        string t = ((string)dynObj.type).ToUpper().Substring(0, 3);
         switch (t)
         {
           case "INT":
@@ -201,7 +202,7 @@ namespace SimulationDAL
             //_value = Convert.ToBoolean(dynObj.value);
             break;
           default:
-            throw new Exception("Value not matching Variable type - " + (string)dynObj.value + " -to- " + (String)dynObj.type);
+            throw new Exception("Value not matching Variable type - " + (string)dynObj.value + " -to- " + (string)dynObj.type);
         }
       }
       catch
@@ -293,7 +294,9 @@ namespace SimulationDAL
   public class Sim3DVariable : SimVariable
   {
     public string sim3DNameId = "";
-    //public string propName = null;
+    public ExternalSim extSim = null;
+
+    public string resourceName { get { return extSim.resourceName; } }
 
     public Sim3DVariable()
       : base() { this.varScope = EnVarScope.gt3DSim; }
@@ -333,6 +336,38 @@ namespace SimulationDAL
       lists.allVariables.Add(this, false);
 
       processed = true;
+      return true;
+    }
+
+    public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
+    {
+      dynamic dynObj = (dynamic)obj;
+      try
+      {
+        if (wrapped)
+        {
+          if (dynObj.Variable == null)
+            return false;
+          if (((dynamic)obj).Variable != null)
+            dynObj = ((dynamic)obj).Variable;
+          else
+            return false;
+        }
+
+        if (dynObj.extSim == null)
+        {
+          throw new Exception("Missing extSim property to specify simulation to link variable to.");
+        }
+        else
+        {
+          extSim =  lists.allExtSims.FindByName((string)dynObj.extSim);
+        }
+      }
+      catch (Exception e)
+      {
+        throw new Exception("Failed to load object links for Sim3DVariable named - " + this.name + " error - " + e.Message);
+      }
+
       return true;
     }
   }
@@ -1856,7 +1891,7 @@ namespace SimulationDAL
         var item = wrapper;
         EnVarScope scope = (EnVarScope)Enum.Parse(typeof(EnVarScope), (string)item.varScope, true);
 
-        if ((scope == EnVarScope.gtLocal) || (scope == EnVarScope.gtAccrual))
+        if ((scope == EnVarScope.gtLocal) || (scope == EnVarScope.gtAccrual) || (scope == EnVarScope.gt3DSim))
         {
 
           SimVariable curItem = this.FindByName((string)item.name, false);

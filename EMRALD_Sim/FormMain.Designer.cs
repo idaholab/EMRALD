@@ -468,7 +468,7 @@ namespace EMRALD_Sim
       label8.Location = new System.Drawing.Point(9, 77);
       label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       label8.Name = "label8";
-      label8.Size = new System.Drawing.Size(62, 15);
+      label8.Size = new System.Drawing.Size(63, 15);
       label8.TabIndex = 15;
       label8.Text = "End Time :";
       // 
@@ -594,7 +594,7 @@ namespace EMRALD_Sim
       label2.Location = new System.Drawing.Point(9, 8);
       label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       label2.Name = "label2";
-      label2.Size = new System.Drawing.Size(39, 15);
+      label2.Size = new System.Drawing.Size(40, 15);
       label2.TabIndex = 1;
       label2.Text = "Time :";
       // 
@@ -616,7 +616,7 @@ namespace EMRALD_Sim
       label11.Location = new System.Drawing.Point(212, 8);
       label11.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       label11.Name = "label11";
-      label11.Size = new System.Drawing.Size(98, 15);
+      label11.Size = new System.Drawing.Size(99, 15);
       label11.TabIndex = 1;
       label11.Text = "Action msg Type:";
       // 
@@ -736,7 +736,7 @@ namespace EMRALD_Sim
       lblMsgTime.Location = new System.Drawing.Point(12, 74);
       lblMsgTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lblMsgTime.Name = "lblMsgTime";
-      lblMsgTime.Size = new System.Drawing.Size(62, 15);
+      lblMsgTime.Size = new System.Drawing.Size(63, 15);
       lblMsgTime.TabIndex = 2;
       lblMsgTime.Text = "Sim Time :";
       // 
@@ -1076,7 +1076,7 @@ namespace EMRALD_Sim
       lbl_CurThread.Location = new System.Drawing.Point(15, 18);
       lbl_CurThread.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lbl_CurThread.Name = "lbl_CurThread";
-      lbl_CurThread.Size = new System.Drawing.Size(92, 15);
+      lbl_CurThread.Size = new System.Drawing.Size(93, 15);
       lbl_CurThread.TabIndex = 40;
       lbl_CurThread.Text = "Showing Thread";
       lbl_CurThread.Visible = false;
@@ -1190,7 +1190,7 @@ namespace EMRALD_Sim
       cbClearTemps.Location = new System.Drawing.Point(375, 121);
       cbClearTemps.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       cbClearTemps.Name = "cbClearTemps";
-      cbClearTemps.Size = new System.Drawing.Size(118, 19);
+      cbClearTemps.Size = new System.Drawing.Size(119, 19);
       cbClearTemps.TabIndex = 41;
       cbClearTemps.Text = "Clear Thread Files";
       cbClearTemps.UseVisualStyleBackColor = true;
@@ -1214,7 +1214,7 @@ namespace EMRALD_Sim
       lblThreads.Location = new System.Drawing.Point(159, 125);
       lblThreads.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       lblThreads.Name = "lblThreads";
-      lblThreads.Size = new System.Drawing.Size(48, 15);
+      lblThreads.Size = new System.Drawing.Size(49, 15);
       lblThreads.TabIndex = 39;
       lblThreads.Text = "Threads";
       lblThreads.Visible = false;
@@ -1235,7 +1235,7 @@ namespace EMRALD_Sim
       cbMultiThreaded.Location = new System.Drawing.Point(18, 121);
       cbMultiThreaded.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       cbMultiThreaded.Name = "cbMultiThreaded";
-      cbMultiThreaded.Size = new System.Drawing.Size(106, 19);
+      cbMultiThreaded.Size = new System.Drawing.Size(107, 19);
       cbMultiThreaded.TabIndex = 37;
       cbMultiThreaded.Text = "Multi Threaded";
       cbMultiThreaded.UseVisualStyleBackColor = true;
@@ -1297,7 +1297,7 @@ namespace EMRALD_Sim
       chkLog.Location = new System.Drawing.Point(159, 187);
       chkLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       chkLog.Name = "chkLog";
-      chkLog.Size = new System.Drawing.Size(246, 19);
+      chkLog.Size = new System.Drawing.Size(245, 19);
       chkLog.TabIndex = 33;
       chkLog.Text = "Debug (file debugLog.txt in run directory)";
       chkLog.UseVisualStyleBackColor = true;
@@ -1337,7 +1337,7 @@ namespace EMRALD_Sim
       label21.Location = new System.Drawing.Point(155, 36);
       label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       label21.Name = "label21";
-      label21.Size = new System.Drawing.Size(46, 15);
+      label21.Size = new System.Drawing.Size(47, 15);
       label21.TabIndex = 38;
       label21.Text = "To Run:";
       // 
@@ -1612,7 +1612,7 @@ namespace EMRALD_Sim
       label12.Location = new System.Drawing.Point(4, 6);
       label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       label12.Name = "label12";
-      label12.Size = new System.Drawing.Size(158, 15);
+      label12.Size = new System.Drawing.Size(157, 15);
       label12.TabIndex = 0;
       label12.Text = "Links to External Simulations";
       label12.TextAlign = System.Drawing.ContentAlignment.TopCenter;

@@ -714,7 +714,8 @@ namespace SimulationDAL
       // If replacements are made, print the modified code
       if (oldPath != null)
       {
-        Console.WriteLine("Modified code:\n" + code);
+        NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+        logger.Info("Modified code:\n" + code);
       }
 
       return filePaths;

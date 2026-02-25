@@ -20,6 +20,7 @@ namespace SimulationDAL
     public TimeSpan simMaxTime;
     public bool verified = false; //verified there is a link to a external sim client
     public int timeout = 10; //time before timeout in trying to connect to external sim
+    public string connectionID; //Probably a GUID, For connections that privide a unique connection ID. Set after establishing a connection for the external sim
 
     public string msgServerClient { get; set; } //
 

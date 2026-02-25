@@ -2,111 +2,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
+using MessageDefLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO;
 using NLog;
 using SimulationDAL;
-using System.Threading;
+using XmppMessageServer;
+using CouplingWebSocket;
+using XmppServer;
 
 namespace SimulationEngine
 {
-
-  
-  //public class Options_v1
-  //{
-  //  // Total number of runs
-  //  public int runct { get; set; } = 100;
-  //  // Input file path
-  //  public string inpfile { get; set; } = "";
-  //  // Results output file path
-  //  public string resout { get; set; } = "BasicResults.txt";
-  //  // Result paths JSON output file path
-  //  public string jsonRes { get; set; } = "";
-  //  //variables to output in the results
-  //  public List<string> variables { get; set; } = null;
-  //  // Path output file path
-  //  public string pathout { get; set; } = null;
-  //  // Maximum simulation time
-  //  public string runtime { get; set; } = "365.00:00:00";
-  //  // Seed for random number generation
-  //  public int seed { get; set; } = 0;
-  //  // debug level [basic, detailed, off]
-  //  public string debug { get; set; } = "off";
-  //  // start index for debug if null then from beginning
-  //  public int? debugStartIdx { get; set; } = null;
-  //  // start index for debug if null then to end
-  //  public int? debugEndIdx { get; set; } = null;
-  //  // external application XMPP connection
-  //  public int pathResultsInterval { get; set; } = -1;
-  //  public string xmppPassword { get; set; } = "secret";
-  //  public List<List<string>> xmppLinks = new List<List<string>>();
-  //}
-
-  public class Options_cur
-  {
-    //Example JSON for passing in the run options 
-    public static string CmdJSON_OptionsExample = "{\n" +
-    "  \"opsVer\": 1.01, //version of this options file\n" +
-    "  \"runct\": 100, // Total number of runs\n" +
-    "  \"inpfile\": \"\", // Input model path\n" +
-    "  \"resout\": \"BasicResults.txt\", // Results output file path\n" +
-    "  \"jsonRes\": \"c:\\\\temp\\\\PathResults.txt\", // Result paths JSON output file path\n" +
-    "  \"variables\": [ // Variables to output in the results\n" +
-    "    \"var1\",\n" +
-    "    \"var2\"\n" +
-    "  ],\n" +
-    "  \"initVars\": [ //initialize these variables with new values (if they have the property to reset on every run, it will get this value on each run otherwise behavior is the same)\n" +
-    "    {\n" +
-    "      \"varName\": \"var1\", //name of the variable\n" +
-    "      \"value\": \"5\" //value for the variable, use a string for all the types.\n" +
-    "    }\n" +
-    "  ],\n" +
-    "  \"runtime\": \"365.00:00:00\", // Maximum simulation time\n" +
-    "  \"seed\": 0, // Seed for random number generation\n" +
-    "  \"debug\": \"off\", // Debug level [basic, detailed, off]\n" +
-    "  \"debugStartIdx\": null, // Start index for debug if null then from beginning\n" +
-    "  \"debugEndIdx\": null, // End index for debug if null then to end\n" +
-    "  \"pathResultsInterval\": -1, // External application XMPP connection path results interval\n" +
-    "  \"xmppPassword\": \"secret\", // XMPP password for external application connection\n" +
-    "  \"xmppLinks\": [] // List of XMPP links\n" +
-    "}";
-
-    //version of the options json
-    public double opsVer { get; set; } = 1.01;
-    
-    // Total number of runs
-    public int runct { get; set; } = 100;
-    // Input file path
-    public string inpfile { get; set; } = "";
-    // Results output file path
-    public string resout { get; set; } = "BasicResults.txt";
-    // Result paths JSON output file path
-    public string jsonRes { get; set; } = "";
-    //variables to output in the results
-    public List<string> variables { get; set; } = null;
-    // //initialize these variables with new values (if they have the property to reset on every run, it will get this value on each run othrwise behavior is the same)
-    public List<VarInitValue> initVars { get; set; } = new List<VarInitValue>();
-    // Maximum simulation time
-    public string runtime { get; set; } = "365.00:00:00";
-    // Seed for random number generation
-    public int seed { get; set; } = 0;
-    // debug level [basic, detailed, off]
-    public string debug { get; set; } = "off";
-    // start index for debug if null then from beginning
-    public int? debugStartIdx { get; set; } = null;
-    // start index for debug if null then to end
-    public int? debugEndIdx { get; set; } = null;
-    // external application XMPP connection
-    public int pathResultsInterval { get; set; } = -1;
-    public string xmppPassword { get; set; } = "secret";
-    public List<List<string>> xmppLinks = new List<List<string>>();
-    public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
-  }
-
   public class VarInitValue
   {
     public string varName { get; set; }
@@ -117,10 +29,12 @@ namespace SimulationEngine
   {
     private string _optsJsonStr = "";
     private string _modelJsonStr = "";
-    //TProgressCallBack _progressCallBack = null;
+    TProgressCallBack _progressCallBack = null;
     private string _error = "";
     public Options_cur options = new Options_cur();
     private bool _done = false;
+    private ISimMessaging _msgCoupler = null;
+    private readonly IAppSettingsService _appSettingsService;
 
     // Create attributes for objects
     private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
@@ -140,8 +54,13 @@ namespace SimulationEngine
     public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
       _optsJsonStr = optionsJsonStr;
+      //Load JSON options 
+      if (_optsJsonStr != "")
+        _error = LoadJson(_optsJsonStr, ref options);
+      if (_error != "")
+        throw new Exception("Error Loading JSON run options - " + error);
       _modelJsonStr = modelJsonStr;
-      //_progressCallBack = progressCallBack;
+      _progressCallBack = progressCallBack;
     }
 
     public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
@@ -149,18 +68,14 @@ namespace SimulationEngine
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _modelJsonStr = modelJsonStr;
-      //_progressCallBack = progressCallBack;
+      _progressCallBack = progressCallBack;
     }
 
     public string RunSim()
     {
       percentDone = 0;
 
-      //Load JSON options 
-      if (_optsJsonStr != "")
-        _error = LoadJson(_optsJsonStr, ref options);
-        if (_error != "")
-          return "Error Loading JSON run options - " + error;
+      
 
       if (_modelJsonStr != "")
       {
@@ -176,12 +91,12 @@ namespace SimulationEngine
         _modelJsonStr = File.ReadAllText(options.inpfile);
       }
       // If it is not acceptable, fill in the error message
-      catch
+      catch (Exception ex)
       {
-        _error = "Invalid model file - " + options.inpfile;
+        _error = "Invalid model file " + ex.Message + " - " + options.inpfile;
         return _error;
       };
-      
+
 
       // Check that the json string syntax is acceptable, validate model uses a dynamic object, so it doesn't check the json syntax right away.
       try
@@ -194,7 +109,7 @@ namespace SimulationEngine
         _error = "Bad model JSON syntax - " + ex.Message;
         return _error;
       };
-           
+
 
       if (!ValidateModel())
       {
@@ -202,7 +117,7 @@ namespace SimulationEngine
       }
 
       //setup debug options
-      switch(options.debug.ToUpper())
+      switch (options.debug.ToUpper())
       {
         case "BASIC":
           ConfigData.debugLev = LogLevel.Info;
@@ -222,6 +137,52 @@ namespace SimulationEngine
       ConfigData.threads = ConfigData.threads != 0 ? ConfigData.threads : null; //don't allow 0 for threads.
 
 
+      //Assign any coupling data from JSON file
+      //start connectons needed
+      if (options.couplingInfo != null)
+      {
+        //Set coupling connection stuff
+        if (options.couplingInfo.couplingPassword != null)
+          _msgCoupler.connectionPassword = options.couplingInfo.couplingPassword;
+        //if (options.couplingInfo. != null)
+        //  _msgCoupler.
+
+
+        if (options.couplingInfo.couplingType == CouplingType.WebSocket)
+        {
+          Dictionary<string, List<String>> appVars = new Dictionary<string, List<String>>();
+          foreach (var v in _model.allVariables.Values)
+          {
+            if (v is Sim3DVariable)
+            {
+              string appName = (v as Sim3DVariable).resourceName;
+              if (!appVars.ContainsKey(appName))
+                appVars[appName] = new List<string>();
+
+              appVars[appName].Add((v as Sim3DVariable).sim3DNameId);
+            }
+          }
+          foreach (var extSim in _model.allExtSims.Values)
+          {
+            Guid conID;
+            if (appVars.ContainsKey(extSim.resourceName))
+              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, appVars[extSim.resourceName]).Result;
+            else
+              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, new List<string>()).Result;
+
+            extSim.connectionID = conID.ToString();
+          }
+        }
+      }
+      //set the time limits for any ext Apps
+      foreach (var extSim in _model.allExtSims.Values)
+      {
+        extSim.simMaxTime = TimeSpan.Parse(options.runtime);
+      }
+      
+
+
+
       // Create a new ProcessSimBatch object
       // This is where the maxTime and outfile_path attributes are used
       List<Thread> threads = new List<Thread>();
@@ -229,24 +190,36 @@ namespace SimulationEngine
       int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
       int runsDiv = options.runct / threadCnt;
       bool resDone = false; //results 
-      
+
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
         _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
+
+        if (_msgCoupler != null)
+        {
+          _simRuns[i].AddExtSimulationData(_msgCoupler);
+        }
+
+        if (_progressCallBack != null)
+          _simRuns[i].progressCallback = _progressCallBack;
+
         if (i == 0) //add extra runs on the first one
           _simRuns[i].SetupBatch(runsDiv + (options.runct % threadCnt), true);
         else
           _simRuns[i].SetupBatch(runsDiv, true);
 
-        foreach(var v in _model.allVariables.Values)
+        foreach (var v in _model.allVariables.Values)
         {
-          if(v.monitorInSim)
+          if (v.monitorInSim)
             _simRuns[i].logVarVals.Add(v.name);
         }
-        foreach (var varItem in this.options.variables)
+        if (this.options.variables is not null)
         {
-          _simRuns[i].logVarVals.Add(varItem.ToString());
+          foreach (var varItem in this.options.variables)
+          {
+            _simRuns[i].logVarVals.Add(varItem.ToString());
+          }
         }
 
         foreach (var varItem in this.options.initVars)
@@ -284,7 +257,7 @@ namespace SimulationEngine
             //wait until first thread is done writing temp tread files.
             while (!_simRuns[0].tempThreadFilesWriten)
               await Task.Delay(TimeSpan.FromMilliseconds(10)); // Adjust the delay as needed
-            
+
             if (_simRuns[locIdx].error != "")
               _error += _simRuns[locIdx].error + Environment.NewLine;
 
@@ -312,25 +285,42 @@ namespace SimulationEngine
       });
 
       //must wait until done to return
-      
+
       while (!resDone)
       {
         System.Threading.Thread.Sleep(100);
       }
-    
+
       return error;
     }
 
-    public static string LoadJson(string optionsJsonStr, ref Options_cur optionsOut)
+    public string LoadJson(string optionsJsonStr, ref Options_cur optionsOut)
     {
-      // Create an Options object named options1 by deserializing the json string options_json, this depends on the Newtonsoft.Json package
+
+      //upgrade from 1.01 to 1.02 if older
+
       try
       {
+        // Parse JSON to check version
+        var jsonObject = JObject.Parse(optionsJsonStr);
+        double version = jsonObject.Value<double?>("opsVer") ?? 1.0;
+
+        // Upgrade from 1.01 (or older) to 1.02 if needed
+        if (version < 1.02)
+        {
+          optionsJsonStr = Options_cur.ConvertOptionsJsonTo1_02(optionsJsonStr);
+        }
+
+        // Deserialize the (possibly upgraded) JSON
         optionsOut = JsonConvert.DeserializeObject<Options_cur>(optionsJsonStr);
       }
-      catch
+      catch (JsonException)
       {
         return "Invalid JSON run options, please fix.";
+      }
+      catch (Exception ex)
+      {
+        return $"Error loading options: {ex.Message}";
       }
 
 
@@ -351,12 +341,12 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.inpfile))
           {
-            optionsOut.inpfile = System.IO.Directory.GetCurrentDirectory() + optionsOut.inpfile;
+            optionsOut.inpfile = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(),  optionsOut.inpfile));
           }
 
           if (!File.Exists(optionsOut.inpfile))
           {
-            return "Invalid input file path, please fix.";
+            return "Invalid input EMRALD file path, please fix.";
           }
         }
       }
@@ -373,7 +363,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.resout))
           {
-            optionsOut.resout = System.IO.Directory.GetCurrentDirectory() + optionsOut.resout;
+            optionsOut.resout = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.resout));
           }
 
           if (!Directory.Exists(Path.GetDirectoryName(optionsOut.resout)))
@@ -395,7 +385,7 @@ namespace SimulationEngine
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.jsonRes))
           {
-            optionsOut.jsonRes = System.IO.Directory.GetCurrentDirectory() + optionsOut.jsonRes;
+            optionsOut.jsonRes = Path.GetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.jsonRes));
           }
 
           if (!Directory.Exists(Path.GetDirectoryName(optionsOut.jsonRes)))
@@ -413,7 +403,7 @@ namespace SimulationEngine
       {
         optionsOut.variables = new List<string>();
       }
-      
+
       //debug info      
       switch (optionsOut.debug.ToUpper())
       {
@@ -427,7 +417,7 @@ namespace SimulationEngine
           return "Invalid debug options, must be one of the following: \"basic\", \"detailed\", \"off\".";
       }
 
-      if((optionsOut.debugStartIdx == null) || (optionsOut.debugStartIdx < 1) )
+      if ((optionsOut.debugStartIdx == null) || (optionsOut.debugStartIdx < 1))
       {
         optionsOut.debugStartIdx = 1;
       }
@@ -447,10 +437,35 @@ namespace SimulationEngine
         return "debugEndIdx must be greater than debugStartIdx";
       }
 
+      if ((optionsOut.couplingInfo != null) &&
+          (optionsOut.couplingInfo.couplingType == CouplingType.WebSocket) &&
+          (optionsOut.couplingInfo.couplingURL == null))
+      {
+        return "If using WebSocket coupling, a couplingURL must be provided.";
+      }
+
+      
+
+      if (optionsOut.couplingInfo != null)
+      {
+        switch (optionsOut.couplingInfo.couplingType)
+        {
+          case CouplingType.WebSocket:
+            _msgCoupler = new WebApiCoupling(optionsOut.couplingInfo.couplingURL);
+            break;
+          case CouplingType.XMPP:
+            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword, _appSettingsService);
+            break;
+          default:
+            throw new Exception("Coupling Type not implemeted");
+            break;
+        }
+      }
+
       return "";
     }
 
-   
+
     private bool ValidateModel()
     {
       // Attempt to deserialize the json string
@@ -474,12 +489,5 @@ namespace SimulationEngine
       }
       return true;
     }
-
-    //private void Progress(TimeSpan runTime, int runCnt, bool finalValOnly)
-    //{
-    //  this.percentDone = runCnt / options.runct;
-    //  if (_progressCallBack != null)
-    //    _progressCallBack(runTime, runCnt, finalValOnly);//, 0); //no display thread for JSON runs.
-    //}
   }
 }
