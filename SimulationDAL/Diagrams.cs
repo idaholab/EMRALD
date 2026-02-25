@@ -4,16 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-//using System.Windows.Forms;
 using MyStuff.Collections;
-//using System.Web.Helpers;
 
 namespace SimulationDAL
 {
   public class Diagram : BaseObjInfo //multiState
   {
     //protected dSimulation _Sim = null;
-    protected Dictionary<int, State> _States = null;
+    protected Dictionary<int, State> _States = null!;
     public EnDiagramType2 diagType = EnDiagramType2.dtMulti;
 
    
@@ -240,7 +238,7 @@ namespace SimulationDAL
         }
       }
 
-      return null;
+      return null!;
     }
 
     public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
@@ -407,7 +405,7 @@ namespace SimulationDAL
       {
         case EnDiagramType2.dtMulti: return new Diagram(EnDiagramType2.dtMulti); 
         case EnDiagramType2.dtSingle: return new EvalDiagram();
-        default: return null;
+        default: return null!;
       }
     }
 
@@ -462,7 +460,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find Diagram - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -470,7 +468,7 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find Diagram - " + name);
         else
-          return null;
+          return null!;
       }      
 
       //Diagram diag = null;
@@ -533,7 +531,7 @@ namespace SimulationDAL
         foreach (var wrapper in dynamicObj)
         {
           var item = wrapper;
-          Diagram curItem = null;
+          Diagram curItem = null!;
           curName = (string)item.name;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))

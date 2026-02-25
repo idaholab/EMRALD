@@ -22,7 +22,7 @@ namespace SimulationDAL
   public abstract class Event : BaseObjInfo
   {
     protected List<int> _relatedIDs = new List<int>(); //IDs of items used to evaluate this event. 
-    protected MyBitArray _relatedIDsBitSet = null;
+    protected MyBitArray _relatedIDsBitSet = null!;
     public bool mainItem = false;
     public string rootPath = "";
     //protected virtual EnModifiableTypes GetModType() { return EnModifiableTypes.mtNone; }
@@ -156,13 +156,13 @@ namespace SimulationDAL
     public bool ifInState = true;
     public bool allItems = false;
     public bool evalEvOnStateEntry = true;
-    private MyBitArray changed = null; //all changed items for an EventTriggered call on this event
+    private MyBitArray changed = null!; //all changed items for an EventTriggered call on this event
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
 
-    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)
+    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null!)
       : base(inName)
     {
       this.ifInState = inIfInState;
@@ -354,7 +354,7 @@ namespace SimulationDAL
 
     public override void Reset()
     {
-      this.changed = null;
+      this.changed = null!;
     }
   }
 
@@ -364,7 +364,7 @@ namespace SimulationDAL
     //bool onSuccess;//true if our logic evaluation is looking for a true.
     public bool successSpace = true;
     public bool triggerOnFalse = false;
-    private LogicNode logicTop = null;
+    private LogicNode logicTop = null!;
     private Dictionary<int, bool?> lastEvalVal = new Dictionary<int, bool?>(); //what value did the tree have last time it was evaluated for the given state (hash is state ID)
     //private bool? lastEvalVal = null; //what value did the tree have last time it was evaluated
 
@@ -514,7 +514,7 @@ namespace SimulationDAL
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
-    protected VariableList varList = null;
+    protected VariableList varList = null!;
     protected string modelPath = ""; //save here because we cant get it from EventTriggered. 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
 
@@ -560,7 +560,7 @@ namespace SimulationDAL
       }
       //varNames = string.Join(",", varList.Values);
 
-      string retStr = null;
+      string retStr = null!;
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
       //                "\"code\":\"" + compCodeStr + "\"";
 
@@ -778,7 +778,7 @@ namespace SimulationDAL
   public class ExtSimEv : EvalVarEvent //et3dSimEv
   {
     public SimEventType extEventType = SimEventType.etCompEv;
-    protected string variable = null;
+    protected string variable = null!;
 
 
     public ExtSimEv() : base() { }
@@ -794,7 +794,7 @@ namespace SimulationDAL
         this.AddRelatedItem(sim3dVar.id);
       }
       else
-        this.variable = null;
+        this.variable = null!;
     }
 
     protected override EnEventType GetEvType() { return EnEventType.et3dSimEv; }
@@ -815,12 +815,11 @@ namespace SimulationDAL
       }
       //varNames = string.Join(",", varList.Values);
 
-      string retStr = null;
+      string retStr = null!;
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
       //                "\"code\":\"" + compCodeStr + "\"";
 
-      if (extEventType != null)
-        retStr = retStr + "," + Environment.NewLine + "\"extEventType\":" + this.extEventType;
+      retStr = retStr + "," + Environment.NewLine + "\"extEventType\":" + this.extEventType;
 
       if (variable != null)
         retStr = retStr + "," + Environment.NewLine + "\"variable\":" + this.variable;
@@ -891,20 +890,21 @@ namespace SimulationDAL
       {
         case SimEventType.etCompEv: //works just like a eval var event
           return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, initialEval, runIdx));
-          break;
+         
 
         case SimEventType.etEndSim:
           return evTypes.ContainsValue(SimEventType.etEndSim);
-          break;
+          
 
         case SimEventType.etPing:
           return evTypes.ContainsValue(SimEventType.etPing);
-          break;
+          
 
         default:
           NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
           logger.Info("Error = externalSim event type not allowed " + extEventType.ToString());
           break;
+          
       }
 
       return false;
@@ -934,7 +934,7 @@ namespace SimulationDAL
       return itemList;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
+    public new void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
@@ -987,13 +987,13 @@ namespace SimulationDAL
       {
         case EnOnChangeTask.ocIgnore:
           return oldOccurTime;
-          break;
+          
         case EnOnChangeTask.ocResample:
           return NextTime(curTime) - (curTime - sampledTime);
-          break;
+          
         case EnOnChangeTask.ocAdjust:
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
-          break;
+          
         default:
           throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
@@ -1008,7 +1008,7 @@ namespace SimulationDAL
   public class TimerEvent : TimeBasedEvent //etTimer
   {
     public EnTimeRate timerVariableUnit = EnTimeRate.trHours;
-    protected SimVariable timeVariable = null;
+    protected SimVariable timeVariable = null!;
     protected bool fromSimStart = false;
     public TimeSpan time = TimeSpan.FromTicks(0);
 
@@ -1194,7 +1194,7 @@ namespace SimulationDAL
     //public int FailureFuncID { get { return _FailureFuncID; } set { this.linksModified = true; _FailureFuncID = value; } }
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
     public TimeSpan compMissionTime = TimeSpan.FromHours(24);
-    protected SimVariable lambdaVariable = null;
+    protected SimVariable lambdaVariable = null!;
     
     protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
 
@@ -1381,7 +1381,7 @@ namespace SimulationDAL
   {
     public class DistribParams
     {
-      public string name { get; set; }
+      public string name { get; set; } = "";
       public string? variable { get; set; }
       public double? value { get; set; }
       public bool? useVariable { get; set; }
@@ -1392,7 +1392,7 @@ namespace SimulationDAL
     protected EnDistType _distType = EnDistType.dtNormal;
     protected EnTimeRate dfltTimeRate = EnTimeRate.trHours;
     //protected Object _mathFuncs = null;
-    protected VariableList vars = null;
+    protected VariableList vars = null!;
 
     protected override EnEventType GetEvType() { return EnEventType.etDistribution; }
 
@@ -1413,7 +1413,7 @@ namespace SimulationDAL
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
       vars = lists.allVariables;
-      dynamic dynObj = null;
+      dynamic dynObj = null!;
       try
       {
         dynObj = (dynamic)obj;
@@ -1459,7 +1459,7 @@ namespace SimulationDAL
         }
 
         string paramsStr = Convert.ToString(dynObj.parameters);
-        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr);
+        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr)!;
       }
       catch
       {
@@ -1540,49 +1540,49 @@ namespace SimulationDAL
         switch (this._distType)
         {
           case EnDistType.dtExponential:
-            sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            sampled = (new Exponential((double)valuePs[0]!, SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtNormal: //mean and standard deviation
-            sampled = (new Normal((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+            sampled = (new Normal((double)valuePs[0]!,
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtWeibull:
-            sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            sampled = (new Weibull((double)valuePs[0]!, (double)valuePs[1]!, SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtLogNormal:
-            sampled = (new LogNormal((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+            sampled = (new LogNormal((double)valuePs[0]!,
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtUniform:
-            sampled = (new ContinuousUniform((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+            sampled = (new ContinuousUniform((double)valuePs[0]!,
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtTriangular:
-            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //min
-                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate),   //max
-                                    (double)valuePs[0], //mode or peak
+            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate), //min
+                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2]!, _dParams[0].timeRate),   //max
+                                    (double)valuePs[0]!, //mode or peak
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtGamma:
-            sampled = (new Gamma((double)valuePs[0],
-                                 ((double)valuePs[1]), //shape
+            sampled = (new Gamma((double)valuePs[0]!,
+                                 ((double)valuePs[1]!), //shape
                                     SingleRandom.Instance)).Sample(); //rate
             distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtGompertz:
             //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
 
-            double shape = (double)valuePs[0]; //shape
-            double scale = (double)valuePs[1]; //scale
+            double shape = (double)valuePs[0]!; //shape
+            double scale = (double)valuePs[1]!; //scale
             double r = SingleRandom.Instance.NextDouble();
             sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
 
@@ -1591,7 +1591,7 @@ namespace SimulationDAL
 
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-            break;
+            
         }
       }
       catch
@@ -1605,7 +1605,7 @@ namespace SimulationDAL
       {
         sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
       }
-      catch (OverflowException e)
+      catch (OverflowException)
       {
         sampledTime = TimeSpan.MaxValue;
       }
@@ -1619,13 +1619,13 @@ namespace SimulationDAL
       {
         TimeSpan minTime = TimeSpan.Zero;
         if (valuePs[valuePs.Count - 1]  != null)
-          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2], _dParams[valuePs.Count - 2].timeRate);
+          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2]!, _dParams[valuePs.Count - 2].timeRate);
         if (sampledTime < minTime)
           return minTime;
 
         TimeSpan maxTime = TimeSpan.MaxValue;
         if (valuePs[valuePs.Count - 1] != null)
-          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1], _dParams[valuePs.Count - 1].timeRate);
+          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1]!, _dParams[valuePs.Count - 1].timeRate);
         if (sampledTime > maxTime)
           return maxTime;
       }
@@ -1654,22 +1654,22 @@ namespace SimulationDAL
           case EnDistType.dtExponential:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           case EnDistType.dtNormal: //mean and standard deviation
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           case EnDistType.dtWeibull:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           case EnDistType.dtLogNormal:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-            break;
+            
         }
       }
 
@@ -1766,7 +1766,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find Event - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -1774,13 +1774,13 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find Event - " + name);
         else
-          return null;
+          return null!;
       }
     }
 
     public static Event CreateNewEvent(EnEventType evType)
     {
-      Event retEv = null;
+      Event retEv = null!;
 
       switch (evType)
       {
@@ -1842,7 +1842,7 @@ namespace SimulationDAL
         {
           var item = wrapper;
           curName = (string)item.name;
-          Event curItem = null;
+          Event curItem = null!;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
           {

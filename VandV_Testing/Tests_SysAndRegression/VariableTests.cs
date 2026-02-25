@@ -35,7 +35,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that a failure rate event using a variable correctly adds the event if it is resampled and inside the mission time")]
 
-    public async void VarTimeCngTest()
+    public async Task VarTimeCngTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -60,7 +60,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Make sure the accrual variable stats are correct")]
 
-    public async void StatVarTest()
+    public async Task StatVarTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -87,7 +87,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Make sure the accrual variable stats are correct using multi threaded")]
-    public async void StatVarTestMulti()
+    public async Task StatVarTestMulti()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -115,7 +115,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Simple accrual variable test with two accrual variables")]
-    public async void VarAccruTest()
+    public async Task VarAccruTest()
     {
       //Make sure accru variable is working 
 
@@ -144,7 +144,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test XML document Link variable to make sure it is reading an writing correctly")]
-    public async void XMLDocLinkTest()
+    public async Task XMLDocLinkTest()
     {
       //FYI - model must have the XML document using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the XML document in that folder
@@ -174,7 +174,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test XML document Link variable that uses a variable in the XPath")]
-    public async void Dynamic_XML_Var_Example_with_CurTime()
+    public async Task Dynamic_XML_Var_Example_with_CurTime()
     {
       //FYI - model must have the XML document using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
       //Save the XML document in that folder
@@ -209,7 +209,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test JSON document Link variable to make sure it is reading an writing correctly")]
-    public async void RegExDocLinkTest()
+    public async Task RegExDocLinkTest()
     {
       //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the text document in that folder
@@ -241,7 +241,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test the ability to assign initial variable values from the options file")]
-    public async void SimRunVarInitTest()
+    public async Task SimRunVarInitTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -270,7 +270,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Tests pathing in JSON document Link variable during multithreading")]
-    public async void MultiThreadDocVar()
+    public async Task MultiThreadDocVar()
     {
       //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the text document in that folder

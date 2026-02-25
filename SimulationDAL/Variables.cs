@@ -28,14 +28,14 @@ namespace SimulationDAL
     private bool _monitor = false; //Default value to watch the variable in the solver UI
     private bool _cumulativeStats = false; //provide the statistical results for this variable at the end of the sim runs
     public EnVarScope varScope = EnVarScope.gtGlobal;
-    public Type dType;
-    protected object _value = null;
+    public Type dType = null!;
+    protected object _value = null!;
     public bool resetOnRuns = false;
-    protected object initValue = null;
+    protected object initValue = null!;
     NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
 
     public double dblValue { get { return Convert.ToDouble(GetValue(false)); } }
-    public string strValue { get { return Convert.ToString(GetValue(false)); } }
+    public string strValue { get { return Convert.ToString(GetValue(false))!; } }
     public bool boolValue { get { return Convert.ToBoolean(GetValue(false)); } }
     public bool monitorInSim { get { return _monitor; } }
     public bool canMonitorSim { get { return _canMonitor; } }
@@ -82,7 +82,7 @@ namespace SimulationDAL
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itVar);
     }
 
-    protected SimVariable(string inName, EnVarScope inType, Type inDType, object inVal = null)
+    protected SimVariable(string inName, EnVarScope inType, Type inDType, object inVal = null!)
     {
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itVar);
 
@@ -120,7 +120,7 @@ namespace SimulationDAL
       }
       else
       {
-        retStr = retStr + "\"value\": " + this._value.ToString().ToLower() + "," + Environment.NewLine;
+        retStr = retStr + "\"value\": " + this._value.ToString()!.ToLower() + "," + Environment.NewLine;
       }
 
       //retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine; //Defined in simulation GUI, not in model editor
@@ -286,7 +286,7 @@ namespace SimulationDAL
     public SimGlobVariable()
       : base() { this.varScope = EnVarScope.gtGlobal; }
 
-    public SimGlobVariable(string inName, Type inDType, object inVal = null)
+    public SimGlobVariable(string inName, Type inDType, object inVal = null!)
       : base(inName, EnVarScope.gtGlobal, inDType, inVal) { }
 
     public override string GetDerivedJSON() { return ""; }
@@ -295,14 +295,14 @@ namespace SimulationDAL
   public class Sim3DVariable : SimVariable
   {
     public string sim3DNameId = "";
-    public ExternalSim extSim = null;
+    public ExternalSim extSim = null!;
 
     public string resourceName { get { return extSim.resourceName; } }
 
     public Sim3DVariable()
       : base() { this.varScope = EnVarScope.gt3DSim; }
 
-    public Sim3DVariable(string inName, string inSim3DNameId, Type inDType, object inVal = null)
+    public Sim3DVariable(string inName, string inSim3DNameId, Type inDType, object inVal = null!)
       : base(inName, EnVarScope.gt3DSim, inDType, inVal)
     {
       this.sim3DNameId = inSim3DNameId;
@@ -375,12 +375,12 @@ namespace SimulationDAL
 
   public class SimCompVariable : SimVariable
   {
-    protected EvalDiagram simCompOwner = null;
+    protected EvalDiagram simCompOwner = null!;
 
     public SimCompVariable()
       : base() { this.varScope = EnVarScope.gtLocal; }
 
-    public SimCompVariable(string inName, EvalDiagram inCompOwner, Type inDType, object inVal = null)
+    public SimCompVariable(string inName, EvalDiagram inCompOwner, Type inDType, object inVal = null!)
       : base(inName, EnVarScope.gtLocal, inDType, inVal)
     {
       this.simCompOwner = inCompOwner;
@@ -564,10 +564,10 @@ namespace SimulationDAL
           State curState = (State)lists.allStates.FindByName((string)toStateItem.stateName);
           _StateList.Add(curState.id, curState);
           string s = JsonConvert.SerializeObject(toStateItem);
-          AccrualVarData data = JsonConvert.DeserializeObject<AccrualVarData>(s);
+          AccrualVarData data = JsonConvert.DeserializeObject<AccrualVarData>(s)!;
           _CumulativeParams.Add(curState.id, data);
-          List<AccrualVariable> addTo = null;
-          if (lists.AccrualVars.TryGetValue(curState.id, out addTo))
+          List<AccrualVariable> addTo = null!;
+          if (lists.AccrualVars.TryGetValue(curState.id, out addTo!))
           {
             addTo.Add(this);
           }
@@ -648,7 +648,7 @@ namespace SimulationDAL
         case EnCumultiveType.ctTime:
           throw new Exception("not implemented time type placeholder");
           //_value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
-          break;
+          
 
         case EnCumultiveType.ctMultiplier:
           double addVal = aData.accrualMult * Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, aData.multRate);
@@ -695,9 +695,9 @@ namespace SimulationDAL
     protected string _docPath = "";
     protected string _linkStr = ""; //xpath for xml, JSONPath for JSON, and regExp string for TextRegExp
     protected bool _pathMustExist = false;
-    protected object _dfltValue = null;
+    protected object _dfltValue = null!;
     protected string _docFullPath = "";
-    private VariableList _vars = null;
+    private VariableList _vars = null!;
     
     protected string linkStr()
     {
@@ -740,7 +740,7 @@ namespace SimulationDAL
         this.InitValue(GetValue(true));
       }
       
-      this._value = this.initValue;
+      this._value = this.initValue!;
       this._oldLinkStr = ""; //reset so it tires to load as needed
     }
 
@@ -920,9 +920,9 @@ namespace SimulationDAL
           {
             xDoc.Load(reader);
           }
-          XmlElement pRoot = xDoc.DocumentElement;
-          XmlNodeList nodes = pRoot.SelectNodes(linkStr());
-          XmlNode replNode = null;
+          XmlElement pRoot = xDoc.DocumentElement!;
+          XmlNodeList nodes = pRoot.SelectNodes(linkStr())!;
+          XmlNode replNode = null!;
           if ((nodes == null) || (nodes.Count == 0))
             throw new Exception("Path string found no items.");
           foreach (XmlNode i in nodes)
@@ -933,16 +933,18 @@ namespace SimulationDAL
                 i.Value = _value.ToString();
                 break;
               case XmlNodeType.Text:
-                i.InnerText = _value.ToString();
+                i.InnerText = _value.ToString()!;
                 break;
               default:
                 if (replNode == null)
                 {
                   XmlDocument repl = new XmlDocument();
                   repl.LoadXml(this.strValue);
-                  replNode = xDoc.ImportNode(repl.DocumentElement, true);
+                  replNode = xDoc.ImportNode(repl.DocumentElement!, true);
                 }
                 var p = i.ParentNode;
+                if (p == null)
+                  throw new Exception("Variable SetValue - parent node is null, this should not happen.");
                 var ret = p.ReplaceChild(replNode, i);
                 break;
             }
@@ -959,7 +961,7 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr, ex);
+          throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr(), ex);
         }
       }
 
@@ -973,7 +975,7 @@ namespace SimulationDAL
     {
       bool fileRead = false;
       int retryCount = 0;
-      object result = null;
+      object result = null!;
 
       while (!fileRead && retryCount < 5)
       {
@@ -1016,8 +1018,8 @@ namespace SimulationDAL
           {
             XmlDocument xDoc = new XmlDocument();
             xDoc.Load(s);
-            XmlElement pRoot = xDoc.DocumentElement;
-            XmlNodeList nodes = pRoot.SelectNodes(curLinkStr);
+            XmlElement pRoot = xDoc.DocumentElement!;
+            XmlNodeList nodes = pRoot.SelectNodes(curLinkStr)!;
             if ((nodes == null) || (nodes.Count == 0))
             {
               if (_dfltValue == null)
@@ -1027,28 +1029,28 @@ namespace SimulationDAL
               else
               {
                 base.SetValue(Convert.ChangeType(_dfltValue, dType));
-                result = _value;
+                result = _value!;
               }
             }
             else if (nodes.Count == 1)
             {
-              switch (nodes[0].NodeType)
+              switch (nodes[0]!.NodeType)
               {
                 case XmlNodeType.Attribute:
-                  base.SetValue(Convert.ChangeType(nodes[0].Value, dType));
+                  base.SetValue(Convert.ChangeType(nodes[0]!.Value, dType)!);
                   break;
                 case XmlNodeType.Text:
-                  base.SetValue(Convert.ChangeType(nodes[0].InnerText, dType));
+                  base.SetValue(Convert.ChangeType(nodes[0]!.InnerText, dType));
                   break;
                 default:
                   if (this.dType != typeof(string))
                   {
                     throw new Exception("Variable type to match to a XML object must be a String");
                   }
-                  base.SetValue(nodes[0].OuterXml);
+                  base.SetValue(nodes[0]!.OuterXml);
                   break;
               }
-              result = _value;
+              result = _value!;
             }
             else // More than one, only allow text
             {
@@ -1065,7 +1067,7 @@ namespace SimulationDAL
 
               foreach (XmlNode i in nodes)
               {
-                switch (nodes[0].NodeType)
+                switch (nodes[0]!.NodeType)
                 {
                   case XmlNodeType.Attribute:
                     base.SetValue(_value + Environment.NewLine + i.Value);
@@ -1079,7 +1081,7 @@ namespace SimulationDAL
                 }
               }
 
-              base.SetValue(((string)_value).TrimStart());
+              base.SetValue(((string)_value!).TrimStart());
               result = _value;
             }
           }
@@ -1129,7 +1131,7 @@ namespace SimulationDAL
       {
         try
         {
-          JObject fullObj = null;
+          JObject fullObj = null!;
           using (StreamReader sr = new StreamReader(_docFullPath))
           {
             string test = sr.ReadToEnd();
@@ -1177,7 +1179,7 @@ namespace SimulationDAL
 
       bool fileRead = false;
       int retryCount = 0;
-      object result = null;
+      object result = null!;
 
       while (!fileRead && retryCount < 5)
       {
@@ -1218,7 +1220,7 @@ namespace SimulationDAL
 
           string fileStr = File.ReadAllText(_docFullPath);
           JObject fullObj = JObject.Parse(fileStr);
-          JToken modItem = fullObj.SelectToken(curLinkStr);
+          JToken modItem = fullObj.SelectToken(curLinkStr)!;
 
           if (modItem == null)
           {
@@ -1229,7 +1231,7 @@ namespace SimulationDAL
             else
             {
               base.SetValue(Convert.ChangeType(_dfltValue, dType));
-              result = _value;
+              result = _value!;
             }
           }
           else if (modItem.Type == JTokenType.Object)
@@ -1240,12 +1242,12 @@ namespace SimulationDAL
             }
 
             base.SetValue(modItem.ToString());
-            result = _value;
+            result = _value!;
           }
           else
           {
-            base.SetValue(modItem.ToObject(dType));
-            result = _value;
+            base.SetValue(modItem.ToObject(dType)!);
+            result = _value!;
           }
 
           fileRead = true;
@@ -1270,7 +1272,7 @@ namespace SimulationDAL
         throw new IOException("Unable to read the file after multiple attempts.");
       }
 
-      return result;
+      return result!;
     }
   }
 
@@ -1280,8 +1282,8 @@ namespace SimulationDAL
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
 
-    private Regex _cachedRegex = null;
-    private string _cachedPattern = null;
+    private Regex _cachedRegex = null!;
+    private string _cachedPattern = null!;
     private static readonly Regex _lineBreakRegex = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)", RegexOptions.Compiled);
 
     public TextRegExVariable()
@@ -1382,7 +1384,7 @@ namespace SimulationDAL
 
           if (this._regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
           {
-            docTxt = rx.Replace(docTxt, newValue.ToString(), 1);
+            docTxt = rx.Replace(docTxt, newValue.ToString()!, 1);
             File.WriteAllText(_docFullPath, docTxt);
           }
           else
@@ -1419,7 +1421,7 @@ namespace SimulationDAL
             }
             else
             {
-              docLines[lineMatch] = newValue.ToString();
+              docLines[lineMatch] = newValue.ToString()!;
             }
             File.WriteAllLines(_docFullPath, docLines);
           }
@@ -1450,7 +1452,7 @@ namespace SimulationDAL
       Regex rx = GetCompiledRegex();
       bool fileRead = false;
       int retryCount = 0;
-      object result = null;
+      object result = null!;
 
       while (!fileRead && retryCount < 5)
       {
@@ -1530,7 +1532,7 @@ namespace SimulationDAL
               }
 
               base.SetValue(Convert.ChangeType(foundTxt, dType));
-              result = _value;
+              result = _value!;
             }
             catch (Exception ex)
             {
@@ -1821,7 +1823,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find Variable - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -1829,7 +1831,7 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find Variable - " + name);
         else
-          return null;
+          return null!;
       }
 
       //int loc = -1;
@@ -1845,7 +1847,7 @@ namespace SimulationDAL
     {
       if (!sim3dNameIDToID.ContainsKey(findSim3dNameId))
       {
-        return null;
+        return null!;
       }
 
       return this[sim3dNameIDToID[findSim3dNameId]];
@@ -1915,7 +1917,7 @@ namespace SimulationDAL
         var item = wrapper;
         try
         {
-          SimVariable curItem = null;
+          SimVariable curItem = null!;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
           {

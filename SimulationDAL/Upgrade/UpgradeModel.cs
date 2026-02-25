@@ -25,10 +25,10 @@ namespace SimulationDAL
 
           //call upgradeEmraldModel function.
           object strfnCall = engine.Invoke("UpgradeEMRALDModel", modelJSON_Str);
-          string strRes = strfnCall.ToString();
+          string strRes = strfnCall.ToString()!;
 
 
-          JToken jt = JToken.Parse(strRes);
+          JToken jt = JToken.Parse(strRes!);
           string formatted = jt.ToString(Newtonsoft.Json.Formatting.Indented);
 
           return formatted;

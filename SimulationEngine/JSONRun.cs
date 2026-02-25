@@ -32,9 +32,9 @@ namespace SimulationEngine
     TProgressCallBack _progressCallBack = null;
     private string _error = "";
     public Options_cur options = new Options_cur();
-    private bool _done = false;
+    //private bool _done = false;
     private ISimMessaging _msgCoupler = null;
-    private readonly IAppSettingsService _appSettingsService;
+    private readonly IAppSettingsService _appSettingsService = null!;
 
     // Create attributes for objects
     private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
@@ -441,11 +441,12 @@ namespace SimulationEngine
             _msgCoupler = new WebApiCoupling(optionsOut.couplingInfo.couplingURL);
             break;
           case CouplingType.XMPP:
+            //todo figure out where _appSettingsService should come from. 
             _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword, _appSettingsService);
             break;
           default:
             throw new Exception("Coupling Type not implemeted");
-            break;
+            
         }
       }
 

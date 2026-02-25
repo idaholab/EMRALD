@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimulationEngine;
 using MathNet.Numerics;
-//using Ewk.Math.Numerics;
 using System.Reflection;
 using System.Diagnostics;
 using NLog;
@@ -52,7 +51,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("General test to make sure system defined variables (RunIdx & CurTime) are working correctly.")]
-    public async void DefaultVarsTest()
+    public async Task DefaultVarsTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 

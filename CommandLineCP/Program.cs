@@ -76,14 +76,12 @@ namespace CommandLineCP
   {
     static int[] threadRunCnt; // runs each thread has done
     static int numRuns = 0; // total runs to do
-    static bool done = false;
     static int numThreads = 1; // number of threads being used
     static object lockObj = new object(); // for thread-safe console updates
 
     // Changed to async Task Main
     static async Task Main(string[] args)
     {
-      bool execute = false;
       string model = null;
       JSONRun modelRun = null; // create if not JSON new JSONRun("", "", DispResults);
 
@@ -302,10 +300,6 @@ namespace CommandLineCP
             ++i;
             break;
 
-          case "-e": // execute
-            execute = true;
-            break;
-
           case "-threads": // number of threads
             try
             {
@@ -498,12 +492,6 @@ namespace CommandLineCP
         // Rewrite console line with progress
         Console.Write("\rProgress: {0:F1}% ({1}/{2} runs) - Runtime: {3:hh\\:mm\\:ss}   ",
                       percentComplete, totDoneRuns, numRuns, runTime);
-
-        // Check if all runs are complete
-        if (totDoneRuns >= numRuns)
-        {
-          done = true;
-        }
       }
     }
   }

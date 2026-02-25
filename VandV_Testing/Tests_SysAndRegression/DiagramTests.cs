@@ -35,7 +35,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test to verify self loops in a diagram work properly.")]
-    public async void SelfLoopTest()
+    public async Task SelfLoopTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -62,7 +62,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test to verify paths to key states are comming out correct.")]
-    public async void KeyStatePathTest()
+    public async Task KeyStatePathTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -90,7 +90,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test to verify single state diagram boolean values are correct.")]
-    public async void SingleStateDiagramValueTest()
+    public async Task SingleStateDiagramValueTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 

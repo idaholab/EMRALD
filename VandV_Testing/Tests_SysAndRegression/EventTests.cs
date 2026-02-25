@@ -36,7 +36,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that the state change event sucessfully detects moving in and out of the states they are monitoring.")]
 
-    public async void Event_1TransitionInOutTest()
+    public async Task Event_1TransitionInOutTest()
     {
       //note the result will be 1 off because the event is triggered on startup for the Logic tree evaluation.
 
@@ -62,7 +62,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the normal distribution event gives the correct statistics with multiple runs of the model.")]
-    public async void DistEvent_Normal()
+    public async Task DistEvent_Normal()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -87,7 +87,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that the normal distribution event using variables gives the correct statistics with multiple runs of the model.")]
 
-    public async void DistEvent_Normal_Vars()
+    public async Task DistEvent_Normal_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -111,7 +111,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the log normal distribution event gives the correct statistics with multiple runs of the model.")]
-    public async void DistEvent_LogNormal()
+    public async Task DistEvent_LogNormal()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -135,7 +135,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the normal distribution event using variables gives the correct statistics with multiple runs of the model.")]
-    public async void DistEvent_LogNormal_Vars()
+    public async Task DistEvent_LogNormal_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -159,7 +159,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the Weibull distribution event gives the correct statistics with multiple runs of the model.")]
-    public async void DistEvent_Weibull()
+    public async Task DistEvent_Weibull()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -183,7 +183,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the Weibull distribution using variables event gives the correct statistics with multiple runs of the model.")]
-    public async void DistEvent_Weibull_Vars()
+    public async Task DistEvent_Weibull_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -207,7 +207,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the Exponential distribution event gives the correct statistics with multiple runs of the model.")]
-    public async void DistEvent_Exponential()
+    public async Task DistEvent_Exponential()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -232,7 +232,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Test that the Exponential distribution with a variable event gives the correct statistics with multiple runs of the model.")]
 
-    public async void DistEvent_Exponential_Vars()
+    public async Task DistEvent_Exponential_Vars()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -258,7 +258,7 @@ namespace SysAndRegressionTesting
     [Description("Test that the timer event gives the correct time with multiple runs of the model.")]
 
     //Test the timer event using a variable
-    public async void TestTimerEvVar()
+    public async Task TestTimerEvVar()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -282,7 +282,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test timer event in a later state that goes off the time from the start.")]
-    public async void Test2Timers()
+    public async Task Test2Timers()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -309,7 +309,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Verify a timer from the start of the simulation work properly.")]
-    public async void FromStartTimerTest()
+    public async Task FromStartTimerTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -333,7 +333,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test using state change event of multiple items matches logic tree evaluation event of the same states.")]
-    public async void TestLogicTreeVsStateChk()
+    public async Task TestLogicTreeVsStateChk()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -357,7 +357,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that the failure rate event using a variable works correctly.")]
-    public async void TestProbEvVar()
+    public async Task TestProbEvVar()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -381,7 +381,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test events correctly evaluate the variable value for varConditions.")]
-    public async void VarConditionTest()
+    public async Task VarConditionTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -407,7 +407,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent distribution events.")]
-    public async void PersistentDistTest()
+    public async Task PersistentDistTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -433,7 +433,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent failure rate events.")]
-    public async void PersistentFailRateTest()
+    public async Task PersistentFailRateTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -459,7 +459,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent timer events.")]
-    public async void PersistentTimerTest()
+    public async Task PersistentTimerTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -485,7 +485,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent events with variables being resampled when the variable changes while the event is NOT in an active state.")]
-    public async void PersistentEventVarChange_EventInactive()
+    public async Task PersistentEventVarChange_EventInactive()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -506,7 +506,7 @@ namespace SysAndRegressionTesting
     }
     [Fact]
     [Description("Test persistent events with variables being resampled when the variable changes while the event is in an active state.")]
-    public async void PersistentEventVarChange()
+    public async Task PersistentEventVarChange()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 

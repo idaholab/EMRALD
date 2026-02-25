@@ -15,13 +15,13 @@ namespace CouplingWebSocket
   {
     private ClientWebSocket _client;
     private CancellationTokenSource _cancellationTokenSource;
-    private Task _receiveTask;
+    private Task? _receiveTask;
 
     // Event for incoming messages - now includes the GUID
-    public event EventHandler<(Guid conID, string message)> MessageReceived;
-    public event EventHandler<string> ErrorOccurred;
-    public event EventHandler Connected;
-    public event EventHandler Disconnected;
+    public event EventHandler<(Guid conID, string message)>? MessageReceived;
+    public event EventHandler<string>? ErrorOccurred;
+    public event EventHandler? Connected;
+    public event EventHandler? Disconnected;
 
     public bool IsConnected => _client?.State == WebSocketState.Open;
 
@@ -170,7 +170,7 @@ namespace CouplingWebSocket
       );
     }
 
-    private TaskCompletionSource<string> _responseWaiter;
+    private TaskCompletionSource<string>? _responseWaiter;
 
     private async Task<string> WaitForResponse(int timeoutMs = 5000)
     {
@@ -252,7 +252,7 @@ namespace CouplingWebSocket
         // All other messages should have a conID and go to MessageReceived event
         if (jsonObj.ContainsKey("conID"))
         {
-          Guid conID = Guid.Parse(jsonObj["conID"].ToString());
+          Guid conID = Guid.Parse(jsonObj["conID"]?.ToString() ?? string.Empty);
           MessageReceived?.Invoke(this, (conID, message));
         }
         else

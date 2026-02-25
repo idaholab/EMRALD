@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -23,13 +22,13 @@ namespace ScriptEngineNS
     public enum Languages { CSharp };
     public Languages language;
     private string assemblyName = "TestClass";
-    private object evaluator = null;
-    private Type evaluatorType = null;
-    Assembly assembly = null;
-    CSharpCompilation compilation = null;
-    EmitResult compResult = null;
-    private string source;
-    string variables, variables1;
+    private object evaluator = null!;
+    private Type evaluatorType = null!;
+    Assembly assembly = null!;
+    CSharpCompilation compilation = null!;
+    EmitResult compResult = null!;
+    private string source = null!;
+    string variables;
     string code;
     public List<string> messages = new List<string>();
     public List<string> addAssemblies = new List<string>() { "MathNet.Numerics.dll" };
@@ -102,9 +101,9 @@ namespace ScriptEngineNS
                     null,
                     evaluator,
                     new object[] { Convert.ChangeType(Value, dType) }
-                 );
+                 )!;
       }
-      catch (Exception e)
+      catch 
       {
         throw new Exception("Failed to assign \"" + Value.ToString() + "\" to Variable \"" + VariableName + "\", check the types are correct");
       }
@@ -205,8 +204,8 @@ namespace ScriptEngineNS
         {
           memoryStream.Seek(0, SeekOrigin.Begin);
           assembly = Assembly.Load(memoryStream.ToArray());
-          evaluatorType = assembly.GetType(domain + "." + assemblyName);
-          evaluator = Activator.CreateInstance(evaluatorType);
+          evaluatorType = assembly.GetType(domain + "." + assemblyName)!;
+          evaluator = Activator.CreateInstance(evaluatorType)!;
           return true;
         }
         else
@@ -241,7 +240,7 @@ namespace ScriptEngineNS
                     null,
                     evaluator,
                     new object[] { }
-                 );
+                 )!;
         return o;
       }
       catch (Exception e)

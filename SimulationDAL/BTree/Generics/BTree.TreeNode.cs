@@ -22,7 +22,7 @@ namespace Sop.Collections.Generic.BTree
     internal partial class BTreeAlgorithm<TKey, TValue>
     {
         internal bool FixVacatedSlot;
-        TreeNode PromoteParent;
+        TreeNode PromoteParent = null!;
         short PromoteIndexOfNode;
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Sop.Collections.Generic.BTree
             /// <param name="oBTree"></param>
             protected TreeNode(BTreeAlgorithm<TKey, TValue> oBTree)
             {
-                this.Initialize(oBTree, null);
+                this.Initialize(oBTree, null!);
             }
             /// <summary>
             /// Constructor expecting ParentTree and ParentNode params.
@@ -87,7 +87,7 @@ namespace Sop.Collections.Generic.BTree
             {
                 if (Slots == null)
                     Slots = new BTreeItem<TKey, TValue>[Btree.SlotLength];
-                Children = null;
+                Children = null!;
                 Parent = ParentObj;
             }
 
@@ -204,7 +204,7 @@ namespace Sop.Collections.Generic.BTree
                             }
                             catch (Exception)
                             {
-                                if (CurrentNode.Slots[0].Key.ToString().CompareTo(Item.Key.ToString()) < 0)
+                                if (CurrentNode.Slots[0].Key!.ToString()!.CompareTo(Item.Key!.ToString()) < 0)
                                     Index = 1;
                             }
                         }
@@ -215,7 +215,7 @@ namespace Sop.Collections.Generic.BTree
                         break;
                 }
                 CurrentNode.Add(ParentBTree, Item, Index);
-                CurrentNode = null;
+                CurrentNode = null!;
             }
             void Add(BTreeAlgorithm<TKey, TValue> ParentBTree,
                 BTreeItem<TKey, TValue> Item, int Index)
@@ -234,13 +234,13 @@ namespace Sop.Collections.Generic.BTree
                 }
                 else
                 {	// node is full, use pTempSlots
-                    Slots.CopyTo(ParentBTree.TempSlots, 0);
+                    Slots.CopyTo(ParentBTree.TempSlots!, 0);
 
                     // *************BPLUS
                     // Index now contains the correct array element number to insert item into.
                     // if we want to implement BPLUS, we must do the modification here..
-                    ShiftSlots(ParentBTree.TempSlots, (byte)Index, (byte)(ParentBTree.SlotLength));
-                    ParentBTree.TempSlots[Index] = Item;
+                    ShiftSlots(ParentBTree.TempSlots!, (byte)Index, (byte)(ParentBTree.SlotLength));
+                    ParentBTree.TempSlots![Index] = Item;
                     // *************BPLUS
 
                     byte SlotsHalf = (byte)(ParentBTree.SlotLength >> 1);
@@ -299,9 +299,9 @@ namespace Sop.Collections.Generic.BTree
                             }
                             catch (Exception)
                             {
-                                Children = null;
-                                LeftNode = null;
-                                RightNode = null;
+                                Children = null!;
+                                LeftNode = null!;
+                                RightNode = null!;
                                 throw;
                             }
                         }
@@ -338,7 +338,7 @@ namespace Sop.Collections.Generic.BTree
                             }
                             catch (Exception)
                             {
-                                RightNode = null;
+                                RightNode = null!;
                                 throw;
                             }
                         }
@@ -374,9 +374,9 @@ namespace Sop.Collections.Generic.BTree
                         catch (Exception)
                         {
                             // falling through here and further down means mem alloc error so delete the allocated ones.
-                            LeftNode = null;
-                            RightNode = null;
-                            RightNode = null;
+                            LeftNode = null!;
+                            RightNode = null!;
+                            RightNode = null!;
                             throw;
                         }
                     }
@@ -399,7 +399,7 @@ namespace Sop.Collections.Generic.BTree
                 {
                     if (r >= 1)
                     {
-                        int rr = BinarySearch(ItemArray, 0, r, Value, Comparer);
+                        int rr = BinarySearch(ItemArray, 0, r, Value, Comparer!);
                         if (rr >= 0)
                             return rr;
                     }
@@ -421,7 +421,7 @@ namespace Sop.Collections.Generic.BTree
             {
                 byte i = 0;
                 TreeNode CurrentNode = this;
-                TreeNode FoundNode = null;
+                TreeNode FoundNode = null!;
                 byte FoundIndex = 0;
                 while (true)
                 {
@@ -436,7 +436,7 @@ namespace Sop.Collections.Generic.BTree
                                 Result = Array.BinarySearch<BTreeItem<TKey, TValue>>(CurrentNode.Slots, 0,
                                     NoOfOccupiedSlots, Item, ParentBTree.SlotsComparer);
                             else
-                                Result = BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item, ParentBTree.SlotsComparer);
+                                Result = BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item, ParentBTree!.SlotsComparer!);
                         }
                         else
                         {
@@ -446,7 +446,7 @@ namespace Sop.Collections.Generic.BTree
                                 if (!GoToFirstInstance)
                                     Result = Array.BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item);
                                 else
-                                    Result = BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item, null);
+                                    Result = BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item, null!);
                             }
                             catch (Exception)
                             {
@@ -454,7 +454,7 @@ namespace Sop.Collections.Generic.BTree
                                 if (!GoToFirstInstance)
                                     Result = Array.BinarySearch(CurrentNode.Slots, Item);
                                 else
-                                    Result = BinarySearch(CurrentNode.Slots, -1, -1, Item, null);
+                                    Result = BinarySearch(CurrentNode.Slots, -1, -1, Item, null!);
 #if !DEVICE
                             }
 #endif
@@ -530,21 +530,21 @@ namespace Sop.Collections.Generic.BTree
             /// </summary>
             internal protected void Clear(bool Recycle)
             {
-                Parent = null;
+                Parent = null!;
                 byte i;
                 for (i = 0; i < count; i++)
-                    Slots[i] = null;
+                    Slots[i] = null!;
                 if (!Recycle)
-                    Slots = null;
+                    Slots = null!;
                 if (this.Children != null)
                 {
                     for (i = 0; i <= count; i++)
                     {
                         if (!Recycle)
                             Children[i].Clear();
-                        Children[i] = null;
+                        Children[i] = null!;
                     }
-                    Children = null;
+                    Children = null!;
                 }
                 count = 0;
             }
@@ -612,7 +612,7 @@ namespace Sop.Collections.Generic.BTree
                             else
                             {
                                 // this is root node. set to null the current item(End of Btree is reached)
-                                ParentBTree.SetCurrentItemAddress(null, 0);
+                                ParentBTree.SetCurrentItemAddress(null!, 0);
                                 return false;
                             }
                         }
@@ -669,7 +669,7 @@ namespace Sop.Collections.Generic.BTree
                             else
                             {
                                 // this is root node. set to null the current item(End of Btree is reached)
-                                ParentBTree.SetCurrentItemAddress(null, 0);
+                                ParentBTree.SetCurrentItemAddress(null!, 0);
                                 return false;
                             }
                         }
@@ -765,7 +765,7 @@ namespace Sop.Collections.Generic.BTree
                 // if we are not at the leftmost sibling yet..
                 if (Index > 0) return Parent.Children[Index - 1];
                 // leftmost was already reached..
-                return (TreeNode)null;
+                return (TreeNode)null!;
             }
 
             /// <summary>
@@ -779,7 +779,7 @@ namespace Sop.Collections.Generic.BTree
                 // if we are not at the Rightmost sibling yet..
                 if (Index < ParentBTree.SlotLength) return Parent.Children[Index + 1];
                 // leftmost was already reached..
-                return (TreeNode)null;
+                return (TreeNode)null!;
             }
 
             /// <summary>
@@ -851,7 +851,7 @@ namespace Sop.Collections.Generic.BTree
                     if (Index > NoOfOccupiedSlots)
                         Index = NoOfOccupiedSlots;
 
-                    Slots[Index] = ParentBTree.TempParent;
+                    Slots[Index] = ParentBTree.TempParent!;
                     // insert the left child
                     Children[Index] = ParentBTree.TempParentChildren[(int)Sop.Collections.BTree.ChildNodes.LeftChild];
                     // insert the right child
@@ -864,7 +864,7 @@ namespace Sop.Collections.Generic.BTree
                 {	// *** Insert to temp slots.. node is full, use pTempSlots
                     CopyArrayElements(Slots, 0, ParentBTree.TempSlots, 0, (ushort)ParentBTree.SlotLength);
                     ShiftSlots(ParentBTree.TempSlots, Index, (byte)ParentBTree.SlotLength);
-                    ParentBTree.TempSlots[Index] = ParentBTree.TempParent;
+                    ParentBTree.TempSlots![Index] = ParentBTree.TempParent;
                     CopyArrayElements(Children, 0, ParentBTree.TempChildren, 0, (ushort)(ParentBTree.SlotLength + 1));
                     // insert the left child
                     ParentBTree.TempChildren[Index] = ParentBTree.TempParentChildren[(int)Sop.Collections.BTree.ChildNodes.LeftChild];
@@ -872,8 +872,8 @@ namespace Sop.Collections.Generic.BTree
                     ShiftSlots(ParentBTree.TempChildren, (byte)(Index + 1), (byte)(NoOfOccupiedSlots + 1));
                     ParentBTree.TempChildren[Index + 1] = ParentBTree.TempParentChildren[(int)Sop.Collections.BTree.ChildNodes.RightChild];
                     // *** Try to break up the node into 2 siblings.
-                    TreeNode LeftNode = null;
-                    TreeNode RightNode = null;
+                    TreeNode LeftNode = null!;
+                    TreeNode RightNode = null!;
                     byte SlotsHalf = (byte)((byte)ParentBTree.SlotLength >> (byte)1);
                     if (Parent != null)
                     {	// prepare this and the right node sibling and promote the temporary parent node(pTempSlot). this is the left sibling !
@@ -911,8 +911,8 @@ namespace Sop.Collections.Generic.BTree
                         }
                         catch (Exception)
                         {
-                            RightNode.Children = null;
-                            RightNode = null;
+                            RightNode.Children = null!;
+                            RightNode = null!;
                             throw;
                         }
                     }
@@ -953,9 +953,9 @@ namespace Sop.Collections.Generic.BTree
                         }
                         catch (Exception)
                         {	// Delete resources prior to returning mem. alloc error
-                            LeftNode.Children = null;
-                            RightNode = null;
-                            LeftNode = null;
+                            LeftNode.Children = null!;
+                            RightNode = null!;
+                            LeftNode = null!;
                             throw;
                         }
                     }
@@ -980,7 +980,7 @@ namespace Sop.Collections.Generic.BTree
                     GetLeftSibling(ParentBTree).DistributeToLeft(ParentBTree, Parent.Slots[GetIndexOfNode(ParentBTree) - 1]);
                     Parent.Slots[GetIndexOfNode(ParentBTree) - 1] = Slots[0];
                     MoveArrayElements(Slots, 1, 0, (ushort)(SlotLength - 1));
-                    Slots[count - 1] = null;
+                    Slots[count - 1] = null!;
                 }
                 else
                     count++;
@@ -1054,7 +1054,7 @@ namespace Sop.Collections.Generic.BTree
                             ParentBTree.CurrentItem.NodeItemIndex,
                             (ushort)(c - 1 - ParentBTree.CurrentItem.NodeItemIndex));
                     count--;
-                    Slots[count] = null;	// nullify the last slot.
+                    Slots[count] = null!;	// nullify the last slot.
                 }
                 else
                 {	// only 1 item in slot
@@ -1077,7 +1077,7 @@ namespace Sop.Collections.Generic.BTree
                                 Parent.Slots[1] = RightSibling.Slots[0];
                                 Parent.count = 2;
                                 ParentBTree.AddRecycleNode(RightSibling);
-                                RightSibling = null;
+                                RightSibling = null!;
                             }
                             else
                             {	// this is right node
@@ -1086,20 +1086,20 @@ namespace Sop.Collections.Generic.BTree
                                 Parent.Slots[0] = LeftSibling.Slots[0];
                                 Parent.count = 2;
                                 ParentBTree.AddRecycleNode(LeftSibling);
-                                LeftSibling = null;
+                                LeftSibling = null!;
                             }
                             // nullify Parent's children will cause this tree node instance to be garbage collected as this is child of parent!
-                            Parent.Children[0] = null;
-                            Parent.Children[1] = null;
-                            Parent.Children = null;
+                            Parent.Children[0] = null!;
+                            Parent.Children[1] = null!;
+                            Parent.Children = null!;
                             Clear();
                         }
                     }
                     else
                     {	// only 1 item in root node !
-                        Slots[0] = null;	// just nullIFY the slot.
+                        Slots[0] = null!;	// just nullIFY the slot.
                         count = 0;
-                        ParentBTree.SetCurrentItemAddress(null, 0);	// Point the current item pointer to end of tree
+                        ParentBTree.SetCurrentItemAddress(null!, 0);	// Point the current item pointer to end of tree
                     }
                 }
             }
@@ -1116,7 +1116,7 @@ namespace Sop.Collections.Generic.BTree
                 {
                     count--;
                     // we only need to nullify the last item since the caller code should have moved it to the slot, which item just got deleted or pulled.
-                    Slots[i - 1] = null;
+                    Slots[i - 1] = null!;
                 }
                 // *********** Start of Unbalanced right sibling branch processing check if there is a right sibling and if it has children node.
                 else
@@ -1168,7 +1168,7 @@ namespace Sop.Collections.Generic.BTree
                     else
                     {
                         // There is only 1 item in the slot and there is no unbalanced left sibling.
-                        if (i == 1 && LeftSibling.count == 1)
+                        if (i == 1 && LeftSibling!.count == 1)
                         {	// we need to combine the leftmost sibling's item with the
                             // parent's 1st item and make them the leftmost node's items.
                             // This scenario caters for this:
@@ -1190,20 +1190,20 @@ namespace Sop.Collections.Generic.BTree
                             LeftSibling.count = 2;
                             i = Parent.count;
                             MoveArrayElements(Parent.Slots, 1, 0, (ushort)(i - 1));
-                            Parent.Slots[i - 1] = null;
+                            Parent.Slots[i - 1] = null!;
                             MoveArrayElements(Parent.Children, 2, 1, (ushort)(i - 1));
-                            Parent.Children[i] = null;
+                            Parent.Children[i] = null!;
                             Parent.count--;
                             ParentBTree.AddRecycleNode(this);
                         }
                         else
                         {
                             Slots[0] = Parent.Slots[i - 1];
-                            Parent.Slots[i - 1] = LeftSibling.Slots[LeftSibling.count - 1];
+                            Parent.Slots[i - 1] = LeftSibling!.Slots[LeftSibling.count - 1];
                             LeftSibling.PullFromLeft(ParentBTree);
                         }
                     }
-                    LeftSibling = null;
+                    LeftSibling = null!;
                 }
             }
             /// <summary>
@@ -1218,7 +1218,7 @@ namespace Sop.Collections.Generic.BTree
                 {
                     count--;
                     MoveArrayElements(Slots, 1, 0, count);
-                    Slots[i - 1] = null;
+                    Slots[i - 1] = null!;
                 }
                 // *********** Start of Unbalanced right sibling branch processing check if there is a right sibling and if it has children node.
                 else
@@ -1281,13 +1281,13 @@ namespace Sop.Collections.Generic.BTree
                     else
                     {
                         if (i == Parent.count - 1 &&
-                            RightSibling.count == 1)
+                            RightSibling!.count == 1)
                         {	// we need to combine the Rightmost sibling's item with the parent's last item and make them the rightmost node's items.
                             RightSibling.Slots[1] = RightSibling.Slots[0];
                             RightSibling.Slots[0] = Parent.Slots[Parent.count - 1];
                             Parent.Children[i] = RightSibling;
-                            Parent.Children[i + 1] = null;
-                            Parent.Slots[i] = null;
+                            Parent.Children[i + 1] = null!;
+                            Parent.Slots[i] = null!;
                             Parent.count--;
                             RightSibling.count = 2;
                             ParentBTree.AddRecycleNode(this);
@@ -1295,11 +1295,11 @@ namespace Sop.Collections.Generic.BTree
                         else
                         {
                             Slots[0] = Parent.Slots[i];
-                            Parent.Slots[i] = RightSibling.Slots[0];
+                            Parent.Slots[i] = RightSibling!.Slots[0];
                             RightSibling.PullFromRight(ParentBTree);
                         }
                     }
-                    RightSibling = null;
+                    RightSibling = null!;
                 }
             }
 
@@ -1337,16 +1337,16 @@ namespace Sop.Collections.Generic.BTree
             /// <summary>
             /// Slots of this TreeNode
             /// </summary>
-            internal protected BTreeItem<TKey, TValue>[] Slots;			// available Slots
+            internal protected BTreeItem<TKey, TValue>[] Slots = null!;			// available Slots
             protected byte count;
             /// <summary>
             /// Parent of this TreeNode
             /// </summary>
-            internal protected TreeNode Parent;			// parent TreeNode node
+            internal protected TreeNode Parent = null!;			// parent TreeNode node
             /// <summary>
             /// Children of this TreeNode
             /// </summary>
-            protected TreeNode[] Children;		// Children TreeNode nodes
+            protected TreeNode[] Children = null!;		// Children TreeNode nodes
         }	// end of TreeNode
         /// <summary>
         /// The root node class. Encapsulates behavior specific to root nodes. 
@@ -1377,8 +1377,8 @@ namespace Sop.Collections.Generic.BTree
                         // Clear children nodes.
                         Children[i].Clear();
                 }
-                Children = null;
-                ResetArray<BTreeItem<TKey, TValue>>(Slots, null);
+                Children = null!;
+                ResetArray<BTreeItem<TKey, TValue>>(Slots, null!);
                 count = 0;
             }
         }	//end of TreeRootNode

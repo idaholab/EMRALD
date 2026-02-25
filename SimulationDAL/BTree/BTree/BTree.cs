@@ -281,7 +281,7 @@ namespace Sop.Collections.BTree
 		public BTree(ValidSlotLengths SlotLen)
 		{
 			btree = new BTreeAlgorithm((ValidSlotLengths)SlotLen);
-		}
+    }
 		/// <summary>
 		/// Default constructor. Use this if you want:<br/>
 		/// - default (6) slots per node <br/>
@@ -300,7 +300,7 @@ namespace Sop.Collections.BTree
 		/// <param name="BTree">BTree object you want to duplicate all its btree graph into this new btree instance</param>
 		public BTree(BTree BTree)
 		{
-			btree = new BTreeAlgorithm((ValidSlotLengths)BTree.btree.SlotLength, BTree.btree.Comparer);
+			btree = new BTreeAlgorithm((ValidSlotLengths)BTree.btree.SlotLength, BTree.btree.Comparer!);
 			this.SortOrder = BTree.SortOrder;
 
 			BTree.MoveFirst();
@@ -436,45 +436,45 @@ namespace Sop.Collections.BTree
 			}
 		}
 
-		/// <summary>
-		/// BTree indexer. Given a key, will return its value.
-		/// If key is not found, will add a new entry having passed 
-		/// params key and value.
-		/// </summary>
-		virtual public object this[object key]
-		{
-			get
-			{
-				if (key == null)
-					throw new ArgumentNullException("key");
-				if (CurrentKey != null && 
-					Comparer != null && Comparer.Compare(this.CurrentKey, key) == 0)
-					return CurrentValue;
-				if (btree.Root.Search(btree, key, false))
-					return this.CurrentValue;
-				return null;
-			}
-			set
-			{
-				if (key == null)
-					throw new ArgumentNullException("key");
-				if ((CurrentKey != null &&
-					Comparer != null && Comparer.Compare(this.CurrentKey, key) == 0) ||
-					btree.Root.Search(btree, key, false))
-					CurrentValue = value;
-				else	// if not found, add new entry/record. 
-						// NOTE: this is .net compliance feature
-					Add(key, value);
-			}
-		}
+    /// <summary>
+    /// BTree indexer. Given a key, will return its value.
+    /// If key is not found, will add a new entry having passed 
+    /// params key and value.
+    /// </summary>
+    virtual public object? this[object key]
+    {
+      get
+      {
+        if (key == null)
+          throw new ArgumentNullException("key");
+        if (CurrentKey != null &&
+            Comparer != null && Comparer.Compare(this.CurrentKey, key) == 0)
+          return CurrentValue;
+        if (btree.Root.Search(btree, key, false))
+          return this.CurrentValue;
+        return null;
+      }
+      set
+      {
+        if (key == null)
+          throw new ArgumentNullException("key");
+        if ((CurrentKey != null &&
+            Comparer != null && Comparer.Compare(this.CurrentKey, key) == 0) ||
+            btree.Root.Search(btree, key, false))
+          CurrentValue = value!;
+        else  // if not found, add new entry/record. 
+              // NOTE: this is .net compliance feature
+          Add(key, value!);
+      }
+    }
 
-		//***************** Collections.BTree.IDictionary API
-		/// <summary>
-		/// Returns the current item (DictionaryEntry having key and value pair) if valid, else null.
-		/// NOTE: you need to check the result if not null and cast to 'DictionaryEntry' to access Key
-		/// and/or Value.
-		/// </summary>
-		virtual public DictionaryEntry CurrentEntry
+    //***************** Collections.BTree.IDictionary API
+    /// <summary>
+    /// Returns the current item (DictionaryEntry having key and value pair) if valid, else null.
+    /// NOTE: you need to check the result if not null and cast to 'DictionaryEntry' to access Key
+    /// and/or Value.
+    /// </summary>
+    virtual public DictionaryEntry CurrentEntry
 		{
 			get
 			{
@@ -492,7 +492,7 @@ namespace Sop.Collections.BTree
 			{
 				if (btree.CurrentEntry != null)
 					return CurrentEntry.Key;
-                return null;
+                return null!;
 			}
 		}
 		/// <summary>
@@ -503,8 +503,8 @@ namespace Sop.Collections.BTree
 			get
 			{
 				if (btree.CurrentEntry != null)
-					return CurrentEntry.Value;
-				return null;
+					return CurrentEntry.Value!;
+				return null!;
 			}
 			set
 			{
@@ -593,86 +593,85 @@ namespace Sop.Collections.BTree
 			return btree.Search(Key, GoToFirstInstance);
 		}
 
-		//***************** .NET ICollection API
-		/// <summary>
-		/// Implements the ISerializable interface and raises the deserialization event when the deserialization is complete.
-		/// </summary>
-        /// <param name="sender">Source of the deserialization event</param>
+    //***************** .NET ICollection API
+    /// <summary>
+    /// Implements the ISerializable interface and raises the deserialization event when the deserialization is complete.
+    /// </summary>
+    /// <param name="sender">Source of the deserialization event</param>
 #if (!DEVICE)
-		public void OnDeserialization(object sender)
-		{
-			// save current sort order
-			// save btree
-			//		- save comparer
-			//		- save other btree data
-			try
-			{
-				this.CurrentSortOrder = (SortOrderType)SerializationInfo.GetInt32("SortOrder");
-			}
-			catch(System.Exception e)
-			{
-				throw new System.Runtime.Serialization.SerializationException(GetStringResource("CurrentSortOrderDeSerializeError"), e);
-			}
-			IComparer Comparer;
-			// save comparer, SlotLength, save Keys & save Values
-			try
-			{
-				Comparer = (IComparer)SerializationInfo.GetValue("Comparer", typeof(IComparer));
-			}
-			catch(System.Exception e)
-			{
-				throw new System.Runtime.Serialization.SerializationException(GetStringResource("ComparerDeSerializeError"), e);
-			}
-			ValidSlotLengths SlotLength;
-			try
-			{
-				SlotLength = (ValidSlotLengths)SerializationInfo.GetByte("SlotLength");
-			}
-			catch(System.Exception e)
-			{
-				throw new System.Runtime.Serialization.SerializationException(GetStringResource("SlotLengthDeSerializeError"), e);
-			}
+    public void OnDeserialization(object? sender)
+    {
+      // save current sort order
+      // save btree
+      //		- save comparer
+      //		- save other btree data
+      try
+      {
+        this.CurrentSortOrder = (SortOrderType)SerializationInfo!.GetInt32("SortOrder");
+      }
+      catch (System.Exception e)
+      {
+        throw new System.Runtime.Serialization.SerializationException(GetStringResource("CurrentSortOrderDeSerializeError"), e);
+      }
+      IComparer Comparer;
+      // save comparer, SlotLength, save Keys & save Values
+      try
+      {
+        Comparer = (IComparer)SerializationInfo!.GetValue("Comparer", typeof(IComparer))!;
+      }
+      catch (System.Exception e)
+      {
+        throw new System.Runtime.Serialization.SerializationException(GetStringResource("ComparerDeSerializeError"), e);
+      }
+      ValidSlotLengths SlotLength;
+      try
+      {
+        SlotLength = (ValidSlotLengths)SerializationInfo!.GetByte("SlotLength");
+      }
+      catch (System.Exception e)
+      {
+        throw new System.Runtime.Serialization.SerializationException(GetStringResource("SlotLengthDeSerializeError"), e);
+      }
+      btree = new BTreeAlgorithm((ValidSlotLengths)SlotLength, Comparer);
+      object[] Keys, Values;
+      try
+      {
+        Keys = (object[])SerializationInfo!.GetValue("Keys", typeof(object))!;
+      }
+      catch (System.Exception e)
+      {
+        if (e.Message == "Members Keys was not found.")
+          Keys = new object[0];
+        else
+          throw new System.Runtime.Serialization.SerializationException(GetStringResource("KeysDeSerializeError"), e);
+      }
+      if (Keys.Length == 0)
+        Values = new object[0];
+      else
+        try
+        {
+          Values = (object[])SerializationInfo!.GetValue("Values", typeof(object))!;
+        }
+        catch (System.Exception e)
+        {
+          throw new System.Runtime.Serialization.SerializationException(GetStringResource("ValuesDeSerializeError"), e);
+        }
+      if (Keys.Length != Values.Length)
+        throw new System.Runtime.Serialization.SerializationException(GetStringResource("KeysAndValuesDifferInSizeError"));
+      for (int i = 0; i < Keys.Length; i++)
+      {
+        if (Keys[i] == null)
+          throw new System.Runtime.Serialization.SerializationException(GetStringResource("DeSerializedNullKeyError"));
+        this.Add(Keys[i], Values[i]);
+      }
+    }
 
-			btree = new BTreeAlgorithm((ValidSlotLengths)SlotLength, Comparer);
-			object[] Keys, Values;
-			try
-			{
-				Keys = (object[])SerializationInfo.GetValue("Keys", typeof(object));
-			}
-			catch(System.Exception e)
-			{
-				if (e.Message == "Members Keys was not found.")
-					Keys = new object[0];
-				else
-					throw new System.Runtime.Serialization.SerializationException(GetStringResource("KeysDeSerializeError"), e);
-			}
-			if (Keys.Length == 0)
-				Values = new object[0];
-			else
-				try
-				{
-					Values = (object[])SerializationInfo.GetValue("Values", typeof(object));
-				}
-				catch(System.Exception e)
-				{
-					throw new System.Runtime.Serialization.SerializationException(GetStringResource("ValuesDeSerializeError"), e);
-				}
-			if (Keys.Length != Values.Length)
-				throw new System.Runtime.Serialization.SerializationException(GetStringResource("KeysAndValuesDifferInSizeError"));
-
-			for(int i = 0; i < Keys.Length; i++)
-			{
-				if (Keys[i] == null)
-					throw new System.Runtime.Serialization.SerializationException(GetStringResource("DeSerializedNullKeyError"));
-				this.Add(Keys[i], Values[i]);
-			}
-		}
-		/// <summary>
-		/// Used by serializer to get btree graph's serializable info
-		/// </summary>
-		/// <param name="info">The SerializationInfo to populate with data.</param>
-		/// <param name="context">The destination (see StreamingContext) for this serialization.</param>
-		public void GetObjectData(System.Runtime.Serialization.SerializationInfo info, 
+    /// <summary>
+    /// Used by serializer to get btree graph's serializable info
+    /// </summary>
+    /// <param name="info">The SerializationInfo to populate with data.</param>
+    /// <param name="context">The destination (see StreamingContext) for this serialization.</param>
+    public void GetObjectData(System.Runtime.Serialization.SerializationInfo info, 
 			System.Runtime.Serialization.StreamingContext context)
 		{
 			// save current sort order
@@ -695,26 +694,26 @@ namespace Sop.Collections.BTree
 			info.AddValue("Values", Value, Value.GetType());
 		}
 #endif
-        /// <summary>
-		/// Add adds an entry with the provided key and value into the BTree.
-		/// Duplicate keys are allowed in BTree unlike in a Dictionary/HashTable
-		/// where key is required to be unique.
-		/// </summary>
-		/// <param name="key">key of item you want to add to the collection</param>
-		/// <param name="value">item you want to add to the collection</param>
-		public virtual void Add(object key, object value)
-		{
-			if (key == null)
-				throw new ArgumentNullException("key");
-			DictionaryEntry o = new DictionaryEntry(key, value);
-			btree.Add(o);
-		}
-		
-		/// <summary>
-		/// IDictionary GetEnumerator Implementation
-		/// </summary>
-		/// <returns>Returns a clone of this collection that can track its tree traversal state (per current record pointer)</returns>
-		public System.Collections.IDictionaryEnumerator GetEnumerator()
+    /// <summary>
+    /// Add adds an entry with the provided key and value into the BTree.
+    /// Duplicate keys are allowed in BTree unlike in a Dictionary/HashTable
+    /// where key is required to be unique.
+    /// </summary>
+    /// <param name="key">key of item you want to add to the collection</param>
+    /// <param name="value">item you want to add to the collection</param>
+    public virtual void Add(object key, object? value)
+    {
+      if (key == null)
+        throw new ArgumentNullException("key");
+      DictionaryEntry o = new DictionaryEntry(key, value);
+      btree.Add(o);
+    }
+
+    /// <summary>
+    /// IDictionary GetEnumerator Implementation
+    /// </summary>
+    /// <returns>Returns a clone of this collection that can track its tree traversal state (per current record pointer)</returns>
+    public System.Collections.IDictionaryEnumerator GetEnumerator()
 		{
 			return new BTreeEnumerator((BTree)this.Clone());
 		}
@@ -741,8 +740,8 @@ namespace Sop.Collections.BTree
 			{
 				DictionaryEntry ItemToRemove = (DictionaryEntry)btree.CurrentEntry;
 				btree.Remove();	// search made item having "key" the current item
-				ItemToRemove.Key = null;
-				ItemToRemove.Value = null;
+				ItemToRemove.Key = null!;
+				ItemToRemove.Value = null!;
 			}
 		}
 
@@ -799,7 +798,7 @@ namespace Sop.Collections.BTree
 		/// <summary>
 		/// Get/Set Comparer object used in sorting items of the collection
 		/// </summary>
-		internal /*protected*/ IComparer Comparer
+		internal /*protected*/ IComparer? Comparer
 		{
 			get
 			{
@@ -913,34 +912,34 @@ namespace Sop.Collections.BTree
 				StartIndex++;
 			}
 		}
-		System.Collections.ICollection keys;
+		System.Collections.ICollection? keys;
 		/// <summary>
 		/// Returns a version of this BTree whose members are all Keys of the members.
 		/// NOTE: this is not bindable to most controls as returned ICollection object is not implementing IList.
 		/// </summary>
 		public System.Collections.ICollection Keys
 		{
-			get
-			{
-				if (keys == null)
-					keys = new BTree(this, ItemType.Key);
-				return keys;
-			}
-		}
-		System.Collections.ICollection values;
+      get
+      {
+        if (keys == null)
+          keys = new BTree(this, ItemType.Key);
+        return keys;
+      }
+    }
+		System.Collections.ICollection? values;
 		/// <summary>
 		/// Returns a version of this BTree whose members are all Values of the members.
 		/// NOTE: this is not bindable to most controls as returned ICollection object is not implementing IList.
 		/// </summary>
 		public System.Collections.ICollection Values
 		{
-			get
-			{
-				if (values == null)
-					values = new BTree(this, ItemType.Value);
-				return values;
-			}
-		}
+      get
+      {
+        if (values == null)
+          values = new BTree(this, ItemType.Value);
+        return values;
+      }
+    }
 		/// <summary>
 		/// Use this constructor if you want to clone or shallow copy your BTree instance.
 		/// </summary>
@@ -982,7 +981,7 @@ namespace Sop.Collections.BTree
 		/// <returns></returns>
 		public static string GetStringResource(string Name)
 		{
-			return ResManager.GetString(Name);
+			return ResManager.GetString(Name)!;
 		}
 
 		/// <summary>
@@ -994,10 +993,10 @@ namespace Sop.Collections.BTree
 
 		private SortOrderType CurrentSortOrder = SortOrderType.Ascending;
 #if !DEVICE
-		private System.Runtime.Serialization.SerializationInfo SerializationInfo;
+		private System.Runtime.Serialization.SerializationInfo? SerializationInfo;
 #endif
-		internal BTreeAlgorithm btree = null;
-		private Synchronizer syncRoot = null;
+		internal BTreeAlgorithm btree = null!;
+		private Synchronizer syncRoot = null!;
 	
 		/*
 		#region IListSource Members
@@ -1027,27 +1026,27 @@ namespace Sop.Collections.BTree
 	/// </summary>
 	internal class BTreeComparer : IComparer
 	{
-		/// <summary>
-		/// Compare object x's key with object y's key.<br/>
-		/// Returns:<br/>
-		///		&lt; 0 if x.Key is &lt; y.Key<br/>
-		///		&gt; 0 if x.Key &gt; y.Key<br/>
-		///		== 0 if x.Key == y.Key
-		/// </summary>
-		/// <param name="x">1st object whose key is to be compared</param>
-		/// <param name="y">2nd object whose key is to be compared</param>
-		/// <returns></returns>
-		public int Compare(object x, object y)
-		{
-			object xKey = x;
-			object yKey = y;
-			if (x is DictionaryEntry)
-				xKey = ((DictionaryEntry)x).Key;
-			if (y is DictionaryEntry)
-				yKey = ((DictionaryEntry)y).Key;
-			return Comparer.Compare(xKey, yKey);
-		}
-		internal BTreeComparer(IComparer Comparer)
+    /// <summary>
+    /// Compare object x's key with object y's key.<br/>
+    /// Returns:<br/>
+    ///		&lt; 0 if x.Key is &lt; y.Key<br/>
+    ///		&gt; 0 if x.Key &gt; y.Key<br/>
+    ///		== 0 if x.Key == y.Key
+    /// </summary>
+    /// <param name="x">1st object whose key is to be compared</param>
+    /// <param name="y">2nd object whose key is to be compared</param>
+    /// <returns></returns>
+    public int Compare(object? x, object? y)
+    {
+      object? xKey = x;
+      object? yKey = y;
+      if (x is DictionaryEntry)
+        xKey = ((DictionaryEntry)x).Key;
+      if (y is DictionaryEntry)
+        yKey = ((DictionaryEntry)y).Key;
+      return Comparer.Compare(xKey, yKey);
+    }
+    internal BTreeComparer(IComparer Comparer)
 		{
 			this.Comparer = Comparer;
 		}
@@ -1061,34 +1060,34 @@ namespace Sop.Collections.BTree
 #endif
 	internal class BTreeDefaultComparer : IComparer
 	{
-		/// <summary>
-		/// Compare string value of object x's key with object y's key<br/>
-		/// Returns:<br/>
-		///		&lt; 0 if x.Key is &lt; y.Key<br/>
-		///		&gt; 0 if x.Key &gt; y.Key<br/>
-		///		== 0 if x.Key == y.Key
-		/// </summary>
-		/// <param name="x">1st object whose key is to be compared</param>
-		/// <param name="y">2nd object whose key is to be compared</param>
-		/// <returns></returns>
-		public int Compare(object x, object y)
-		{
-			try
-			{
-				object xKey = x;
-				if (x is DictionaryEntry)
-					xKey = ((DictionaryEntry)x).Key;
-				object yKey = y;
-				if (y is DictionaryEntry)
-					yKey = ((DictionaryEntry)y).Key;
-				return xKey.ToString().CompareTo(yKey.ToString());
-			}
-			catch(Exception e)
-			{
-				throw new InvalidOperationException(BTree.GetStringResource("NoComparerError"), e);
-			}
-		}
-	}
+    /// <summary>
+    /// Compare string value of object x's key with object y's key<br/>
+    /// Returns:<br/>
+    ///		&lt; 0 if x.Key is &lt; y.Key<br/>
+    ///		&gt; 0 if x.Key &gt; y.Key<br/>
+    ///		== 0 if x.Key == y.Key
+    /// </summary>
+    /// <param name="x">1st object whose key is to be compared</param>
+    /// <param name="y">2nd object whose key is to be compared</param>
+    /// <returns></returns>
+    public int Compare(object? x, object? y)
+    {
+      try
+      {
+        object? xKey = x;
+        if (x is DictionaryEntry)
+          xKey = ((DictionaryEntry)x).Key;
+        object? yKey = y;
+        if (y is DictionaryEntry)
+          yKey = ((DictionaryEntry)y).Key;
+        return xKey!.ToString()!.CompareTo(yKey!.ToString());
+      }
+      catch (Exception e)
+      {
+        throw new InvalidOperationException(BTree.GetStringResource("NoComparerError"), e);
+      }
+    }
+  }
 	/// <summary>
 	/// BTree domain System default comparer. This comparer provides/uses System.Collections.Comparer.Default.Compare function.
 	/// </summary>
@@ -1097,54 +1096,54 @@ namespace Sop.Collections.BTree
 #endif
 	internal class SystemDefaultComparer : IComparer
 	{
-		/// <summary>
-		/// Compare object x's key with object y's key.<br/>
-		/// Returns:<br/>
-		///		&lt; 0 if x.Key is &lt; y.Key<br/>
-		///		&gt; 0 if x.Key &gt; y.Key<br/>
-		///		== 0 if x.Key == y.Key
-		/// </summary>
-		/// <param name="x">1st object whose key is to be compared</param>
-		/// <param name="y">2nd object whose key is to be compared</param>
-		/// <returns></returns>
-		public int Compare(object x, object y)
-		{
-			try
-			{
-				if (IsComparingObject)
-				{
-					int xHash = x.GetHashCode();
-					int yHash = y.GetHashCode();
-					return xHash.CompareTo(yHash);
-				}
-				object xKey = x;
-				if (x is DictionaryEntry)
-					xKey = ((DictionaryEntry)x).Key;
-				object yKey = y;
-				if (y is DictionaryEntry)
-					yKey = ((DictionaryEntry)y).Key;
-				return System.Collections.Comparer.Default.Compare(xKey, yKey);
-			}
-			catch(Exception e)
-			{
-				if (!(x is ValueType || IsComparingObject))
-				{
-					IsComparingObject = true;
-					if (x == null)
-						throw new ArgumentNullException("x");
-					if (y == null)
-						throw new ArgumentNullException("y");
-					try
-					{
-						int xHash = x.GetHashCode();
-						int yHash = y.GetHashCode();
-						return xHash.CompareTo(yHash);
-					}
-					catch { }
-				}
-				throw new InvalidOperationException(BTree.GetStringResource("NoComparerError"), e);
-			}
-		}
-		bool IsComparingObject;
+    /// <summary>
+    /// Compare object x's key with object y's key.<br/>
+    /// Returns:<br/>
+    ///		&lt; 0 if x.Key is &lt; y.Key<br/>
+    ///		&gt; 0 if x.Key &gt; y.Key<br/>
+    ///		== 0 if x.Key == y.Key
+    /// </summary>
+    /// <param name="x">1st object whose key is to be compared</param>
+    /// <param name="y">2nd object whose key is to be compared</param>
+    /// <returns></returns>
+    public int Compare(object? x, object? y)
+    {
+      try
+      {
+        if (IsComparingObject)
+        {
+          int xHash = x!.GetHashCode();
+          int yHash = y!.GetHashCode();
+          return xHash.CompareTo(yHash);
+        }
+        object? xKey = x;
+        if (x is DictionaryEntry)
+          xKey = ((DictionaryEntry)x).Key;
+        object? yKey = y;
+        if (y is DictionaryEntry)
+          yKey = ((DictionaryEntry)y).Key;
+        return System.Collections.Comparer.Default.Compare(xKey, yKey);
+      }
+      catch (Exception e)
+      {
+        if (!(x is ValueType || IsComparingObject))
+        {
+          IsComparingObject = true;
+          if (x == null)
+            throw new ArgumentNullException("x");
+          if (y == null)
+            throw new ArgumentNullException("y");
+          try
+          {
+            int xHash = x.GetHashCode();
+            int yHash = y.GetHashCode();
+            return xHash.CompareTo(yHash);
+          }
+          catch { }
+        }
+        throw new InvalidOperationException(BTree.GetStringResource("NoComparerError"), e);
+      }
+    }
+    bool IsComparingObject;
 	}
 }

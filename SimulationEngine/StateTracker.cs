@@ -1512,7 +1512,6 @@ namespace SimulationTracking
                   {
                     logger.Debug("Ext Sim not running and trying to send message.");
                     throw new Exception("Ext Sim not running and trying to send message.");
-                    return true;
                   }
 
                   System.Threading.Thread.Sleep(10);
@@ -1544,7 +1543,7 @@ namespace SimulationTracking
 
                 break;
               }
-              catch (Exception e)
+              catch (Exception)
               {
                 logger.Debug("Failed to send external Sim message for modifying variable with action: " + curAct.name);
               }

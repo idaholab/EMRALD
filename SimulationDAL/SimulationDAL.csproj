@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ewk.Math.Numerics" Version="1.0.4807.29504" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.ClearScript.V8" Version="7.5.0" />
     <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.5.0" />

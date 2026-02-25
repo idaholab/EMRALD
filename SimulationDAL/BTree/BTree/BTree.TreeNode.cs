@@ -23,7 +23,7 @@ namespace Sop.Collections.BTree
 		}
 		internal TreeNode GetRecycleNode(TreeNode Parent)
 		{
-			TreeNode r = null;
+			TreeNode r = null!;
 			if (RecycledNodes.Count == 0)
 				r = new TreeNode(this, Parent);
 			else
@@ -36,7 +36,7 @@ namespace Sop.Collections.BTree
 		}
 
 		bool FixVacatedSlot;
-		TreeNode PromoteParent;
+		TreeNode? PromoteParent;
 		short PromoteIndexOfNode;
 
 		/// <summary>
@@ -67,7 +67,7 @@ namespace Sop.Collections.BTree
 			/// <param name="oBTree"></param>
 			protected TreeNode(BTreeAlgorithm oBTree)
 			{
-				this.Initialize(oBTree, null);
+				this.Initialize(oBTree, null!);
 			}
 			/// <summary>
 			/// Constructor expecting ParentTree and ParentNode params.
@@ -101,7 +101,7 @@ namespace Sop.Collections.BTree
 			{
 				if (Slots == null)
 					Slots = new object[Btree.SlotLength];
-				Children = null;
+				Children = null!;
 				Parent = ParentObj;
 			}
 
@@ -253,7 +253,7 @@ namespace Sop.Collections.BTree
 						break;
 				}
 				CurrentNode.Add(ParentBTree, Item, (short)Index);
-				CurrentNode = null;
+				CurrentNode = null!;
 			}
 			void Add(BTreeAlgorithm ParentBTree, object Item, short Index)
 			{
@@ -337,9 +337,9 @@ namespace Sop.Collections.BTree
 							catch (Exception e)
 							{
 								//
-								Children = null;
-								LeftNode = null;
-								RightNode = null;
+								Children = null!;
+								LeftNode = null!;
+								RightNode = null!;
 								throw new InvalidOperationException(BTree.GetStringResource("MemAllocError"), e);	// throw an error.
 							}
 						}
@@ -375,7 +375,7 @@ namespace Sop.Collections.BTree
 							}
 							catch (Exception e)
 							{
-								RightNode = null;
+								RightNode = null!;
 								throw new InvalidOperationException(BTree.GetStringResource("MemAllocError"), e);	// throw an error.
 							}
 						}
@@ -411,8 +411,8 @@ namespace Sop.Collections.BTree
 						catch (Exception e)
 						{
 							// falling through here and further down means mem alloc error so delete the allocated ones.
-							LeftNode = null;
-							RightNode = null;
+							LeftNode = null!;
+							RightNode = null!;
 							throw new InvalidOperationException(BTree.GetStringResource("MemAllocError"), e);	// throw an error.
 						}
 					}
@@ -435,7 +435,7 @@ namespace Sop.Collections.BTree
 				{
 					if (r >= 1)
 					{
-						int rr = BinarySearch(Array, 0, r, Value, Comparer);
+						int rr = BinarySearch(Array, 0, r, Value, Comparer!);
 						if (rr >= 0)
 							return rr;
 					}
@@ -456,7 +456,7 @@ namespace Sop.Collections.BTree
 			{
 				byte i = 0;
 				TreeNode CurrentNode = this;
-				TreeNode FoundNode = null;
+				TreeNode FoundNode = null!;
 				byte FoundIndex = 0;
 				while (true)
 				{
@@ -480,7 +480,7 @@ namespace Sop.Collections.BTree
 								if (!GoToFirstInstance)
 									Result = Array.BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item);
 								else
-									Result = BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item, null);
+									Result = BinarySearch(CurrentNode.Slots, 0, NoOfOccupiedSlots, Item, null!);
 							}
 							catch
 							{
@@ -490,7 +490,7 @@ namespace Sop.Collections.BTree
 									if (!GoToFirstInstance)
 										Result = Array.BinarySearch(CurrentNode.Slots, Item);
 									else
-										Result = BinarySearch(CurrentNode.Slots, -1, -1, Item, null);
+										Result = BinarySearch(CurrentNode.Slots, -1, -1, Item, null!);
 								}
 								catch (Exception innerE)
 								{
@@ -577,21 +577,21 @@ namespace Sop.Collections.BTree
 			/// </summary>
 			internal protected void Clear(bool Recycle)
 			{
-				Parent = null;
+				Parent = null!;
 				byte i;
 				for (i = 0; i < count; i++)
-					Slots[i] = null;
+					Slots[i] = null!;
 				if (!Recycle)
-					Slots = null;
+					Slots = null!;
 				if (this.Children != null)
 				{
 					for (i = 0; i <= count; i++)
 					{
 						if (!Recycle)
 							Children[i].Clear();
-						Children[i] = null;
+						Children[i] = null!;
 					}
-					Children = null;
+					Children = null!;
 				}
 				count = 0;
 			}
@@ -659,7 +659,7 @@ namespace Sop.Collections.BTree
 							else
 							{
 								// this is root node. set to null the current item(End of Btree is reached)
-								ParentBTree.SetCurrentItemAddress(null, 0);
+								ParentBTree.SetCurrentItemAddress(null!, 0);
 								return false;
 							}
 						}
@@ -717,7 +717,7 @@ namespace Sop.Collections.BTree
 							else
 							{
 								// this is root node. set to null the current item(End of Btree is reached)
-								ParentBTree.SetCurrentItemAddress(null, 0);
+								ParentBTree.SetCurrentItemAddress(null!, 0);
 								return false;
 							}
 						}
@@ -799,7 +799,7 @@ namespace Sop.Collections.BTree
 				// if we are not at the leftmost sibling yet..
 				if (Index > 0) return Parent.Children[Index - 1];
 				// leftmost was already reached..
-				return (TreeNode)null;
+				return (TreeNode)null!;
 			}
 
 			/// <summary>
@@ -813,7 +813,7 @@ namespace Sop.Collections.BTree
 				// if we are not at the Rightmost sibling yet..
 				if (Index < SlotLength) return Parent.Children[Index + 1];
 				// leftmost was already reached..
-				return (TreeNode)null;
+				return (TreeNode)null!;
 			}
 
 			/// <summary>
@@ -887,7 +887,7 @@ namespace Sop.Collections.BTree
 					if (Index > NoOfOccupiedSlots)
 						Index = NoOfOccupiedSlots;
 
-					Slots[Index] = ParentBTree.TempParent;
+					Slots[Index] = ParentBTree.TempParent!;
 					// insert the left child
 					Children[Index] = ParentBTree.TempParentChildren[(int)ChildNodes.LeftChild];
 					// insert the right child
@@ -900,7 +900,7 @@ namespace Sop.Collections.BTree
 				{	// *** Insert to temp slots.. node is full, use pTempSlots
 					CopyArrayElements(Slots, 0, ParentBTree.TempSlots, 0, (ushort)ParentBTree.SlotLength);
 					ShiftSlots(ParentBTree.TempSlots, Index, (byte)ParentBTree.SlotLength);
-					ParentBTree.TempSlots[Index] = ParentBTree.TempParent;
+					ParentBTree.TempSlots[Index] = ParentBTree.TempParent!;
 					CopyArrayElements(Children, 0, ParentBTree.TempChildren, 0, (ushort)(ParentBTree.SlotLength + 1));
 					// insert the left child
 					ParentBTree.TempChildren[Index] = ParentBTree.TempParentChildren[(int)ChildNodes.LeftChild];
@@ -908,8 +908,8 @@ namespace Sop.Collections.BTree
 					ShiftSlots(ParentBTree.TempChildren, (byte)(Index + 1), (byte)(NoOfOccupiedSlots + 1));
 					ParentBTree.TempChildren[Index + 1] = ParentBTree.TempParentChildren[(int)ChildNodes.RightChild];
 					// *** Try to break up the node into 2 siblings.
-					TreeNode LeftNode = null;
-					TreeNode RightNode = null;
+					TreeNode LeftNode = null!;
+					TreeNode RightNode = null!;
 					byte SlotsHalf = (byte)((byte)ParentBTree.SlotLength >> (byte)1);
 					if (Parent != null)
 					{	// prepare this and the right node sibling and promote the temporary parent node(pTempSlot). this is the left sibling !
@@ -948,8 +948,8 @@ namespace Sop.Collections.BTree
 						}
 						catch (Exception e)
 						{
-							RightNode.Children = null;
-							RightNode = null;
+							RightNode.Children = null!;
+							RightNode = null!;
 							throw new InvalidOperationException("Error in attempt to promote parent of a borken node.", e);
 						}
 					}
@@ -990,9 +990,9 @@ namespace Sop.Collections.BTree
 						}
 						catch (Exception e)
 						{	// Delete resources prior to returning mem. alloc error
-							LeftNode.Children = null;
-							RightNode = null;
-							LeftNode = null;
+							LeftNode.Children = null!;
+							RightNode = null!;
+							LeftNode = null!;
 							throw new InvalidOperationException(BTree.GetStringResource("MemAllocError"), e);	// throw an error.
 						}
 					}
@@ -1016,7 +1016,7 @@ namespace Sop.Collections.BTree
 					GetLeftSibling(SlotLength).DistributeToLeft(SlotLength, Parent.Slots[GetIndexOfNode(SlotLength) - 1]);
 					Parent.Slots[GetIndexOfNode(SlotLength) - 1] = Slots[0];
 					MoveArrayElements(Slots, 1, 0, (ushort)(SlotLength - 1));
-					Slots[count - 1] = null;
+					Slots[count - 1] = null!;
 				}
 				else
 					count++;
@@ -1062,7 +1062,7 @@ namespace Sop.Collections.BTree
 							ParentBTree.CurrentItem.NodeItemIndex,
 							(ushort)(c - 1 - ParentBTree.CurrentItem.NodeItemIndex));
 					count--;
-					Slots[count] = null;	// nullify the last slot.
+					Slots[count] = null!;	// nullify the last slot.
 				}
 				else
 				{	// only 1 item in slot
@@ -1085,7 +1085,7 @@ namespace Sop.Collections.BTree
 								Parent.Slots[1] = RightSibling.Slots[0];
 								Parent.count = 2;
 								ParentBTree.AddRecycleNode(RightSibling);
-								RightSibling = null;
+								RightSibling = null!;
 							}
 							else
 							{	// this is right node
@@ -1094,21 +1094,21 @@ namespace Sop.Collections.BTree
 								Parent.Slots[0] = LeftSibling.Slots[0];
 								Parent.count = 2;
 								ParentBTree.AddRecycleNode(LeftSibling);
-								LeftSibling = null;
+								LeftSibling = null!;
 							}
 							// nullify Parent's children will cause this tree node instance to be garbage collected as this is child of parent!
-							Parent.Children[0] = null;
-							Parent.Children[1] = null;
-							Parent.Children = null;
+							Parent.Children[0] = null!;
+							Parent.Children[1] = null!;
+							Parent.Children = null!;
 							Clear();
 							//ParentBTree.AddRecycleNode(this);
 						}
 					}
 					else
 					{	// only 1 item in root node !
-						Slots[0] = null;	// just nullIFY the slot.
+						Slots[0] = null!;	// just nullIFY the slot.
 						count = 0;
-						ParentBTree.SetCurrentItemAddress(null, 0);	// Point the current item pointer to end of tree
+						ParentBTree.SetCurrentItemAddress(null!, 0);	// Point the current item pointer to end of tree
 					}
 				}
 			}
@@ -1125,7 +1125,7 @@ namespace Sop.Collections.BTree
 				{
 					count--;
 					// we only need to nullify the last item since the caller code should have moved it to the slot, which item just got deleted or pulled.
-					Slots[i - 1] = null;
+					Slots[i - 1] = null!;
 				}
 				// *********** Start of Unbalanced right sibling branch processing check if there is a right sibling and if it has children node.
 				else
@@ -1177,7 +1177,7 @@ namespace Sop.Collections.BTree
 					else
 					{
 						// There is only 1 item in the slot and there is no unbalanced left sibling.
-						if (i == 1 && LeftSibling.count == 1)
+						if (i == 1 && LeftSibling!.count == 1)
 						{	// we need to combine the leftmost sibling's item with the
 							// parent's 1st item and make them the leftmost node's items.
 							// This scenario caters for this:
@@ -1199,20 +1199,20 @@ namespace Sop.Collections.BTree
 							LeftSibling.count = 2;
 							i = Parent.count;
 							MoveArrayElements(Parent.Slots, 1, 0, (ushort)(i - 1));
-							Parent.Slots[i - 1] = null;
+							Parent.Slots[i - 1] = null!;
 							MoveArrayElements(Parent.Children, 2, 1, (ushort)(i - 1));
-							Parent.Children[i] = null;
+							Parent.Children[i] = null!;
 							Parent.count--;
 							ParentBTree.AddRecycleNode(this);
 						}
 						else
 						{
 							Slots[0] = Parent.Slots[i - 1];
-							Parent.Slots[i - 1] = LeftSibling.Slots[LeftSibling.count - 1];
+							Parent.Slots[i - 1] = LeftSibling!.Slots[LeftSibling.count - 1];
 							LeftSibling.PullFromLeft(ParentBTree);
 						}
 					}
-					LeftSibling = null;
+					LeftSibling = null!;
 				}
 			}
 			
@@ -1228,7 +1228,7 @@ namespace Sop.Collections.BTree
 				{
 					count--;
 					MoveArrayElements(Slots, 1, 0, count);
-					Slots[i - 1] = null;
+					Slots[i - 1] = null!;
 				}
 				// *********** Start of Unbalanced right sibling branch processing check if there is a right sibling and if it has children node.
 				else
@@ -1276,7 +1276,7 @@ namespace Sop.Collections.BTree
 					}	// *********** End of Unbalanced right sibling branch processing
 					else
 					{
-						if (i == Parent.count - 1 && RightSibling.count == 1)
+						if (i == Parent.count - 1 && RightSibling!.count == 1)
 						{	// we need to combine the Rightmost sibling's item with the parent's last item and make them the rightmost node's items.
 							// This scenario caters for this:
 							//		[ 5 | 7 ]
@@ -1296,8 +1296,8 @@ namespace Sop.Collections.BTree
 							RightSibling.Slots[1] = RightSibling.Slots[0];
 							RightSibling.Slots[0] = Parent.Slots[Parent.count - 1];
 							Parent.Children[i] = RightSibling;
-							Parent.Children[i + 1] = null;
-							Parent.Slots[i] = null;
+							Parent.Children[i + 1] = null!;
+							Parent.Slots[i] = null!;
 							Parent.count--;
 							RightSibling.count = 2;
 							ParentBTree.AddRecycleNode(this);
@@ -1305,11 +1305,11 @@ namespace Sop.Collections.BTree
 						else
 						{
 							Slots[0] = Parent.Slots[i];
-							Parent.Slots[i] = RightSibling.Slots[0];
+							Parent.Slots[i] = RightSibling!.Slots[0];
 							RightSibling.PullFromRight(ParentBTree);
 						}
 					}
-					RightSibling = null;
+					RightSibling = null!;
 				}
 			}
 
@@ -1346,16 +1346,16 @@ namespace Sop.Collections.BTree
 			/// <summary>
 			/// Slots of this TreeNode
 			/// </summary>
-			internal protected object[] Slots = null;			// available Slots
+			internal protected object[] Slots = null!;			// available Slots
 			protected byte count;
 			/// <summary>
 			/// Parent of this TreeNode
 			/// </summary>
-			protected TreeNode Parent = null;			// parent TreeNode node
+			protected TreeNode Parent = null!;			// parent TreeNode node
 			/// <summary>
 			/// Children of this TreeNode
 			/// </summary>
-			protected TreeNode[] Children = null;		// Children TreeNode nodes
+			protected TreeNode[] Children = null!;		// Children TreeNode nodes
 		}	// end of TreeNode
 		/// <summary>
 		/// The root node class. Encapsulates behavior specific to root nodes. 
@@ -1386,7 +1386,7 @@ namespace Sop.Collections.BTree
 						// Clear children nodes.
 						Children[i].Clear();
 				}
-				Children = null;
+				Children = null!;
 				ResetArray(Slots, null);
 				count = 0;
 			}

@@ -169,8 +169,11 @@ namespace MyStuff.Collections
     }
     #endregion
 
-    public bool Equals(MyBitArray obj)
+    public bool Equals(MyBitArray? obj)
     {
+      if (obj == null)
+        return false;
+
       return this.HasCommonBits(obj);
     }
 
