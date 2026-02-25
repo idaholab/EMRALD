@@ -173,7 +173,7 @@
   ],
   "ExtSimList": [],
   "objType": "EMRALD_Model",
-  "emraldVersion": 3.1,
+  "emraldVersion": 3.2,
   "templates": [],
   "multiThreadInfo": {
     "ToCopyForRefs": [

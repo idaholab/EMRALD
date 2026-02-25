@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NLog;
+using SimulationDAL.LocalLibs;
 using Sop.Collections.BTree;
 
 
@@ -489,9 +490,35 @@ namespace SimulationDAL
     {
       if (this._threadNumber != null)
       {
-        if (Directory.Exists(this.rootPath))
+        System.Threading.Thread.Sleep(500);
+        int retries = 10;
+        for (int i = 0; i < retries; i++)
         {
-          Directory.Delete(this.rootPath, true);
+          string lockedFile = "";
+          if (FileLockChecker.IsDirectoryLocked(this.rootPath, out lockedFile))
+          {
+            if (i == retries - 1)
+            {
+              throw new Exception("Failed to delete temp folder, loced file - " + lockedFile);
+            }
+            System.Threading.Thread.Sleep(500);
+          }
+          else
+          {
+            try
+            {
+              if (Directory.Exists(this.rootPath))
+              {
+                Directory.Delete(this.rootPath, true);
+              }
+              break;
+            }
+            catch (IOException)
+            {
+              if (i == retries - 1) throw;
+              System.Threading.Thread.Sleep(500);
+            }
+          }
         }
 
         //clear out any old tread files that could be lingering

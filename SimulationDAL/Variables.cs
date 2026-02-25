@@ -658,7 +658,7 @@ namespace SimulationDAL
     protected DocType _docType = DocType.dtXML;
     protected string _docPath = "";
     protected string _linkStr = ""; //xpath for xml, JSONPath for JSON, and regExp string for TextRegExp
-    protected bool _pathMustExist = true;
+    protected bool _pathMustExist = false;
     protected object _dfltValue = null;
     protected string _docFullPath = "";
     private VariableList _vars = null;
@@ -1239,26 +1239,36 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Variable;
       }
 
-      if (dynObj.regExpLine == null)
-        throw new Exception("Missing regExpLine for regEx document variable");
-
-
-      if (dynObj.begPosition == null)
-        throw new Exception("Missing begPosition for RegEx document variable");
-
-      if (dynObj.numChars == null)
-        throw new Exception("Missing begPosition for regEx document variable");
-
-      try
-      {
+      if (dynObj.regExpLine != null)
         this._regExpLine = Convert.ToInt32(dynObj.regExpLine);
+
+      if (dynObj.begPosition != null)
         this._begPosition = Convert.ToInt32(dynObj.begPosition);
+
+      if (dynObj.numChars != null)
         this._numChars = Convert.ToInt32(dynObj.numChars);
-      }
-      catch (Exception e)
-      {
-        throw new Exception("Failed to get data from TextRegEx document variable bad format - " + e.Message);
-      }
+
+
+      //if (dynObj.regExpLine == null)
+      //  throw new Exception("Missing regExpLine for regEx document variable");
+
+
+      //if (dynObj.begPosition == null)
+      //  throw new Exception("Missing begPosition for RegEx document variable");
+
+      //if (dynObj.numChars == null)
+      //  throw new Exception("Missing begPosition for regEx document variable");
+
+      //try
+      //{
+      //  this._regExpLine = Convert.ToInt32(dynObj.regExpLine);
+      //  this._begPosition = Convert.ToInt32(dynObj.begPosition);
+      //  this._numChars = Convert.ToInt32(dynObj.numChars);
+      //}
+      //catch (Exception e)
+      //{
+      //  throw new Exception("Failed to get data from TextRegEx document variable bad format - " + e.Message);
+      //}
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;

@@ -813,7 +813,13 @@ namespace SimulationEngine
       foreach (var keyPath in toAddBatch.keyPaths)
       {
         if (!this.keyPaths.ContainsKey(keyPath.Key))
+        {
           this.keyPaths.Add(keyPath.Value.name, keyPath.Value);
+          foreach (var variableCategory in toAddBatch._variableVals)
+          {
+            this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
+          }
+        }
         else
         {
           KeyStateResult addToRes = this.keyPaths[keyPath.Key];
@@ -844,33 +850,6 @@ namespace SimulationEngine
           this.keyFailedItems[failedItem.Key].CombineFailSet(failedItem.Value);
         }
       }
-
-      ////add in variable values //already done when doing addToRes.Merge 
-      ////private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
-      //foreach (var variableCategory in toAddBatch._variableVals)
-      //{
-      //  if (!this._variableVals.ContainsKey(variableCategory.Key))
-      //    this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
-      //  else
-      //  {
-      //    foreach (var variableSubCategory in variableCategory.Value)
-      //    {
-      //      if (!this._variableVals[variableCategory.Key].ContainsKey(variableSubCategory.Key))
-      //        this._variableVals[variableCategory.Key].Add(variableSubCategory.Key, new Dictionary<string, string>(variableSubCategory.Value));
-      //      else
-      //      {
-      //        foreach (var variable in variableSubCategory.Value)
-      //        {
-      //          //add to list not update???
-      //          if (!this._variableVals[variableCategory.Key][variableSubCategory.Key].ContainsKey(variable.Key))
-      //            this._variableVals[variableCategory.Key][variableSubCategory.Key].Add(variable.Key, variable.Value);
-      //          else
-      //            this._variableVals[variableCategory.Key][variableSubCategory.Key][variable.Key] = variable.Value; // Update with the new value
-      //        }
-      //      }
-      //    }
-      //  }
-      //}
 
       this._totRunTime += toAddBatch._totRunTime;
       this._numRuns += toAddBatch._numRuns;

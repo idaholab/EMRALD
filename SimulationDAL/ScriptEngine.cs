@@ -148,9 +148,15 @@ namespace ScriptEngineNS
         string escCurDir = curDir.Replace(@"\", @"\\"); // Escape backslashes
         source = source + "Directory.SetCurrentDirectory(\"" + escCurDir + "\");\r\n"; //set the current path to the model directory if given
       }
+      //wrap in a TryFinally block so we can reset the currend directory when done
+      source = source + "try\r\n{\r\n";
+
       source = source + code;
-      source += "\r\n\r\n}\r\n}\r\n}";
-      //File.WriteAllText("WriteText" + assemblyName + ".txt", source);
+      
+      source = source + "\r\n}\r\nfinally\r\n{\r\n";
+      source = source + "Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);\r\n";
+      source = source + "}\r\n"; // Close finally
+      source += "\r\n}\r\n}\r\n}"; // Close method, class, namespace
 
       SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
       var references = new List<MetadataReference>();
