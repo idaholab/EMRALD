@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using MessageDefLib;
@@ -397,14 +398,16 @@ namespace SimulationDAL
       }
     }
 
-    public static void Reset()
+    public static void Reset(int? seedOverride = null)
     {
       _threadLocalRandom = new ThreadLocal<Random>(() =>
       {
-        if (ConfigData.seed == null)
+        int? effectiveSeed = seedOverride ?? ConfigData.seed;
+
+        if (effectiveSeed == null)
           return new Random();
         else
-          return new Random((int)ConfigData.seed);
+          return new Random((int)effectiveSeed);
       });
     }
   }
@@ -645,6 +648,60 @@ namespace SimulationDAL
 
   public class CommonFunctions
   {
+    /// <summary>
+    /// Get the full path but always use / instead of \\
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string NormalizeGetFullPath(string path)
+    {
+      string full = Path.GetFullPath(path);
+
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? full.Replace('\\', '/')
+          : full;
+    }
+
+    public static string NormalizeGetDirectoryName(string path)
+    {
+      if (path == "")
+        return "";
+
+      string full = Path.GetDirectoryName(path);
+
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? full.Replace('\\', '/')
+          : full;
+    }
+
+    public static string NormalizeGetCurrentDirectory()
+    {
+      string full = Directory.GetCurrentDirectory();
+
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? full.Replace('\\', '/')
+          : full;
+    }
+
+    public static string NormalizeGetParent(string path)
+    {
+      string full = Directory.GetParent(path).FullName;
+
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? full.Replace('\\', '/')
+          : full;
+    }
+
+    public static string NormalizeCombine(params string[] paths)
+    {
+      string combined = Path.Combine(paths);
+
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? combined.Replace('\\', '/')
+          : combined;
+    }
+
+
     public static List<string> FindFilePathReferences(ref string code, string oldPath = null, string newPath = null)
     {
       // Define a regular expression pattern to match file paths, including paths separated by spaces
@@ -740,7 +797,7 @@ namespace SimulationDAL
       // Get the files in the source directory and copy to the destination directory
       foreach (FileInfo file in dir.GetFiles())
       {
-        string targetFilePath = Path.Combine(destinationDir, file.Name);
+        string targetFilePath = CommonFunctions.NormalizeCombine(destinationDir, file.Name);
         file.CopyTo(targetFilePath);
       }
 
@@ -749,7 +806,7 @@ namespace SimulationDAL
       {
         foreach (DirectoryInfo subDir in dirs)
         {
-          string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+          string newDestinationDir = CommonFunctions.NormalizeCombine(destinationDir, subDir.Name);
           CopyDirectory(subDir.FullName, newDestinationDir, true);
         }
       }
@@ -765,12 +822,12 @@ namespace SimulationDAL
       if (filePaths.Count == 1)
       {
         // If there is only one file path, return its parent directory
-        return Path.GetDirectoryName(Path.GetFullPath(filePaths[0])).Replace('\\', '/');
+        return CommonFunctions.NormalizeGetDirectoryName(CommonFunctions.NormalizeGetFullPath(filePaths[0]));
       }
 
       // Split the file paths into directory parts
       List<string[]> pathParts = filePaths
-          .Select(path => Path.GetFullPath(path).Replace('\\', '/').Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
+          .Select(path => CommonFunctions.NormalizeGetFullPath(path).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
           .ToList();
 
       // Find the minimum length of the path parts
@@ -804,38 +861,65 @@ namespace SimulationDAL
       return FindClosestParentFolder(paths);
     }
 
-    public static string GetRemainingPath(string parentFolder, string filePath)
-    {
-      // Ensure the parent folder and file path are in a consistent format
-      string normalizedParentFolder = Path.GetFullPath(parentFolder).Replace('\\', '/');
-      string normalizedFilePath = Path.GetFullPath(filePath).Replace('\\', '/');
-
-      // Check if the file path starts with the parent folder path
-      if (!normalizedFilePath.StartsWith(normalizedParentFolder, StringComparison.OrdinalIgnoreCase))
-      {
-        throw new ArgumentException("The file path does not start with the provided parent folder path.");
-      }
-
-      // Get the remaining path after the parent folder
-      string remainingPath = normalizedFilePath.Substring(normalizedParentFolder.Length).TrimStart('/');
-      return remainingPath;
-    }
-
     public static string GetRelativePath(string rootPath, string actualPath)
     {
-      Uri rootUri = new Uri(rootPath);
-      Uri targetUri = new Uri(actualPath);
+      // Normalize the root path - handle "C:" case
+      string fullRootPath = rootPath;
 
-      // Ensure the rootUri ends with a directory separator
-      if (!rootUri.AbsolutePath.EndsWith("/"))
+      // If rootPath is just a drive letter (e.g., "C:" or "C:"), convert to root
+      if (rootPath.Length == 2 && rootPath[1] == ':')
       {
-        rootUri = new Uri(rootUri.AbsoluteUri + "/");
+        fullRootPath = rootPath + Path.AltDirectorySeparatorChar;
+      }
+      else if (rootPath.Length == 3 && rootPath[1] == ':' &&
+               (rootPath[2] == '/' || rootPath[2] == '\\'))
+      {
+        // Already a root path like "C:\" or "C:/"
+        fullRootPath = rootPath;
+      }
+      else
+      {
+        // For other paths, get the full path
+        fullRootPath = CommonFunctions.NormalizeGetFullPath(rootPath);
       }
 
+      string fullActualPath = CommonFunctions.NormalizeGetFullPath(actualPath);
+
+      // If both paths point to the same location, return ".\"
+      string rootTrimmed = fullRootPath.TrimEnd(
+          Path.DirectorySeparatorChar,
+          Path.AltDirectorySeparatorChar);
+
+      string actualTrimmed = fullActualPath.TrimEnd(
+          Path.DirectorySeparatorChar,
+          Path.AltDirectorySeparatorChar);
+
+      if (string.Equals(rootTrimmed, actualTrimmed, StringComparison.OrdinalIgnoreCase))
+      {
+        return "." + Path.AltDirectorySeparatorChar;
+      }
+
+      // Ensure the root path ends with a directory separator
+      if (!fullRootPath.EndsWith(Path.DirectorySeparatorChar.ToString()) &&
+          !fullRootPath.EndsWith(Path.AltDirectorySeparatorChar.ToString()))
+      {
+        fullRootPath += Path.AltDirectorySeparatorChar;
+      }
+
+      // Create URIs - must be absolute file URIs
+      Uri rootUri = new Uri(fullRootPath);
+      Uri targetUri = new Uri(fullActualPath);
+
       Uri relativeUri = rootUri.MakeRelativeUri(targetUri);
-      string relativePath = Uri.UnescapeDataString(relativeUri.ToString()).Replace('/', Path.DirectorySeparatorChar);
-      if ((relativePath[0] != '.') && (relativePath[0] != Path.DirectorySeparatorChar))
-        relativePath = "." + Path.DirectorySeparatorChar + relativePath;
+      string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+      // Add .\ prefix if the path doesn't start with . or a separator
+      if ((relativePath.Length > 0) &&
+          (relativePath[0] != '.') &&
+          (relativePath[0] != Path.AltDirectorySeparatorChar))
+      {
+        relativePath = "." + Path.AltDirectorySeparatorChar + relativePath;
+      }
 
       return relativePath;
     }
@@ -897,6 +981,9 @@ namespace SimulationDAL
     //}
   }
 
+  /// <summary>
+  /// return item data when doing a scan for things in the model
+  /// </summary>
   public class ScanForReturnItem
   {
     public int itemID { get; set; }
@@ -904,9 +991,12 @@ namespace SimulationDAL
     public EnIDTypes itemType { get; set; }
     public string msg { get; set; }
     
-
     // Constructor
-    public ScanForReturnItem(int itemId, string itemName, EnIDTypes itemType, string msg)
+    public ScanForReturnItem(
+        int itemId,
+        string itemName,
+        EnIDTypes itemType,
+        string msg)
     {
       this.itemID = itemId;
       this.itemName = itemName;
@@ -920,14 +1010,15 @@ namespace SimulationDAL
   {
     public string Path { get; set; }
     public string calcRelativeFrom { get; set; } = ""; //where the relative calc needs to come from if not from the new model location
-
+    public bool copyByDefault { get; set; } = true;
 
     // ConstructorI t
-    public ScanForRefsItem(int itemId, string itemName, EnIDTypes itemType, string msg, string path, string diffRootPath = "")
+    public ScanForRefsItem(int itemId, string itemName, EnIDTypes itemType, string msg, string path, string diffRootPath = "", bool dfltCopy = true)
         : base(itemId, itemName, itemType, msg)
     {
       this.Path = path;
       this.calcRelativeFrom = diffRootPath;
+      this.copyByDefault = dfltCopy;
     }
   }
 

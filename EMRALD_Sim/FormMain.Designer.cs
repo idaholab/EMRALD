@@ -35,8 +35,6 @@ namespace EMRALD_Sim
       fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      saveStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       openModel = new System.Windows.Forms.OpenFileDialog();
       tabXMPP = new System.Windows.Forms.TabPage();
@@ -215,8 +213,7 @@ namespace EMRALD_Sim
       // 
       // fileToolStripMenuItem
       // 
-      fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, defaultLoadToolStripMenuItem, saveStripMenuItem, toolStripMenuItem1, recentToolStripMenuItem });
-      fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+      fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, recentToolStripMenuItem }); fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       fileToolStripMenuItem.Text = "File";
       // 
@@ -225,29 +222,7 @@ namespace EMRALD_Sim
       openToolStripMenuItem.Name = "openToolStripMenuItem";
       openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
       openToolStripMenuItem.Text = "Open";
-      openToolStripMenuItem.Click += openToolStripMenuItem_Click;
-      // 
-      // defaultLoadToolStripMenuItem
-      // 
-      defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
-      defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      defaultLoadToolStripMenuItem.Text = "DefaultLoad";
-      defaultLoadToolStripMenuItem.Visible = false;
-      defaultLoadToolStripMenuItem.Click += defaultLoadToolStripMenuItem_Click;
-      // 
-      // saveStripMenuItem
-      // 
-      saveStripMenuItem.Name = "saveStripMenuItem";
-      saveStripMenuItem.Size = new System.Drawing.Size(138, 22);
-      saveStripMenuItem.Text = "Save";
-      saveStripMenuItem.Click += saveStripMenuItem_Click;
-      // 
-      // toolStripMenuItem1
-      // 
-      toolStripMenuItem1.Name = "toolStripMenuItem1";
-      toolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
-      toolStripMenuItem1.Text = "Save As";
-      toolStripMenuItem1.Click += toolStripMenuItem1_Click;
+      openToolStripMenuItem.Click += openToolStripMenuItem_Click;      
       // 
       // recentToolStripMenuItem
       // 
@@ -1847,9 +1822,7 @@ namespace EMRALD_Sim
     private System.Windows.Forms.TextBox tbLogRunStart;
     private System.Windows.Forms.ToolTip toolTip1;
     private ICSharpCode.TextEditor.TextEditorControl teModel;
-    private System.Windows.Forms.ToolStripMenuItem saveStripMenuItem;
     private System.Windows.Forms.SaveFileDialog sdSaveModel;
-    private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
     private System.Windows.Forms.Button btn_DebugOpen;
     private System.Windows.Forms.Label lblThreads;

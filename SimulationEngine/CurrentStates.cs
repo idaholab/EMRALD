@@ -252,7 +252,7 @@ namespace SimulationTracking
         foreach (var v in model.allVariables.Values)
         {
           varVals[v.name].AddRange(curStatePath.varValues[v.name]);
-          varVals[v.name].Add(v.value);
+          varVals[v.name].Add(v.GetValue(true));
         }
         
         
@@ -280,7 +280,7 @@ namespace SimulationTracking
         actionNames.Add(evName);
         foreach (var v in model.allVariables.Values)
         {
-          varVals[v.name].Add(v.value);
+          varVals[v.name].Add(v.GetValue(true)); //use getValue(true) so default value is used if it has an issue getting the value and it isn't required on startup
         }
       }
       //}

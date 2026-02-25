@@ -150,7 +150,7 @@ namespace SimulationDAL
     //public override bool DeleteFromDB(LookupLists lists) { return base.DeleteFromDB(lists); }
   }
 
-  public class StateCngEvent : CondBasedEvent //etStateCng
+  public class StateCngEvent : CondBasedEvent //etStateCngevalEvOnStateEntry
   {
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
@@ -314,7 +314,7 @@ namespace SimulationDAL
         if (ifInState) // In the specified state/s
         {
           // Get all the states we are currently in and are in the related IDs
-          if (!this.allItems) // Can only use ones we just entered
+          if (!this.evalEvOnStateEntry) // Can only use ones we just entered
             changed = _relatedIDsBitSet.And(curStates.And(changed));
           else
             changed = _relatedIDsBitSet.And(curStates);
@@ -322,7 +322,7 @@ namespace SimulationDAL
         else // Exiting the specified state/s
         {
           // Get all the states we are not in current states and are in the related IDs
-          if (!this.allItems) // Can only use ones we just exited
+          if (!this.evalEvOnStateEntry) // Can only use ones we just exited
             changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
           else
             changed = _relatedIDsBitSet.And(curStates.Not());
@@ -637,7 +637,6 @@ namespace SimulationDAL
     public virtual bool CompileCompCode(string modelPath)
     {
       compiledComp.Code = compCode;
-      compiledComp.curDir = modelPath;
 
       //add the Time and 3D Frame variables needed event if 
       compiledComp.AddVariable("CurTime", typeof(Double));
@@ -760,7 +759,7 @@ namespace SimulationDAL
      if (!modelPath.EndsWith(@"\"))
         modelPath += @"\";
 
-      newRef = Path.GetFullPath(Path.Combine(modelPath + newRef));
+      newRef = CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath + newRef));
 
       string newRefEscaped = newRef.Replace("\\", "\\\\").Replace("\"", "\\\"");
       var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRefEscaped);

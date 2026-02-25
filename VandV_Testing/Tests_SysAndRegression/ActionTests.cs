@@ -18,24 +18,24 @@ namespace SysAndRegressionTesting
     #region Validation Cases Setup Code
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
     {
-      return "EMRALDTests" + Path.DirectorySeparatorChar;
+      return "EMRALDTests" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "Models" + Path.DirectorySeparatorChar;
+      return "Models" + Path.AltDirectorySeparatorChar;
     }
     #endregion
 
 
     [Fact]
     [Description("General test of several actions single option transition action, Change Var value action, and run application action.")]
-    public void ActionsTest()
+    public async void ActionsTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -49,7 +49,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 10;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -59,8 +59,8 @@ namespace SysAndRegressionTesting
     }
 
     [Fact]
-    [Description("Test transition acions that have multiple to states and a variable for one of the %")]
-    public void TransitionPercentTest()
+    [Description("Test transition acions that have multiple to states and a variable for one of the % Starts with 50% for S4 then 25% of remaining to 55")]
+    public async void TransitionPercentTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -71,13 +71,13 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
-      optionsJ["runct"] = 5;
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
+      optionsJ["runct"] = 100;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(dir, testName, optionsJ);
+     // CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -86,7 +86,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test changing of a variable value using the math library MathNet.Numerics")]
-    public void ChangeVarTest()
+    public async void ChangeVarTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -100,7 +100,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
       optionsJ["runct"] = 100;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -111,7 +111,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test changing of a variable value using the math library MathNet.Numerics and Multi threading")]
-    public void ChangeVarTestMulti()
+    public async void ChangeVarTestMulti()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -127,7 +127,7 @@ namespace SysAndRegressionTesting
       optionsJ["threads"] = 2;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -139,7 +139,7 @@ namespace SysAndRegressionTesting
 
     [Fact(Skip = "DLL Value not fully implmented yet, will allow users to update a variable through a DLL call")]
     [Description("Test the use of executing dll functions with ")]
-    public void DllValueTest()
+    public async void DllValueTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -153,7 +153,7 @@ namespace SysAndRegressionTesting
 
       optionsJ["runct"] = 1;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -168,7 +168,7 @@ namespace SysAndRegressionTesting
     // Current Result: An error, it cannot find the string in the path to MultithreadWrite.txt
     [Fact]
     [Description("Test pathing in the change variable action when running in multi thread")]
-    public void MultiThreadVarChange()
+    public async void MultiThreadVarChange()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -186,7 +186,7 @@ namespace SysAndRegressionTesting
       options.variables = new List<string>() { "Var" };
 
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -198,7 +198,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test pathing in the change variable action when running in multi thread")]
-    public void MultiThreadExeTest()
+    public async void MultiThreadExeTest()
     {
 
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
@@ -214,7 +214,7 @@ namespace SysAndRegressionTesting
       optionsJ["threads"] = 2;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -225,7 +225,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test that runApplication acion runs correctuly and uses JSON document variables for input and output ")]
-    public void JsonVarExeTest()
+    public async void JsonVarExeTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -239,7 +239,7 @@ namespace SysAndRegressionTesting
 
       optionsJ["runct"] = 10;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);

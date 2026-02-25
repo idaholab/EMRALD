@@ -49,6 +49,8 @@ namespace SimulationDAL
     private int? _threadNumber = 0;
     private bool _updated = false;
     private MultiThreadInfo _MultiThreadInfo = null;
+    private string _origRootPath = ""; //origional root path before being changed by multithreading 
+    private string _rootPath = ""; //emrald model root path
     public const double SCHEMA_VERSION = 3.2;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
@@ -65,7 +67,19 @@ namespace SimulationDAL
 
 
     public string fileName { get; set; } = "";
-    public string rootPath { get; set; } = "";
+    public string origRootPath => _origRootPath; //origional root path before being changed by multithreading 
+    public string rootPath //emerald model root path
+    {
+      get => _rootPath;
+      set
+      {
+        if (_rootPath != value)
+        {
+          _origRootPath = _rootPath;  // save previous
+          _rootPath = value;
+        }        
+      }
+    }
     public string modelTxt { get; set; } = "";
     public bool updated { get { return _updated; } }
     public MultiThreadInfo multiThreadInfo
@@ -195,7 +209,7 @@ namespace SimulationDAL
     {
       if(threadID < 0)
         threadID = (int)_threadNumber;
-      return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + threadID.ToString());
+      return CommonFunctions.NormalizeCombine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + threadID.ToString());
     }
 
     public bool DeserializeJSON(string jsonModel, string modelPath, string fileName, int? threadNum = null) 
@@ -206,6 +220,8 @@ namespace SimulationDAL
       this.modelTxt = jsonModel;
       this.fileName = fileName;
       this._threadNumber = threadNum;
+      this._rootPath = modelPath;
+      this._origRootPath = modelPath;
 
       // Deserialize multiThreadInfo if present
       if (jsonObj.multiThreadInfo != null)
@@ -241,56 +257,66 @@ namespace SimulationDAL
         {
           //copy all the data needed to run in its own thread
 
-          File.WriteAllText(this.rootPath + Path.DirectorySeparatorChar + this.fileName + ".emrald", this.modelTxt); 
+          File.WriteAllText(this.rootPath + Path.AltDirectorySeparatorChar + this.fileName + ".emrald", this.modelTxt); 
           Dictionary<string, string> copied = new Dictionary<string, string>(); //files copied and where they came from
           foreach (var item in multiThreadInfo.ToCopyForRefs)
           {
             if (threadNum == 0)// && (item.ToCopy.Count > 0)) //if the first thread then make sure to figure out all the files needed.
             {
-              string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
-              for (int i = 0; i < item.ToCopy.Count; i++)
+              if (item.ToCopy.Count > 0)
               {
-                var copyItem = item.ToCopy[i];
-                
-                //copy the items needed
-                string copyFrom = Path.GetFullPath(Path.Combine(modelPath, copyItem));
-                if (File.Exists(copyFrom))
+                string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
+                for (int i = 0; i < item.ToCopy.Count; i++)
                 {
-                  string root = rootPath;
-                  //if this is not directly reletive to the model location adjust it
-                  if (item.AdjRelRoot != "")
-                    root = Path.GetFullPath(Path.Combine(rootPath, item.AdjRelRoot));
-                  string copyTo = Path.GetFullPath(Path.Combine(root, item.RelPath));
-                  if (i > 0) //not the main copy/replace item, so use the path of the [0] item for this copy
+                  var copyItem = item.ToCopy[i];
+                  //copy the items needed
+                  string copyFrom = CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath, copyItem));
+                  if (File.Exists(copyFrom))
                   {
-                    string subItemPath = Path.GetDirectoryName(item.RelPath);
-                    if (subItemPath == ".")
-                      subItemPath = "";
-                    else
-                      subItemPath += Path.DirectorySeparatorChar;
-
-                    copyTo = Path.GetFullPath(Path.Combine(root, subItemPath + Path.GetFileName(copyItem)));
-                  }
-
-                  if (copied.ContainsKey(copyTo))
-                  {
-                    if (copied[copyTo] != copyFrom)
+                    string root = rootPath;
+                    //if this is not directly reletive to the model location adjust it
+                    if (item.AdjRelRoot != "")
+                      root = CommonFunctions.NormalizeGetFullPath(Path.Combine(rootPath, item.AdjRelRoot));
+                    string copyTo = CommonFunctions.NormalizeGetFullPath(Path.Combine(root, item.RelPath));
+                    if (i > 0) //not the main copy/replace item, so use the path of the [0] item for this copy
                     {
-                      throw new Exception("If run using multithreading, the model would have idenical relaive path references to two different files of the same name.");
-                    }
-                    //else it already coppied the file, dont copy again
-                  }
-                  else //not copied yet so copy for multithreading.
-                  {
-                    //make sure directory exists
-                    string directory = Path.GetDirectoryName(copyTo);
-                    if (directory != null && !Directory.Exists(directory))
-                    {
-                      Directory.CreateDirectory(directory);
+                      string subItemPath = CommonFunctions.NormalizeGetDirectoryName(item.RelPath);
+                      if (subItemPath == ".")
+                        subItemPath = "";
+                      else
+                        subItemPath += Path.AltDirectorySeparatorChar;
+                      copyTo = CommonFunctions.NormalizeGetFullPath(Path.Combine(root, subItemPath + Path.GetFileName(copyItem)));
                     }
 
-                    File.Copy(copyFrom, copyTo);
-                    copied.Add(copyTo, copyFrom);
+                    // If copyTo is a directory (no file extension or ends with separator), append the source filename
+                    if (Directory.Exists(copyTo) ||
+                        copyTo.EndsWith(Path.DirectorySeparatorChar.ToString()) ||
+                        copyTo.EndsWith(Path.AltDirectorySeparatorChar.ToString()) ||
+                        string.IsNullOrEmpty(Path.GetExtension(copyTo)))
+                    {
+                      copyTo = Path.Combine(copyTo, Path.GetFileName(copyFrom));
+                      copyTo = CommonFunctions.NormalizeGetFullPath(copyTo);
+                    }
+
+                    if (copied.ContainsKey(copyTo))
+                    {
+                      if (copied[copyTo] != copyFrom)
+                      {
+                        throw new Exception("If run using multithreading, the model would have idenical relaive path references to two different files of the same name.");
+                      }
+                      //else it already coppied the file, dont copy again
+                    }
+                    else //not copied yet so copy for multithreading.
+                    {
+                      //make sure directory exists
+                      string directory = CommonFunctions.NormalizeGetDirectoryName(copyTo);
+                      if (directory != null && !Directory.Exists(directory))
+                      {
+                        Directory.CreateDirectory(directory);
+                      }
+                      File.Copy(copyFrom, copyTo);
+                      copied.Add(copyTo, copyFrom);
+                    }
                   }
                 }
               }
@@ -298,10 +324,7 @@ namespace SimulationDAL
           }
         }
       }
-      else
-      {
-        this.rootPath = modelPath;
-      }
+      
       
       
       //update the model if needed
@@ -420,7 +443,7 @@ namespace SimulationDAL
           foreach (var curI in curMutiThreadItems[modelRef.itemName])
           {
             issue = $"{modelRef.itemName} missing RelPath";
-            if (string.IsNullOrEmpty(curI.RelPath))
+            if (string.IsNullOrEmpty(curI.RelPath) && !string.IsNullOrEmpty(curI.RefPath))
             {
               break;
             }
@@ -435,28 +458,52 @@ namespace SimulationDAL
         }
         else //not in the saved items so add it 
         {
-          var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
-          
-          string actualPath = mPathRef.Path;
-          //if it as a relative reference get to full path 
-          if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
+          try
           {
-            actualPath = Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path));
-          }
+            var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
 
-          string commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
-          //if item provided a different root location use that one instead
-          if (mPathRef.calcRelativeFrom != "")
+            string actualPath = mPathRef.Path;
+            string commonParent = rootPath;
+            if (actualPath == "") //could be "" if run external app and the app is blank
+            {
+              actualPath = rootPath;
+              addI.RelPath = "";
+              //addI.ToCopy.Add(mPathRef.Path); nothing to copy unless the user says to
+
+              multiThreadInfo.ToCopyForRefs.Add(addI);
+              notAccountedFor.Add(addI.ItemName);
+            }
+            else
+            {
+              //if it as a relative reference get to full path 
+              if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
+              {
+                actualPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(rootPath, mPathRef.Path));
+              }
+
+              commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
+
+
+
+              //if item provided a different root location use that one instead
+              if (mPathRef.calcRelativeFrom != "")
+              {
+                string newRootPath = CommonFunctions.FindClosestParentFolder(mPathRef.calcRelativeFrom, actualPath);
+                addI.AdjRelRoot = CommonFunctions.GetRelativePath(commonParent, newRootPath);
+                commonParent = newRootPath;
+              }
+              addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
+              if (mPathRef.copyByDefault)
+                addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
+
+              multiThreadInfo.ToCopyForRefs.Add(addI);
+              notAccountedFor.Add(addI.ItemName);
+            }
+          }
+          catch (Exception ex)
           {
-            string newRootPath = CommonFunctions.FindClosestParentFolder(mPathRef.calcRelativeFrom, actualPath);
-            addI.AdjRelRoot = CommonFunctions.GetRelativePath(commonParent, newRootPath);
-            commonParent = newRootPath;
+            throw new Exception("Invalid path data for " + mPathRef.itemName + " - " + ex.Message);
           }
-          addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
-          addI.ToCopy.Add(mPathRef.Path); //combine and normalize the path.
-
-          multiThreadInfo.ToCopyForRefs.Add(addI);
-          notAccountedFor.Add(addI.ItemName);
 
         }
       }

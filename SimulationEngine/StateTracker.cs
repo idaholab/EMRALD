@@ -1659,7 +1659,7 @@ namespace SimulationTracking
             //create a dictionary with just the last state time.
             Dictionary<int, TimeSpan> curStatesTime = this.curStates.Select(i => i).ToDictionary(i => i.Key, i => i.Value.times[i.Value.times.Count - 1]);
 
-            curRunExeAct.RunExtApp(curStatesTime, this.curTime, this.allLists, ref addStates, ref leaveStates);
+            curRunExeAct.RunExtApp(curStatesTime, this.curTime, this.allLists, ref addStates, ref leaveStates, this.allLists.threadNum == null ? false : true);
 
             foreach (int id in leaveStates)
             {
@@ -1695,13 +1695,15 @@ namespace SimulationTracking
             }
 
 
-            //update any doc variables that were marked as used now that code is executed.
-            foreach (string varName in curRunExeAct.codeVariables)
+            //update any doc variables now that code is executed so they try to update if needed.
+            foreach (SimVariable curVar in allLists.allVariables.Values)
             {
-              SimVariable curVar = allLists.allVariables.FindByName(varName);
               if ((curVar != null) && (curVar.varScope == EnVarScope.gtDocLink))
               {
-                changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
+                object o1 = curVar.NoUpdateValue;
+                object o2 = curVar.GetValue(true);
+                if (!object.Equals(o1, o2))
+                  changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
               }
             }
 
@@ -1710,7 +1712,6 @@ namespace SimulationTracking
             {
               changedItems.AddChangedID(EnModifiableTypes.mtVar, curRunExeAct.assignVariable.id);
             }
-
 
             //update any doc variables that were marked as used now that code is executed.
             foreach (string varName in curRunExeAct.codeVariables)

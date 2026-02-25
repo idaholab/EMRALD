@@ -18,24 +18,24 @@ namespace SysAndRegressionTesting
     #region Validation Cases Setup Code
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
     {
-      return "EMRALDTests" + Path.DirectorySeparatorChar;
+      return "EMRALDTests" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "Models" + Path.DirectorySeparatorChar;
+      return "Models" + Path.AltDirectorySeparatorChar;
     }
     #endregion
     
     [Fact]
     [Description("Test that a failure rate event using a variable correctly adds the event if it is resampled and inside the mission time")]
 
-    public void VarTimeCngTest()
+    public async void VarTimeCngTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -48,7 +48,7 @@ namespace SysAndRegressionTesting
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 10;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -60,7 +60,7 @@ namespace SysAndRegressionTesting
     [Fact]
     [Description("Make sure the accrual variable stats are correct")]
 
-    public void StatVarTest()
+    public async void StatVarTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -76,7 +76,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "SumCurTime", "Accrual_Save" };
 
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -87,7 +87,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Make sure the accrual variable stats are correct using multi threaded")]
-    public void StatVarTestMulti()
+    public async void StatVarTestMulti()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -104,7 +104,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "SumCurTime", "Accrual_Save" };
 
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -115,7 +115,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Simple accrual variable test with two accrual variables")]
-    public void VarAccruTest()
+    public async void VarAccruTest()
     {
       //Make sure accru variable is working 
 
@@ -133,7 +133,7 @@ namespace SysAndRegressionTesting
       options.runtime = "0.01:00:00";
       options.variables = new List<string>() { "State1", "state2" };
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -144,7 +144,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test XML document Link variable to make sure it is reading an writing correctly")]
-    public void XMLDocLinkTest()
+    public async void XMLDocLinkTest()
     {
       //FYI - model must have the XML document using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the XML document in that folder
@@ -163,7 +163,7 @@ namespace SysAndRegressionTesting
       //todo set variables to watch initial doc link var value and then after it is set.
       //options.variables = new List<string>() { "State1", "state2" };
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -174,7 +174,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test XML document Link variable that uses a variable in the XPath")]
-    public void Dynamic_XML_Var_Example_with_CurTime()
+    public async void Dynamic_XML_Var_Example_with_CurTime()
     {
       //FYI - model must have the XML document using relative path to ..\..\..\UnitTesting_Simulation\TestingFiles\Other\
       //Save the XML document in that folder
@@ -196,7 +196,7 @@ namespace SysAndRegressionTesting
       //todo set variables to watch initial doc link var value and then after it is set.
       //options.variables = new List<string>() { "State1", "state2" };
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       CopyToValidated(dir, testName, optionsJ);
@@ -209,7 +209,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test JSON document Link variable to make sure it is reading an writing correctly")]
-    public void RegExDocLinkTest()
+    public async void RegExDocLinkTest()
     {
       //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the text document in that folder
@@ -229,7 +229,7 @@ namespace SysAndRegressionTesting
       //todo set variables to watch initial RegEx link var value and then after it is set.
       //options.variables = new List<string>() { "State1", "state2" };
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -241,7 +241,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test the ability to assign initial variable values from the options file")]
-    public void SimRunVarInitTest()
+    public async void SimRunVarInitTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -258,7 +258,7 @@ namespace SysAndRegressionTesting
       options.initVars.Add(new VarInitValue { varName = "Int_TestV", value = "2" });
 
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -270,7 +270,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Tests pathing in JSON document Link variable during multithreading")]
-    public void MultiThreadDocVar()
+    public async void MultiThreadDocVar()
     {
       //FYI - model must have the Text document for the RegEx using relative path to ..\..\..\VandV_Testing\TestingFiles\Other\
       //Save the text document in that folder
@@ -289,7 +289,7 @@ namespace SysAndRegressionTesting
       options.threads = 2;
       options.variables = new List<string>() { "DocVar" };
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);

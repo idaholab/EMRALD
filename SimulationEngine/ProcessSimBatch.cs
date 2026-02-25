@@ -104,7 +104,7 @@ namespace SimulationEngine
     //private string _sim3DPath = "";
     //private HoudiniSimClient.TLogEvCallBack _viewNotifications = null;
     private string _resultFile; //same as _origionalResutsFile unless multi threded then it is in the temp file path location
-    private static readonly object _fileLock = new object();
+    //private static readonly object _fileLock = new object();
     private string _origionalResutsFile; //user specified results location;
     private int _numRuns;
     private string _jsonResultPaths; //same as _origionalJsonResutsFile unless multi threded then it is in the temp file path location
@@ -135,8 +135,8 @@ namespace SimulationEngine
     //public List<Tuple<string, double>> 
     public TimeSpan runtime = TimeSpan.FromMilliseconds(0);
     private string _error = "";
-    public string error { get { return _error; } }
-    public int? threadNum { get { return _threadNum; } }
+    public string error { get { return _error; } set { _error = value; } }
+    public int? threadNum { get { return _threadNum; }  }
     public int numRuns { get { return _numRuns; } }
     public bool tempThreadFilesWriten { get {  return _tempThreadFilesWriten; } }
     //public string resultFile { get { return _resultFile; } }
@@ -244,6 +244,7 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+     
       //make a new model so that we don't have issues if they run multiple batches or for mutli thraded must do in the thread function
       _tempThreadFilesWriten = false;
       this._lists = new EmraldModel();
@@ -256,13 +257,10 @@ namespace SimulationEngine
         try
         {
           // Set the file paths with the rootPath
-          lock (_fileLock)
+          this._resultFile = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
+          if (_jsonResultPaths != "")
           {
-            this._resultFile = Path.GetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
-            if (_jsonResultPaths != "")
-            {
-              this._jsonResultPaths = Path.GetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths)));
-            }
+            this._jsonResultPaths = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths)));
           }
         }
         catch (Exception e)
@@ -311,9 +309,9 @@ namespace SimulationEngine
       if (_pathResultsInterval < 1)
         _pathResultsInterval = _numRuns;
 
-      //if user defined the seed then reset random so that seed is used.
-      if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
-        SingleRandom.Reset();
+      ////if user defined the seed then reset random so that seed is used.
+      //if ((threadNum == null) && ((ConfigData.seed != null) && (ConfigData.seed >= 0))
+      //  SingleRandom.Reset();
      
       try
       {
@@ -424,7 +422,7 @@ namespace SimulationEngine
           {
             stopWatch.Stop();
             LogResults(stopWatch.Elapsed, i, _logFailedComps);
-            if(progressCallback != null)
+            if (progressCallback != null)
               progressCallback(stopWatch.Elapsed, i, _logFailedComps, _lists.threadNum);
             stopWatch.Start();
             resTime = stopWatch.Elapsed;
@@ -489,7 +487,7 @@ namespace SimulationEngine
     //  //file is not locked
     //  return false;
     //}
-    private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+    private readonly ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
 
     public void WriteToFileThreadSafe(string path, string text)
     {
@@ -579,17 +577,17 @@ namespace SimulationEngine
               }
               Directory.CreateDirectory(tempLoc);
 
-              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
+              File.WriteAllText(CommonFunctions.NormalizeCombine(tempLoc, @"data.js"), @"window.data=" + output);
             }
             catch
             {
-              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data= ");
+              File.WriteAllText(CommonFunctions.NormalizeCombine(tempLoc, @"data.js"), @"window.data= ");
             }
 
             string exeLoc = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
 
-            File.Copy(Path.GetFullPath(Path.Combine( exeLoc, @"./sankey/emrald-sankey-timeline.html")), Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-            File.Copy(Path.GetFullPath(Path.Combine(exeLoc, @"./sankey/emrald-sankey-timeline.js")), Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+            File.Copy(CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine( exeLoc, @"./sankey/emrald-sankey-timeline.html")), Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+            File.Copy(CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(exeLoc, @"./sankey/emrald-sankey-timeline.js")), Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
           }
         }
       }
@@ -674,8 +672,8 @@ namespace SimulationEngine
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);
-      lock (_fileLock)
-      {
+      //lock (_fileLock) should not be needed because each tread writes to it own temp file location
+      //{
         using (StreamWriter streamwriter = File.AppendText(_resultFile))
         {
           streamwriter.WriteLine("Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString());
@@ -744,14 +742,14 @@ namespace SimulationEngine
             }
           }
         }
-      }
+      //}
     }
 
     public List<string> GetVarValues(List<string> varNames, bool finalLog = false)
     {
       List<string> retVals = new List<string>();
-      lock (_fileLock) //lock for threading
-      {
+      //lock (_fileLock) //lock for threading should not be needed because each tread writes to it own temp file location
+      //{
         
         if (finalLog)
         {
@@ -800,7 +798,7 @@ namespace SimulationEngine
             }
           }
         }
-      }
+      //}
       return retVals;
     }
 
