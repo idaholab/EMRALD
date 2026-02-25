@@ -729,8 +729,6 @@ namespace SimulationTracking
     /// current time of the executing simulation.
     /// </summary>
     private TimeSpan curTime; //time incriment counter from the start.
-    private bool tempStateCngCheck = false; //see if there was a state change because of an external sim message 
-    //public TLogEvCallBack logFunc = null;
     public bool keepExtSimEvs = true;
 
     //keep track of last external events so that we can trigger internal events if needed
@@ -938,7 +936,6 @@ namespace SimulationTracking
 
       foreach (var ev in evData.simEvents)
       {
-        tempStateCngCheck = false;
         string lastEvKey = fromClient + "-" + ev.evType.ToString();
         if (ev.itemData != null)
         {
@@ -1101,7 +1098,7 @@ namespace SimulationTracking
 
       if (!this.emraldStopping3D)
       {
-        if (curExtSimState == StatusType.stWaiting)// || tempStateCngCheck)
+        if (curExtSimState == StatusType.stWaiting)
         {
           Send3DNextEvTimers(fromClient);
         }
@@ -1320,7 +1317,6 @@ namespace SimulationTracking
       {
         return false;
       }
-      tempStateCngCheck = true;
 
       //since we are entering the state fresh reset any data for events incase we have already been in the state
       curState.ResetEventCriteria();

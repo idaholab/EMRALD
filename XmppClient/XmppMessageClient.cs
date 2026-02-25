@@ -244,8 +244,9 @@ namespace XmppMessageClient
       try
       {
         //pick which one.
-        //string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
-        
+        string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
+        //string lic = Environment.GetEnvironmentVariable("Secrets__XmppLicense");
+
         if (lic != null)
           Matrix.License.LicenseManager.SetLicense(lic);
       }
