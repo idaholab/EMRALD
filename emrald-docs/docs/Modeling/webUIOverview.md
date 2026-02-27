@@ -47,7 +47,7 @@ Once you complete your conflict resolution choices, click "Submit", and the mode
   <img src="/images/Modeling/webUIOverview/TopMenuDownload.png" alt="Download Menu" style="width:500px;">
 
   - **Solver Engine:** Downloads the EMRALD model solver, which is a separate executable.
-  - **Client Tester:** Downloads an example test client that couples with EMRALD through message protocal. This is for use in testing and developing custom software coupling.
+  - **Client Tester:** Downloads an example test client that couples with EMRALD through message protocol. This is for use in testing and developing custom software coupling.
   - **Client Tester Source:** Downloads the source code for the Client Tester.
 
 **Help** <br>
@@ -73,11 +73,11 @@ This top half of the Left Navigation Frame allows you to access your Diagrams, L
 <img src="/images/Modeling/webUIOverview/DiagramsExpanded.png" alt="Diagrams Expanded" style="width:300px;">
 <br>
 
-By default, Diagrams are sorted by Plant, Component, and System Diagrams. However, these categories can be customized by the currently open model or for specific modeling needs. Double-clicking on the folders will expand them to reveal the inidividual diagrams. Double-clicking on the individual diagrams will open them in the Modeling Area.
+By default, Diagrams are sorted by Plant, Component, and System Diagrams. However, these categories can be customized by the currently open model or for specific modeling needs. Double-clicking on the folders will expand them to reveal the individual diagrams. Double-clicking on the individual diagrams will open them in the Modeling Area.
 
 Each diagram represents a particular piece of the model and the various conditions or states that this piece of the model can be in. These pieces correlate to aspects of traditional PRA modeling and range from small-scale components to a large scope, overall plant response, and design. A diagram contains multiple states with the events that can occur, actions that can be executed, and variables used. These all define how the simulation may sift through the diagram over time.
 
-Additionally, some diagrams, Component and State, can also be evaluated to a Boolean, depending on which stat they are currently in. This is a main feature that when combined with a Component Logic Event can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only be in one state at a time, to ensure/enable the execution of the evaluation process in returning a 1 or 0.
+Additionally, some diagrams, Component and State, can also be evaluated to a Boolean, depending on which state they are currently in. This is a main feature that when combined with a Component Logic Event can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only be in one state at a time, to ensure/enable the execution of the evaluation process in returning a 1 or 0.
 
 There are three diagram grouping predefined in EMRALD to help organize diagram. A brief description of each diagram type will be explained below, but for more information, see [Diagrams](/Modeling/diagrams.md).
 
@@ -97,7 +97,7 @@ There are three diagram grouping predefined in EMRALD to help organize diagram. 
 
 - System<br>
   ![Diagrams System Expanded](/images/Modeling/webUIOverview/SystemDiagram.png) <br>
-  System diagrams are mainly just a catigorization, but behave similarly to component diagrams.
+  System diagrams are mainly just a categorization, but behave similarly to component diagrams.
   A Fault Tree from traditional modeling could be directly converted into a system diagram with just two states and a "Component Logic" event used to determine the boolean logic from component diagrams. See [Logic Trees](/Modeling/logicTree.md) and [Events](/Modeling/events.md) for more information. The two states for this diagram are "Active" and "Failed", with a "Component Logic" event in the active state evaluating the assigned logic whenever a component diagram state changes. If the logic ever evaluates to false, then the current state shifts from "Active" to "Failed". This is similar to a typical PRA model except the logic does not contain any probabilities, just references to the Component diagrams.
 
 **Logic Tree** <br>
@@ -132,7 +132,7 @@ The bottom half of the Left Navigation Frame allows you to access your Actions, 
 | Items from every diagram in the project.               | Shows items can be used in any diagram. New Global items must be created through the right-click option of the selected type. Items created in a specific diagram are local to that diagram | Items currently open and being worked on in the diagram. |
 
 **Actions**<br>
-Actions change the properties or cause movement though a model during a simulation run. <br>
+Actions change the properties or cause movement through a model during a simulation run. <br>
 
 See [Actions](/Modeling/actions.md) for more information.
 
