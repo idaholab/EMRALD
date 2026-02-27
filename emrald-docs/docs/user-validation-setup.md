@@ -1,0 +1,19 @@
+# User Validation Setup
+
+Use this guide to add new validation cases to the EMRALD testing suite.
+
+## How to Add a New Validation Case
+
+1. Use git to create a new branch for adding this validation case: `git checkout -b validationCase/{caseName}`
+2. Create a new test method in `VandV_Testing\ValidationTests.cs` by copying and pasting the template method: `Template_ValidationCase_Test()`.
+3. Place the test model inside `VandV_Testing\TestingFiles\Models\ValidationModels\` and ensure the test model's file name matches exactly the name of the new test method with a `.json` extension (e.g., `Template_ValidationCase_Test.json`).
+4. Place the file with the expected results inside `VandV_Testing\TestingFiles\Models\ValidationModels\` and ensure the file name matches exactly the name of the new test method with the following appended to the end of it, as appropriate:
+    - `_res.txt` for normal results (e.g., `Template_ValidationCase_Test_res.txt`)
+    - `_paths.txt` for path out results (e.g., `Template_ValidationCase_Test_paths.txt`)
+    - `_jsonResults.json` for JSON results (e.g., `Template_ValidationCase_Test_jsonResults.json`)
+5. Edit the test method and options as necessary.
+6. Confirm the test works by right-clicking the method name and selecting **Run Tests** in Visual Studio.
+7. Once the test method is confirmed as passing, add a new page for the test case in this documentation. Instructions for doing this can be found on the [template page](templates.md).
+8. Commit your changes in git and push them up to GitHub.
+9. Create a Pull Request in GitHub to merge your branch into the main branch.
+10. The EMRALD Team will review the changes and decide whether to complete the pull request.

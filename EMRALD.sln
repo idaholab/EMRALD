@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineCP", "CommandLin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouplingWebSocket", "CouplingWebSocket\CouplingWebSocket.csproj", "{CE9B33AE-E43C-436B-8A6C-8FCAF740B83B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketTestServer", "WebSocketTestServer\WebSocketTestServer.csproj", "{57435E1E-C2A2-4C1C-CA45-56498A5D7671}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{CE9B33AE-E43C-436B-8A6C-8FCAF740B83B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE9B33AE-E43C-436B-8A6C-8FCAF740B83B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE9B33AE-E43C-436B-8A6C-8FCAF740B83B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57435E1E-C2A2-4C1C-CA45-56498A5D7671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57435E1E-C2A2-4C1C-CA45-56498A5D7671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57435E1E-C2A2-4C1C-CA45-56498A5D7671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57435E1E-C2A2-4C1C-CA45-56498A5D7671}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

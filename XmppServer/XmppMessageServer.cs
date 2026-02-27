@@ -22,7 +22,6 @@ namespace XmppMessageServer
 
     // Thread signal.
     private readonly ManualResetEvent allDone = new ManualResetEvent(false);
-    private readonly IAppSettingsService _appSettingsService;
 
     #region << Properties and Member Variables >>
     private Socket m_Listener;
@@ -34,11 +33,10 @@ namespace XmppMessageServer
     private NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
     private DateTime lastMsgSendTime;
 
-    public XmppMessageServer(int port, string passwd, IAppSettingsService appSettingsService)
+    public XmppMessageServer(int port, string passwd)
     {
       m_port = port;
       m_passwd = passwd;
-      _appSettingsService = appSettingsService;
       SetLicense();
       StartListening();
     }
@@ -126,16 +124,19 @@ namespace XmppMessageServer
     private void SetLicense()
     {
       //If you are compiling this on your own, you need to have an MatriX license for 2 way coupling
-      //Get a license and use project "Manage User Secrets" to set the license if you want to use this MatriX package 
-      //example 
-      /*
+      //Get a license from environment variable
+      //run the following in cmd: setx Secrets__XmppLicense "YourLicenseCodeHere"
+      //restart IDE
+
+      //string lic = Environment.GetEnvironmentVariable("Secrets__XmppLicense");
+      string lic = @"eJxkkd1ugkAUhF+FeGsqPyJqs25aFZGAiAVBvVthxbUsS2HBn6evUasXvZtzvsmZSQ6wSYSzEgsnmmbloIGSt5Lt+BEV+D29owYEbsHiKuJmDD1exYQB8bUBiwplnPAzlIH41GBUlZxRXEDgIIqh6diCYQZAvE1gxGiOsvP1HK5xJnwJboHLiHEOxD8EdIpICsubo5U/+AfJ0lbCaiDe8dX/DFrmMeJYP+WkwOOrgook92RZufb6h4BHkgzxqsAwaOsFRge7fYhoNKfrnRFuOuG3q4a26/e1vrnfDg+4RxKHe9LFSgIz7fuKZ3b2a5l6CdNGs1TDseX7l8n0R0LNaFbMN7h70WtL14xAps1lHKbdaYXW2We9m4zH5VIVna6nSnk0V8yttVPsOiTGYTgK88WYHdXmqjQso9uLVpW78OZ0oyFV30gDIL56A/HxO/grgAA=";
+
+
+      if (string.IsNullOrEmpty(lic))
       {
-        "Secrets": {
-          "XmppLicense": "YourLicenseCodeHere"
-        }
+        throw new Exception("XmppLicense not found. Set environment variable: Secrets__XmppLicense");
       }
-       */
-      string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
+
       Matrix.License.LicenseManager.SetLicense(lic);
 
       // when something is wrong with your license you can find the error here

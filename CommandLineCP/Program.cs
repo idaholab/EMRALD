@@ -179,8 +179,7 @@ namespace CommandLineCP
             Console.WriteLine("-n \"run count\"");
             Console.WriteLine("-i \"input model path\"");
             Console.WriteLine("-r \"results output file\"");
-            Console.WriteLine("-o \"paths output file\"");
-            Console.WriteLine("-jsonStats \"write path statistics to json output file at specified directory\"");
+            Console.WriteLine("-o \"write path statistics to json output file at specified directory\"");
             Console.WriteLine("-t \"max run time\"");
             Console.WriteLine("-e \"execute\"");
             Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
@@ -264,7 +263,7 @@ namespace CommandLineCP
             ++i;
             break;
 
-          case "-o": // path to paths and timing output file (alternate to -jsonStats)
+          case "-o": // path to paths and timing output file 
             try
             {
               modelRun.options.jsonRes = args[i + 1];
@@ -272,18 +271,6 @@ namespace CommandLineCP
             catch
             {
               Console.WriteLine("Invalid syntax for -o, must be a string.");
-            }
-            ++i;
-            break;
-
-          case "-jsonstats": // path to paths and timing output file
-            try
-            {
-              modelRun.options.jsonRes = args[i + 1];
-            }
-            catch
-            {
-              Console.WriteLine("Invalid syntax for -jsonStats, must be a string.");
             }
             ++i;
             break;
