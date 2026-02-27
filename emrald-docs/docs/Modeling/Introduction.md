@@ -1,6 +1,6 @@
 # Introduction
 
-Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool developed at INL for researching the capabilities of dynamic PRA (probabilistic risk assessment). In order to promote the effective use of dynamic PRA by the general community, EMRALD focuses on the following key aspects:
+Event Modeling Risk Assessment using Linked Diagrams (EMRALD) is a software tool developed at INL for researching the capabilities of dynamic PRA (probabilistic risk assessment). To promote the effective use of dynamic PRA by the general community, EMRALD focuses on the following key aspects:
 
 - Simplifying dynamic modeling process by providing a structure similar to traditional PRA modeling methods.
 - Providing a user interface (UI) that makes it easy for the user to model and visualize complex interactions.

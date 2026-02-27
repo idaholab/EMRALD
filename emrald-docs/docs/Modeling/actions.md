@@ -128,7 +128,7 @@ Listed as "Change Var Value" in the drop-down menu. This action changes the valu
 <img src="/images/Modeling/actions/ChangeVarValueOptions.png" alt="Change Variable Value Options" width="500"/>
 
 - **Variable:** Click the field to expand the drop down menu of variables you created in the model. Click on the variable to be updated. 
-The value returned by the script is assigned to the variable, so one must be selected in order to create the event. 
+The value returned by the script is assigned to the variable, so one must be selected to create the event. 
 - **New Value Code (c#):** Type or copy and paste into this text field. The script must have a return value, and that value must be the
 same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section.
 - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" drop-down menu.
