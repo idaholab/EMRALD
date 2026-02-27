@@ -135,7 +135,7 @@ Listed as Var Condition in the drop-down menu, this event monitors variable valu
 
 <img src="/images/Modeling/events/ExternalSimOptions.png" alt="External Simulation Options" width="500"/>
 
-  - **External Sim Variable:** Click the field to expand the drop down menu of external simulation variables you created in the model. Select the one that will change when this event could be triggered. One must be selected in order to create the event. 
+  - **External Sim Variable:** Click the field to expand the drop down menu of external simulation variables you created in the model. Select the one that will change when this event could be triggered. One must be selected ito create the event. 
   - **Evaluate Code (C#):** Type or copy and paste the C# code into this text field to evaluate and determine if this event is triggered. This must return a boolean true or false value.
   - **Variables used in code:** A list of other variables available in the model for use in evaluating the code. Pre-existing variables such as CurTime are auto-checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Check the box to identify which variables are used in the code.
 

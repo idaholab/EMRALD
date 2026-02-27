@@ -77,7 +77,7 @@ By default, Diagrams are sorted by Plant, Component, and System Diagrams. Howeve
 
 Each diagram represents a particular piece of the model and the various conditions or states that this piece of the model can be in. These pieces correlate to aspects of traditional PRA modeling and range from small-scale components to a large scope, overall plant response, and design. A diagram contains multiple states with the events that can occur, actions that can be executed, and variables used. These all define how the simulation may sift through the diagram over time.
 
-Additionally, some diagrams, Component and State, can also be evaluated to a Boolean, depending on which stat they are currently in. This is a main feature that when combined with a Component Logic Event can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only be in one state at a time, in order to execute the evaluation process.
+Additionally, some diagrams, Component and State, can also be evaluated to a Boolean, depending on which stat they are currently in. This is a main feature that when combined with a Component Logic Event can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only be in one state at a time, to ensure/enable the execution of the evaluation process in returning a 1 or 0.
 
 There are three diagram grouping predefined in EMRALD to help organize diagram. A brief description of each diagram type will be explained below, but for more information, see [Diagrams](/Modeling/diagrams.md).
 
