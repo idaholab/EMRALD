@@ -119,14 +119,14 @@ namespace Sop.Collections.Generic.BTree
 
 			public void Dispose()
 			{
-				BTree = null;
+				BTree = null!;
 			}
 
 			object IEnumerator.Current
 			{
 				get
 				{
-					return ((BTreeEnumerator<T>)this).Current;
+					return ((BTreeEnumerator<T>)this).Current!;
 				}
 			}
 
@@ -225,7 +225,7 @@ namespace Sop.Collections.Generic.BTree
 			{
 				if (btree.CurrentEntry != null)
 					return btree.CurrentEntry.Key;
-				return default(TKey);
+				return default(TKey)!;
 			}
 		}
 
@@ -235,7 +235,7 @@ namespace Sop.Collections.Generic.BTree
 			{
 				if (btree.CurrentEntry != null)
 					return btree.CurrentEntry.Value;
-				return default(TValue);
+				return default(TValue)!;
 			}
 			set
 			{
@@ -338,7 +338,7 @@ namespace Sop.Collections.Generic.BTree
 			return Search(item.Key);
 		}
 
-		System.Collections.Generic.ICollection<TKey> keys;
+		System.Collections.Generic.ICollection<TKey> keys = null!;
 		public System.Collections.Generic.ICollection<TKey> Keys
 		{
 			get
@@ -361,11 +361,11 @@ namespace Sop.Collections.Generic.BTree
 				value = CurrentValue;
 				return true;
 			}
-			value = default(TValue);
+			value = default(TValue)!;
 			return false;
 		}
 
-		System.Collections.Generic.ICollection<TValue> values;
+		System.Collections.Generic.ICollection<TValue> values = null!;
 		public System.Collections.Generic.ICollection<TValue> Values
 		{
 			get
@@ -390,7 +390,7 @@ namespace Sop.Collections.Generic.BTree
 					return CurrentValue;
 				if (Search(key))
 					return this.CurrentValue;
-				return default(TValue);
+				return default(TValue)!;
 			}
 			set
 			{
@@ -466,7 +466,7 @@ namespace Sop.Collections.Generic.BTree
 			btree.Remove();
 		}
 
-		System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>> enumerator;
+		System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>>? enumerator = null!;
 		public System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<TKey, TValue>> GetEnumerator()
 		{
 			if (enumerator == null || ((BTreeEnumeratorDefault)enumerator).BTree == null)
@@ -483,9 +483,7 @@ namespace Sop.Collections.Generic.BTree
 		}
 
 		private Sop.Collections.BTree.SortOrderType CurrentSortOrder = Sop.Collections.BTree.SortOrderType.Ascending;
-#if !DEVICE
-		private System.Runtime.Serialization.SerializationInfo SerializationInfo;
-#endif
+
 		internal BTree.BTreeAlgorithm<TKey, TValue> btree;
 	}
 }

@@ -33,34 +33,34 @@ namespace Sop.Collections.BTree
 		{
 			Synchronizer.Unlock();
 		}
-		/// <summary>
-		/// Synchronized Add method. Add adds an entry with the provided key and value into the BTreeAlgorithm.
-		/// </summary>
-		/// <summary>
-		/// Duplicate keys are allowed in BTree unlike in a Dictionary/HashTable
-		/// where key is required to be unique.
-		/// <param name="Key">key of item you want to add to the collection</param>
-		/// <param name="Value">the item you want to be collected</param>
-		/// </summary>
-		public void Add(object Key, object Value)
-		{
-			Lock(Collections.BTree.OperationType.Write);
-			try
-			{
-				BTree.Add(Key, Value);
-			}
-			finally
-			{
-				Unlock();
-			}
-		}
-		/// <summary>
-		/// Synchronized Clear method.
-		/// </summary>
-		/// <summary>
-		/// Set to null all collected items and their internal buffers making collection empty
-		/// </summary>
-		public void Clear()
+    /// <summary>
+    /// Synchronized Add method. Add adds an entry with the provided key and value into the BTreeAlgorithm.
+    /// </summary>
+    /// <summary>
+    /// Duplicate keys are allowed in BTree unlike in a Dictionary/HashTable
+    /// where key is required to be unique.
+    /// <param name="Key">key of item you want to add to the collection</param>
+    /// <param name="Value">the item you want to be collected</param>
+    /// </summary>
+    public void Add(object Key, object? Value)
+    {
+      Lock(Collections.BTree.OperationType.Write);
+      try
+      {
+        BTree.Add(Key, Value);
+      }
+      finally
+      {
+        Unlock();
+      }
+    }
+    /// <summary>
+    /// Synchronized Clear method.
+    /// </summary>
+    /// <summary>
+    /// Set to null all collected items and their internal buffers making collection empty
+    /// </summary>
+    public void Clear()
 		{
 			Lock(Collections.BTree.OperationType.Write);
 			try
@@ -162,7 +162,7 @@ namespace Sop.Collections.BTree
 		/// Implements the ISerializable interface and raises the deserialization event when the deserialization is complete.
 		/// </summary>
 		/// <param name="sender">Source of the deserialization event</param>
-		public void OnDeserialization(object sender)
+		public void OnDeserialization(object? sender)
 		{
 			Lock(OperationType.Write);
 			try
@@ -509,42 +509,42 @@ namespace Sop.Collections.BTree
 				return Synchronizer;
 			}
 		}
-		/// <summary>
-		/// Synchronized accessor. item's key is the parameter used to access the item
-		/// </summary>
-		public object this[object key]
-		{
-			get
-			{
-				object o;
-				Lock(Collections.BTree.OperationType.Read);
-				try
-				{
-					o = BTree[key];
-				}
-				finally
-				{
-					Unlock();
-				}
-				return o;
-			}
-			set
-			{
-				Lock(Collections.BTree.OperationType.Write);
-				try
-				{
-					BTree[key] = value;
-				}
-				finally
-				{
-					Unlock();
-				}
-			}
-		}
-		/// <summary>
-		/// Returns collection of values in the btree. (Synchronized)
-		/// </summary>
-		public System.Collections.ICollection Values
+    /// <summary>
+    /// Synchronized accessor. item's key is the parameter used to access the item
+    /// </summary>
+    public object? this[object key]
+    {
+      get
+      {
+        object? o;
+        Lock(Collections.BTree.OperationType.Read);
+        try
+        {
+          o = BTree[key];
+        }
+        finally
+        {
+          Unlock();
+        }
+        return o;
+      }
+      set
+      {
+        Lock(Collections.BTree.OperationType.Write);
+        try
+        {
+          BTree[key] = value;
+        }
+        finally
+        {
+          Unlock();
+        }
+      }
+    }
+    /// <summary>
+    /// Returns collection of values in the btree. (Synchronized)
+    /// </summary>
+    public System.Collections.ICollection Values
 		{
 			get
 			{

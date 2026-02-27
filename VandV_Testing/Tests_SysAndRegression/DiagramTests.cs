@@ -18,24 +18,24 @@ namespace SysAndRegressionTesting
     #region Validation Cases Setup Code
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
     {
-      return "EMRALDTests" + Path.DirectorySeparatorChar;
+      return "EMRALDTests" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "Models" + Path.DirectorySeparatorChar;
+      return "Models" + Path.AltDirectorySeparatorChar;
     }
     #endregion
 
 
     [Fact]
     [Description("Test to verify self loops in a diagram work properly.")]
-    public void SelfLoopTest()
+    public async Task SelfLoopTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -51,7 +51,7 @@ namespace SysAndRegressionTesting
       options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -62,7 +62,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test to verify paths to key states are comming out correct.")]
-    public void KeyStatePathTest()
+    public async Task KeyStatePathTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -79,7 +79,7 @@ namespace SysAndRegressionTesting
       // TODO Compare JSON path results options.resout 
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -90,7 +90,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("Test to verify single state diagram boolean values are correct.")]
-    public void SingleStateDiagramValueTest()
+    public async Task SingleStateDiagramValueTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -106,7 +106,7 @@ namespace SysAndRegressionTesting
       //options.variables = new List<string>() { "Int_Cnt" };
       //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);

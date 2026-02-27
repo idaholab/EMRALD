@@ -34,10 +34,11 @@ The Properties window will open up in the Diagram window. <br>
 
 
 ## State Properties
-  State properties depend on the type of diagram. All diagram states have lists of events in the "Event Actions" list, and associated with each event is a "Exit Parent State" property. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon (<img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/> ) to the right of the event and any arrows going from the action will turn black. If there are no transition actions.<br>
+  State properties depend on the type of diagram. All diagram states have lists of events in the "Event Actions" list and associated with each event is a "Exit Parent State" property. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon to the right of the event, and any arrows going from the action will turn black if there are no transition actions.
+  <img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/>
   
   Note that the exit property is set and edited in the event forms, not the state forms.
-  <img src="/images/Modeling/states/ExitPropertyInEventProperties.png" alt="Event Properties Exit Option" style="width:450px"><br>
+  <img src="/images/Modeling/states/ExitPropertyInEventProperties.png" alt="Event Properties Exit Option" width="450"><br>
 
 ### Single State Diagrams (System, Component)
 Single State diagrams, such as system and components, have an additional status value. This field is used for logic tree evaluations. 
@@ -46,25 +47,25 @@ See the following screenshots of the CCS System diagram as an example; there sho
 actions should have a exit symbol.<br>
 
 The Single State diagram representing the CCS System.
-<img src="/images/Modeling/states/StatusValueExample.png" alt="Single State Diagram Example" style="width:500px"><br>
+<img src="/images/Modeling/states/StatusValueExample.png" alt="Single State Diagram Example" width="500"><br>
 
 The CCS_Sys_Active State Properties window with "True" selected as the Status Value.
-<img src="/images/Modeling/states/StatusValueTrue.png" alt="Status Value True" style="width:450px"><br>
+<img src="/images/Modeling/states/StatusValueTrue.png" alt="Status Value True" width="450"><br>
 
 The CCS_Sys_Failed State Properties window with "False" selected as the Status Value.
-<img src="/images/Modeling/states/StatusValueFalse.png" alt="Status Value False" style="width:450px"><br>
+<img src="/images/Modeling/states/StatusValueFalse.png" alt="Status Value False" width="450"><br>
 
 
 ## Deleting a State
 **Option 1:** <br> 
   On the Left Navigation Frame, click on the tab (All, Global, or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Delete".<br>
-  <img src="/images/Modeling/states/DeleteStateOpt1.png" alt="Delete State Option 1 Step 1" style="width:300px">
+  <img src="/images/Modeling/states/DeleteStateOpt1.png" alt="Delete State Option 1 Step 1" width="300">
 
   A confirmation window will appear in the Modeling Area. Click "DELETE".<br>
   <img src="/images/Modeling/states/DeleteStateWarn.png" alt="Delete State Option 1 Step 2"><br>
 
   The state will be deleted and no longer listed in the Left Navigation Frame. <br>
-  <img src="/images/Modeling/states/DeleteStateOpt1_3.png" alt="Delete State Option 1 Step 3" style="width:200px"><br>
+  <img src="/images/Modeling/states/DeleteStateOpt1_3.png" alt="Delete State Option 1 Step 3" width="200"><br>
 
 **Option 2:** <br> 
   Open the Diagram containing the state and locate the state. Right-click on the state and click "Delete State".<br>
@@ -79,22 +80,25 @@ The CCS_Sys_Failed State Properties window with "False" selected as the Status V
 ## Types of States
 The type of state will be indicated by an icon in the header of the state. Those icons are included in the title of the respective section, as well as in the [Icons: States](./icons.md#states) section.
 
-<h3>Start <img src="/images/Modeling/states/start.png" alt="Start" width="25"/></h3>
+### Start
+<img src="/images/Modeling/states/start.png" alt="Start" width="25"/>
 
 Start states are the states the model is in when the simulation begins. There must be at least one, but there can be more. All start states will be activated simultaneously.<br>
 <img src="/images/Modeling/states/StartState.png" alt="Start State" style="width:220px">
 
 ### Standard
 A normal state representing no special conditions. It will have no icon in the Header.<br>
-<img src="/images/Modeling/states/StandardState.png" alt="Standard State" style="width:220px">
+<img src="/images/Modeling/states/StandardState.png" alt="Standard State" width="220">
 
-<h3>Key <img src="/images/Modeling/states/key.png" alt="Key" width="25"/></h3>
+### Key
+<img src="/images/Modeling/states/key.png" alt="Key" width="25"/>
 
 A key state is the primary focus of interest in the model; it will be tracked and reported if the model is in this state at the end of a simulation. In comparison to traditional PRA, all "End States" would have a corresponding "Key State". <br>
 <img src="/images/Modeling/states/KeyState.png" alt="Key State" style="width:220px">
 
 
-<h3>Terminal <img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/></h3>
+### Terminal
+<img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/>
 
 A user-defined simulation stopping point. A terminal state is not required, but the simulation will run until the end time parameter is reached. However, it is recommend that terminal states be used to end all simulations when desired stop conditions are met for shortened computing time.<br>
 <img src="/images/Modeling/states/TerminalState.png" alt="Terminal State" style="width:220px">
@@ -126,7 +130,7 @@ See [Actions](/Modeling/actions.md) for more information.
 
 ## Event Actions
   Event Actions are event/action combinations taken when the event condition is met. 
-  <img src="/images/Modeling/states/EventActionsSection.png" alt="Event Actions Section" style="width:220px"><br>
+  <img src="/images/Modeling/states/EventActionsSection.png" alt="Event Actions Section" width="220"><br>
 An icon on the left of the action shows what type of action it is. See [Icons](/Modeling/icons.md) for descriptions of each icon.
 
 ### Adding an Event

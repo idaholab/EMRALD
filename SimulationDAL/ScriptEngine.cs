@@ -1,18 +1,18 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using System.Diagnostics;
 using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Diagnostics.Tracing;
 using Newtonsoft.Json.Schema.Generation;
+using SimulationDAL;
 
 namespace ScriptEngineNS
 {
@@ -22,27 +22,25 @@ namespace ScriptEngineNS
     public enum Languages { CSharp };
     public Languages language;
     private string assemblyName = "TestClass";
-    private object evaluator = null;
-    private Type evaluatorType = null;
-    Assembly assembly = null;
-    CSharpCompilation compilation = null;
-    EmitResult compResult = null;
-    private string source;
-    string variables, variables1;
+    private object evaluator = null!;
+    private Type evaluatorType = null!;
+    Assembly assembly = null!;
+    CSharpCompilation compilation = null!;
+    EmitResult compResult = null!;
+    private string source = null!;
+    string variables;
     string code;
     public List<string> messages = new List<string>();
     public List<string> addAssemblies = new List<string>() { "MathNet.Numerics.dll" };
     public List<string> addUsing = new List<string>();
     public string preClassInfo = "";
-    public string curDir = "";
 
 
-    public ScriptEngine(Languages language, string code = "", string curDir = "")
+    public ScriptEngine(Languages language, string code = "")
     {
       this.language = language;
       this.code = code;
       this.variables = "";
-      this.curDir = curDir;
     }
     
     public string Code
@@ -103,9 +101,9 @@ namespace ScriptEngineNS
                     null,
                     evaluator,
                     new object[] { Convert.ChangeType(Value, dType) }
-                 );
+                 )!;
       }
-      catch (Exception e)
+      catch 
       {
         throw new Exception("Failed to assign \"" + Value.ToString() + "\" to Variable \"" + VariableName + "\", check the types are correct");
       }
@@ -143,14 +141,20 @@ namespace ScriptEngineNS
                "public class " + assemblyName + "\r\n{\r\n" +
               variables + preClassInfo + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
       int realLn0 = source.Count(c => c.Equals('\n')) + 1;
-      if (curDir != "")
-      {
-        string escCurDir = curDir.Replace(@"\", @"\\"); // Escape backslashes
-        source = source + "Directory.SetCurrentDirectory(\"" + escCurDir + "\");\r\n"; //set the current path to the model directory if given
-      }
+
+      //set the current path to the model directory if given
+      source = source + "if ((RootPath != \"\") && Path.Exists(RootPath))\r\n{\r\n";
+      source = source + "  Directory.SetCurrentDirectory(RootPath);\r\n}\r\n"; 
+      
+      //wrap in a TryFinally block so we can reset the currend directory when done
+      source = source + "try\r\n{\r\n";
+
       source = source + code;
-      source += "\r\n\r\n}\r\n}\r\n}";
-      //File.WriteAllText("WriteText" + assemblyName + ".txt", source);
+      
+      source = source + "\r\n}\r\nfinally\r\n{\r\n";
+      source = source + "Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);\r\n";
+      source = source + "}\r\n"; // Close finally
+      source += "\r\n}\r\n}\r\n}"; // Close method, class, namespace
 
       SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
       var references = new List<MetadataReference>();
@@ -179,10 +183,10 @@ namespace ScriptEngineNS
       }
       foreach (var addLib in addAssemblies)
       {
-        string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        string appPath = CommonFunctions.NormalizeGetDirectoryName(Assembly.GetExecutingAssembly().Location);
         if (!added.Contains(addLib))
         {
-          references.Add(MetadataReference.CreateFromFile(appPath + Path.DirectorySeparatorChar + addLib));
+          references.Add(MetadataReference.CreateFromFile(appPath + Path.AltDirectorySeparatorChar + addLib));
         }      
       }     
 
@@ -200,8 +204,8 @@ namespace ScriptEngineNS
         {
           memoryStream.Seek(0, SeekOrigin.Begin);
           assembly = Assembly.Load(memoryStream.ToArray());
-          evaluatorType = assembly.GetType(domain + "." + assemblyName);
-          evaluator = Activator.CreateInstance(evaluatorType);
+          evaluatorType = assembly.GetType(domain + "." + assemblyName)!;
+          evaluator = Activator.CreateInstance(evaluatorType)!;
           return true;
         }
         else
@@ -236,7 +240,7 @@ namespace ScriptEngineNS
                     null,
                     evaluator,
                     new object[] { }
-                 );
+                 )!;
         return o;
       }
       catch (Exception e)

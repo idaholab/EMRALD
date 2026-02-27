@@ -706,7 +706,7 @@ namespace SimulationTracking
     /// <summary>
     /// external simulation server to process external events
     /// </summary>
-    private EMRALDMsgServer sim3DServer;
+    private ISimMessaging sim3DServer;
     //todo store these in ExternalSim object and adjust code for multiple simulations
     private bool extSimRunning = false;
     private bool emraldStopping3D = false;
@@ -753,8 +753,7 @@ namespace SimulationTracking
     public StateTracker(
       EmraldModel inLists,
       TimeSpan endTime, //max time allowed for events to occur
-      double in3dFrameRate,//todo remove obsolete
-      EMRALDMsgServer inSim3DServer,
+      ISimMessaging inSim3DServer,
       int desiredRuns
       )
     {
@@ -1119,6 +1118,9 @@ namespace SimulationTracking
       //timeEvList.PrintTimes();
       //pop the next time events and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
+      if (nextItem == null)
+        return false;
+      
       if ((idMatch > -1) && (idMatch != nextItem.id))
       {
         return false;
@@ -1496,7 +1498,56 @@ namespace SimulationTracking
             }
 
             curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime, this.allLists.curRunIdx);
-                    
+
+            //if it is an external sim variable then send a message
+            if (varItem is Sim3DVariable)
+            {
+              try
+              {
+                logger.Debug("DoExternalSimMessageAction.ComponentModifyAction: " + varItem.name);
+                //wait to make sure the 3D sim has started
+                while ((!this.extSimRunning) && (!this.emraldStopping3D))
+                {
+                  if (!this.extSimStarting)
+                  {
+                    logger.Debug("Ext Sim not running and trying to send message.");
+                    throw new Exception("Ext Sim not running and trying to send message.");
+                  }
+
+                  System.Threading.Thread.Sleep(10);
+                }
+
+               Sim3DVariable simVar = varItem as Sim3DVariable;
+                                
+                string setValue;
+                switch (simVar.dType.Name.ToUpper().Substring(0, 4))
+                {
+                  case "INT":
+                  case "INT3":
+                  case "DOUB":
+                  case "BOOL":
+                  case "TIME":
+                    setValue = simVar.dblValue.ToString();
+                    break;
+                  case "STRI":
+                    setValue = simVar.strValue;
+                    break;
+                  default:
+                    throw new Exception("Invalid Variable type");
+                }
+
+                var varMsg = new TMsgWrapper(MessageType.mtSimAction, "SetSimValue", curTime, "Adjust External Sim");
+                varMsg.simAction = new SimAction(SimActionType.atCompModify, curTime, new ItemData(simVar.sim3DNameId, setValue));
+
+                sim3DServer.SendMessage(varMsg, simVar.resourceName);
+
+                break;
+              }
+              catch (Exception)
+              {
+                logger.Debug("Failed to send external Sim message for modifying variable with action: " + curAct.name);
+              }
+            }
 
             try
             {
@@ -1607,7 +1658,7 @@ namespace SimulationTracking
             //create a dictionary with just the last state time.
             Dictionary<int, TimeSpan> curStatesTime = this.curStates.Select(i => i).ToDictionary(i => i.Key, i => i.Value.times[i.Value.times.Count - 1]);
 
-            curRunExeAct.RunExtApp(curStatesTime, this.curTime, this.allLists, ref addStates, ref leaveStates);
+            curRunExeAct.RunExtApp(curStatesTime, this.curTime, this.allLists, ref addStates, ref leaveStates, this.allLists.threadNum == null ? false : true);
 
             foreach (int id in leaveStates)
             {
@@ -1643,13 +1694,15 @@ namespace SimulationTracking
             }
 
 
-            //update any doc variables that were marked as used now that code is executed.
-            foreach (string varName in curRunExeAct.codeVariables)
+            //update any doc variables now that code is executed so they try to update if needed.
+            foreach (SimVariable curVar in allLists.allVariables.Values)
             {
-              SimVariable curVar = allLists.allVariables.FindByName(varName);
               if ((curVar != null) && (curVar.varScope == EnVarScope.gtDocLink))
               {
-                changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
+                object o1 = curVar.NoUpdateValue;
+                object o2 = curVar.GetValue(true);
+                if (!object.Equals(o1, o2))
+                  changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
               }
             }
 
@@ -1658,7 +1711,6 @@ namespace SimulationTracking
             {
               changedItems.AddChangedID(EnModifiableTypes.mtVar, curRunExeAct.assignVariable.id);
             }
-
 
             //update any doc variables that were marked as used now that code is executed.
             foreach (string varName in curRunExeAct.codeVariables)
@@ -1706,11 +1758,11 @@ namespace SimulationTracking
                   ++conCnt;
                   if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
                   {
-                    logger.Error("Lost XMPP connection");
+                    logger.Error("Lost coupling connection");
 
                     if (conCnt > 60)
                     {
-                      logger.Error("End wait for XMPP reconnection");
+                      logger.Error("End wait for coupling reconnection");
                       throw new Exception("No external client code named - " + cur3DAct.resourceName);
                     }
 
@@ -1726,11 +1778,7 @@ namespace SimulationTracking
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
                 sim3DServer.evCallBackFunc = Sim3DEventOccurred;
 
-                //TActionData startup = new TActionData(T3DActionType.atStartSim);
-                //startup.time = (int)(sim3DFameRate * 1500); 
-                //startup.itemName = sim3dPath;// "C:\\Program Files2\\INL_FUSimServer\\houdini\\hip\\fu_sim_testRoom_v12.hipnc";
-                //if (sim3DServer.SendAction(new TActionPacketData(startup)))  //initialize it
-                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
+                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName)) 
                 {
                   extSimStarting = true;
                   emraldStopping3D = false;

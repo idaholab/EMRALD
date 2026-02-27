@@ -21,12 +21,12 @@ namespace UnitAndIntegrationTesting
 
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "UnitTestItems" + Path.DirectorySeparatorChar;
+      return "UnitTestItems" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
@@ -36,13 +36,13 @@ namespace UnitAndIntegrationTesting
     
     private void SetupTheTest(string testName, EmraldModel model = null)
     {
-      // Reset IDs and the random number generator so tests don't fail when run together
+      // Reset IDs and the public async Task number generator so tests don't fail when run together
       SingleNextIDs.Instance.ResetAllIDs();
       SingleRandom.Reset();
-      // set up the random number generator so it starts with the same key each time.
+      // set up the public async Task number generator so it starts with the same key each time.
       ConfigData.seed = 0;
       if (model != null)
-        model.rootPath = MainTestDir() + ModelFolder();
+        model.rootPath = CommonFunctions.NormalizeGetFullPath(MainTestDir() + ModelFolder());
     }
        
     #endregion
@@ -72,7 +72,7 @@ namespace UnitAndIntegrationTesting
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //test for correct value, known because of key used in random
+      //test for correct value, known because of key used in public async Task
       TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True(s.TotalMilliseconds == 77730.9248);
     }
@@ -98,7 +98,7 @@ namespace UnitAndIntegrationTesting
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //test for correct value, known because of key used in random
+      //test for correct value, known because of key used in public async Task
       TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True((s.TotalMilliseconds - 300000) < 1);
     }
@@ -124,7 +124,7 @@ namespace UnitAndIntegrationTesting
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //test for correct value, known because of key used in random
+      //test for correct value, known because of key used in public async Task
       TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True(s.TotalMilliseconds == 276367885.3593);
       
@@ -152,7 +152,7 @@ namespace UnitAndIntegrationTesting
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //test for correct value, known because of key used in random
+      //test for correct value, known because of key used in public async Task
       Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 45286473.5153);
     }
 
@@ -177,7 +177,7 @@ namespace UnitAndIntegrationTesting
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //test for correct value, known because of key used in random
+      //test for correct value, known because of key used in public async Task
       TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
       Assert.True(s.TotalMilliseconds == 2036054.5867);
     }
@@ -204,7 +204,7 @@ namespace UnitAndIntegrationTesting
       //for some items, if the item JSON references other items they will need to be added to the main model
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
-      //test for correct value, known because of key used in random
+      //test for correct value, known because of key used in public async Task
       Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 2592841926.2083);
     }
 

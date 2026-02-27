@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-//using System.Web.Helpers;
 
 namespace SimulationDAL
 {
@@ -19,7 +18,7 @@ namespace SimulationDAL
     protected ActionList _immediateActions;
     protected List<Event> _events;
     protected List<ActionList> _evActions;
-    protected Diagram _Diagram;
+    protected Diagram _Diagram = null!;
     protected int _dfltStateValue; //[-1 = unknow, 0 = false, 1 = true]
     public int dfltStateValue { get { return _dfltStateValue; } }
 
@@ -52,7 +51,7 @@ namespace SimulationDAL
       _Diagram.AddState(this);      
     }
 
-    public void AddEvent(Event ev, bool inMoveFromCur = false, Action act = null)
+    public void AddEvent(Event ev, bool inMoveFromCur = false, Action act = null!)
     {
       if ((!inMoveFromCur) && (act == null))
         throw new Exception("Need an action for an event that does not move from the state - " + this.name + " Event - " + ev.name);
@@ -295,7 +294,7 @@ namespace SimulationDAL
       this._immediateActions.Clear();
       foreach (var actName in dynObj.immediateActions)
       {
-        Action curAct = lists.allActions.FindByName((string)actName);
+        Action curAct = lists.allActions.FindByName((string)actName)!;
         if (curAct == null)
         {
           throw new Exception("Deserialize State, failed to find immediateAction - " + actName);
@@ -383,8 +382,10 @@ namespace SimulationDAL
 
   class StateSort : IComparer<State>
   {
-    public int Compare(State c1, State c2)
+    public int Compare(State? c1, State? c2)
     {
+      if (c1 == null || c2 == null)
+        throw new Exception("null item i compare, should not happen");
       return c1.name.CompareTo(c2.name);
     }
   }
@@ -470,7 +471,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find State - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -478,7 +479,7 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find State - " + name);
         else
-          return null;
+          return null!;
       }
     }
 
@@ -522,7 +523,7 @@ namespace SimulationDAL
         foreach (var wrapper in dynamicObj)
         {
           var item = wrapper;
-          State curItem = null;
+          State curItem = null!;
           curName = (string)item.name;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))

@@ -2,7 +2,7 @@
 
 While the EMRALD model is built in a web-based application, the actual simulation and solving of the model is done in an external application. This solver runs Monte-Carlo-type statistical simulations.
 
-This application can be downloaded from the EMRALD web-based model editor. </br>
+This application can be downloaded from the EMRALD web-based model editor.
 
 ![Download Solver](/images/Modeling/solver/DownloadSolver.png)
 
@@ -20,7 +20,7 @@ The Model tab should be the window that is open upon opening the solver. After o
 
 The lower window displays warning messages about errors in the model. After opening the model file, if there are errors, an error should populate this window immediately. It will only display one message at a time; so once it is fixed, the model will need to be validated repeatedly until all errors are addressed. <br/>
 
-If it does not display an error, click the "Validate" button. If it still does not display an error, your model does not have any technical errors and can be run. See what an errorless model looks like below. <br/>
+If it does not display an error, click the "Validate" button. If it still does not display an error, your model does not have any technical errors and can be run. See what an errorless model looks like below. 
 ![Model 2](/images/Modeling/solver/Model2.png)
 
 ::: tip NOTE
@@ -42,7 +42,7 @@ Errors displayed are only errors that make the model technically incorrect, such
 ![Links to External Simulations](/images/Modeling/solver/ExtSimLinkList.png)
 
 ### Variables to Monitor
-This window will display a checklist of all of the variables present in the model. If you check the box next to a variable, the value of that variable will be displayed in the lower result monitor as the simulation is running and at the end of each run will be saved into the output files. See the [Results Monitors](#results-monitors) section for more information.<br/>
+This window will display a checklist of all the variables present in the model. If you check the box next to a variable, the value of that variable will be displayed in the lower result monitor as the simulation is running and at the end of each run will be saved into the output files. See the [Results Monitors](#results-monitors) section for more information.
 ![Variables Monitor](/images/Modeling/solver/VarMonitor.png)
 
 ### Simulation Controls
@@ -59,7 +59,7 @@ This window will display a checklist of all of the variables present in the mode
 ### Results Monitors
 ![Results Monitors](/images/Modeling/solver/ResultsMonitors.png)
 
-The top bar displays the computational run time, physical time for the model to compute, and the number of runs completed of the total number of runs prescribed for the simulation.<br/>
+The top bar displays the computational run time, physical time for the model to compute, and the number of runs completed of the total number of runs prescribed for the simulation.
 ![Top Bar](/images/Modeling/solver/TopBar.png)
 
 The upper window displays preliminary basic results. This monitor will update at the end of each run. The results shown are *not* minimal cutsets because they are not mutually exclusive. It displays all key states that were occupied at the end of the run. Below are descriptions of what is contained in each column of each entry. <br/>
@@ -69,7 +69,7 @@ The upper window displays preliminary basic results. This monitor will update at
 - **Rate:** The failure rate in percent. The top row will contain the rate for all times the key state was reached. The succeeding rows will contain the failure rate for each particular scenario. Because these numbers update at the end of each run, the rate is calculated by the failure count over the number of runs completed and not the total number of runs to be completed.
 - **Failed Items:** This is a list of all states with a "False" value reached when the key state was reached. They may not necessarily directly contribute to leading to that key state.
 
-The lower window monitors the variables checked in the Variables to Monitor section of the Simulate tab. This monitor will update in live simulation time.
+The lower window monitors the variables checked in the Variables to Monitor section of the Simulate tab. This monitor will be updated in live simulation time.
 ![Lower Monitor](/images/Modeling/solver/LowerMonitor.png)
 - **Variable Name:** The name of the variable.
 - **Value:** The current value of that variable.
@@ -110,17 +110,17 @@ The lower window monitors the variables checked in the Variables to Monitor sect
 From the simulation, three different kinds of files can be output: Basic Results, Path Results, and an optional Debug file. The structure and content of each will be further explained in the following sections. See more on the file location references in [Backend Information](./backendInfo.md#file-references).
 
 ### Basic Results
-The basic results will dispaly all of the same results that were displayed in the upper and lower monitor windows of the solver GUI. This file will be updated as the simulation is running. Below is a breakdown of the content contained in the order it is written to the file.<br/>
+The basic results will display all the same results that were displayed in the upper and lower monitor windows of the solver GUI. This file will be updated as the simulation is running. Below is a breakdown of the content contained in the order it is written to the file.
 ![NewSimResults.txt Screenshot](/images/Modeling/solver/NewSimResults.png)
 
 - **Simulation:** Name of the model when it was first created from "New". This example does not have a name because it is the demonstration model that is loaded by default into the EMRALD model editor.
 - **Runtime:** The simulation run time. This is not the physical computation time. It is in the format: [days.hh:mm:ss.ms].
 - **Runs:** The number of runs completed out of the number of runs prescribed for the simulation. It is in the format: [Number of Runs Completed] of [Total Number of Runs].
-- **Key States:** There is a block entry for each key state. It first includes the name of the Key State, number of occurances and Rate structured like this:<br/>
+- **Key States:** There is a block entry for each key state. It first includes the name of the Key State, number of occurrences, and Rate, structured like this:
         
         [Key State Name] Occurred [Failure Count] times, Rate = [Failure Rate]
 
-    The following lines will be a breakdown of all the different scenarios, combinations of failed items. Each entry is structured like this:<br/>
+    The following lines will be a breakdown of all the different scenarios, combinations of failed items. Each entry is structured like this:
         
         (Failure Count)[Failure Rate in %] Failed Item #1, Failed Item #2, ... Failed Item #n
 
@@ -185,7 +185,7 @@ Once generated, the file is saved in a subdirectory in your EMRALD directory at 
 
 Depending on which selection was chosen, it can either be a basic or detailed debug file.
 
-The basic file contains all state movement that occured within the prescribed range of runs and is structured like the following for each run:
+The basic file contains all state movements that occurred within the prescribed range of runs, and is structured like the following for each run:
 
     StartRun: [The number of the run]
     EnterState: [Name of state entered], time: [Simulation time it entered], Cause Event: [Event that caused the state to be entered], fromState-Action: [Action that caused the state to be entered]

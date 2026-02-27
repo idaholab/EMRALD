@@ -85,91 +85,166 @@ const MAAP = () => {
     const cleanExePath = getCleanPath(formData?.exePath ?? '');
     const cleanParameterPath = getCleanPath(parameterPath);
     const cleanInputPath = getCleanPath(inputPath);
-    ReturnPreCode(`string exeLoc = "${cleanExePath}";
-        string paramLoc = "${cleanParameterPath}";
-        string inpLoc = "${cleanInputPath}";
-        string newInp = @"${createMaapFile()}";
-        string fileRefs = "${(formData?.fileRefs ?? []).join(',')}"; //example "PVGS_502.par, test.txt";
-        string[] fileRefsList = fileRefs.Split(',');
-        
-        if (!Path.IsPathRooted(exeLoc))
-        {
-          exeLoc = Path.Join(Directory.GetCurrentDirectory(), exeLoc);
-        }
-        if (!Path.IsPathRooted(paramLoc))
-        {
-          paramLoc = Path.Join(Directory.GetCurrentDirectory(), paramLoc);
-        }
-        if (!Path.IsPathRooted(inpLoc))
-        {
-          inpLoc = Path.Join(Directory.GetCurrentDirectory(), inpLoc);
-        }
-        
-        string tempLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP");
-        try
-        {
-          if (Directory.Exists(tempLoc))
-          {
-            Directory.Delete(tempLoc, true);
-          }
-          Directory.CreateDirectory(tempLoc);
-        }
-        catch { }
-        if (File.Exists(paramLoc) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(paramLoc))))
-        {
-          File.Copy(paramLoc, Path.Join(tempLoc, Path.GetFileName(paramLoc)));
-        }
-        
-        string paramFileName = Path.GetFileName(paramLoc);
-        string inpFileName = Path.GetFileName(inpLoc);
-        string inpLocPath = Path.GetDirectoryName(inpLoc);
-        foreach (string fileRef in fileRefsList)
-        {
-          string fileRefPath = Path.Join(inpLocPath, fileRef);
-          if (File.Exists(fileRefPath) && !File.Exists(Path.Join(tempLoc, fileRef)))
-          {
-            if (fileRef != paramFileName)
-            File.Copy(fileRefPath, Path.Join(tempLoc, fileRef));
-          }
+
+    ReturnPreCode(`string paramLoc = "${cleanParameterPath}";
+      string inpLoc = "${cleanInputPath}";
+      string exeName = Path.GetFileName(ExePath);
+      string paramFileName = Path.GetFileName(paramLoc);
+      string inpFileName = Path.GetFileName(inpLoc);
+
+      string newInp = @"${createMaapFile()}";
+
+      string fileRefs = "${(formData?.fileRefs ?? []).join(',')}";
+      string[] fileRefsList = fileRefs.Split(',');
+      // Trim whitespace from each element
+      for (int i = 0; i < fileRefsList.Length; i++)
+      {
+          fileRefsList[i] = fileRefsList[i].Trim();
+      }
+
+
+      //get tempLoc for non vs multiThreaded and copy files needed for each
+      string tempLoc = "";
+      if(MultiThreaded)
+      {
+	      //temp location is the RootPath variable + Relative of OrigRootPath to the Exe location, if multi threaded as everything is relative to that 
+	      string relativeExePath = Path.GetRelativePath(OrigRootPath, ExePath);
+	      string relativeExeDir = Path.GetDirectoryName(relativeExePath);
+	      while (relativeExeDir.StartsWith("../") || relativeExeDir.StartsWith("..\\\\"))
+		      relativeExeDir = relativeExeDir.Substring(3);
+	      tempLoc = Path.GetFullPath(Path.Join(RootPath, relativeExeDir));
+      }
+      else
+      {
+	      //if not multiThreaded create a appData folder to copy the MAAP files to run
+	      tempLoc = Path.Join(
+		      Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+		      "EMRALD_MAAP"
+	      );
+	      try
+	      {
+		      if (Directory.Exists(tempLoc))
+		      {
+			      Directory.Delete(tempLoc, true);
+		      }
+
+		      Directory.CreateDirectory(tempLoc);
+	      }
+	      catch (Exception ex)
+	      {
+		      Console.WriteLine($"Error creating working directory: {ex.Message}");
+              throw;
+	      }
+      }
+
+      //copy exe file
+      string newExePath = Path.Join(tempLoc, exeName);
+      if (File.Exists(ExePath))
+      {
+	      if (!File.Exists(newExePath))
+		      File.Copy(ExePath, newExePath); 
+      }
+      else
+	      Console.WriteLine("Missing MAAP exe file - " + ExePath); 
+
+      //copy the MAAP dll
+      string dllPath = Path.Join(Path.GetDirectoryName(ExePath), exeName[..^7] + ".dll");
+      if (File.Exists(dllPath))
+      {
+	      string copyToPath = Path.GetFullPath(Path.Join(tempLoc, Path.GetFileName(dllPath)));
+	      if(!File.Exists(copyToPath))
+            File.Copy(dllPath, copyToPath);
+      }
+      else
+	      Console.WriteLine("Missing MAAP dll file - " + dllPath);
+
+      //copy the MAAP parameter file
+      string fullParamLoc = paramLoc;
+      if (!Path.IsPathRooted(paramLoc))
+      {
+          fullParamLoc = Path.GetFullPath(Path.Join(OrigRootPath, paramLoc));
+      }
+      if (File.Exists(fullParamLoc))
+      {
+	      string copyToPath = Path.Join(tempLoc, paramFileName);
+	      File.Copy(fullParamLoc, copyToPath, true); 
+      }
+      else
+	      Console.WriteLine("Missing MAAP input file - " + fullParamLoc);
+	
+      //copy the new input file
+      string newInpLoc = Path.Join(tempLoc, inpFileName);
+      File.WriteAllText(newInpLoc, newInp);
+
+      //Get the old input file location to copy other used files
+      string copyFromRoot = inpLoc;
+      if (!Path.IsPathRooted(copyFromRoot))
+      {
+          copyFromRoot = Path.GetFullPath(Path.Join(OrigRootPath, copyFromRoot));
+	      copyFromRoot = Path.GetDirectoryName(fullParamLoc);
+      }
+      foreach (string fileRef in fileRefsList)
+      {
+          string fileFromPath = Path.GetFullPath(Path.Join(copyFromRoot, fileRef));
+	      string copyToPath = Path.GetFullPath(Path.Join(tempLoc, fileRef));
+
+          if (File.Exists(fileFromPath))
+	      {		
+		      if(!File.Exists(copyToPath))
+			      File.Copy(fileFromPath, copyToPath);
+	      }
           else
-          {
-            Console.WriteLine("Missing MAAP referenced file - " + Path.Join(inpLocPath, fileRef));
-          }
-        }
-        string exeName = Path.GetFileName(exeLoc);
-        if (File.Exists(exeLoc) && !File.Exists(Path.Join(tempLoc, exeName)))
-        {
-          File.Copy(exeLoc, Path.Join(tempLoc, exeName));
-        }
-        string dllPath = Path.Join(Path.GetDirectoryName(exeLoc), exeName[..^7] + ".dll");
-        if (File.Exists(dllPath) && !File.Exists(Path.Join(tempLoc, Path.GetFileName(dllPath))))
-        {
-          File.Copy(dllPath, Path.Join(tempLoc, Path.GetFileName(dllPath)));
-        }
+              Console.WriteLine("Missing MAAP referenced file - " + fileFromPath);
+      }
+
+      //all files are in same location as MAAP EXE so just return the file names
+      return $"{newExePath} {inpFileName} {paramFileName}";`);
+
+    ReturnExePath(formData?.exePath ?? '');
+
+    ReturnPostCode(`string inpLoc = @"${cleanInputPath}"; 
+      string neededResults = @".inp,.log,.D59";
+      //only need to copy results when not running multi threaded so document variable have correct path. if multithreaded this is taken care of.
+      if(!MultiThreaded)
+      {
+          string sourceDir = Path.Join(
+		      Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+		      "EMRALD_MAAP"
+	      );
+	      if (!Directory.Exists(sourceDir))
+            throw new Exception("MAAP source folder not found - " + sourceDir);
+	
+          // Copy .inp, .log, and .D59 to inpLoc which is RootPath + ../MAAPFiles/
+	      if (!Path.IsPathRooted(inpLoc))
+		      inpLoc = Path.GetFullPath(Path.Join(RootPath, inpLoc));	
+	      string maapFilesPath = Path.GetDirectoryName(inpLoc);
+	      if(!Directory.Exists(maapFilesPath))
+		      throw new Exception("MAAP results destination folder invalid - " + maapFilesPath);
+	
+	      string baseFileName = Path.GetFileNameWithoutExtension(inpLoc);
         
-        string newInpLoc = Path.Join(tempLoc, inpFileName);
-        System.IO.File.WriteAllText(newInpLoc, newInp);
-        return $"{Path.Join(tempLoc, exeName)} {inpFileName} {paramFileName}";`);
-    ReturnExePath('');
-    ReturnPostCode(`string inpLoc = @"${cleanInputPath}";
-  if (!Path.IsPathRooted(inpLoc))
-        inpLoc = RootPath + inpLoc;
-    string docVarPath = @"./MAAP/temp.log";
-  if (!Path.IsPathRooted(docVarPath))
-        docVarPath = RootPath + docVarPath;
-  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EMRALD_MAAP", Path.GetFileNameWithoutExtension(inpLoc) + ".log");
-  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));
-  File.Copy(resLoc, docVarPath, true);`);
+	      string[] maapFilesExtensions = neededResults.Split(',', StringSplitOptions.RemoveEmptyEntries);
+	      foreach (string ext in maapFilesExtensions)
+	      {
+		      string sourceFile = Path.Combine(sourceDir, baseFileName + ext);
+		      string destFile = Path.Combine(maapFilesPath, baseFileName + ext);
+		
+		      if (File.Exists(sourceFile))
+		      {
+			      File.Copy(sourceFile, destFile, true);
+		      }
+          }
+      }`);
 
     setReturnProcess('rtNone');
     setFormData(
       formData
         ? {
-            ...formData,
-            exePath: cleanExePath,
-            inputPath: cleanInputPath,
-            parameterPath: cleanParameterPath,
-          }
+          ...formData,
+          exePath: cleanExePath,
+          inputPath: cleanInputPath,
+          parameterPath: cleanParameterPath,
+        }
         : undefined,
     );
   }, [inputPath, parameterFile, parameterPath, JSON.stringify(formData)]);

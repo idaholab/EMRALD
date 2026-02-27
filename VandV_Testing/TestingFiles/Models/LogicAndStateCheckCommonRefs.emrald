@@ -1,5 +1,5 @@
 {
-  "id": "0",
+  "id": "eb116ada-d26f-4bb8-9f32-fb31426b9e5f",
   "name": "LogicAndStateCheckCommonRefs",
   "desc": "Make sure events in the same state work when they have common items that impact them.",
   "version": 1,
@@ -14,7 +14,7 @@
         "A_Working",
         "A_Failed"
       ],
-      "id": "0a30cdf1-728e-49e7-be4f-f25770d9326d",
+      "id": "d1c440a0-758e-4730-8ae4-9d70e84f1e4a",
       "objType": "Diagram",
       "required": false
     },
@@ -28,12 +28,12 @@
         "B_Working",
         "B_Failed"
       ],
-      "id": "24929b4d-9421-4427-b473-952cc80e3718",
+      "id": "2e261ebe-ee06-4b01-953e-8a5a9ce8c9cb",
       "objType": "Diagram",
       "required": false
     },
     {
-      "id": "137de05e-7d9f-4106-8ec0-7714e1b23204",
+      "id": "20eaf4f1-3d28-4614-857f-47de7416d4d6",
       "name": "EvalStates",
       "desc": "",
       "diagramType": "dtMulti",
@@ -67,7 +67,7 @@
           ]
         }
       ],
-      "id": "9a9c4ec2-c9c3-4097-8302-9dcb8e45d07e",
+      "id": "a3ae68f5-7789-4571-909c-9564b07ef6ab",
       "objType": "State",
       "geometryInfo": {
         "x": 316.0423175000002,
@@ -94,7 +94,7 @@
           "moveFromCurrent": true
         }
       ],
-      "id": "a1b47af8-7974-4baa-b503-1a52a75b2b1a",
+      "id": "52a73b13-70e4-4f1e-90ce-870889d85684",
       "objType": "State",
       "geometryInfo": {
         "x": -34.399,
@@ -121,7 +121,7 @@
           ]
         }
       ],
-      "id": "b34d9b35-919c-45e9-9c18-6d5c2e7aade8",
+      "id": "24a998be-dcff-4172-b2f4-b202c4d3ee64",
       "objType": "State",
       "geometryInfo": {
         "x": 289.18629999999996,
@@ -148,7 +148,7 @@
           "moveFromCurrent": true
         }
       ],
-      "id": "0d186667-372d-4057-b4e9-91fe235b359d",
+      "id": "483ad5fe-8830-4f20-926d-23f537e547ff",
       "objType": "State",
       "geometryInfo": {
         "x": 1.5,
@@ -159,7 +159,7 @@
       "defaultSingleStateValue": "True"
     },
     {
-      "id": "79ae86f2-cf59-40fd-86d9-442a280c94e8",
+      "id": "1adae882-c316-4a64-9328-aa53a7fdc20e",
       "name": "FT_Fail",
       "desc": "",
       "diagramName": "EvalStates",
@@ -187,7 +187,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "53f87911-0988-4fde-926a-bfcfef126bd7",
+      "id": "32dd30b8-9647-456a-a73f-0c43fc94c0b9",
       "name": "LogicEval_Fixed",
       "desc": "",
       "diagramName": "EvalStates",
@@ -215,7 +215,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "053a3667-2127-47a5-8792-f4dc6cd06fcd",
+      "id": "16eabb27-da5c-4050-8f7a-efd4a731f0f9",
       "name": "Start",
       "desc": "",
       "diagramName": "EvalStates",
@@ -264,7 +264,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "4e27d2eb-d5a8-4132-b239-68bbd86b989a",
+      "id": "e9984bec-318c-4822-86d1-2657c27d96a0",
       "name": "StateEval_Fail",
       "desc": "",
       "diagramName": "EvalStates",
@@ -292,7 +292,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "2d13c930-6550-473e-a0d2-042fb86573c4",
+      "id": "fc8e6ec0-542f-4367-81f6-dd44cf9ba18d",
       "name": "StateEval_Fixed",
       "desc": "",
       "diagramName": "EvalStates",
@@ -334,11 +334,11 @@
           "failDesc": ""
         }
       ],
-      "id": "dd9097cd-3405-4a60-ba18-29db2e87261c",
+      "id": "163012e4-2ec0-4245-84ff-7329fb3b0b13",
       "objType": "Action"
     },
     {
-      "id": "4d3274ce-dffd-4411-b5be-9c3453dd4752",
+      "id": "c4cf3cd6-8df4-4cf7-8b0d-f5260a7d24f5",
       "name": "goto_A_Working",
       "desc": "",
       "actType": "atTransition",
@@ -382,11 +382,11 @@
           "failDesc": ""
         }
       ],
-      "id": "73fd4973-3d81-41d7-b286-a812fea57d2f",
+      "id": "918c046f-34bf-4b25-bb2c-22e5b07f6e32",
       "objType": "Action"
     },
     {
-      "id": "719e6dd5-a49c-4120-9088-32b7af05b623",
+      "id": "a2d1d4fc-b294-49f3-b083-4bda99cb48e7",
       "name": "goto_B_Working",
       "desc": "",
       "actType": "atTransition",
@@ -418,7 +418,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "e8d6e6a8-cfd7-4e23-8f43-576902954487",
+      "id": "224398f9-d80d-49a7-978a-7db942cab4bf",
       "name": "Goto_Failed",
       "desc": "",
       "actType": "atTransition",
@@ -450,7 +450,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "e852fb91-476a-453a-9348-bb21fcecc7e6",
+      "id": "601d5775-a07b-42db-91bc-d95134df3297",
       "name": "goto_LogicEval_Fixed",
       "desc": "",
       "actType": "atTransition",
@@ -482,7 +482,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "8c59c6ac-0658-4751-a10b-726f94df17f0",
+      "id": "0c81c1cc-8027-48cf-b22b-fca236ec4b52",
       "name": "goto_LogicFail",
       "desc": "",
       "actType": "atTransition",
@@ -514,7 +514,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "bb3432a2-bd06-4742-828f-310c3da544eb",
+      "id": "d02bc47d-d007-4229-92f6-7c8e490f3eef",
       "name": "goto_StateEval_Fixed",
       "desc": "",
       "actType": "atTransition",
@@ -546,7 +546,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "e7cdb150-5ec1-4246-94d2-04ea42f5f677",
+      "id": "cc7cb03b-797c-4197-bbaa-c6c7fee5a42d",
       "name": "Inc_FTFailCnt",
       "desc": "",
       "actType": "atCngVarVal",
@@ -571,7 +571,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "c5eb7a3c-2502-49ab-8927-32fce235d002",
+      "id": "69fa080c-3088-4fdd-b229-d2610fbb274f",
       "name": "inc_FTFixedCnt",
       "desc": "",
       "actType": "atCngVarVal",
@@ -596,7 +596,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "72934606-a749-47be-b1d5-eb72e2075899",
+      "id": "f04ea976-6840-495d-b916-42af15d2a5ba",
       "name": "Inc_StateFailCnt",
       "desc": "",
       "actType": "atCngVarVal",
@@ -621,7 +621,7 @@
       "returnProcess": "rtNone"
     },
     {
-      "id": "2d4ebed9-29a7-4eba-90a2-7892128adeef",
+      "id": "be8b8510-43d3-4475-9ac1-37d68c6b1d6c",
       "name": "Inc_StateFixCnt",
       "desc": "",
       "actType": "atCngVarVal",
@@ -648,7 +648,7 @@
   ],
   "EventList": [
     {
-      "id": "4db2e6f4-d376-4463-a46e-5156bcd80813",
+      "id": "c81525e2-3546-4d2e-ac92-0c7b8d1fe61c",
       "name": "A_FTR",
       "desc": "A fails to run",
       "evType": "etTimer",
@@ -660,7 +660,7 @@
       "time": "P0DT5H1S"
     },
     {
-      "id": "32f43aad-3ef1-4169-afb2-c35b8fcfdf91",
+      "id": "04c00a8e-6d17-432e-8f74-39ef747f9612",
       "name": "AFixed",
       "desc": "",
       "evType": "etTimer",
@@ -672,7 +672,7 @@
       "time": "P0DT5H"
     },
     {
-      "id": "6d5c3ac6-7847-4247-9040-a643b9d434f8",
+      "id": "69ae9015-0fcd-4d3e-8af3-4e9d70fccbf1",
       "name": "B_FTR",
       "desc": "A fails to run",
       "evType": "etTimer",
@@ -684,7 +684,7 @@
       "time": "P0DT5H"
     },
     {
-      "id": "d1b84fad-f6ca-48e7-be89-a633bd4b6cb7",
+      "id": "bb80d623-a053-46f6-bcab-5f690d6f07ea",
       "name": "BFix",
       "desc": "",
       "evType": "etTimer",
@@ -696,7 +696,7 @@
       "time": "P0DT5H"
     },
     {
-      "id": "4b77b2f9-e884-42ab-a432-0e294027ac98",
+      "id": "b190c412-976b-4adc-a8f5-3d485b3d40d5",
       "name": "BothFixed_Logic",
       "desc": "",
       "evType": "etComponentLogic",
@@ -710,24 +710,23 @@
       "logicTop": "TreeTest"
     },
     {
-      "id": "3392419c-a21d-40ad-970f-862f0cbe7b96",
+      "id": "85adff39-8a9c-4772-bc9d-f21c07764536",
       "name": "BothFixed_SCng",
       "desc": "",
       "evType": "etStateCng",
       "mainItem": true,
       "required": false,
       "objType": "Event",
-      "varNames": [],
+      "ifInState": true,
+      "allItems": true,
       "triggerStates": [
         "A_Failed",
         "B_Failed"
       ],
-      "allItems": true,
-      "time": "P0D",
-      "lambda": ""
+      "evalEvOnStateEntry": true
     },
     {
-      "id": "26d0eab7-5a8a-45b9-aafb-7199dd458646",
+      "id": "45defa22-775f-46d3-9e25-a797ab58005b",
       "name": "ExitNow",
       "desc": "",
       "evType": "etTimer",
@@ -740,7 +739,7 @@
       "time": "P0DT0S"
     },
     {
-      "id": "53461e7d-ca2e-4b9d-b8ee-66db88838288",
+      "id": "85130a03-1fbf-44c6-81a0-32e2151afbbe",
       "name": "ItemsFailed",
       "desc": "",
       "evType": "etStateCng",
@@ -755,7 +754,7 @@
       "allItems": true
     },
     {
-      "id": "913d6a9a-62a4-44fc-87c2-829b8ec93885",
+      "id": "5db65ff8-190f-4e07-85dc-863354fe2464",
       "name": "LogicTreeEval",
       "desc": "",
       "evType": "etComponentLogic",
@@ -771,7 +770,7 @@
   ],
   "LogicNodeList": [
     {
-      "id": "f71ed5d3-b7ab-4857-91b3-3238d40cd38b",
+      "id": "686cff5f-88f4-4d9a-8a5d-7f1060abbd9d",
       "name": "Tree",
       "desc": "",
       "isRoot": false,
@@ -781,7 +780,7 @@
       "objType": "LogicNode"
     },
     {
-      "id": "0d855ea2-174e-4207-b245-0f8390dbd9ad",
+      "id": "8f210586-a33c-4b6c-8549-d2bf62ca4dcb",
       "name": "TreeTest",
       "desc": "",
       "isRoot": true,
@@ -806,7 +805,7 @@
       "value": 0,
       "type": "int",
       "objType": "Variable",
-      "id": "c5874931-6b4d-4b2b-b1d7-e5d30d548c7e",
+      "id": "ac2ff86b-6ab6-4841-8aac-4d55dd18d214",
       "desc": "",
       "resetOnRuns": true
     },
@@ -816,7 +815,7 @@
       "value": 0,
       "type": "int",
       "objType": "Variable",
-      "id": "052d64b5-8acc-4e6d-946a-a5fed42d52f2",
+      "id": "04b9ace4-ea3a-4b84-9648-429a006af1b3",
       "desc": "",
       "resetOnRuns": true
     },
@@ -826,7 +825,7 @@
       "value": 0,
       "type": "int",
       "objType": "Variable",
-      "id": "51e5b2e8-7604-4d8e-a2e9-57b1cb919e36",
+      "id": "26991087-2501-4767-9df6-2d2d48a90011",
       "desc": "",
       "resetOnRuns": true
     },
@@ -836,13 +835,14 @@
       "value": 0,
       "type": "int",
       "objType": "Variable",
-      "id": "1f3c6932-faa2-4e8b-b905-eaca588dbe20",
+      "id": "fc036a16-a9eb-4623-a93c-db95adda120b",
       "desc": "",
       "resetOnRuns": true
     }
   ],
   "ExtSimList": [],
   "objType": "EMRALD_Model",
-  "emraldVersion": 3,
-  "templates": []
+  "emraldVersion": 3.2,
+  "templates": [],
+  "versionHistory": []
 }

@@ -17,9 +17,9 @@
   |<div style="width:100px">Icon</div>|<div style="width:300px">Description</div>|
   |---|---|
   |**Logic Gates**|
-  |<img src="/images/Modeling/logicTree/OrGate.png" alt="Or Gate" style="width:40px;" />|Drag this icon to add an Or Gate to the Fault Tree|
-  | <img src="/images/Modeling/logicTree/AndGate.png" alt="And Gate" style="width:40px;" />|Drag this icon to add an And Gate to the Fault Tree|
-  |<img src="/images/Modeling/logicTree/NotGate.png" alt="Not Gate" style="width:40px;" />|Drag this icon to add a Not Gate to the Fault Tree|
+  |<img src="/images/Modeling/logicTree/OrGate.png" alt="Or Gate" width="40" />|Drag this icon to add an Or Gate to the Fault Tree|
+  | <img src="/images/Modeling/logicTree/AndGate.png" alt="And Gate" width="40" />|Drag this icon to add an And Gate to the Fault Tree|
+  |<img src="/images/Modeling/logicTree/NotGate.png" alt="Not Gate" width="40" />|Drag this icon to add a Not Gate to the Fault Tree|
 
 
 ## Editing Area
@@ -27,13 +27,13 @@
 
 ## Logic Gates
   **Or Gate** <br>
-  <img src="/images/Modeling/logicTree/OrGateElement.png" alt="Or Gate" style="width:200px;" />
+  <img src="/images/Modeling/logicTree/OrGateElement.png" alt="Or Gate" width="200" />
 
   **And Gate**<br>
-  <img src="/images/Modeling/logicTree/AndGateElement.png" alt="And Gate" style="width:200px;" />
+  <img src="/images/Modeling/logicTree/AndGateElement.png" alt="And Gate" width="200" />
 
   **Not Gate** <br>
-  <img src="/images/Modeling/logicTree/NotGateElement.png" alt="Not Gate" style="width:200px;" />
+  <img src="/images/Modeling/logicTree/NotGateElement.png" alt="Not Gate" width="200" />
 
   
   **Adding a Gate**<br>
@@ -41,7 +41,7 @@
 <img src="/images/Modeling/logicTree/AddGateOpt1.png" alt="Add Gate Option 1" style="width:500px;" />
   
   The gate will appear in the Editing Area under the branch you dragged it to.<br>
-<img src="/images/Modeling/logicTree/AddGateOpt1_2.png" alt="Add Gate Option 1 Step 2" style="width:500px;" />
+<img src="/images/Modeling/logicTree/AddGateOpt1_2.png" alt="Add Gate Option 1 Step 2" width="500" />
 
   <ins>Option 2:</ins> In the Editing Area, right-click on the gate you would like to add a new gate under and select "Add Gate".<br> 
 <img src="/images/Modeling/logicTree/AddGateOpt2.png" alt="Add Gate Option 2" style="width:500px;" />
@@ -49,15 +49,15 @@
   An Edit Forms/Gate Adder window will appear. Fill it out and click "SAVE". A description is optional.<br>
 <img src="/images/Modeling/logicTree/AddGateOpt2_2.png" alt="Add Gate Option 2 Step 2" style="width:500px;" />
   
-  The gate will appear in the Editing Area under the branch that you added it to.<br> 
+  The gate will appear in the Editing Area under the branch you added it to.<br> 
 <img src="/images/Modeling/logicTree/AddGateOpt2_3.png" alt="Add Gate Option 2 Step 3" style="width:500px;" />
 
   **Editing a Gate**<br>
-  To edit a gate, right click on the desired blue gate and select the option to "Edit Gate Node". <br> 
-<img src="/images/Modeling/logicTree/EditGate1.png" alt="Edit Gate Step 1" style="width:500px;" />
+  To edit a gate, right-click on the desired blue gate and select the option to "Edit Gate Node". <br> 
+<img src="/images/Modeling/logicTree/EditGate1.png" alt="Edit Gate Step 1" width="500" />
   
   The Edit Gate Node window should appear. Click "SAVE" to confirm the changes.<br>
-<img src="/images/Modeling/logicTree/EditGate2.png" alt="Edit Gate Step 2" style="width:500px;" />
+<img src="/images/Modeling/logicTree/EditGate2.png" alt="Edit Gate Step 2" width="500" />
   
   **Deleting a Gate**<br>
   Right-click on the gate and select the option to "Delete Gate" as shown below. This will delete the gate from all logic trees if you have previously copied and pasted that tree elsewhere. <br>
@@ -65,7 +65,7 @@
 
   **Removing a Gate**<br>
   In the top right corner of the gate you would like to delete, click the [x] icon. Use caution as no confirmation window will appear.<br>
-<img src="/images/Modeling/logicTree/DeleteGate1.png" alt="Delete Gate Step 1" style="width:500px;" />
+<img src="/images/Modeling/logicTree/DeleteGate1.png" alt="Delete Gate Step 1" width="500" />
 
   The gate will no longer be shown in the logic tree. You can also right-click and click "Remove Gate" for the same effect.<br>
 <img src="/images/Modeling/logicTree/DeleteGate2.png" alt="Delete Gate Step 2" style="width:500px;" />
@@ -82,14 +82,14 @@
 <img src="/images/Modeling/logicTree/AddBasicEventOpt1_2.png" alt="Add Basic Event Option 1 Step 2" style="width:500px;" />
 
   The Basic Event will appear in the Editing Area under the branch you added it to.<br>
-<img src="/images/Modeling/logicTree/AddBasicEventOpt1_3.png" alt="Add Basic Event Option 1 Step 3" style="width:500px;" />
+<img src="/images/Modeling/logicTree/AddBasicEventOpt1_3.png" alt="Add Basic Event Option 1 Step 3" width="500" />
 
   <ins>Option 2:</ins> 
   From the Left Navigation Frame, expand the Diagrams section. Click and hold on to the Single State Diagram that you would like to add as a Basic Event to your logic tree. Then drag it to the Gate you would like it to be under. Once the Gate highlihgts green, release your mouse button. <br>
   ![Add Basic Event Option 2 Step 1](/images/Modeling/logicTree/AddBasicEventOpt2.png)
 
   The Basic Event will appear in the Editing Area under the branch you added it to.<br> 
-  <img src="/images/Modeling/logicTree/AddBasicEventOpt2_2.png" style="width:500px">
+  <img src="/images/Modeling/logicTree/AddBasicEventOpt2_2.png" width="500">
 
   **Editing a Basic Event**<br>
   <ins>Option 1:</ins>
@@ -118,7 +118,7 @@
   **Deleting a Basic Event**<br>
   <ins>Option 1:</ins><br>
   In the top right corner of the Basic Event you would like to delete, click the [x] icon. Use caution as no confirmation window will appear.<br>
-  <img src="/images/Modeling/logicTree/DeleteBasicEvent1.png" style="width:300px">
+  <img src="/images/Modeling/logicTree/DeleteBasicEvent1.png" width="300">
 
   The Basic Event will no longer be shown in the logic tree. Clicking the [x] button removes the event fromt he tree but does not delete the corresponding diagram. <br>
   <img src="/images/Modeling/logicTree/DeleteBasicEvent2.png" style="width:300px">
@@ -128,14 +128,14 @@
   <img src="/images/Modeling/logicTree/DeleteBasicEvent3.png" style="width:300px">
 
   The Basic Event will no longer be shown in the logic tree.<br>
-  <img src="/images/Modeling/logicTree/DeleteBasicEvent2.png" style="width:300px">
+  <img src="/images/Modeling/logicTree/DeleteBasicEvent2.png" width="300">
 
 
 ## Summary of Shared Symbols
   |<div style="width:100px">Icon</div>|<div style="width:300px">Description</div>|
   |---|---|
-  |<img src="/images/Modeling/logicTree/CollapseIcon.png" style="width:25px">|Click to collapse the branches below the gate|
-  |<img src="/images/Modeling/logicTree/ExpandIcon.png" style="width:25px">|Click to expand the branches below the gate|
-  |<img src="/images/Modeling/logicTree/LinkDiagramIcon.png" style="width:25px">|Click to go to the diagram of that component|
+  |<img src="/images/Modeling/logicTree/CollapseIcon.png" width="25">|Click to collapse the branches below the gate|
+  |<img src="/images/Modeling/logicTree/ExpandIcon.png" width="25">|Click to expand the branches below the gate|
+  |<img src="/images/Modeling/logicTree/LinkDiagramIcon.png" width="25">|Click to go to the diagram of that component|
 
 <!--Copyright 2021 Battelle Energy Alliance-->

@@ -12,7 +12,7 @@ Actions that are triggered immediately are listed in the **Immediate Actions** s
 Open the Diagram where you would like your action to appear. Locate the State you would like to add the action to and either right-click on the "Immediate actions" label or on the event you would like to add it to. Next click "New Action". <br>
 ![New Action 1_1](/images/Modeling/actions/NewAction1.png)
 
-Fill out the dialogue box and press "SAVE". A description is optional.
+Fill out the dialogue box and press "SAVE". The description is optional.
 ![New Action 2](/images/Modeling/actions/NewAction2.png) See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
 
 The action name cannot be the same as any existing action in the model. If it is, an error message will appear notifying you to choose another name.<br>
@@ -25,10 +25,10 @@ The action will appear in the Immediate Actions list or Event that you initially
 Click on the Global tab in the Left Navigation Frame Modeling Pieces tabs. The descriptor for each section under the tab should have changed to Global.<br>
 ![New Action 1_2](/images/Modeling/webUIOverview/GlobalTabs.png)
 
-Then right click on Global Actions. A dropdown menu will appear, click on "New Action". <br>
+Then right-click on Global Actions. A dropdown menu will appear, click on "New Action". <br>
 ![New Action 2_2](/images/Modeling/actions/NewAction2_2.png)
 
-Fill out the dialogue box and press "SAVE". A description is optional.
+Fill out the dialogue box and press "SAVE". The description is optional.
 ![New Action 3_2](/images/Modeling/actions/NewAction3_2.png) 
 
 See [Types of Actions](#types-of-actions) for detailed description of dialogue box options for each type of action.
@@ -94,11 +94,12 @@ A confirmation window will appear in the Modeling Area. Click "DELETE". <br>
 
 The action will no longer be listed in the state and will no longer be listed in the Left Navigation Frame. <br>
 ![Delete an Action in a State Step 2](/images/Modeling/actions/DeleteActionInState_2.png)</br>
-Use "[Remove Action](#removing-an-action)" to remove it from the selected state only.
+Use "[Remove Action](#removing-an-action)" to just remove it from the selected state only.
 
 ## Types of Actions
 
-<h3>Transition <img src="/images/Modeling/actions/TransitionArrow.png" alt="Transition" width="25"/></h3>
+### Transition
+<img src="/images/Modeling/actions/TransitionArrow.png" alt="Transition" width="25"/>
 
 A transition action always adds the state it references to the current state list, meaning that it is now in that state during the simulation. If the event is marked as "Exit" when it occurs, (see [State Properties](./states.md#state-properties) and [Editing an Event](./events.md#editing-an-event) for more information) then the model is
 moving from the one state to the other. A solid black arrow indicates moving, and a dashed green indicated adding to the current states. A transition action in 
@@ -132,7 +133,8 @@ The value returned by the script is assigned to the variable, so one must be sel
 same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section.
 - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" drop-down menu.
 
-<h3>External Simulation Message <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/></h3>  
+### External Simulation Message
+<img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/>  
 
 Listed as "Ext. Sim Message" in the drop-down menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./xmppProtocol.md#xmpp-protocol) for details on coupling code to EMRALD.
 
@@ -145,9 +147,7 @@ Runs user-defined scripts to both execute an external piece of code and process 
 
 <img src="/images/Modeling/actions/RunApplicationOptions.png" alt="Run Application Options" width="500"/>
 
-- **Preprocess Code (C#):** Type or copy and paste into this text field the C# code you would like to be executed before the executable is started when this action is triggered. 
-this code must return a string and this string is passed as parameters on end of executable being run. For example if you are running notepad you could 
-return "c:/somepath/file.txt" to open a specific file.
+- **Preprocess Code (C#):** Type or copy and paste into this text field the C# code you would like to be executed before the executable is started when this action is triggered. This code must return a string, and this string is passed as parameters on end of executable being run. For example, if you are running Notepad, you could return "c:/somepath/file.txt" to open a specific file.
 - **Executable Location:** Type or copy and paste into this text field the path to the executable.
 - **Return Type:** The type of process for returning data from the executable. Options are "None", "State List", and "Variable". If a value other than "None" is selected, the Postprocess Code section will be shown (see below).
 - **Target Variable:** If the "Variable" return type is selected, a drop down menu will be shown where you can select the variable to store the results of the external code. The postprocess code (see below) returns the value that is written to this variable.
@@ -163,13 +163,13 @@ Below is a table of icons that either identify the type of action (left-hand sid
 |<div style="width:100px">Icon</div>|<div style="width:300px">Description</div>|
 |---|---|
 |**Action Type**| |
-|<div style="width:25px">![Transition](/images/Modeling/actions/TransitionArrow.png)</div>|Transition Action|
-|<div style="width:25px">![Change Variable Value](/images/Modeling/actions/varCond.png)</div>|Change Variable Value Action|
-|<div style="width:25px">![External Simulation Message](/images/Modeling/actions/extSim.png)</div>|External Simulation Message Action|
-|![Run Application](/images/Modeling/actions/cogwheel.png)|Run Application Action|
+|<img src="/images/Modeling/actions/TransitionArrow.png" alt="Transition" width="25" />|Transition Action|
+|<img src="/images/Modeling/actions/varCond.png" alt="Change Variable Value" width="25" />|Change Variable Value Action|
+|<img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25" />|External Simulation Message Action|
+|<img src="/images/Modeling/actions/cogwheel.png" alt="Run Application" width="25" />|Run Application Action|
 |**Status Icons**| |
-|![Arrow Icon](/images/Modeling/actions/connector.gif)|This click and drag from this icon to connect the action to a state.|
-|![Link Icon](/images/Modeling/actions/link.png)|This icon appears instead of an arrow, when the transition goes to a state not in the current diagram.|
+|<img src="/images/Modeling/actions/connector.gif" alt="Arrow Icon" width="25" />|This click and drag from this icon to connect the action to a state.|
+|<img src="/images/Modeling/actions/link.png" alt="Link Icon" width="25" />|This icon appears instead of an arrow, when the transition goes to a state not in the current diagram.|
 
 
 <!-- |<div style="width:20px">![Missing Information Action Icon](/images/Modeling/actions/questionOrange.png)</div>|This icon appears when the action is not fully defined|

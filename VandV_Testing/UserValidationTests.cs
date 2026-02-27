@@ -14,6 +14,7 @@ using Testing;
 using Matrix.Xmpp.Jingle;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 //////////////////////////////////////////
 ///See the readMe for adding 
@@ -28,17 +29,17 @@ namespace UserTesting
     #region Validation Cases Setup Code
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "UserVerifiedCompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "UserVerifiedCompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
     {
-      return "UserValidationRuns" + Path.DirectorySeparatorChar;
+      return "UserValidationRuns" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "UserValidationModels" + Path.DirectorySeparatorChar;
+      return "UserValidationModels" + Path.AltDirectorySeparatorChar;
     }
     #endregion
 
@@ -71,7 +72,7 @@ namespace UserTesting
     //  optionsJ["runct"] = 1;
     //  optionsJ["debug"] = "basic";
     //  JSONRun testRun = new JSONRun(optionsJ.ToString());
-    //  Assert.True(TestRunSim(testRun));
+    //  Assert.True(await TestRunSim(testRun));
 
 
     //  //If verifying against a different results file use this code, otherwise delete and add the verification asserts 
@@ -85,7 +86,7 @@ namespace UserTesting
 
     //2.2.1 T2
     [Fact]
-    public void Single_component_failure()
+    public async Task Single_component_failure()
     {
       //Description 
       //test the failure probability of a single component given the mission time and failure rate
@@ -108,7 +109,7 @@ namespace UserTesting
       optionsJ["runct"] = 100000;
       optionsJ["runtime"] = "365.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -119,7 +120,7 @@ namespace UserTesting
 
     //2.2.2 T1
     [Fact] 
-    public void Single_Component_Repair()
+    public async Task Single_Component_Repair()
     {
       //Description 
       //test the failure and repair of a single component given the failure rate, repair rate or time, and mission time
@@ -142,7 +143,7 @@ namespace UserTesting
       optionsJ["runct"] = 100000;
       optionsJ["runtime"] = "365.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -153,7 +154,7 @@ namespace UserTesting
 
     //2.2.2 T2
     [Fact]
-    public void Single_Component_Repair_With_Timer()
+    public async Task Single_Component_Repair_With_Timer()
     {
       //Description 
       //test the failure and repair of a single component given the failure rate, repair rate or time, and mission time.
@@ -175,7 +176,7 @@ namespace UserTesting
       /////////////
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -187,7 +188,7 @@ namespace UserTesting
 
     //2.2.3 T1
     [Fact]
-    public void Two_Components_Fail_in_Parallel()
+    public async Task Two_Components_Fail_in_Parallel()
     {
       //Description 
       //test the rate and MTTF of two identical components in parallel for rate of 1/10 days Mission time 100 days
@@ -210,7 +211,7 @@ namespace UserTesting
       optionsJ["runct"] = 100000;
       optionsJ["runtime"] = "100.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -221,7 +222,7 @@ namespace UserTesting
 
     //2.2.3 t3
     [Fact]
-    public void Two_Components_Fail_in_Parallel_Rate()
+    public async Task Two_Components_Fail_in_Parallel_Rate()
     {
       //Description 
       //test the failure probability of two identical components in parallel
@@ -244,7 +245,7 @@ namespace UserTesting
       optionsJ["runct"] = 100000;
       optionsJ["runtime"] = "10000.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -255,7 +256,7 @@ namespace UserTesting
 
     //2.2.4 t1
     [Fact]
-    public void Two_Components_Fail_in_Series()
+    public async Task Two_Components_Fail_in_Series()
     {
       //Description 
       //test the failure probability of two identical components in series in EMRALD, as shown in Figure 9, we can use SAPHIRE as shown in Figure 10 and analytical calculations as given in Equation  (4). 
@@ -277,7 +278,7 @@ namespace UserTesting
       /////////////
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -288,7 +289,7 @@ namespace UserTesting
 
     //2.2.4 t3
     [Fact]
-    public void Two_Components_Fail_in_Series_Rate()
+    public async Task Two_Components_Fail_in_Series_Rate()
     {
       //Description 
       //test the MTTF of two identical components in series in EMRALD, as shown in Figure 9, we can use SAPHIRE as shown in Figure 10 and analytical calculations as given in Equation  (4). 
@@ -313,7 +314,7 @@ namespace UserTesting
       //optionsJ["resout"] = "c:\\temp\\BasicResults.txt"; 
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -324,7 +325,7 @@ namespace UserTesting
 
     //2.2.5
     [Fact]
-    public void CCF()
+    public async Task CCF()
     {
       //Description 
       //calculate the failure probability of two components in parallel with common cause failure using the equation of the beta factor model
@@ -346,7 +347,7 @@ namespace UserTesting
       /////////////
       optionsJ["runct"] = 100000;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -357,7 +358,7 @@ namespace UserTesting
 
     //2.2.6
     [Fact]
-    public void Basic_Event_Tree()
+    public async Task Basic_Event_Tree()
     {
       //Description 
       //verify the results of an event tree model, with one component as the engineering safety feature, in EMRALD
@@ -380,7 +381,7 @@ namespace UserTesting
       optionsJ["runct"] = 1000000;
       optionsJ["runtime"] = "365.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -391,7 +392,7 @@ namespace UserTesting
 
     //2.2.7
     [Fact]
-    public void Basic_Event_Tree_With_Two_Components_In_Parallel()
+    public async Task Basic_Event_Tree_With_Two_Components_In_Parallel()
     {
       //Description 
       //verify the results of an event tree model with an engineering safety feature that has two component sin parallel, in EMRALD
@@ -414,7 +415,7 @@ namespace UserTesting
       optionsJ["runct"] = 10000;
       optionsJ["runtime"] = "365.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -425,7 +426,7 @@ namespace UserTesting
 
     //2.2.8
     [Fact]
-    public void Basic_Event_Tree_With_Two_Components_In_Series()
+    public async Task Basic_Event_Tree_With_Two_Components_In_Series()
     {
       //Description 
       //verify the results of an event tree model with an engineering safety feature that has two components in series, in EMRALD
@@ -448,7 +449,7 @@ namespace UserTesting
       optionsJ["runct"] = 10000;
       optionsJ["runtime"] = "1000.00:00:00";
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -461,7 +462,7 @@ namespace UserTesting
 
     //2.3.1
     [Fact]
-    public void Two_Components_Fail_In_Parallel_And_Undergo_Repair()
+    public async Task Two_Components_Fail_In_Parallel_And_Undergo_Repair()
     {
       //Description 
       //Two Identical Components in Active Parallel Fail and Get Repaired: One Repairperson Available
@@ -488,7 +489,7 @@ namespace UserTesting
       optionsJ["variables"] = variablesArray;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -499,7 +500,7 @@ namespace UserTesting
 
     //2.3.2
     [Fact]
-    public void Two_Components_Fail_In_Parallel_And_Undergo_2Repair()
+    public async Task Two_Components_Fail_In_Parallel_And_Undergo_2Repair()
     {
       //Description 
       //Two Identical Components in Active Parallel Fail and Get Repaired: Two Repairperson Available
@@ -526,7 +527,7 @@ namespace UserTesting
       optionsJ["variables"] = variablesArray;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -538,7 +539,7 @@ namespace UserTesting
 
     //2.3.3
     [Fact]
-    public void Two_Components_Active_And_Standby_Fail_And_Undergo_Repair()
+    public async Task Two_Components_Active_And_Standby_Fail_And_Undergo_Repair()
     {
       //Description 
       //Two Identical Components, One Active and One in Standby, Fail and Get Repaired, One Repairperson Available
@@ -565,7 +566,7 @@ namespace UserTesting
       optionsJ["variables"] = variablesArray;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -575,7 +576,7 @@ namespace UserTesting
     }
     //2.3.4
     [Fact]
-    public void Two_Components_Active_And_Standby_Fail_And_Undergo_2Repair()
+    public async Task Two_Components_Active_And_Standby_Fail_And_Undergo_2Repair()
     {
       //Description 
       //Two Identical Components, One Active and One in Standby, Fail and Get Repaired, Two Repairpersons Available
@@ -602,7 +603,7 @@ namespace UserTesting
       optionsJ["variables"] = variablesArray;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -612,7 +613,7 @@ namespace UserTesting
     }
     //2.3.5 
     [Fact]
-    public void Two_Components_Series_Fail_And_Undergo_Repair()
+    public async Task Two_Components_Series_Fail_And_Undergo_Repair()
     {
       //Description 
       //Two Identical Components in Series Fail and Get Repaired, One Repairperson Available
@@ -639,7 +640,7 @@ namespace UserTesting
       optionsJ["variables"] = variablesArray;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);
@@ -649,7 +650,7 @@ namespace UserTesting
     }
     //2.3.6
     [Fact]
-    public void Two_Components_Series_Fail_And_Undergo_2Repair()
+    public async Task Two_Components_Series_Fail_And_Undergo_2Repair()
     {
       //Description 
       //Two Identical Components in Series Fail and Get Repaired, Two Repairpersons Available
@@ -676,7 +677,7 @@ namespace UserTesting
       optionsJ["variables"] = variablesArray;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);

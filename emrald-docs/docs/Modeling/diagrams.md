@@ -7,7 +7,7 @@
   In the Left Navigation Frame, right click on "Diagrams" and select "New Diagram" from the drop down menu. <br>
   <img src="/images/Modeling/diagrams/NewDiagram1.png" alt="Right Click for New Diagram" style="width:300px;">
 
-  Or select "New Diagram" from the right side drop down menu. 
+  Or select "New Diagram" from the right-side drop-down menu. 
   <img src="/images/Modeling/diagrams/NewDiagram1_1.png" alt="Click New Diagram" style="width:300px;">
 
   There are three options when filling out the form, all seen in the Properties window.
@@ -67,7 +67,7 @@
   See [States](/Modeling/states.md) for more information.
 
 ### <span style="color:blue"> Events </span>
-  Events monitor for specified criteria and can have one or more actions that are executed when that criteria is met. <br>
+  Events monitor for specified criteria and can have one or more actions that are executed when that criterion is met. <br>
 
   See [Events](/Modeling/events.md) for more information.
 
@@ -92,7 +92,7 @@
 
 ### Single State
   Single State diagrams are meant to be small diagrams for capturing all behaviors of individual components. All basic events for components in traditional PRA can be captured in a single state diagram.
-  Single State diagrams means you can only be in one state at a time and that a boolean value is associated with the different states. At least one state must have a "0" value and at least one state must have a "1" value assigned. (See the Single State Diagrams subsection in [State Properties](./states.md#single-state-diagrams) for more information.) <br>
+  Single State diagrams mean you can only be in one state at a time and that a boolean value is associated with the different states. At least one state must have a "0" value and at least one state must have a "1" value assigned. (See the Single State Diagrams subsection in [State Properties](./states.md#single-state-diagrams) for more information.) <br>
   
   <img src="/images/Modeling/diagrams/SampleComponentDiagram.png" alt="Sample Component Diagram">
   This example is a pump that has three states, standby, active, and failed. When the demand event for the pump's use is triggered, the pump either moves to an Active or Failed state, depending on random sampling. This would be equivalent to a "Fails to Start" basic event in traditional PRA.

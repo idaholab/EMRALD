@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
+using SimulationDAL;
 using SimulationEngine;
 using Xunit;
 
@@ -36,7 +38,7 @@ namespace Testing
 
     protected bool ConfirmManualTest(string testName, string textDesc)
     {
-      string currentDirectory = Directory.GetCurrentDirectory();
+      string currentDirectory = CommonFunctions.NormalizeGetCurrentDirectory();
 
       try
       {
@@ -69,7 +71,7 @@ namespace Testing
 
     protected string RootDir()
     {
-      string currentPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+      string currentPath = CommonFunctions.NormalizeGetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
       while (true)
       {
@@ -83,13 +85,15 @@ namespace Testing
         }
         else
         {
-          currentPath = Directory.GetParent(currentPath).FullName;
+          currentPath = CommonFunctions.NormalizeGetParent(currentPath);
         }
       }
     }
     protected string MainTestDir()
     {
-      return RootDir() + Path.DirectorySeparatorChar + "TestingFiles" + Path.DirectorySeparatorChar;
+      return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+          ? (RootDir() + Path.AltDirectorySeparatorChar + "TestingFiles" + Path.AltDirectorySeparatorChar).Replace('\\', '/')
+          : (RootDir() + Path.AltDirectorySeparatorChar + "TestingFiles" + Path.AltDirectorySeparatorChar);
     }
 
     protected abstract string CompareFilesDir();
@@ -101,7 +105,7 @@ namespace Testing
     protected string SetupTestDir(string testName)
     {
       //Setup directory for unit test 
-      string dir = MainTestDir() + TestFolder() + testName + Path.DirectorySeparatorChar;
+      string dir = MainTestDir() + TestFolder() + testName + Path.AltDirectorySeparatorChar;
       if (Directory.Exists(dir))
       {
         var d = new DirectoryInfo(dir);
@@ -112,7 +116,7 @@ namespace Testing
       //setup the test log file
       var rootDir = RootDir();
 
-      LogManager.Configuration = new XmlLoggingConfiguration(rootDir + Path.DirectorySeparatorChar + "NLog.config");
+      LogManager.Configuration = new XmlLoggingConfiguration(rootDir + Path.AltDirectorySeparatorChar + "NLog.config");
       var config = LogManager.Configuration;
       var logfile = new NLog.Targets.FileTarget(debugLogger)
       {
@@ -133,8 +137,24 @@ namespace Testing
     {
       var st = new StackTrace();
       var sf = st.GetFrame(1);
+      var method = sf.GetMethod();
 
-      return sf.GetMethod().Name;
+      // Check if we're in a compiler-generated async method (MoveNext)
+      if (method.Name == "MoveNext" && method.DeclaringType != null)
+      {
+        var declaringType = method.DeclaringType.Name;
+
+        // Async methods are in types named like "<MethodName>d__##"
+        if (declaringType.Contains("<") && declaringType.Contains(">"))
+        {
+          var start = declaringType.IndexOf('<') + 1;
+          var end = declaringType.IndexOf('>');
+          return declaringType.Substring(start, end - start);
+        }
+      }
+
+      // Regular (non-async) method
+      return method.Name;
     }
 
     protected JObject SetupJSON(string loc, string testName, bool jsonResults = false)
@@ -208,10 +228,10 @@ namespace Testing
       }
     }
 
-    protected bool TestRunSim(JSONRun runParams)
+    protected async Task<bool> TestRunSim(JSONRun runParams)
     {
       var logger = NLog.LogManager.GetLogger(debugLogger);
-      string res = runParams.RunSim();
+      string res = await runParams.RunSim();  // Add await here
       if (res != "")
       {
         var st = new StackTrace();

@@ -157,7 +157,7 @@ namespace MessageDefLib
     }
 
     public string version { get; set; } // [major.minor.revision] Server and Client must operate on the same “Major” number for compatibility. Non required features will be a minor or revision number change
-    public Guid pID { get; set; } //packet ID, unique for each simulation running
+    public Guid pID { get; set; } //packet ID, unique for each mesage and simulation running
     public MessageType msgType { get; set; }  // Message type [Event, Action, Request, Response, Register] must have a matching name/value pair.
     public TimeSpan globalRunTime { get; set; }
     public string dispName; //display name of the action

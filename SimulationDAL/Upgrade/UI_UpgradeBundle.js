@@ -1,6 +1,6 @@
 'use strict';
 
-const EMRALD_SchemaVersion = 3.1;
+const EMRALD_SchemaVersion = 3.2;
 
 function UpgradeV1_x(modelTxt) {
     const newModel = JSON.parse(modelTxt);
@@ -555,6 +555,38 @@ function UpgradeV3_1_Recursive(oldModel) {
     };
 }
 
+function UpgradeV3_2(modelTxt) {
+    return {
+        newModel: JSON.stringify(UpgradeV3_2_Recursive(JSON.parse(modelTxt))),
+        errors: [],
+    };
+}
+function UpgradeV3_2_Recursive(oldModel) {
+    const upgradeModel = (oldModel) => {
+        return {
+            ...oldModel,
+            StateList: oldModel.StateList.map((state) => {
+                // eslint-disable-next-line prefer-const
+                let { geometryInfo } = state;
+                if (typeof state.geometryInfo === 'undefined' && typeof state.geometry === 'string') {
+                    geometryInfo = JSON.parse(state.geometry.replace(/([A-z]+):\s/g, '"$1": '));
+                }
+                return {
+                    ...state,
+                    geometryInfo,
+                };
+            }),
+            emraldVersion: 3.2,
+        };
+    };
+    return {
+        ...upgradeModel(oldModel),
+        templates: oldModel.templates?.map((template) => {
+            return upgradeModel(template);
+        }),
+    };
+}
+
 class Upgrade {
     constructor(modelTxt) {
         this._emraldVersion = 0.0;
@@ -584,6 +616,7 @@ class Upgrade {
             { emraldVersion: 2.4, upgradeFunction: UpgradeV2_4 },
             { emraldVersion: 3.0, upgradeFunction: UpgradeV3_0 },
             { emraldVersion: 3.1, upgradeFunction: UpgradeV3_1 },
+            { emraldVersion: 3.2, upgradeFunction: UpgradeV3_2 },
         ];
         // Apply upgrades
         for (const upgrade of upgrades) {

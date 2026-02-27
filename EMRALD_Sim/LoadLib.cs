@@ -58,7 +58,7 @@ namespace EMRALD_Sim
         {
           sim = new EmraldModel();
         }
-        sim.DeserializeJSON(modelText, Path.GetDirectoryName(modelDir), Path.GetFileNameWithoutExtension(modelDir)); //throws and exception of failed
+        sim.DeserializeJSON(modelText, CommonFunctions.NormalizeGetDirectoryName(modelDir), Path.GetFileNameWithoutExtension(modelDir)); //throws and exception of failed
         return "";
       }
       catch (Exception error)
