@@ -41,7 +41,8 @@ namespace CouplingWebSocket
     {
       try
       {
-        await _client.ConnectAsync(new Uri(url), _cancellationTokenSource.Token);
+        await _client.ConnectAsync(new Uri(url), _cancellationTokenSource.Token)
+                     .ConfigureAwait(false);
         Connected?.Invoke(this, EventArgs.Empty);
         _receiveTask = ReceiveLoop();
       }
@@ -65,7 +66,7 @@ namespace CouplingWebSocket
         command = "GetAppOptions"
       };
 
-      string response = await SendRequestAsync(request);
+      string response = await SendRequestAsync(request).ConfigureAwait(false);
 
       // Parse the response {"names":["app1","app2",...]}
       var jsonResponse = JObject.Parse(response);
@@ -89,7 +90,7 @@ namespace CouplingWebSocket
         watchItems = watchItems
       };
 
-      string response = await SendRequestAsync(request);
+      string response = await SendRequestAsync(request).ConfigureAwait(false);
 
       // Parse the GUID from the response
       if (response.StartsWith("{"))
@@ -119,7 +120,7 @@ namespace CouplingWebSocket
       };
 
       var jsonRequest = JsonConvert.SerializeObject(request);
-      await SendMessageAsync(jsonRequest);
+      await SendMessageAsync(jsonRequest).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -133,14 +134,14 @@ namespace CouplingWebSocket
             WebSocketCloseStatus.NormalClosure,
             "Client closing",
             CancellationToken.None
-        );
+        ).ConfigureAwait(false);
       }
 
       _cancellationTokenSource.Cancel();
 
       if (_receiveTask != null)
       {
-        await _receiveTask;
+        await _receiveTask.ConfigureAwait(false);
       }
 
       Disconnected?.Invoke(this, EventArgs.Empty);
@@ -157,8 +158,8 @@ namespace CouplingWebSocket
     private async Task<string> SendRequestAsync(object request, int? timeoutMs = null)
     {
       var json = JsonConvert.SerializeObject(request);
-      await SendMessageAsync(json);
-      return await WaitForResponse(timeoutMs ?? RequestTimeoutMs);
+      await SendMessageAsync(json).ConfigureAwait(false);
+      return await WaitForResponse(timeoutMs ?? RequestTimeoutMs).ConfigureAwait(false);
     }
 
     private async Task SendMessageAsync(string message)
@@ -170,7 +171,7 @@ namespace CouplingWebSocket
           WebSocketMessageType.Text,
           true,
           _cancellationTokenSource.Token
-      );
+      ).ConfigureAwait(false);
     }
 
     private TaskCompletionSource<string>? _responseWaiter;
@@ -180,7 +181,7 @@ namespace CouplingWebSocket
       _responseWaiter = new TaskCompletionSource<string>();
 
       var timeoutTask = Task.Delay(timeoutMs);
-      var completedTask = await Task.WhenAny(_responseWaiter.Task, timeoutTask);
+      var completedTask = await Task.WhenAny(_responseWaiter.Task, timeoutTask).ConfigureAwait(false);
 
       if (completedTask == timeoutTask)
       {
@@ -188,7 +189,7 @@ namespace CouplingWebSocket
         throw new TimeoutException($"Timeout waiting for server response after {timeoutMs}ms");
       }
 
-      var result = await _responseWaiter.Task;
+      var result = await _responseWaiter.Task.ConfigureAwait(false);
       _responseWaiter = null;
       return result;
     }
@@ -205,7 +206,7 @@ namespace CouplingWebSocket
           var result = await _client.ReceiveAsync(
               new ArraySegment<byte>(buffer),
               _cancellationTokenSource.Token
-          );
+          ).ConfigureAwait(false);
 
           if (result.MessageType == WebSocketMessageType.Close)
           {
@@ -213,7 +214,7 @@ namespace CouplingWebSocket
                 WebSocketCloseStatus.NormalClosure,
                 "Server closed",
                 CancellationToken.None
-            );
+            ).ConfigureAwait(false);
             Disconnected?.Invoke(this, EventArgs.Empty);
             break;
           }

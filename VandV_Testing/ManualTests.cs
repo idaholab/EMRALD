@@ -47,7 +47,7 @@ namespace ManualTests
     [Fact]
     public void TestModelVisualizationSpeed()
     {
-      string testDesc = "Verify that the Plant Diagram - Test Digram and Logic Tree - CCS_TOP open within 1 sec.";
+      string testDesc = "Verify that the Plant Diagram - \n Test Digram and Logic Tree - CCS_TOP open within 1 sec.";
 
       // Check the exit code to determine if the user confirmed
       Assert.True(ConfirmManualTest(GetCurrentMethodName(), testDesc));

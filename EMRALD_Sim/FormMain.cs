@@ -60,6 +60,7 @@ namespace EMRALD_Sim
       teModel.SetHighlighting("JSON");
       tcCouplingTypeInfo.SelectedIndex = 1;
       ResetResults();
+      _curSimOptions.seed = null; 
       _curSimOptions.opsVer = 1.02;
       _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
       _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
@@ -1073,7 +1074,7 @@ namespace EMRALD_Sim
       tbMaxSimTime.Text = _curSimOptions.runtime ?? "365.00:00:00";
       tbSavePath.Text = _curSimOptions.resout ?? @"c:\temp\NewSimResults.txt";
       tbSavePath2.Text = _curSimOptions.jsonRes ?? @"c:\temp\PathResults.json";
-      tbSeed.Text = _curSimOptions.seed > 0 ? _curSimOptions.seed.ToString() : "";
+      tbSeed.Text = _curSimOptions.seed.HasValue ? _curSimOptions.seed.ToString() : "";
       LoadLib.SetSeed(tbSeed.Text);
       tbThreads.Text = _curSimOptions.threads > 0 ? _curSimOptions.threads.ToString() : "";
       LoadLib.SetThreads(tbThreads.Text);
@@ -1259,8 +1260,8 @@ namespace EMRALD_Sim
     private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
     {
       tbSavePath.Text = saveFileDialog1.FileName;
-      SaveUISettingsToJson();
       _curSimOptions.resout = tbSavePath.Text;
+      SaveUISettingsToJson();
     }
 
     private void button2_Click_1(object sender, EventArgs e)
@@ -1271,8 +1272,8 @@ namespace EMRALD_Sim
     private void saveFileDialog2_FileOk(object sender, CancelEventArgs e)
     {
       tbSavePath2.Text = saveFileDialog2.FileName;
-      SaveUISettingsToJson();
       _curSimOptions.jsonRes = tbSavePath2.Text;
+      SaveUISettingsToJson();
     }
 
     private void AssignServer()
@@ -1291,8 +1292,8 @@ namespace EMRALD_Sim
       if (rbDebugDetailed.Checked)
         ConfigData.debugLev = LogLevel.Debug;
 
-      SaveUISettingsToJson();
       _curSimOptions.debug = chkLog.Checked ? (rbDebugDetailed.Checked ? "DETAILED" : "BASIC") : "OFF";
+      SaveUISettingsToJson();
     }
 
     private void chkLog_CheckedChanged(object sender, EventArgs e)
@@ -1330,12 +1331,12 @@ namespace EMRALD_Sim
       }
       else
       {
-        SaveUISettingsToJson();
       }
       if (int.TryParse(tbSeed.Text, out int seedVal))
         _curSimOptions.seed = seedVal;
       else
-        _curSimOptions.seed = 0;
+        _curSimOptions.seed = null;
+      SaveUISettingsToJson();
     }
 
     private void tbLogRunStart_Leave(object sender, EventArgs e)
@@ -1389,8 +1390,8 @@ namespace EMRALD_Sim
       }
       else
       {
-        SaveUISettingsToJson();
         _curSimOptions.runct = parsedValue;
+        SaveUISettingsToJson();
       }
     }
 

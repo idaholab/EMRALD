@@ -644,7 +644,8 @@ namespace SimulationDAL
       compiledComp.AddVariable("ExtSimStartTime", typeof(double));
       compiledComp.AddVariable("NextEvTime", typeof(double));
       compiledComp.AddVariable("RootPath", typeof(string));
-      
+      compiledComp.AddVariable("Rand", typeof(Random));
+
 
       if (varList != null)
       {
@@ -655,7 +656,8 @@ namespace SimulationDAL
               (varItem.Value.name != "RunIdx") &&
               (varItem.Value.name != "ExtSimStartTime") &&
               (varItem.Value.name != "NextEvTime") &&
-              (varItem.Value.name != "RootPath"))
+              (varItem.Value.name != "RootPath") &&
+              (varItem.Value.name != "Seed"))
           {
             compiledComp.AddVariable(varItem.Value.name, varItem.Value.dType);
           }
@@ -688,6 +690,7 @@ namespace SimulationDAL
       compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
       compiledComp.SetVariable("RootPath", typeof(string), rootPath);
+      compiledComp.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
 
       if (varList != null) //assign the values to the variables if assigned
       {

@@ -383,7 +383,7 @@
       "required": false,
       "codeVariables": [],
       "variableName": "Dbl_FlowRate",
-      "scriptCode": "var random = new Random();\r\nreturn random.NextDouble() * 5.0; "
+      "scriptCode": "return Rand.NextDouble() * 5.0; "
     },
     {
       "id": "d658b58e-299d-42b4-84b6-9815feb2f796",

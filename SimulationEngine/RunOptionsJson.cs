@@ -109,7 +109,7 @@ namespace SimulationEngine
     // Maximum simulation time
     public string runtime { get; set; } = "365.00:00:00";
     // Seed for random number generation
-    public int seed { get; set; } = 0;
+    public int? seed { get; set; } = 0;
     // debug level [basic, detailed, off]
     public string debug { get; set; } = "off";
     // start index for debug if null then from beginning
