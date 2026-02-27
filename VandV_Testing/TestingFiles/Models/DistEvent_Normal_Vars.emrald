@@ -1,0 +1,192 @@
+{
+  "id": "07b9e251-6c18-480c-a4e4-33ed622bf2c4",
+  "name": "DistEvTest1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Event",
+        "Done"
+      ],
+      "id": "1405f8f4-6cd7-4f65-af79-e7b3d4bddd26",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Done",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "956eba2b-85fd-4112-a916-e1c2484f7102",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 640,
+        "y": 340.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Event",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Done"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "a3db3d4f-30f7-4b8d-be84-48f633afbe1b",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 160.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "NormalDist"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Event"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "82107445-2c03-40b2-b048-3a6d39a44132",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 20.5,
+        "width": 200,
+        "height": 130
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Done",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "6f8985d0-a997-405d-aa1b-b91b8180063f",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Event",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Event",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "66ec958f-78c3-4ed1-ab63-2c1101168379",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "NormalDist",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": "12",
+          "timeRate": "trHours",
+          "useVariable": true,
+          "variable": "Dbl_Mean"
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "timeRate": "trHours",
+          "useVariable": true,
+          "variable": "Dbl_STD"
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 24,
+          "timeRate": "trHours",
+          "useVariable": false
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "onVarChange": "ocResample",
+      "id": "0bb7b3f4-9201-4c47-8dba-d7264a1675ac",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dbl_Mean",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 12,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "278f0488-e559-4827-ac4d-75546b1af28f",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_STD",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "05283ee8-3604-44c2-a22e-3396d66d04c7",
+      "objType": "Variable"
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

@@ -11,7 +11,7 @@ Installation can be found here: [Liquid Studio](https://www.liquid-technologies.
 ### Step 1
 
 - Open Liquid Studio
-- Open the file at \EMRALD\Emrald-UI\src\utils\Upgrades\v3_0
+- Open the file at \EMRALD\Emrald-UI\src\utils\Upgrades\vXXX
 
 ### Step 2: Edit Structure
 
@@ -26,14 +26,14 @@ Installation can be found here: [Liquid Studio](https://www.liquid-technologies.
 ### Step 4: Generate TypeScript Schema
 
 - Copy the generated TypeScript schema from the right-hand side of the website.
-- Paste the TypeScript side into: EMRALD\Emrald-UI\src\utils\Upgrades\v3_0\AllModelInterfacesV3_0.ts
+- Paste the TypeScript side into: EMRALD\Emrald-UI\src\utils\Upgrades\vXXX\AllModelInterfacesVXXX.ts
 
 ### Step 5: Update Types Directory
 
-- Copy the section -- or interface -- of `AllModelInterfacesV3_0.ts` that was edited.
+- Copy the section -- or interface -- of `AllModelInterfacesVXXX.ts` that was edited.
 - Paste it into its matching section in the `types` directory. For example, if you edited the structure of the `Diagram` type,
-  copy the entire `Diagram` interface from `AllModelInterfacesV3_0.ts` and paste it into the `Diagram.ts` file in the `types` directory.
+  copy the entire `Diagram` interface from `AllModelInterfacesVXXX.ts` and paste it into the `Diagram.ts` file in the `types` directory.
 
 ### Step 6: Update Documentation
 
-- Once you are in the emrald-docs directory, run the command `npx jsonschema2md -o Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/v3_0/ -e json` to regenerate the documentation for the schema with your saved changes.
+- Once you are in the emrald-docs directory, run the command `npx jsonschema2md -o Modeling/schema-md -d ../Emrald-UI/src/utils/Upgrades/vXXX/ -e json` to regenerate the documentation for the schema with your saved changes.

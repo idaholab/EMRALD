@@ -194,9 +194,9 @@
         "mainItem": "False",
         "mutExcl": true,
         "newStates": [],
-        "makeInputFileCode": "return @\"..\\..\\..\\VandV_Testing\\TestingFiles\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt \" + V2_Dbl.ToString() + \" 110.0\";",
-        "exePath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\GreaterThan.exe",
-        "processOutputFileCode": "StreamReader reader = File.OpenText(@\"..\\..\\..\\..\\VandV_Testing\\TestingFiles\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt\");\nvar s = reader.ReadLine();\nreader.Dispose();\nList<String> retStates = new List<String>();\nif (s == \"True\")\n{\n    retStates.Add(\"+OK\");\n}\nelse\n{\n    retStates.Add(\"+Fail\");\n}\n\nretStates.Add(\"-S3\");\n\nreturn retStates;",
+        "makeInputFileCode": "return @\"..\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt \" + V2_Dbl.ToString() + \" 110.0\";",
+        "exePath": "..\\Other\\GreaterThan.exe",
+        "processOutputFileCode": "StreamReader reader = File.OpenText(@\"..\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt\");\nvar s = reader.ReadLine();\nreader.Dispose();\nList<String> retStates = new List<String>();\nif (s == \"True\")\n{\n    retStates.Add(\"+OK\");\n}\nelse\n{\n    retStates.Add(\"+Fail\");\n}\n\nretStates.Add(\"-S3\");\n\nreturn retStates;",
         "codeVariables": [
           "V2_Dbl"
         ]

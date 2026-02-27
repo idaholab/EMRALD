@@ -9,7 +9,7 @@ import {
 import { capitalize } from 'lodash';
 import debounce from 'lodash.debounce';
 import DropTargetComponent from '../../../drag-and-drop/Droppable';
-import { State } from '../../../../types/State';
+import type { State } from '../../../../types/EMRALD_Model';
 import EventActions from './StateItems/EventActions';
 import ImmediateActions from './StateItems/ImmediateActions';
 import useEmraldDiagram from '../useEmraldDiagram';
@@ -50,7 +50,7 @@ const StateControllerComponent: React.FC<StateControllerComponentProps> = ({ typ
         >
           <DiagramAccordionSummary
             aria-controls={`panel1a-content`}
-            onContextMenu={(e) => onActionsHeaderContextMenu(e, type, state)}
+            onContextMenu={(e) => void onActionsHeaderContextMenu(e, type, state)}
           >
             <Typography sx={{ fontSize: 11 }}>{`${capitalize(type)} actions`}</Typography>
           </DiagramAccordionSummary>

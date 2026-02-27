@@ -13,9 +13,10 @@ interface CollapsibleListProps {
   groups: { name: string }[];
 }
 
-const CollapsibleList: React.FC<
-  React.PropsWithChildren<CollapsibleListProps>
-> = ({ groups, children }) => {
+const CollapsibleList: React.FC<React.PropsWithChildren<CollapsibleListProps>> = ({
+  groups,
+  children,
+}) => {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
 
   const handleClick = (index: number) => {
@@ -26,10 +27,12 @@ const CollapsibleList: React.FC<
     <List>
       {groups.map((group, index) => (
         <React.Fragment key={group.name}>
-          <ListItemButton onClick={() => handleClick(index)}>
-            <ListItemIcon>
-              {openIndex === index ? <FolderOpenIcon /> : <FolderIcon />}
-            </ListItemIcon>
+          <ListItemButton
+            onClick={() => {
+              handleClick(index);
+            }}
+          >
+            <ListItemIcon>{openIndex === index ? <FolderOpenIcon /> : <FolderIcon />}</ListItemIcon>
             <ListItemText primary={group.name} />
             {openIndex === index ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>

@@ -24,12 +24,12 @@ namespace UnitAndIntegrationTesting
 
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "UnitTestItems" + Path.DirectorySeparatorChar;
+      return "UnitTestItems" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
@@ -47,7 +47,7 @@ namespace UnitAndIntegrationTesting
       // set up the random number generator so it starts with the same key each time.
       ConfigData.seed = 0;
       if (model != null)
-        model.rootPath = MainTestDir() + ModelFolder();
+        model.rootPath = CommonFunctions.NormalizeGetFullPath(MainTestDir() + ModelFolder());
     }
     
 
@@ -483,10 +483,7 @@ namespace UnitAndIntegrationTesting
       act.LoadObjLinks(jsonObj, true, mainModel);
 
       //make sure the JSON returned for the item is good 
-      string retJsonStr = act.GetJSON(true, mainModel);
-
-      //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      string retJsonStr = act.GetJSON(true, mainModel);      
 
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }

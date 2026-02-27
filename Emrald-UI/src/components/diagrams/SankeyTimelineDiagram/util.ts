@@ -1,4 +1,4 @@
-import { NodeTimes } from './types';
+import type { NodeTimes } from './types';
 
 /**
  * Check if the time configuration has a distribution.
@@ -7,9 +7,7 @@ import { NodeTimes } from './types';
  * @returns If the configuration has a distribution.
  */
 export function hasDist(times: NodeTimes): boolean {
-  return (
-    typeof times.meanTime === 'number' && typeof times.stdDeviation === 'number'
-  );
+  return typeof times.meanTime === 'number' && typeof times.stdDeviation === 'number';
 }
 
 /**

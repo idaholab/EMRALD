@@ -1,5 +1,5 @@
 import React from 'react';
-import { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 // Material UI Components
 import {
   Box,
@@ -74,7 +74,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
     handleSave,
     addNewGroup,
     deleteGroup,
-    handleNewGroupNameChange
+    handleNewGroupNameChange,
   } = useTemplateForm(templatedData);
 
   return (
@@ -107,9 +107,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
           </Button>
         </Box>
         <Box>
-          <GroupListItems 
-            selectedGroup={selectedGroup} 
-            setSelectedGroup={setSelectedGroup} 
+          <GroupListItems
+            selectedGroup={selectedGroup}
+            setSelectedGroup={setSelectedGroup}
             handleContextMenu={handleContextMenu}
             highlightSelectedGroup={true}
           />
@@ -151,12 +151,24 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
 
       <Box display={'flex'} alignItems={'center'}>
         <Box mt={2} mr={2}>
-          <Button color="secondary" variant="contained" onClick={() => updateAllUnlocked('keep')}>
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              updateAllUnlocked('keep');
+            }}
+          >
             Keep All
           </Button>
         </Box>
         <Box mt={2}>
-          <Button variant="contained" color="secondary" onClick={() => updateAllUnlocked('rename')}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              updateAllUnlocked('rename');
+            }}
+          >
             Rename All
           </Button>
         </Box>
@@ -219,7 +231,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                     <IconButton
                       sx={{ color: '#1b8f55' }}
                       disabled={row.exclude}
-                      onClick={() => handleLockChange(index, false)}
+                      onClick={() => {
+                        handleLockChange(index, false);
+                      }}
                     >
                       <FaLock />
                     </IconButton>
@@ -227,7 +241,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                     <IconButton
                       sx={{ color: '#d32c38' }}
                       disabled={row.exclude}
-                      onClick={() => handleLockChange(index, true)}
+                      onClick={() => {
+                        handleLockChange(index, true);
+                      }}
                     >
                       <FaLockOpen />
                     </IconButton>
@@ -242,7 +258,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                       row
                       name="row-radio-buttons-group"
                       value={row.action}
-                      onChange={(e) => handleActionChange(index, e.target.value)}
+                      onChange={(e) => {
+                        handleActionChange(index, e.target.value);
+                      }}
                     >
                       <FormControlLabel
                         value="keep"
@@ -269,7 +287,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                   <TextField
                     value={row.action === 'rename' ? row.newName : ''}
                     disabled={row.locked || row.action !== 'rename' || row.exclude}
-                    onChange={(e) => handleNewNameChange(index, e.target.value)}
+                    onChange={(e) => {
+                      handleNewNameChange(index, e.target.value);
+                    }}
                     size="small"
                   />
                 </TableCell>
@@ -277,8 +297,14 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                   {row.type !== 'Diagram' ? (
                     <Checkbox
                       checked={row.exclude}
-                      disabled={row.required || (row.displayType === 'State' && checkIfDiagramDirectState(row.oldName)) || row.displayType === 'Diagram'}
-                      onChange={(e) => handleExcludeChange(index, e.target.checked)}
+                      disabled={
+                        row.required ||
+                        (row.displayType === 'State' && checkIfDiagramDirectState(row.oldName)) ||
+                        row.displayType === 'Diagram'
+                      }
+                      onChange={(e) => {
+                        handleExcludeChange(index, e.target.checked);
+                      }}
                     />
                   ) : (
                     <></>
@@ -306,7 +332,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                     <Checkbox
                       disabled={row.exclude || row.type === 'State' || row.type === 'Diagram'}
                       checked={row.required}
-                      onChange={(e) => handleRequiredChange(index, e.target.checked)}
+                      onChange={(e) => {
+                        handleRequiredChange(index, e.target.checked);
+                      }}
                     />
                   </Box>
                 </TableCell>
@@ -319,14 +347,32 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         <Button variant="contained" sx={{ mr: 2 }} disabled={!templateName} onClick={handleSave}>
           Save Changes
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => handleClose()}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            handleClose();
+          }}
+        >
           Cancel
         </Button>
       </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => handleShowGroupDialog('sub')}>Add Sub Group</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleShowGroupDialog('sub');
+          }}
+        >
+          Add Sub Group
+        </MenuItem>
         <Divider />
-        <MenuItem onClick={() => handleShowGroupDialog('delete')}>Delete Group</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleShowGroupDialog('delete');
+          }}
+        >
+          Delete Group
+        </MenuItem>
       </Menu>
 
       {showGroupDialog && (
@@ -336,8 +382,8 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
             groupType === 'sub'
               ? 'Add Sub Group'
               : groupType === 'main'
-              ? 'Add Main Group'
-              : 'Delete Group'
+                ? 'Add Main Group'
+                : 'Delete Group'
           }
           submitText={groupType === 'delete' ? 'Delete' : 'Save'}
           disabled={duplicateNameError}
@@ -353,9 +399,11 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
           {groupType === 'main' || groupType === 'sub' ? (
             <TextField
               label="New Group Name"
-              size='small'
+              size="small"
               value={newGroupName}
-              onChange={(e) => handleNewGroupNameChange(e.target.value)}
+              onChange={(e) => {
+                handleNewGroupNameChange(e.target.value);
+              }}
               sx={{ width: 500, mt: 2 }}
               error={duplicateNameError}
               helperText={duplicateNameError ? 'A group with this name already exists' : ''}

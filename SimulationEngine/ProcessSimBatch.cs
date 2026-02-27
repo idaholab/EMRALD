@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using Matrix.Xmpp.AdHocCommands;
 using Matrix.Xmpp.PubSub;
 using Matrix.Xmpp.StreamInitiation;
 using Matrix.Xmpp.XHtmlIM;
+using MessageDefLib;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
 using Newtonsoft.Json;
@@ -97,12 +99,12 @@ namespace SimulationEngine
     private EmraldModel _lists;
     private TimeSpan _endTime;
     //private HoudiniSimClient _sim3DHandler = null;
-    private EMRALDMsgServer _msgServer;
-    private double _frameRate = 30;
-    private string _sim3DPath = "";
+    private ISimMessaging _msgServer;
+    //private double _frameRate = 30;
+    //private string _sim3DPath = "";
     //private HoudiniSimClient.TLogEvCallBack _viewNotifications = null;
     private string _resultFile; //same as _origionalResutsFile unless multi threded then it is in the temp file path location
-    private static readonly object _fileLock = new object();
+    //private static readonly object _fileLock = new object();
     private string _origionalResutsFile; //user specified results location;
     private int _numRuns;
     private string _jsonResultPaths; //same as _origionalJsonResutsFile unless multi threded then it is in the temp file path location
@@ -133,8 +135,8 @@ namespace SimulationEngine
     //public List<Tuple<string, double>> 
     public TimeSpan runtime = TimeSpan.FromMilliseconds(0);
     private string _error = "";
-    public string error { get { return _error; } }
-    public int? threadNum { get { return _threadNum; } }
+    public string error { get { return _error; } set { _error = value; } }
+    public int? threadNum { get { return _threadNum; }  }
     public int numRuns { get { return _numRuns; } }
     public bool tempThreadFilesWriten { get {  return _tempThreadFilesWriten; } }
     //public string resultFile { get { return _resultFile; } }
@@ -160,12 +162,9 @@ namespace SimulationEngine
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
-    public void AddExtSimulationData(EMRALDMsgServer msgServer, double frameRate, string sim3DPath, string password)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
+    public void AddExtSimulationData(ISimMessaging msgServer)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
     {
       _msgServer = msgServer;
-      _frameRate = frameRate;
-      _sim3DPath = sim3DPath;
-      //_viewNotifications = viewNotifications;
     }
 
     public bool AutoConnectExtSim()
@@ -245,6 +244,7 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
+     
       //make a new model so that we don't have issues if they run multiple batches or for mutli thraded must do in the thread function
       _tempThreadFilesWriten = false;
       this._lists = new EmraldModel();
@@ -257,10 +257,10 @@ namespace SimulationEngine
         try
         {
           // Set the file paths with the rootPath
-          lock (_fileLock)
+          this._resultFile = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
+          if (_jsonResultPaths != "")
           {
-            this._resultFile = Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile));
-            this._jsonResultPaths = Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths));
+            this._jsonResultPaths = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths)));
           }
         }
         catch (Exception e)
@@ -309,9 +309,9 @@ namespace SimulationEngine
       if (_pathResultsInterval < 1)
         _pathResultsInterval = _numRuns;
 
-      //if user defined the seed then reset random so that seed is used.
-      if ((ConfigData.seed != null) && (ConfigData.seed >= 0))
-        SingleRandom.Reset();
+      ////if user defined the seed then reset random so that seed is used.
+      //if ((threadNum == null) && ((ConfigData.seed != null) && (ConfigData.seed >= 0))
+      //  SingleRandom.Reset();
      
       try
       {
@@ -320,9 +320,9 @@ namespace SimulationEngine
 
         SimulationTracking.StateTracker trackSim;
         if (_msgServer == null)
-          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, 0, null, _numRuns);
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, null, _numRuns);
         else
-          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _frameRate, _msgServer, _numRuns);
+          trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _msgServer, _numRuns);
 
         for (int i = 1; i <= _numRuns; ++i)
         {
@@ -422,7 +422,7 @@ namespace SimulationEngine
           {
             stopWatch.Stop();
             LogResults(stopWatch.Elapsed, i, _logFailedComps);
-            if(progressCallback != null)
+            if (progressCallback != null)
               progressCallback(stopWatch.Elapsed, i, _logFailedComps, _lists.threadNum);
             stopWatch.Start();
             resTime = stopWatch.Elapsed;
@@ -487,7 +487,7 @@ namespace SimulationEngine
     //  //file is not locked
     //  return false;
     //}
-    private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
+    private readonly ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
 
     public void WriteToFileThreadSafe(string path, string text)
     {
@@ -554,36 +554,21 @@ namespace SimulationEngine
           resultObj.numRuns = curIdx;
           resultObj.CalcStats();
           Dictionary<string, int> inStateCnts = new Dictionary<string, int>();
-          //foreach (var keyS in resultObj.keyStates)
-          //{
-          //  Dictionary<string, int> depth = new Dictionary<string, int>();
-          //  StateCounts(keyS, inStateCnts, depth);
-          //}
+          
           foreach (var keyS in resultObj.keyStates)
           {
-            // Dictionary<string, int> depth = new Dictionary<string, int>();
-            //SetResultStatsRec(keyS, inStateCnts, curI);//, depth);
-
             if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
               keyS.watchVariables = _variableVals[keyS.name];
           }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
-          //if (File.Exists(_jsonResultPaths))
-          //{
-          //  bool locked = true;
-          //  while (locked)
-          //  { 
-          //    locked = IsFileLocked(new FileInfo(_jsonResultPaths));
-          //  }
-          //}
-          //File.WriteAllText(_jsonResultPaths, output);
+          
           WriteToFileThreadSafe(_jsonResultPaths, output);
 
           //set up the sankey file to view results if not a thread one.
           if (!this._threadNum.HasValue && makeSankey)
           {
-            string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\\EMRALD_SANKEY\\";
+            string tempLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\EMRALD_SANKEY\";
             try
             {
               if (Directory.Exists(tempLoc))
@@ -592,15 +577,17 @@ namespace SimulationEngine
               }
               Directory.CreateDirectory(tempLoc);
 
-              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data=" + output);
+              File.WriteAllText(CommonFunctions.NormalizeCombine(tempLoc, @"data.js"), @"window.data=" + output);
             }
             catch
             {
-              File.WriteAllText(Path.Combine(tempLoc, @"data.js"), @"window.data= ");
+              File.WriteAllText(CommonFunctions.NormalizeCombine(tempLoc, @"data.js"), @"window.data= ");
             }
 
-            File.Copy(@"./sankey/emrald-sankey-timeline.html", Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
-            File.Copy(@"./sankey/emrald-sankey-timeline.js", Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
+            string exeLoc = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+
+            File.Copy(CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine( exeLoc, @"./sankey/emrald-sankey-timeline.html")), Path.Combine(tempLoc, @"emrald-sankey-timeline.html"));
+            File.Copy(CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(exeLoc, @"./sankey/emrald-sankey-timeline.js")), Path.Combine(tempLoc, @"emrald-sankey-timeline.js"));
           }
         }
       }
@@ -685,8 +672,8 @@ namespace SimulationEngine
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);
-      lock (_fileLock)
-      {
+      //lock (_fileLock) should not be needed because each tread writes to it own temp file location
+      //{
         using (StreamWriter streamwriter = File.AppendText(_resultFile))
         {
           streamwriter.WriteLine("Runtime = " + runTime.ToString(@"dd\.hh\:mm\:ss") + Environment.NewLine + "Runs = " + runCnt.ToString() + " of " + _numRuns.ToString());
@@ -755,14 +742,14 @@ namespace SimulationEngine
             }
           }
         }
-      }
+      //}
     }
 
     public List<string> GetVarValues(List<string> varNames, bool finalLog = false)
     {
       List<string> retVals = new List<string>();
-      lock (_fileLock) //lock for threading
-      {
+      //lock (_fileLock) //lock for threading should not be needed because each tread writes to it own temp file location
+      //{
         
         if (finalLog)
         {
@@ -811,7 +798,7 @@ namespace SimulationEngine
             }
           }
         }
-      }
+      //}
       return retVals;
     }
 
@@ -822,7 +809,13 @@ namespace SimulationEngine
       foreach (var keyPath in toAddBatch.keyPaths)
       {
         if (!this.keyPaths.ContainsKey(keyPath.Key))
+        {
           this.keyPaths.Add(keyPath.Value.name, keyPath.Value);
+          foreach (var variableCategory in toAddBatch._variableVals)
+          {
+            this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
+          }
+        }
         else
         {
           KeyStateResult addToRes = this.keyPaths[keyPath.Key];
@@ -832,14 +825,14 @@ namespace SimulationEngine
         this.keyPaths[keyPath.Key].AssignResults();
       }
 
-      //todo add in the other paths
+      //add in the other paths
       //public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
       foreach (var otherPath in toAddBatch.otherPaths)
       {
         if (!this.otherPaths.ContainsKey(otherPath.Key))
           this.otherPaths.Add(otherPath.Value.name, otherPath.Value);
         else
-          otherPath.Value.Combine(otherPath.Value);
+          this.otherPaths[otherPath.Value.name].Combine(otherPath.Value);
       }
 
       //add in keyFailedItems
@@ -853,33 +846,6 @@ namespace SimulationEngine
           this.keyFailedItems[failedItem.Key].CombineFailSet(failedItem.Value);
         }
       }
-
-      ////add in variable values //already done when doing addToRes.Merge 
-      ////private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
-      //foreach (var variableCategory in toAddBatch._variableVals)
-      //{
-      //  if (!this._variableVals.ContainsKey(variableCategory.Key))
-      //    this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
-      //  else
-      //  {
-      //    foreach (var variableSubCategory in variableCategory.Value)
-      //    {
-      //      if (!this._variableVals[variableCategory.Key].ContainsKey(variableSubCategory.Key))
-      //        this._variableVals[variableCategory.Key].Add(variableSubCategory.Key, new Dictionary<string, string>(variableSubCategory.Value));
-      //      else
-      //      {
-      //        foreach (var variable in variableSubCategory.Value)
-      //        {
-      //          //add to list not update???
-      //          if (!this._variableVals[variableCategory.Key][variableSubCategory.Key].ContainsKey(variable.Key))
-      //            this._variableVals[variableCategory.Key][variableSubCategory.Key].Add(variable.Key, variable.Value);
-      //          else
-      //            this._variableVals[variableCategory.Key][variableSubCategory.Key][variable.Key] = variable.Value; // Update with the new value
-      //        }
-      //      }
-      //    }
-      //  }
-      //}
 
       this._totRunTime += toAddBatch._totRunTime;
       this._numRuns += toAddBatch._numRuns;

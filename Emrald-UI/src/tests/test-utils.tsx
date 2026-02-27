@@ -1,19 +1,15 @@
-import { findByRole, fireEvent, render, RenderOptions, screen } from '@testing-library/react';
+import { findByRole, fireEvent, render, type RenderOptions, screen } from '@testing-library/react';
 import 'jest-extended';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
 import React, { act } from 'react';
-import { EMRALD_Model } from '../types/EMRALD_Model';
+import type { EMRALD_Model, Variable, State, LogicNode, ExtSim } from '../types/EMRALD_Model';
 import { appData, updateAppData } from '../hooks/useAppData';
 import Sidebar from '../components/layout/Sidebar/Sidebar';
 import userEvent from '@testing-library/user-event';
-import { Variable } from '../types/Variable';
-import { State } from '../types/State';
-import { LogicNode } from '../types/LogicNode';
 import EventContextProvider from '../contexts/EventContext';
 import EventFormContextProvider from '../components/forms/EventForm/EventFormContext';
 import ActionContextProvider from '../contexts/ActionContext';
 import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
-import { ExtSim } from '../types/ExtSim';
 import VariableContextProvider from '../contexts/VariableContext';
 import VariableFormContextProvider from '../components/forms/VariableForm/VariableFormContext';
 
@@ -85,6 +81,8 @@ export function ensureModel() {
         EventList: [],
         LogicNodeList: [],
         VariableList: [],
+        emraldVersion: 3.1,
+        versionHistory: [],
       });
     });
   }
@@ -98,8 +96,10 @@ export function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
   ensureModel();
   const appData = sessionStorage.getItem('appData');
   if (appData) {
-    let model = JSON.parse(appData) as EMRALD_Model;
-    act(() => updateAppData(fn(model)));
+    const model = JSON.parse(appData) as EMRALD_Model;
+    act(() => {
+      updateAppData(fn(model));
+    });
   } else {
     throw new Error('No EMRALD model present in sessionStorage.');
   }
@@ -113,7 +113,7 @@ export function updateModel(fn: (model: EMRALD_Model) => EMRALD_Model) {
 export function ensureVariable(name: string, data?: Partial<Variable>) {
   try {
     getVariable(name);
-  } catch (err) {
+  } catch {
     updateModel((model) => {
       let v: Variable = {
         objType: 'Variable',
@@ -142,7 +142,7 @@ export function ensureVariable(name: string, data?: Partial<Variable>) {
 export function ensureState(name: string, data?: Partial<State>) {
   try {
     getState(name);
-  } catch (err) {
+  } catch {
     updateModel((model) => {
       let s: State = {
         objType: 'State',
@@ -174,7 +174,7 @@ export function ensureState(name: string, data?: Partial<State>) {
 export function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
   try {
     getLogicNode(name);
-  } catch (err) {
+  } catch {
     updateModel((model) => {
       let n: LogicNode = {
         objType: 'LogicNode',
@@ -205,7 +205,7 @@ export function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
 export function ensureExtSim(name: string, data?: Partial<ExtSim>) {
   try {
     getExtSim(name);
-  } catch (err) {
+  } catch {
     updateModel((model) => {
       let e: ExtSim = {
         objType: 'ExtSim',

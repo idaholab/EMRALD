@@ -1,339 +1,271 @@
-{
-	function extractList(list, index) {
-    	return list.map(i => i[index]);
-    }
-    function safeValue(value) {
-    	return (value || [])[0] || [];
-    }
-    function stripLocations(o) {
-      if (o) {
-        delete o.location;
-      }
-      if (typeof o === 'object') {
-        Object.values(o).forEach((v) => stripLocations(v));
-      }
-      return o;
-    }
+Start = __ preamble:(CommentBlock __)? value:SourceElements epilogue:(___ Comment)* __ {
+    return {
+    	type: "program",
+        value,
+        comments: [preamble ? preamble[0] : [], epilogue.map(e => e[1])]
+	}
 }
 
-Start = preamble:__ program:Program __ {
-	program.value = preamble.concat(program.value);
-    
-	// Switch the comments on the following lines to disable locations for debugging
-	return program;
-	//return stripLocations(program);
-}
-
-/* Lexical Grammar */
-SourceCharacter = .
-FreeCharacter = !LineTerminator SourceCharacter
+/* Common character types and literals */
+FreeCharacter = !LineTerminator !CommentIndicator c:. { return c }
 WhiteSpace = "\t" / "\v" / "\f" / " " / "\u00A0" / "\uFEFF"
 LineTerminator = [\n\r\u2028\u2029]
 LineTerminatorSequence = "\n" / "\r\n" / "\r" / "\u2028" / "\u2029"
-Comment = EnclosedComment / SingleLineComment
+Comment = CommentIndicator _ value:(!LineTerminator .)* {
+	return value.map(v => v[1]).join('');
+}
 CommentIndicator = "//" / "!" / "C " / "**"
-SingleLineComment = CommentIndicator v:FreeCharacter* {
-	return {
-    	type: "comment",
-        value: extractList(v,1).join(''),
-    }
-}
-EnclosedComment = "****" v:[^*]+ "****" {
-	return {
-    	type: "comment",
-        value: v.join(''),
-    }
-}
 IdentifierStart = [a-zA-Z] / "$" / "_" / "\\"
 Literal = BooleanLiteral / NumericLiteral / TimerLiteral
-Units = first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
-	let units = first.join('');
-    if (rest) {
-    	units += rest[0] + rest[1];
-    }
-    return units;
+Units = !(AND / OR) first:[a-zA-Z0-9]+ rest:(("**" / "/") Units)? {
+    return first.join('') + (rest ? rest[0] + rest[1] : '');
 }
-NumericLiteral = literal:DecimalLiteral !(IdentifierStart / DecimalDigit) units:(_ Units)? {
+NumericLiteral = negative:"-"? literal:DecimalLiteral !(IdentifierStart / [0-9]) units:(_ Units)? {
 	return {
-    	location: location(),
     	type: "number",
         units: (units || [])[1],
-        value: literal,
+        value: negative !== null ? -literal : literal,
     }
 }
-DecimalLiteral = DecimalIntegerLiteral "." DecimalDigit* ExponentPart? {
+DecimalLiteral = DecimalIntegerLiteral "." [0-9]* ExponentPart? {
 	return parseFloat(text());
 }
-	/ "." DecimalDigit+ ExponentPart? {
+	/ "." [0-9]+ ExponentPart? {
     return parseFloat(text());
 }
 	/ DecimalIntegerLiteral ExponentPart? {
     return parseFloat(text());
 }
-DecimalIntegerLiteral = "0" / NonZeroDigit DecimalDigit*
-DecimalDigit = [0-9]
-NonZeroDigit = [1-9]
+DecimalIntegerLiteral = "0" / [1-9] [0-9]*
 ExponentPart = ExponentIndicator SignedInteger
 ExponentIndicator = "e"i
-SignedInteger = [+-]? DecimalDigit+
+SignedInteger = [+-]? [0-9]+
 BooleanLiteral = v:(TRUE / FALSE / T / F) ![a-zA-Z] {
-	let value = v === 'TRUE' || v === 'T';
-	return {
-    	location: location(),
-    	type: "boolean",
-        value,
-    }
+	return { type: "boolean", value: v === 'TRUE' || v === 'T' }
 }
-Reserved = (END / IS / AS) ![a-zA-Z]
-Identifier = !Reserved value:[a-zA-Z0-9]+ {
-	return {
-    	location: location(),
-    	type: "identifier",
-        value: value.join(''),
-    }
+Reserved = (END / IS / AS / AND / OR) ![a-zA-Z]
+Identifier = !Reserved value:[a-zA-Z0-9_]+ {
+	return { type: "identifier", value: value.join('') }
 }
-ParameterNameCharacter = [a-zA-Z0-9:()|]
-ParameterName = !Reserved head:ParameterNameCharacter+ tail:(_ !Reserved ParameterNameCharacter+)+ {
+ParameterName = !Reserved head:[a-zA-Z0-9:()|]+ tail:(_ !Reserved [a-zA-Z0-9:()|]+)+ {
 	let value = head.join('');
     if (tail) {
-    	value += ' ' + extractList(tail, 2).map((item) => item.join('')).join(' ');
+    	value += ' ' + tail.map((item) => item[2].join('')).join(' ');
     }
 	return {
-    	location: location(),
         type: "parameter_name",
         value,
     }
 }
-Parameter = index:[0-9]+ _ flag:(BooleanLiteral _)? value:(Expr / ParameterName) {
+Parameter = index:[0-9]+ _ flag:(BooleanLiteral _)? value:ParameterName {
 	return {
     	flag: (flag || [])[0],
-        location: location(),
         index: Number(index.join('')),
     	type: "parameter",
         value,
     }
 }
 TimerLiteral = TIMER _ "#"? n:[0-9]+ {
-	return {
-    	location: location(),
-    	type: "timer",
-        value: Number(n.join('')),
-    }
+	return { type: "timer", value: Number(n.join('')) }
 }
 
+// Case-insensitive declarations of words
 ACTION = "ACTION"i
 ALIAS = "ALIAS"i
+AND = "AND"i
 AS = "AS"i
-END = "END"i !" TIME"i
+DOSE_PARAMETER_FILE = "DOSE PARAMETER FILE"i
+END = "END"i
+END_TIME = "END TIME"i
 F = "F"i
 FALSE = "FALSE"i
 FUNCTION = "FUNCTION"i
+IF = "IF"i
 INCLUDE = "INCLUDE"i
 INITIATORS = "INITIATOR"i "S"i? {
 	return "INITIATORS";
 }
-IF = "IF"i
 IS = "IS"i
 LOOKUP_VARIABLE = "LOOKUP VARIABLE"i
 OFF = "OFF"i
 ON = "ON"i
+OR = "OR"i
 PARAMETER_CHANGE = "PARAMETER CHANGE"i
 PARAMETER_FILE = "PARAMETER FILE"i
 PLOTFIL = "PLOTFIL"i
 SENSITIVITY = "SENSITIVITY"i
-SET = "SET"i
-SI = "SI"i
+SET = "SET"i;
 T = "T"i
-TIMER = "TIMER"
+TIMER = "TIMER"i
 TITLE = "TITLE"i
 TRUE = "TRUE"i
 USEREVT = "USEREVT"i
 WHEN = "WHEN"i
 
-___ = v:(WhiteSpace / LineTerminatorSequence / Comment)+ {
+___ = v:(WhiteSpace / LineTerminatorSequence)+ {
 	return v.filter((x) => x.type === "comment");
 }
-__ = v:(WhiteSpace / LineTerminatorSequence / Comment)* {
+__ = v:(WhiteSpace / LineTerminatorSequence)* {
 	return v.filter((x) => x.type === "comment");
 }
 _ = WhiteSpace*
 
 /* Expressions */
 Arguments = value:ExpressionType rest:(_ "," _ Arguments)? {
-	let args = [value];
-    if (rest) {
-    	args = args.concat(rest[3]);
-    }
-	return args;
+	return [value].concat(rest ? rest[3] : []);
 }
 CallExpression = value:Identifier _ "(" args:Arguments? ")" {
 	return {
     	arguments: args || [],
-        location: location(),
     	type: "call_expression",
         value,
     }
 }
-ExpressionOperator = "**" / "*" / "/" / ">=" / "<=" / ">" / "<" / "+" / "-" / "AND"
+ExpressionOperator = "**" / "*" / "/" / ">=" / "<=" / ">" / "<" / "+" / "-" / "!=" / "=="
 Expression = left:ExpressionType _ op:ExpressionOperator _ right:(Expression / ExpressionType) {
 	return {
-    	location: location(),
     	type: "expression",
-        value: {
-        	left,
-            op,
-            right,
-        },
+        left,
+        op,
+        right,
     }
 }
-ExpressionBlock = "(" value:Expression ")" {
+ExpressionBlock = "(" value:Expr ")" _ units:Units? {
 	return {
-    	location: location(),
     	type: "expression_block",
         value,
+        units: units ?? undefined,
     }
 }
 ExpressionType = CallExpression / ExpressionBlock / Variable
-SpaceAssignment = target:(CallExpression / Identifier) WhiteSpace WhiteSpace+ value:Expr {
-	return {
-    	location: location(),
-    	target,
-    	type: "assignment",
-        value,
-    }
-}
 Assignment = target:(CallExpression / Identifier) _ "=" _ value:Expr {
 	return {
-    	location: location(),
     	target,
     	type: "assignment",
         value,
     }
 }
-IsExpression = target:Variable _ IS _ value:Expr {
+IsExpression = target:(Variable / END_TIME) _ IS _ value:Expr {
 	return {
-    	location: location(),
-    	target,
+    	target: target === 'END TIME' ? {
+        	type: 'parameter_name',
+            value: 'END TIME',
+        } : target,
     	type: "is_expression",
         value,
     }
 }
 AsExpression = target:Variable _ AS _ value:Variable {
 	return {
-    	location: location(),
     	target,
     	type: "as_expression",
         value,
     }
 }
-Expr = IsExpression / Expression / ExpressionType
+MultiPartExpression = first:(Expression / IsExpression / ExpressionBlock) comment:(_ CommentBlock)? __ op:(AND / OR) _ rest:Expr  {
+	return {
+    	type: "multi_expression",
+        op,
+        value: [first, rest],
+        comments: comment ? comment[1] : [],
+    }
+}
+Expr = MultiPartExpression / IsExpression / Expression / ExpressionType
 Variable = CallExpression / Literal / ParameterName / Identifier
 
 /* Statements */
-Statement = value:(SensitivityStatement
-	/ TitleStatement
-    / FileStatement
-    / BlockStatement
-    / ConditionalBlockStatement
-    / AliasStatement
-    / PlotFilStatement
-    / UserEvtStatement
-    / FunctionStatement
-    / TimerStatement
-    / LookupStatement) {
+SensitivityStatement = SENSITIVITY _ value:(ON / OFF) {
+	return { type: "sensitivity", value }
+}
+TitleStatement = TITLE _ comment:Comment? __ value:(TitleBlock ___)* epilogue:(CommentBlock ___)? END {
+	let innerComments = [];
+    if (value) {
+    	innerComments = value.map(v => v[0].comments)[0] ?? [];
+    }
     return {
-    	location: location(),
-        ...value,
-    }
-}
-SensitivityStatement = SENSITIVITY ___ value:(ON / OFF) {
-	return {
-    	location: location(),
-    	type: "sensitivity",
-        value,
-    }
-}
-TitleStatement = TITLE ___ value:(TitleBlock ___)? END {
-	return {
     	type: "title",
-        value: (value || [])[0],
+        value: value.map(v => v[0].title).join('\n'),
+        comment: [[comment, ...innerComments], epilogue ? [...epilogue[0]] : []],
     }
 }
-TitleBlock = !END first:FreeCharacter+ rest:(___ TitleBlock)? {
-	let title = extractList(first, 1).join('');
-    if (rest) {
-    	title += '\n' + rest[1];
+TitleBlock = preamble:(CommentBlock ___)? !END title:FreeCharacter+ epilogue:Comment? {
+	let comments = [];
+    if (preamble) {
+    	comments = comments.concat(preamble[0]);
     }
-	return title;
+    if (epilogue) {
+    	comments.push(epilogue);
+    }
+	return { title: title.join(''), comments }
 }
-FileStatement = fileType:(PARAMETER_FILE / INCLUDE) _ v:FreeCharacter+ {
+FileStatement = fileType:(PARAMETER_FILE / DOSE_PARAMETER_FILE / INCLUDE) _ value:FreeCharacter+ {
 	return {
     	fileType,
-    	type: "file",
-        value: extractList(v, 1).join(''),
+        type: 'file',
+        value: value.join('')
     }
 }
-BlockStatement = blockType:(PARAMETER_CHANGE / INITIATORS) ___ value:(SourceElements ___)? END {
+BlockStatement = blockType:(PARAMETER_CHANGE / INITIATORS) _ comment:Comment? value:(___ SourceElements)? epilogue:(___ CommentBlock)? ___ END {
 	return {
     	blockType,
         type: "block",
-        value: safeValue(value),
+        value: value ? value[1] : [],
+        comment: [[comment], epilogue ? epilogue[1] : []]
     }
 }
-ConditionalBlockStatement = blockType:(WHEN / IF) _ test:Expr ___ value:(SourceElements ___)? END {
+ConditionalBlockStatement = blockType:(WHEN / IF) _ test:Expr comment:(_ Comment)? value:(___ SourceElements)? epilogue:(___ CommentBlock)? ___  END {
 	return {
     	blockType,
     	test,
     	type: "conditional_block",
-        value: safeValue(value),
+        value: value ? value[1] : [],
+        comment: [comment ? [comment[1]] : [], epilogue ? epilogue[1] : []],
     }
 }
-AliasStatement = ALIAS ___ value:(AliasBody ___)? END {
-	return {
+AliasStatement = ALIAS _ comment1:Comment? ___ value:(SourceElements ___)? comment2:(CommentBlock ___)? END {
+    return {
     	type: "alias",
-        value: safeValue(value),
+        value: value ? value[0] : [],
+        comment: [[comment1], comment2 ? comment2[0] : []],
     }
 }
-AliasBody = head:AsExpression tail:(___ AsExpression)* {
-	return [head].concat(extractList(tail, 1));
-}
-PlotFilStatement = PLOTFIL _ n:[0-9]+ ___ value:(PlotFilBody ___)? END {
-	return {
+PlotFilStatement = PLOTFIL _ n:[0-9]+ comment1:(_ Comment)? value:(___ PlotFilBody)* comment2:(__ CommentBlock)? ___ END {
+    return {
     	n: Number(n.join('')),
     	type: "plotfil",
-        value: safeValue(value),
+        value: value.length > 0 ? value.map(v => v[1])[0] : [],
+        comment: [comment1 ? [comment1[1]] : [], comment2 ? [...comment2[1]] : []],
     }
 }
 PlotFilList = head:Variable tail:(_ "," _ PlotFilList)* {
-	let value = [head];
-    if (tail && tail.length > 0) {
-    	value = value.concat(extractList(tail, 3)[0]);
-    }
-	return value;
+	return tail.length > 0 ? [head].concat(tail.map(t => t[3])[0]) : [head];
 }
-PlotFilBody = head:PlotFilList tail:(___ PlotFilBody)* {
-	let value = [head];
-    if (tail && tail.length > 0) {
-    	value = value.concat(extractList(tail, 1)[0]);
+PlotFilBody = preamble:(CommentBlock ___)? head:PlotFilList epilogue:(_ Comment)? tail:(___ PlotFilBody)* {
+	let comments = [];
+    if (preamble) {
+    	comments = comments.concat(preamble[0]);
     }
-	return value;
+    if (epilogue) {
+    	comments.push(epilogue[1]);
+    }
+    return [{
+    	row: head,
+        comments,
+    }].concat(tail.length > 0 ? tail.map(t => t[1])[0] : []);
 }
-UserEvtStatement = USEREVT ___ value:(UserEvtBody ___)? END {
-	return {
+UserEvtStatement = USEREVT comment1:(_ Comment)? ___ value:(SourceElements ___)? comment2:(CommentBlock ___)? END {
+    return {
     	type: "user_evt",
-        value: safeValue(value),
+        value: value ? value[0] : [],
+        comment: [comment1 ? [comment1[1]] : [], comment2 ? comment2[0] : []],
     }
 }
-UserEvtBody = head:UserEvtElement tail:(___ UserEvtElement)* {
-	return [head].concat(extractList(tail, 1));
-}
-UserEvtElement = Parameter / ActionStatement / SourceElement
-ActionStatement = ACTION _ "#" n:[0-9]+ ___ value:(UserEvtBody ___)? END {
-	return {
+ActionStatement = ACTION _ "#" n:[0-9]+ comment1:(_ Comment)? ___ value:(SourceElements ___)? comment2:(CommentBlock ___)? END {
+    return {
     	index: Number(n.join('')),
-        location: location(),
     	type: "action",
-        value: safeValue(value),
+        value: value ? value[0] : [],
+        comment: [comment1 ? [comment1[1]] : [], comment2 ? comment2[0] : []],
     }
 }
 FunctionStatement = FUNCTION _ name:Identifier _ "=" _ value:Expr {
@@ -349,46 +281,61 @@ TimerStatement = SET _ value:TimerLiteral {
         value,
     }
 }
-LookupStatement = LOOKUP_VARIABLE _ name:Variable ___ value:(LookupBody ___)? END {
+LookupStatement = LOOKUP_VARIABLE _ name:Variable comment:(_ Comment)? value:(___ LookupBody)? ___ END {
 	return {
 		name,
     	type: "lookup_variable",
-        value: safeValue(value),
+        value: value ? value[1] : [],
+        comment: [comment ? [comment[1]] : [], []],
     }
 }
-LookupBody = !Reserved head:FreeCharacter+ tail:(___ LookupBody)* {
-	let value = [extractList(head, 1).join('')];
-    if (tail && tail.length > 0) {
-    	value = value.concat(extractList(tail, 1)[0]);
-    }
-	return value;
+LookupBody = !Reserved head:FreeCharacter+ tail:(___ LookupBody)? {
+	return [head.join('')].concat(tail ? tail[1] : []);
 }
 
-/* Program blocks */
-Program = value:SourceElements? {
-	return {
-    	type: "program",
-        value: value || [],
-    }
+CommentBlock = first:Comment rest:(___ CommentBlock)? {
+	return [first].concat(rest ? rest[1] : []);
 }
-SourceElements = head:SourceElement tail:(___ SourceElement)* {
-	let re = [head];
-    for (let i = 0; i < tail.length; i += 1) {
-    	for (let j = 0; j < tail[i][0].length; j += 1) {
-        	re = re.concat(tail[i][0][j]);
+
+SourceElements = preamble:(CommentBlock ___)? element:SourceElement _ epilogue:Comment? next:(___ SourceElements)? {
+	let comments = [[], []];
+    if (preamble) {
+    	comments[0] = comments[0].concat(preamble[0]);
+    }
+    if (element.comment) {
+    	if (Array.isArray(element.comment)) {
+        	comments[0] = comments[0].concat(element.comment[0].filter(c => c != null));
+            comments[1] = comments[1].concat(element.comment[1].filter(c => c != null));
+        } else {
+    		comments.push(element.comment);
         }
-        re = re.concat(tail[i][1]);
     }
-    return re;
+    delete element.comment;
+    if (epilogue) {
+    	comments[1].push(epilogue);
+    }
+    return [{ ...element, comments }].concat(next ? next[1] : []);
 }
-SourceElement = Statement
-	/ SpaceAssignment
-	/ Assignment
-	/ AsExpression
-	/ IsExpression
-	/ Expression
-	/ CallExpression
-	/ ExpressionBlock
-	/ ParameterName
+
+SourceElement =
+	SensitivityStatement
+    / TitleStatement
+    / FileStatement
+    / BlockStatement
+    / Assignment
+    / TimerStatement
+    / ConditionalBlockStatement
+    / AsExpression
+    / AliasStatement
+    / PlotFilStatement
+    / UserEvtStatement
+    / ActionStatement
+    / FunctionStatement
+    / Expression
+    / IsExpression
+    / LookupStatement
+    / Parameter
     / Literal
-	/ Identifier
+    / CallExpression
+    / ParameterName
+    / Identifier

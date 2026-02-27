@@ -11,43 +11,48 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import { v4 as uuid } from 'uuid';
-import { MAAPFormData } from '../maap';
-import { Initiator } from '../MAAPTypes';
+import type { MAAPAssignment, MAAPSourceElement } from '../../../../../../../../types/EMRALD_Model';
+import { MAAPToString } from '../Parser/maap-to-string';
 
 const Initiators = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [initiators, setInitiators] = useState<Initiator[]>([]);
-
-  const maapForm = formData as MAAPFormData;
+  const [initiators, setInitiators] = useState<MAAPSourceElement[]>([]);
 
   useEffect(() => {
-    setInitiators(maapForm?.initiators || []);
+    setInitiators(formData?.initiators ?? []);
   }, [formData]);
 
-  const removeInitiator = (row: any) => {
+  const removeInitiator = (row: MAAPSourceElement) => {
     const updatedInitiators = initiators.filter((initiator) => initiator !== row);
     setInitiators(updatedInitiators);
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, initiators: updatedInitiators };
-      return data;
-    });
+    setFormData((prevFormData) =>
+      prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
+    );
   };
+
   const addInitiator = (desc: string) => {
-    const initiator = maapForm?.possibleInitiators?.find((init) => init.desc === desc);
-    if (initiator && !initiators.find((init) => init.name === initiator.desc)) {
-      const newInitiator = {
-        name: initiator.desc,
-        comment: '',
-        id: uuid(),
-        value: initiator.value,
+    const initiator = formData?.possibleInitiators?.find((init) => init.desc === desc);
+    if (initiator) {
+      const newInitiator: MAAPAssignment = {
+        type: 'assignment',
+        target: {
+          type: 'identifier',
+          value: initiator.desc ?? '',
+        },
+        value:
+          typeof initiator.value === 'string'
+            ? {
+                type: 'identifier',
+                value: initiator.value,
+              }
+            : initiator.value,
+        comments: [[], []],
       };
       const updatedInitiators = [...initiators, newInitiator];
       setInitiators(updatedInitiators);
-      setFormData((prevFormData: MAAPFormData) => {
-        const data = { ...prevFormData, initiators: updatedInitiators };
-        return data;
-      });
+      setFormData((prevFormData) =>
+        prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
+      );
     }
   };
 
@@ -56,8 +61,10 @@ const Initiators = () => {
       <Autocomplete
         size="small"
         disablePortal
-        options={maapForm?.possibleInitiators?.map((initiator) => initiator.desc) || []}
-        onChange={(e) => addInitiator(e.currentTarget.innerHTML)}
+        options={formData?.possibleInitiators?.map((initiator) => initiator.desc) ?? []}
+        onChange={(e) => {
+          addInitiator(e.currentTarget.innerHTML);
+        }}
         sx={{ width: 300 }}
         renderInput={(params) => <TextField {...params} label="Add Initiator" />}
       />
@@ -76,15 +83,19 @@ const Initiators = () => {
           {initiators.map((row, idx) => (
             <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell component="th" scope="row">
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {row.name} {row.comment ? ` - ${row.comment}` : ''}
-                </div>
+                {row.type === 'assignment'
+                  ? row.target.type === 'call_expression'
+                    ? new MAAPToString().callExpressionToString(row.target)
+                    : row.target.value
+                  : ''}
               </TableCell>
               <TableCell align="center">
                 <Tooltip title="Remove Initiator">
                   <DeleteIcon
                     sx={{ cursor: 'pointer', ml: 3 }}
-                    onClick={() => removeInitiator(row)}
+                    onClick={() => {
+                      removeInitiator(row);
+                    }}
                   />
                 </Tooltip>
               </TableCell>

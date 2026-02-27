@@ -23,9 +23,13 @@ namespace EMRALD_Sim
         errorMsg = "File does not exist anymore.";
         return "";
       }
-      StreamReader srFileReader = new StreamReader(path);
 
-      string modelStr = srFileReader.ReadToEnd();
+      string modelStr;
+      using (StreamReader srFileReader = new StreamReader(path))
+      {
+        modelStr = srFileReader.ReadToEnd();
+      }
+
       try
       {
         if (sim == null)
@@ -54,7 +58,7 @@ namespace EMRALD_Sim
         {
           sim = new EmraldModel();
         }
-        sim.DeserializeJSON(modelText, Path.GetDirectoryName(modelDir), Path.GetFileNameWithoutExtension(modelDir)); //throws and exception of failed
+        sim.DeserializeJSON(modelText, CommonFunctions.NormalizeGetDirectoryName(modelDir), Path.GetFileNameWithoutExtension(modelDir)); //throws and exception of failed
         return "";
       }
       catch (Exception error)
@@ -105,7 +109,7 @@ namespace EMRALD_Sim
     {
       int inThreads = 0;
       if (threadCnt == "")
-        ConfigData.threads = 1;
+        ConfigData.threads = null;
       else
       {
         if (!Int32.TryParse(threadCnt, out inThreads))

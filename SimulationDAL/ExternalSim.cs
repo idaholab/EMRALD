@@ -14,14 +14,15 @@ namespace SimulationDAL
 {
   public class ExternalSim : BaseObjInfo
   {
-    public string resourceName; //name of resource type to connect to in MsgServer, not unique if more than one simulation of the same tool 
-    public string modelRef; 
+    public string resourceName = ""; //name of resource type to connect to in MsgServer, not unique if more than one simulation of the same tool 
+    public string modelRef = ""; 
     public string configData = "";
     public TimeSpan simMaxTime;
     public bool verified = false; //verified there is a link to a external sim client
     public int timeout = 10; //time before timeout in trying to connect to external sim
+    public string connectionID = ""; //Probably a GUID, For connections that privide a unique connection ID. Set after establishing a connection for the external sim
 
-    public string msgServerClient { get; set; } //
+    //public string msgServerClient { get; set; } = ""; //
 
 
     public ExternalSim(string clientResourceName, string desc, string modelRef, TimeSpan maxRunTime, string configData = "")
@@ -117,7 +118,7 @@ namespace SimulationDAL
       //none
     }
 
-    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       //override in the different types if it is possible that the item has something for the scanType 
       return new List<ScanForReturnItem>();
@@ -204,7 +205,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find External Sim - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -212,7 +213,7 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find External Sim - " + name);
         else
-          return null;
+          return null!;
       }
     }
 
@@ -257,7 +258,7 @@ namespace SimulationDAL
         foreach (var wrapper in dynamicObj)
         {
           var item = wrapper;
-          ExternalSim curItem = null;
+          ExternalSim curItem = null!;
           curName = (string)item.name;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
@@ -310,7 +311,7 @@ namespace SimulationDAL
 
       foreach (var curItem in this.Values)
       {
-        foundList.AddRange(curItem.ScanFor(scanType));
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
       }
 
       return foundList;

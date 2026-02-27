@@ -1,0 +1,200 @@
+{
+  "id": "bab3b264-da67-4a2c-b22f-da7688045fd9",
+  "name": "DistEvTest1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Event",
+        "Done"
+      ],
+      "id": "3d12da6c-c7d7-48dd-8997-791680888dcd",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Done",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "7d91ebb5-1d62-4642-aa07-c2e7b64eae06",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 640,
+        "y": 340.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Event",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Done"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "99d7c0f1-bed1-4758-baeb-25376e402650",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 160.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "LogNorm"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Event"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "8e89db38-cc8a-4b1a-9fa5-b1d42765901e",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 20.5,
+        "width": 200,
+        "height": 130
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Done",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "7aa12909-516b-48ae-912b-dcdffa77e9e5",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Event",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Event",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "3b033965-b7d8-4457-90e4-39cf1f72fd40",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "LogNorm",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "distType": "dtLogNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": "6",
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 10000,
+          "timeRate": "trHours",
+          "useVariable": false
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "onVarChange": "ocResample",
+      "id": "1c0d6e9b-f5ec-467a-913d-c9de739824da",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dbl_Mean",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 12,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "ffdc8d79-7af4-41bd-9c09-df4c142c31bf",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_Rate",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0.1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "603e24a7-e938-44b7-b712-c829b1c563c0",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_STD",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "20a681c8-994d-45c4-b783-272b11651b46",
+      "objType": "Variable"
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

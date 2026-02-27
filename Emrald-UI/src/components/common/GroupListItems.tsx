@@ -5,17 +5,21 @@ import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Group } from '../../types/ItemTypes';
+import type { Group } from '../../types/EMRALD_Model';
 
 interface GroupListItemsProps {
-
   selectedGroup: string;
   highlightSelectedGroup?: boolean;
   setSelectedGroup: React.Dispatch<React.SetStateAction<string>>;
-  handleContextMenu?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, group: Group) => void;
+  handleContextMenu?: (event: React.MouseEvent<HTMLDivElement>, group: Group) => void;
 }
 
-const GroupListItems: React.FC<GroupListItemsProps> = ({ selectedGroup, highlightSelectedGroup, setSelectedGroup, handleContextMenu }) => {
+const GroupListItems: React.FC<GroupListItemsProps> = ({
+  selectedGroup,
+  highlightSelectedGroup,
+  setSelectedGroup,
+  handleContextMenu,
+}) => {
   const { groups } = useTemplateContext();
   const [expanded, setExpanded] = React.useState<string[]>([]);
 
@@ -30,7 +34,7 @@ const GroupListItems: React.FC<GroupListItemsProps> = ({ selectedGroup, highligh
     });
   };
 
-  const renderListItems = (groups: Group[], level: number = 1) => {
+  const renderListItems = (groups: Group[], level = 1) => {
     return groups.map((item) => (
       <React.Fragment key={item.name}>
         <ListItemButton
@@ -38,8 +42,13 @@ const GroupListItems: React.FC<GroupListItemsProps> = ({ selectedGroup, highligh
             toggleExpand(item.name);
             setSelectedGroup(item.name);
           }}
-          onContextMenu={(e) => handleContextMenu ? handleContextMenu(e, item) : null}
-          sx={{ backgroundColor: highlightSelectedGroup && item.name === selectedGroup ? 'lightgreen' : 'white' }}
+          onContextMenu={(e) => {
+            handleContextMenu ? handleContextMenu(e, item) : null;
+          }}
+          sx={{
+            backgroundColor:
+              highlightSelectedGroup && item.name === selectedGroup ? 'lightgreen' : 'white',
+          }}
         >
           <ListItemIcon>
             {expanded.includes(item.name) && item.subgroup && item.subgroup.length > 0 ? (

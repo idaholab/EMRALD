@@ -1,0 +1,201 @@
+{
+  "id": "87153d29-9df7-4455-9a67-ad53fbb09a48",
+  "name": "Sim1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "End",
+        "Occured"
+      ],
+      "id": "a9cfc67f-daf3-416a-9a09-c9b91ef63ad8",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "End",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "55051f76-496d-4276-9059-575005631e30",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 449.7272644042969,
+        "y": 280.18748474121094,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Occured",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_End"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "98f11c34-3e5d-4a03-82a9-fe17c6f28730",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 439.81817626953125,
+        "y": 79.73295593261719,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [
+        "SetFailRateVar"
+      ],
+      "events": [
+        "FailProbFromVar"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Occured"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "0b1a2488-2801-4e9b-8685-81e182f83e11",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 128.1818084716797,
+        "y": 66.27840423583984,
+        "width": 200,
+        "height": 150
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_End",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "End",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "9e410d38-57ec-469a-b6c3-647d0db92494",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Occured",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Occured",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "fd7dce4e-444a-4c3d-a5c2-d275906336da",
+      "objType": "Action"
+    },
+    {
+      "name": "SetFailRateVar",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return 0.5;",
+      "variableName": "FailProb",
+      "codeVariables": [],
+      "id": "3d57547c-b787-4af6-a445-2922dd2b994d",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "FailProbFromVar",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etFailRate",
+      "varNames": [],
+      "lambda": "FailProb",
+      "lambdaTimeRate": "P365D",
+      "useVariable": true,
+      "id": "10a2c06a-2a16-4300-91d8-60f35bec778b",
+      "objType": "Event"
+    },
+    {
+      "name": "timer1",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": true,
+      "time": "t1",
+      "timeVariableUnit": "trHours",
+      "id": "e2ab5f69-46d1-43fe-b455-2206eee64b5e",
+      "objType": "Event"
+    },
+    {
+      "name": "TimerStd",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": false,
+      "time": "P1DT2H3M4S",
+      "timeVariableUnit": "",
+      "id": "07586bf4-dba2-499d-8ca3-e92c3ee8d8a9",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "FailProb",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0.003,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "531a0b30-4b7c-464d-a4ec-abf9202c186d",
+      "objType": "Variable"
+    },
+    {
+      "name": "t1",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 3.5,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "dee6fc34-de49-4c30-b919-19ea42ba8219",
+      "objType": "Variable"
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

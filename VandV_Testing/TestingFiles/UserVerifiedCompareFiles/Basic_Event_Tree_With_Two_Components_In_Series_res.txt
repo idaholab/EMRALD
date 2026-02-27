@@ -1,0 +1,21 @@
+Simulation = Basic Event Tree
+Runtime = 00.00:00:00
+Runs = 10000 of 10000
+
+C1 Failed Occurred 9319 times, Probability =0.9319, MeanTime = 292.08:20:29 +/- 242.21:35:14.84
+(8679)[93.132%]C1 Failed, C2 Failed
+(640)[6.868%]C1 Failed
+
+C2 Failed Occurred 9316 times, Probability =0.9316, MeanTime = 297.17:27:51 +/- 243.12:47:29.67
+(8679)[93.162%]C1 Failed, C2 Failed
+(637)[6.838%]C2 Failed
+
+Core Damage  Occurred 146 times, Probability =0.0146, MeanTime = 558.20:46:53 +/- 277.09:30:52.82
+(29)[19.863%]C1 Failed
+(90)[61.644%]C1 Failed, C2 Failed
+(27)[18.493%]C2 Failed
+
+ESF Actuated Occurred 1 times, Probability =0.0001, MeanTime = 133.07:46:31 +/- 00.00:00:00.00
+---------------------------
+- End Sim Variable Values -
+---------------------------

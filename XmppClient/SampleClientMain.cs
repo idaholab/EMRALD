@@ -21,7 +21,7 @@ namespace XmppMessageClient
       // show the gui
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
-      var appSettingsService = new AppSettingsService(ConfigHelper.GetConfiguration());
+      var appSettingsService = new AppSettingsService(XMPPConfigHelper.GetConfiguration());
       Application.Run(new FrmSampleClient(new SampleClientController(appSettingsService)));
     }
   }

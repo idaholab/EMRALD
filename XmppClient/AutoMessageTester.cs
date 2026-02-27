@@ -25,7 +25,7 @@ namespace XmppMessageClient
     private int _idx = 0;
     public int _runToIdx = 0;
     private bool _hasStatusMsgs = false;
-    private StatusType _curStatus = StatusType.stIdle;
+    //private StatusType _curStatus = StatusType.stIdle;
     private UpdateDelegate _updateCallback;
 
 
@@ -73,7 +73,7 @@ namespace XmppMessageClient
     {
       try
       {
-        _curStatus = StatusType.stIdle;
+        //_curStatus = StatusType.stIdle;
 
         while (_idx < _msgList.Count)
         {

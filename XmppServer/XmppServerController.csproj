@@ -10,7 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MatriX.Mono" Version="2.1.0.8" />
+    <PackageReference Include="MatriX.Mono" Version="2.1.0.8">
+			<NoWarn>NU1701</NoWarn>
+		</PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.4.0" />

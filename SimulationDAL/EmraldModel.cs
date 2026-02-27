@@ -14,18 +14,21 @@ using System.Text;
 using System.Text.Json.Nodes;
 using MathNet.Numerics.LinearAlgebra;
 using MessageDefLib;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using NLog;
+using SimulationDAL.LocalLibs;
 using Sop.Collections.BTree;
 
 
 namespace SimulationDAL
 {
-  
+
   //public delegate int NewStateDecisionCallBack(StEvKey stEvKey);
- 
+
 
   //public static class GlobalVar
   //{
@@ -36,16 +39,19 @@ namespace SimulationDAL
   //}
 
 
-  
 
-    
+
+
   //[DataContract]
   public class EmraldModel : BaseObjInfo
   {
     private Boolean _multiThreadReady = false;
     private int? _threadNumber = 0;
     private bool _updated = false;
-    public const double SCHEMA_VERSION = 3.0;    
+    private MultiThreadInfo _MultiThreadInfo = null!;
+    private string _origRootPath = ""; //origional root path before being changed by multithreading 
+    private string _rootPath = ""; //emrald model root path
+    public const double SCHEMA_VERSION = 3.2;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();
@@ -57,14 +63,29 @@ namespace SimulationDAL
     //public ComponentsList allComponents = new ComponentsList();
     public LogicNodeList allLogicNodes = new LogicNodeList();
     public Dictionary<int, List<AccrualVariable>> AccrualVars = new Dictionary<int, List<AccrualVariable>>();
-    public MultiThreadInfo multiThreadInfo = null;
     private static readonly object deleteLock = new object(); // a static object for thread file locking
-    
+
 
     public string fileName { get; set; } = "";
-    public string rootPath { get; set; } = "";
+    public string origRootPath => _origRootPath; //origional root path before being changed by multithreading 
+    public string rootPath //emerald model root path
+    {
+      get => _rootPath;
+      set
+      {
+        if (_rootPath != value)
+        {
+          _origRootPath = _rootPath;  // save previous
+          _rootPath = value;
+        }        
+      }
+    }
     public string modelTxt { get; set; } = "";
     public bool updated { get { return _updated; } }
+    public MultiThreadInfo multiThreadInfo
+    {
+      get { if (_MultiThreadInfo == null) _MultiThreadInfo = new MultiThreadInfo(); return _MultiThreadInfo; }
+    }
 
     //public int dbID = 0;
     public int curRunIdx = 0; //current run index.
@@ -83,7 +104,24 @@ namespace SimulationDAL
       this.desc = desc;
       this._id = 0;
     }
-   
+
+    public void SetMultiThreadInfo (MultiThreadInfo value = null!)
+    {
+      if (value != null)
+        this._MultiThreadInfo = value;
+
+      dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt)!;
+      string multiThreadInfoJson = JsonConvert.SerializeObject(this._MultiThreadInfo);
+      JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
+
+      // Modify the property if it exists, or add it if it does not
+      ((JObject)jsonObj)["multiThreadInfo"] = multiThreadInfoToken;
+
+      // Serialize the modified object back into a JSON string
+      this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+    }
+
+
     public void AddList(EmraldModel toAdd)
     {
       foreach (var i in toAdd.allDiagrams) { allDiagrams.Add(i.Value); }
@@ -144,7 +182,7 @@ namespace SimulationDAL
 
     public string UpdateModel(string jsonModel)
     {
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel)!;
       //update the model if needed
       if ((jsonObj.emraldVersion == null) || (jsonObj.emraldVersion < SCHEMA_VERSION))
       {
@@ -161,7 +199,7 @@ namespace SimulationDAL
       }
       else if(jsonObj.emraldVersion > SCHEMA_VERSION)
       {
-        throw new Exception("EMRALD solver version to old to solve this model. Upgrade to v" + jsonObj.emraldVersion);
+        throw new Exception("EMRALD solver version too old to solve this model. Upgrade to v" + jsonObj.emraldVersion);
       }
      
       return jsonModel;
@@ -170,31 +208,33 @@ namespace SimulationDAL
     private string GetTempThreadFilesPath(int threadID = -1)
     {
       if(threadID < 0)
-        threadID = (int)_threadNumber;
-      return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + threadID.ToString());
+        threadID = (int)_threadNumber!;
+      return CommonFunctions.NormalizeCombine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + threadID.ToString());
     }
 
     public bool DeserializeJSON(string jsonModel, string modelPath, string fileName, int? threadNum = null) 
     {
       SingleNextIDs.Instance.Reset();
 
-      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel);
+      dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel)!;
       this.modelTxt = jsonModel;
       this.fileName = fileName;
       this._threadNumber = threadNum;
+      this._rootPath = modelPath;
+      this._origRootPath = modelPath;
+
+      // Deserialize multiThreadInfo if present
+      if (jsonObj.multiThreadInfo != null)
+      {
+        this._MultiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(jsonObj.multiThreadInfo));
+      }
+      else
+      {
+        this._MultiThreadInfo = new MultiThreadInfo();
+      }
 
       if (threadNum != null) //assign thread info and copy data
       {
-        // Deserialize multiThreadInfo if present
-        if (jsonObj.multiThreadInfo != null)
-        {
-          this.multiThreadInfo = JsonConvert.DeserializeObject<MultiThreadInfo>(Convert.ToString(jsonObj.multiThreadInfo));
-        }
-        else
-        {
-          this.multiThreadInfo = new MultiThreadInfo();
-        }
-
         this.rootPath = GetTempThreadFilesPath();
 
         // Ensure the directory exists and is empty
@@ -213,31 +253,78 @@ namespace SimulationDAL
           }
           CommonFunctions.CopyDirectory(firstRootPath, this.rootPath, true);
         }
-
-        //copy all the data needed to run in its own thread
-        foreach (var item in multiThreadInfo.ToCopyForRefs)
+        else
         {
-          if ((threadNum == 0) && (item.ToCopy.Count > 0)) //if the first thread then make sure to figure out all the files needed.
+          //copy all the data needed to run in its own thread
+
+          File.WriteAllText(this.rootPath + Path.AltDirectorySeparatorChar + this.fileName + ".emrald", this.modelTxt); 
+          Dictionary<string, string> copied = new Dictionary<string, string>(); //files copied and where they came from
+          foreach (var item in multiThreadInfo.ToCopyForRefs)
           {
-            string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
-            foreach (var copyItem in item.ToCopy)
+            if (threadNum == 0)// && (item.ToCopy.Count > 0)) //if the first thread then make sure to figure out all the files needed.
             {
-              //copy the items needed
-              if (File.Exists(copyItem))
+              if (item.ToCopy!.Count > 0)
               {
-                string remainingPath = CommonFunctions.GetRemainingPath(commonFolder, copyItem);
-                string copyTo = Path.GetFullPath(Path.Combine(rootPath, remainingPath));
-                File.Copy(copyItem, copyTo);
+                string commonFolder = CommonFunctions.FindClosestParentFolder(item.ToCopy);
+                for (int i = 0; i < item.ToCopy.Count; i++)
+                {
+                  var copyItem = item.ToCopy[i];
+                  //copy the items needed
+                  string copyFrom = CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath, copyItem));
+                  if (File.Exists(copyFrom))
+                  {
+                    string root = rootPath;
+                    //if this is not directly reletive to the model location adjust it
+                    if (item.AdjRelRoot != "")
+                      root = CommonFunctions.NormalizeGetFullPath(Path.Combine(rootPath, item.AdjRelRoot));
+                    string copyTo = CommonFunctions.NormalizeGetFullPath(Path.Combine(root, item.RelPath));
+                    if (i > 0) //not the main copy/replace item, so use the path of the [0] item for this copy
+                    {
+                      string subItemPath = CommonFunctions.NormalizeGetDirectoryName(item.RelPath);
+                      if (subItemPath == ".")
+                        subItemPath = "";
+                      else
+                        subItemPath += Path.AltDirectorySeparatorChar;
+                      copyTo = CommonFunctions.NormalizeGetFullPath(Path.Combine(root, subItemPath + Path.GetFileName(copyItem)));
+                    }
+
+                    // If copyTo is a directory (no file extension or ends with separator), append the source filename
+                    if (Directory.Exists(copyTo) ||
+                        copyTo.EndsWith(Path.DirectorySeparatorChar.ToString()) ||
+                        copyTo.EndsWith(Path.AltDirectorySeparatorChar.ToString()) ||
+                        string.IsNullOrEmpty(Path.GetExtension(copyTo)))
+                    {
+                      copyTo = Path.Combine(copyTo, Path.GetFileName(copyFrom));
+                      copyTo = CommonFunctions.NormalizeGetFullPath(copyTo);
+                    }
+
+                    if (copied.ContainsKey(copyTo))
+                    {
+                      if (copied[copyTo] != copyFrom)
+                      {
+                        throw new Exception("If run using multithreading, the model would have idenical relaive path references to two different files of the same name.");
+                      }
+                      //else it already coppied the file, dont copy again
+                    }
+                    else //not copied yet so copy for multithreading.
+                    {
+                      //make sure directory exists
+                      string directory = CommonFunctions.NormalizeGetDirectoryName(copyTo);
+                      if (directory != null && !Directory.Exists(directory))
+                      {
+                        Directory.CreateDirectory(directory);
+                      }
+                      File.Copy(copyFrom, copyTo);
+                      copied.Add(copyTo, copyFrom);
+                    }
+                  }
+                }
               }
             }
           }
-        }          
+        }
       }
-      else
-      {
-        this.rootPath = modelPath;
-        this.multiThreadInfo = new MultiThreadInfo();
-      }
+      
       
       
       //update the model if needed
@@ -246,7 +333,7 @@ namespace SimulationDAL
         try
         {
           string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
-          jsonObj = JsonConvert.DeserializeObject(upgraded);
+          jsonObj = JsonConvert.DeserializeObject(upgraded)!;
         }
         catch (Exception ex)
         {
@@ -316,10 +403,10 @@ namespace SimulationDAL
       // Ensure multiThreadInfo and its ToCopyForRefs list are initialized before use.
       // This prevents NullReferenceExceptions if either the multiThreadInfo object or its ToCopyForRefs property
       // have not been set (such as after deserialization, or if not initialized elsewhere in the code).
-      if (multiThreadInfo == null)
-        multiThreadInfo = new MultiThreadInfo();
-      if (multiThreadInfo.ToCopyForRefs == null)
-        multiThreadInfo.ToCopyForRefs = new List<ToCopyForRef>();
+      if (_MultiThreadInfo == null)
+        _MultiThreadInfo = new MultiThreadInfo();
+      if (_MultiThreadInfo.ToCopyForRefs == null)
+        _MultiThreadInfo.ToCopyForRefs = new List<ToCopyForRef>();
       
       var ModelRefsList = new List<ScanForReturnItem>();
 
@@ -332,77 +419,115 @@ namespace SimulationDAL
       ModelRefsList.AddRange(allVariables.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       ModelRefsList.AddRange(allLogicNodes.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       
-      //go through each of the found items and look for hem in the multiThreadInfo or put in a new list.
+      //go through each of the found items and look for them in the multiThreadInfo or put in a new list.
       var notAccountedFor = new List<String>();
-      Dictionary<string, ToCopyForRef> curMutiThreadItems = new Dictionary<string, ToCopyForRef>();
+      Dictionary<string, List<ToCopyForRef>> curMutiThreadItems = new Dictionary<string, List<ToCopyForRef>>();
       foreach (var item in multiThreadInfo.ToCopyForRefs)
       {
-        curMutiThreadItems.Add(item.ItemName, item);
+        //create list if doens't exist yet for key
+        if (!curMutiThreadItems.ContainsKey(item.ItemName))
+          curMutiThreadItems.Add(item.ItemName, new List<ToCopyForRef>());
+
+        curMutiThreadItems[item.ItemName].Add(item);          
       }
 
+      //add items to the multiThreadInfo if not there and keep track if items were not accounted for.
       foreach (var modelRef in ModelRefsList)
       {
         var mPathRef = (modelRef as ScanForRefsItem);
         //see if the item is in the saved JSON reference info
         if (curMutiThreadItems.ContainsKey(modelRef.itemName)) 
         {
-          var curI = curMutiThreadItems[modelRef.itemName];
-          if (string.IsNullOrEmpty(curI.RelPath))
+          bool found = false;
+          string issue = "";
+          foreach (var curI in curMutiThreadItems[modelRef.itemName])
           {
-            // Accumulate the issue, do not throw
+            issue = $"{modelRef.itemName} missing RelPath";
+            if (string.IsNullOrEmpty(curI.RelPath) && !string.IsNullOrEmpty(curI.RefPath))
+            {
+              break;
+            }
+            if (curI.RefPath == mPathRef!.Path)
+            {
+              found = true;
+              break;
+            }
+          }
+          if (!found)
             notAccountedFor.Add($"{modelRef.itemName} missing RelPath");
-            continue;
-          }
-          if (curI.RefPath != mPathRef.Path)
-          {
-            curI.RefPath = mPathRef.Path;
-            notAccountedFor.Add(curI.ItemName);
-          }
         }
         else //not in the saved items so add it 
         {
-          //var toCopyList = new List<string>();
-          //if (!string.IsNullOrEmpty(mPathRef.Path))
-          //  toCopyList.Add(mPathRef.Path);
-
-          var addI = new ToCopyForRef(mPathRef.itemName, mPathRef.itemType, mPathRef.Path, null, "");
-
-          //if it as a relative reference add it to the copy list
-          if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
+          try
           {
-            addI.RelPath = mPathRef.Path;
-            addI.ToCopy.Add(Path.GetFullPath(Path.Combine(rootPath, mPathRef.Path))); //combine and normalize the path.
-          }
-          else //it is a full path
-          {
-            addI.ToCopy.Add(mPathRef.Path);
-          }
+            var addI = new ToCopyForRef(mPathRef!.itemName, mPathRef.itemType, mPathRef.Path, null!, "");
 
-          multiThreadInfo.ToCopyForRefs.Add(addI);
-          notAccountedFor.Add(addI.ItemName);
+            string actualPath = mPathRef.Path;
+            string commonParent = rootPath;
+            if (actualPath == "") //could be "" if run external app and the app is blank
+            {
+              actualPath = rootPath;
+              addI.RelPath = "";
+              //addI.ToCopy.Add(mPathRef.Path); nothing to copy unless the user says to
+
+              multiThreadInfo.ToCopyForRefs.Add(addI);
+              notAccountedFor.Add(addI.ItemName);
+            }
+            else
+            {
+              //if it as a relative reference get to full path 
+              if (!Path.IsPathRooted(mPathRef.Path) && (mPathRef.Path[0] == '.'))
+              {
+                actualPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(rootPath, mPathRef.Path));
+              }
+
+              commonParent = CommonFunctions.FindClosestParentFolder(rootPath, actualPath);
+
+
+
+              //if item provided a different root location use that one instead
+              if (mPathRef.calcRelativeFrom != "")
+              {
+                string newRootPath = CommonFunctions.FindClosestParentFolder(mPathRef.calcRelativeFrom, actualPath);
+                addI.AdjRelRoot = CommonFunctions.GetRelativePath(commonParent, newRootPath);
+                commonParent = newRootPath;
+              }
+              addI.RelPath = CommonFunctions.GetRelativePath(commonParent, actualPath);
+              if (mPathRef.copyByDefault)
+                addI.ToCopy!.Add(mPathRef.Path); //combine and normalize the path.
+
+              multiThreadInfo.ToCopyForRefs.Add(addI);
+              notAccountedFor.Add(addI.ItemName);
+            }
+          }
+          catch (Exception ex)
+          {
+            throw new Exception("Invalid path data for " + mPathRef!.itemName + " - " + ex.Message);
+          }
 
         }
       }
 
-      //put the multiTheadInfo back onto the model JSON string
-      dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
-      string multiThreadInfoJson = JsonConvert.SerializeObject(multiThreadInfo);
-      JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
+      //put the multiTheadInfo back onto the model JSON string by assigning it;
+      SetMultiThreadInfo();
+      //dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
+      //string multiThreadInfoJson = JsonConvert.SerializeObject(multiThreadInfo);
+      //JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
 
-      // Check if the "multiThreadInfo" property exists
-      if (jsonObj.multiThreadInfo != null)
-      {
-        // Replace the existing value
-        jsonObj.multiThreadInfo = multiThreadInfoToken;
-      }
-      else
-      {
-        // Add the new property and value
-        ((JObject)jsonObj).Add("multiThreadInfo", multiThreadInfoToken);
-      }
+      //// Check if the "multiThreadInfo" property exists
+      //if (jsonObj.multiThreadInfo != null)
+      //{
+      //  // Replace the existing value
+      //  jsonObj.multiThreadInfo = multiThreadInfoToken;
+      //}
+      //else
+      //{
+      //  // Add the new property and value
+      //  ((JObject)jsonObj).Add("multiThreadInfo", multiThreadInfoToken);
+      //}
 
-      // Serialize the modified object back into a JSON string
-      this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+      //// Serialize the modified object back into a JSON string
+      //this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
 
       _multiThreadReady = notAccountedFor.Count == 0;
       return notAccountedFor;
@@ -412,14 +537,40 @@ namespace SimulationDAL
     {
       if (this._threadNumber != null)
       {
-        if (Directory.Exists(this.rootPath))
+        System.Threading.Thread.Sleep(500);
+        int retries = 10;
+        for (int i = 0; i < retries; i++)
         {
-          Directory.Delete(this.rootPath, true);
+          string lockedFile = "";
+          if (FileLockChecker.IsDirectoryLocked(this.rootPath, out lockedFile))
+          {
+            if (i == retries - 1)
+            {
+              throw new Exception("Failed to delete temp folder, loced file - " + lockedFile);
+            }
+            System.Threading.Thread.Sleep(500);
+          }
+          else
+          {
+            try
+            {
+              if (Directory.Exists(this.rootPath))
+              {
+                Directory.Delete(this.rootPath, true);
+              }
+              break;
+            }
+            catch (IOException)
+            {
+              if (i == retries - 1) throw;
+              System.Threading.Thread.Sleep(500);
+            }
+          }
         }
 
         //clear out any old tread files that could be lingering
         // Get the parent directory info
-        DirectoryInfo parentDirInfo = new DirectoryInfo(this.rootPath).Parent;
+        DirectoryInfo parentDirInfo = new DirectoryInfo(this.rootPath).Parent!;
 
         // Get all subdirectories
         DirectoryInfo[] subDirs = parentDirInfo.GetDirectories();
@@ -443,7 +594,7 @@ namespace SimulationDAL
                 // Delete the directory and its contents
                 dir.Delete(true);
               }
-              catch (Exception ex) { }
+              catch {  }
             }
           }
         }
@@ -464,21 +615,20 @@ namespace SimulationDAL
             if (!(vItem is DocVariable))
               throw new Exception("Broken path reference edit " + item.ItemName + " is not a document variable.");
 
-            (vItem as DocVariable).UpdatePathRefs(item.RefPath, item.RelPath);
+            (vItem as DocVariable)!.UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
             break;
           case EnIDTypes.itState:
             throw new Exception("Currently there are no state properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
-            break;
           case EnIDTypes.itEvent:
             var eItem = this.allEvents.FindByName(item.ItemName);
             if (!((eItem is EvalVarEvent) || (eItem is ExtSimEv)))
               throw new Exception("Broken path reference edit " + item.ItemName + " is not an external Simulation or evaluate Variable event.");
 
             if(eItem is EvalVarEvent)
-              (eItem as EvalVarEvent).UpdatePathRefs(item.RefPath, item.RelPath);
+              (eItem as EvalVarEvent)!.UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
 
             if (eItem is ExtSimEv)
-               (eItem as ExtSimEv).UpdatePathRefs(item.RefPath, item.RelPath);
+               (eItem as ExtSimEv)!.UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
             break;
           case EnIDTypes.itAction:
             var aItem = this.allActions.FindByName(item.ItemName);
@@ -486,24 +636,24 @@ namespace SimulationDAL
               throw new Exception("Broken path reference edit " + item.ItemName + " is not an Variable Value or Run Exe Action.");
 
             if (aItem is ScriptAct)
-              (aItem as ScriptAct).UpdatePathRefs(item.RefPath, item.RelPath);
+              (aItem as ScriptAct)!.UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath);
 
             if (aItem is RunExtAppAct)
-              (aItem as RunExtAppAct).UpdatePathRefs(item.RefPath, item.RelPath);
+              (aItem as RunExtAppAct)!.UpdatePathRefs(item.RefPath, item.RelPath, this.rootPath, this);
 
             break;
           case EnIDTypes.itTreeNode:
             throw new Exception("Currently there are no Logic Tree properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
-            break;
+           
           case EnIDTypes.itTimer:
             throw new Exception("Currently there are no Timer properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
-            break;
+            
           case EnIDTypes.itDiagram:
             throw new Exception("Currently there are no Diagram properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
-            break;
+            
           case EnIDTypes.itExtSim:
             throw new Exception("Currently there are no External Sim properties that need to be modified for multi threading, check the entry for - " + item.ItemName);
-            break;
+            
           default:
             throw new ArgumentOutOfRangeException(nameof(EnIDTypes), item.ItemType, null);
         }
@@ -600,7 +750,7 @@ namespace SimulationDAL
         if (sim3DComp != "")
         {
           Sim3DVariable simVar = (Sim3DVariable)this.allVariables.FindByName(sim3DComp);
-          ExtSimEv sim3DEvent = new ExtSimEv(sim3DComp, "return true;", null, simVar, SimEventType.etCompEv);
+          ExtSimEv sim3DEvent = new ExtSimEv(sim3DComp, "return true;", null!, simVar, SimEventType.etCompEv);
           //sim3DEvent.AddRelatedItem(simVar.id);
           allEvents.Add(sim3DEvent);
           activeState.AddEvent(sim3DEvent, true, failAct);
@@ -642,7 +792,7 @@ namespace SimulationDAL
       allStates.Add(activeState);
       List<State> failStates = new List<State>();
 
-      State failedState = null;
+      State failedState = null!;
       if (!sepFailStates)
       {
         failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp, 0);
@@ -775,7 +925,7 @@ namespace SimulationDAL
                                            string[] turnOffStates,
                                            string sim3DComp = "",
                                            bool sepFailStates = false,
-                                           EmraldModel refLookup = null) //only have this not null if trying to get the JSON for this.
+                                           EmraldModel refLookup = null!) //only have this not null if trying to get the JSON for this.
     {
       if (refLookup == null)
         refLookup = this;
@@ -800,7 +950,7 @@ namespace SimulationDAL
       allStates.Add(activeState);
       List<State> failStates = new List<State>();
 
-      State failedState = null;
+      State failedState = null!;
       if (!sepFailStates)
       {
         failedState = new State(compName + "_Failed", EnStateType.stStandard, addComp, 0);
@@ -995,7 +1145,7 @@ namespace SimulationDAL
       for (int i = 0; i < demandFailVars.Count(); ++i)
       {
         VarValueAct setVarVal = new VarValueAct("_Set_" + compName + "_Demand_val" + i.ToString(), allVariables.FindByName(setVarsIf[i]),
-                              setToVals[i], typeof(double), null);
+                              setToVals[i], typeof(double), null!);
         allActions.Add(setVarVal);
 
         State tempState = new State(compName + "_Temp" + demandNames[i], EnStateType.stStandard, addComp, 0); //"Joint_3_Temp_SIL1"
@@ -1077,9 +1227,9 @@ namespace SimulationDAL
 
       //add the events to the states
       activeState.AddEvent(evalEvent, true, failAct);
-      activeState.AddEvent(stopEvent, true, null);
+      activeState.AddEvent(stopEvent, true, null!);
 
-      failedState.AddEvent(stopEvent, true, null);
+      failedState.AddEvent(stopEvent, true, null!);
 
       allLogicNodes.AddRecursive(logicTop);
 
@@ -1133,9 +1283,9 @@ namespace SimulationDAL
 
       //add the events to the states
       activeState.AddEvent(evalEvent, true, failAct);
-      activeState.AddEvent(stopEvent, true, null);
+      activeState.AddEvent(stopEvent, true, null!);
 
-      failedState.AddEvent(stopEvent, true, null);
+      failedState.AddEvent(stopEvent, true, null!);
 
       allLogicNodes.AddRecursive(logicTop);
 

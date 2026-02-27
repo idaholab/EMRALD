@@ -1,0 +1,189 @@
+{
+  "id": "ccb67d63-c9cc-498e-a8be-613aaf356a13",
+  "name": "Sim1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "End",
+        "Occured"
+      ],
+      "id": "995f465e-3d64-4773-b7fc-c428a0f3dd71",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "End",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "118de967-0977-4614-8ed4-1fd2dc200db9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 449.7272644042969,
+        "y": 280.18748474121094,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Occured",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_End"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "567e10bc-8792-46e1-bcab-fa547983a5fa",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 439.81817626953125,
+        "y": 79.73295593261719,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Set_t1"
+      ],
+      "events": [
+        "timer1"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Occured"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "d898a8a9-40a6-41e4-a46c-a06f6ffb2672",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 128.1818084716797,
+        "y": 66.27840423583984,
+        "width": 200,
+        "height": 150
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_End",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "End",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "fbfb451e-ea15-42b4-af8e-0bd864573182",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Occured",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Occured",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "d8ac8381-bc44-4a51-aaf4-921ae68690e4",
+      "objType": "Action"
+    },
+    {
+      "name": "Set_t1",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return 30;",
+      "variableName": "t1",
+      "codeVariables": [],
+      "id": "4c36a1aa-eddc-4c64-ba7c-49fd375ed8a3",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "timer1",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": true,
+      "time": "t1",
+      "timeVariableUnit": "trHours",
+      "id": "063aea05-f335-41ca-8990-ebb7660641fc",
+      "objType": "Event"
+    },
+    {
+      "name": "TimerStd",
+      "desc": "",
+      "mainItem": true,
+      "evType": "etTimer",
+      "varNames": [],
+      "useVariable": false,
+      "time": "P1DT2H3M4S",
+      "timeVariableUnit": "",
+      "id": "3211d6c6-c815-4007-bd54-c12b8623f8b2",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "FailProb",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0.003,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "fc41b9fe-75bd-4099-b452-a9831365a6e8",
+      "objType": "Variable"
+    },
+    {
+      "name": "t1",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 3.5,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "97fe20f5-8a81-4910-9b77-a2850977bb9c",
+      "objType": "Variable"
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

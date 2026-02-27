@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReactFlow, getNodesBounds, getViewportForBounds, Node } from 'reactflow';
+import { useReactFlow, getNodesBounds, getViewportForBounds, type Node } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { FaCamera } from 'react-icons/fa';
 import { ControlButton } from 'reactflow';
@@ -22,21 +22,23 @@ const DownloadButton: React.FC = () => {
     const nodesBounds = getNodesBounds(getNodes() as Node[]);
     const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
 
-    const reactFlowViewport = document.querySelector('.react-flow__viewport') as HTMLElement;
+    const reactFlowViewport = document.querySelector('.react-flow__viewport');
 
     if (reactFlowViewport) {
-      toPng(reactFlowViewport, {
+      toPng(reactFlowViewport as HTMLElement, {
         backgroundColor: '#ffffff',
         width: imageWidth,
         height: imageHeight,
         style: {
           width: String(imageWidth),
           height: String(imageHeight),
-          transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+          transform: `translate(${viewport.x.toString()}px, ${viewport.y.toString()}px) scale(${viewport.zoom.toString()})`,
         },
-      }).then(downloadImage).catch((error) => {
-        console.error('Error generating image:', error);
-      });
+      })
+        .then(downloadImage)
+        .catch((error: unknown) => {
+          console.error('Error generating image:', error);
+        });
     } else {
       console.error('React Flow viewport element not found');
     }

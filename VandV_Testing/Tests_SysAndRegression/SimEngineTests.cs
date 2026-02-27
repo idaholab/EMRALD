@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimulationEngine;
 using MathNet.Numerics;
-//using Ewk.Math.Numerics;
 using System.Reflection;
 using System.Diagnostics;
 using NLog;
@@ -34,17 +33,17 @@ namespace SysAndRegressionTesting
     #region Validation Cases Setup Code
     protected override string CompareFilesDir()
     {
-      return MainTestDir() + "CompareFiles" + Path.DirectorySeparatorChar;
+      return MainTestDir() + "CompareFiles" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string TestFolder()
     {
-      return "EMRALDTests" + Path.DirectorySeparatorChar;
+      return "EMRALDTests" + Path.AltDirectorySeparatorChar;
     }
 
     protected override string ModelFolder()
     {
-      return "Models" + Path.DirectorySeparatorChar;
+      return "Models" + Path.AltDirectorySeparatorChar;
     }
     #endregion
 
@@ -52,7 +51,7 @@ namespace SysAndRegressionTesting
 
     [Fact]
     [Description("General test to make sure system defined variables (RunIdx & CurTime) are working correctly.")]
-    public void DefaultVarsTest()
+    public async Task DefaultVarsTest()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
@@ -62,10 +61,10 @@ namespace SysAndRegressionTesting
       JObject optionsJ = SetupJSON(dir, testName, true);
 
       //Change the default settings as needed for the test seed default set to 0 for testing.
-      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".json";
+      optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 10;
       JSONRun testRun = new JSONRun(optionsJ.ToString());
-      Assert.True(TestRunSim(testRun));
+      Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
       //CopyToValidated(dir, testName, optionsJ);

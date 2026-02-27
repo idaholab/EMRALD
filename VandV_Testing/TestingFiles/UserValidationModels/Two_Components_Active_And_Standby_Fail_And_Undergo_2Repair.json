@@ -1,0 +1,798 @@
+{
+  "id": "0",
+  "name": "2_3_4",
+  "desc": "Two Identical Components, One Active and One in Standby, Fail and Get Repaired, Two Repairpersons Available",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "db63722b-4777-4fa6-a5b7-4f39045e2b68",
+      "name": "Component 1",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramLabel": "Component",
+      "states": [
+        "C1_Standby",
+        "C1_Running",
+        "C1_Repair"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    },
+    {
+      "id": "3e6c3bc4-ed17-4d2d-937c-b723368f9909",
+      "name": "Component 2",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramLabel": "Component",
+      "states": [
+        "C2_Standby",
+        "C2_Running",
+        "C2_Repair"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    },
+    {
+      "id": "cd1fefe2-a4f0-4b84-b83c-3139df6ef7d1",
+      "name": "Repair And Down Time",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Okay",
+        "Failed",
+        "MissionTime",
+        "Terminate",
+        "Start_Mission"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "d6bad282-59c1-4460-98fc-10a280dc1d1a",
+      "name": "C1_Repair",
+      "desc": "",
+      "diagramName": "Component 1",
+      "stateType": "stStandard",
+      "events": [
+        "RepairRate1"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "C1Success",
+            "GoTo_C1_Standby"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "C1Fail"
+      ],
+      "geometryInfo": {
+        "x": 571.4723062981142,
+        "y": 40.29897445848076,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "id": "68fdfc77-4e16-4c1e-bfc4-91b242f77fc0",
+      "name": "C1_Running",
+      "desc": "",
+      "diagramName": "Component 1",
+      "stateType": "stStart",
+      "events": [
+        "C1_Failed"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_C1_Repair"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 211.81933720813822,
+        "y": 8.008341744517168,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "7597fa32-866c-493c-b786-d19a5d68d276",
+      "name": "C1_Standby",
+      "desc": "",
+      "diagramName": "Component 1",
+      "stateType": "stStandard",
+      "events": [
+        "C2Check"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_C1_Running"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 282.0556289816435,
+        "y": 220.171181120656,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "a1f2ec38-15c2-4e08-acd0-35a55516f3ce",
+      "name": "C2_Repair",
+      "desc": "",
+      "diagramName": "Component 2",
+      "stateType": "stStandard",
+      "events": [
+        "RepairRate2"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "C2Success",
+            "GoTo_C2_Standby"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "C2Fail"
+      ],
+      "geometryInfo": {
+        "x": 720.9673762737924,
+        "y": -7.236129405041112,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "id": "42e53fa8-ef1b-45c6-a960-d7bf9d33c6df",
+      "name": "C2_Running",
+      "desc": "",
+      "diagramName": "Component 2",
+      "stateType": "stStandard",
+      "events": [
+        "C2_Failed"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_C2_Repair"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 211.81933720813822,
+        "y": 8.008341744517168,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "9cadb57d-8acd-43c9-8ff6-c58e77bd17df",
+      "name": "C2_Standby",
+      "desc": "",
+      "diagramName": "Component 2",
+      "stateType": "stStart",
+      "events": [
+        "C1Check"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_C2_Running"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 337.9963554381462,
+        "y": 251.66937974040042,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "809923bf-6b76-41e3-a7c3-38f7b587be44",
+      "name": "Failed",
+      "desc": "",
+      "diagramName": "Repair And Down Time",
+      "stateType": "stStandard",
+      "events": [
+        "CompRepaired"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Okay"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 272.6677234901656,
+        "y": -197.62731396874597,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "3d66b4d7-f55b-47ff-a54f-920d543b7cf6",
+      "name": "MissionTime",
+      "desc": "",
+      "diagramName": "Repair And Down Time",
+      "stateType": "stKeyState",
+      "events": [
+        "MissionTime"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "TallyTime",
+            "GoTo_Terminate"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 706.4107229586107,
+        "y": -422.70866533113895,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "983f8b51-ca6a-4db4-8dd4-f7e8c2ca695e",
+      "name": "Okay",
+      "desc": "",
+      "diagramName": "Repair And Down Time",
+      "stateType": "stStart",
+      "events": [
+        "BothCompFailEval"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Failed"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 284.534933060822,
+        "y": -454.4822296150625,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "e2783995-f604-466e-9d7f-c01d47bb0b3e",
+      "name": "Start_Mission",
+      "desc": "",
+      "diagramName": "Repair And Down Time",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTo_MissionTime"
+      ],
+      "geometryInfo": {
+        "x": 711.2239419980012,
+        "y": -611.037107860783,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "eb1e516d-7378-4b7c-9a8e-25aff3b7499f",
+      "name": "Terminate",
+      "desc": "",
+      "diagramName": "Repair And Down Time",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 1021.2461678902399,
+        "y": -308.16430047379527,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "2bc1a5bf-6eb2-4bc8-bbaf-017348cadbc9",
+      "name": "C1Fail",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "C1Fail",
+      "scriptCode": "return true;"
+    },
+    {
+      "id": "413e5c66-d991-466d-bf33-9b2f74e8d508",
+      "name": "C1Success",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "C1Fail",
+      "scriptCode": "return false;"
+    },
+    {
+      "id": "f88d7403-ff40-4e2e-af4c-1faa1977d153",
+      "name": "C2Fail",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "C2Fail",
+      "scriptCode": "return true;"
+    },
+    {
+      "id": "2839285c-445f-46b4-bb00-b3b8bef5a2bf",
+      "name": "C2Success",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "C2Fail",
+      "scriptCode": "return false;"
+    },
+    {
+      "id": "77425f00-2acf-44d7-b3a8-1472399f283b",
+      "name": "GoTo_C1_Repair",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "C1_Repair",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "b392983d-1232-4bae-a684-48b23d615108",
+      "name": "GoTo_C1_Running",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "C1_Running",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "fa2a7d66-ca18-4448-8fde-a765536d2c6f",
+      "name": "GoTo_C1_Standby",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "C1_Standby",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "c0b282c0-a007-4b5a-a6c4-1e12f86218f5",
+      "name": "GoTo_C2_Repair",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "C2_Repair",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "aa0e4ff2-5caf-407b-abf5-66afa1c5cdd7",
+      "name": "GoTo_C2_Running",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "C2_Running",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "d6d9f3ae-e8ac-4fde-bff4-b7b66d1458d0",
+      "name": "GoTo_C2_Standby",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "C2_Standby",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "dda32a97-7e08-423b-9f15-fac57d49d8d2",
+      "name": "GoTo_Failed",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Failed",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "c729ddf9-6898-433c-8a93-97987cb65606",
+      "name": "GoTo_MissionTime",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "MissionTime",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "757ac1c4-da85-4710-b048-06b76ccfcb91",
+      "name": "GoTo_Okay",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Okay",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "ee10ff12-c2e7-4ade-8d9f-c39329984517",
+      "name": "GoTo_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "e4995219-7a93-4674-99ec-3ff56381f158",
+      "name": "TallyTime",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [
+        "TimeAcc",
+        "TimeUnavail"
+      ],
+      "variableName": "TimeUnavail",
+      "scriptCode": "return (((TimeUnavail*(RunIdx-1))+((TimeAcc)/(1000*24)))/RunIdx);"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "e535eb21-badb-4f74-bc3e-b7621dbe9d59",
+      "name": "BothCompFailEval",
+      "desc": "",
+      "evType": "etComponentLogic",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "logicTop": "BothCompFailTree",
+      "triggerOnFalse": false,
+      "onSuccess": false
+    },
+    {
+      "id": "6e015d05-1877-4fe5-b618-34ddf35730ff",
+      "name": "C1_EntersRepair",
+      "desc": "",
+      "evType": "etStateCng",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "C1_Repair"
+      ]
+    },
+    {
+      "id": "613d35a1-3191-41fa-94cb-14cb37adab21",
+      "name": "C1_Failed",
+      "desc": "",
+      "evType": "etFailRate",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "lambda": 1,
+      "lambdaTimeRate": "P10D"
+    },
+    {
+      "id": "1f216237-4900-4642-b333-591bd583b4b8",
+      "name": "C1Check",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [
+        "C1Fail"
+      ],
+      "code": "return C1Fail;"
+    },
+    {
+      "id": "2a58c416-0d61-4e85-8996-4468107d8520",
+      "name": "C2_EntersRepair",
+      "desc": "",
+      "evType": "etStateCng",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "ifInState": true,
+      "allItems": true,
+      "triggerStates": [
+        "C2_Repair"
+      ]
+    },
+    {
+      "id": "abbb080d-a52b-4e8e-9a53-b068231b0007",
+      "name": "C2_Failed",
+      "desc": "",
+      "evType": "etFailRate",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "lambda": 1,
+      "lambdaTimeRate": "P10D"
+    },
+    {
+      "id": "c31f5c21-d2a1-4913-9c43-92de3bb9a01d",
+      "name": "C2Check",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [
+        "C2Fail"
+      ],
+      "code": "return C2Fail;"
+    },
+    {
+      "id": "3881a5d5-cd7c-4287-95ba-8408a8e7f49f",
+      "name": "CompRepaired",
+      "desc": "",
+      "evType": "etComponentLogic",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "logicTop": "BothCompFailTree",
+      "triggerOnFalse": true,
+      "onSuccess": false
+    },
+    {
+      "id": "4dacd36e-28e9-477d-b499-c4da8a5339d2",
+      "name": "MissionTime",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P1000D"
+    },
+    {
+      "id": "e6bf5b82-b0e2-40ad-bb8e-39263e0b5323",
+      "name": "RepairRate1",
+      "desc": "",
+      "evType": "etFailRate",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "lambda": 1,
+      "lambdaTimeRate": "P1D"
+    },
+    {
+      "id": "95a268c7-a1f9-4d35-998a-48e317b48be4",
+      "name": "RepairRate2",
+      "desc": "",
+      "evType": "etFailRate",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "lambda": 1,
+      "lambdaTimeRate": "P1D"
+    }
+  ],
+  "LogicNodeList": [
+    {
+      "id": "df1e3775-08b9-43ab-933b-8b72e6526c59",
+      "name": "BothCompFailTree",
+      "desc": "",
+      "isRoot": true,
+      "gateType": "gtAnd",
+      "compChildren": [
+        {
+          "diagramName": "Component 1",
+          "stateValues": []
+        },
+        {
+          "diagramName": "Component 2",
+          "stateValues": []
+        }
+      ],
+      "gateChildren": [],
+      "objType": "LogicNode"
+    }
+  ],
+  "VariableList": [
+    {
+      "name": "C1Fail",
+      "varScope": "gtGlobal",
+      "value": false,
+      "type": "bool",
+      "objType": "Variable",
+      "id": "83841f00-d1db-4419-bb55-fe3191c2de14",
+      "desc": "",
+      "resetOnRuns": true
+    },
+    {
+      "name": "C2Fail",
+      "varScope": "gtGlobal",
+      "value": false,
+      "type": "bool",
+      "objType": "Variable",
+      "id": "987637ad-5503-4e65-bfdb-18eef2979abd",
+      "desc": "",
+      "resetOnRuns": true
+    },
+    {
+      "name": "TimeAcc",
+      "varScope": "gtAccrual",
+      "value": 0,
+      "type": "double",
+      "objType": "Variable",
+      "id": "efd6727b-d70a-4426-b7c2-8611993be83b",
+      "desc": "",
+      "accrualStatesData": [
+        {
+          "stateName": "Failed",
+          "accrualMult": 0.0002777777777777778,
+          "multRate": "trSeconds",
+          "accrualTable": [],
+          "type": "ctMultiplier"
+        }
+      ],
+      "resetOnRuns": true
+    },
+    {
+      "name": "TimeUnavail",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "type": "double",
+      "objType": "Variable",
+      "id": "61b5c3f5-f6ed-4d92-a588-8716d79e6727",
+      "desc": "",
+      "resetOnRuns": false
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

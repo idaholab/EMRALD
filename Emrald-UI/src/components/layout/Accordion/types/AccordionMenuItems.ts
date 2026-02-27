@@ -1,6 +1,6 @@
 export interface AccordionMenuItemType {
   type: string;
-  data: any[];
+  data?: any[];
 }
 
 export interface AccordionMenuList {

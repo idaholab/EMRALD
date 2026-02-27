@@ -1,0 +1,329 @@
+{
+  "id": "233e365c-c79b-45e1-ab31-09d99c934b6c",
+  "name": "UnitTestActions",
+  "desc": "",
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "S2",
+        "S3",
+        "Fail",
+        "OK",
+        "Terminate"
+      ],
+      "id": "8bad0f71-17bf-49f5-a9c9-60d956cd596e",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Fail",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "e82ad7bd-830f-4931-a31b-d51963174e04",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 220,
+        "y": 330,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "OK",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Terminate"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "bee99e71-0094-4f63-8d94-e9764797f795",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 690,
+        "y": 340,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "S2",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Set_V1",
+        "SetV2",
+        "SetV4_String"
+      ],
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_S3"
+          ]
+        }
+      ],
+      "id": "8d6b1eb6-8c1c-45ef-95e0-f27758c2193c",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 400,
+        "y": 100,
+        "width": 200,
+        "height": 180
+      }
+    },
+    {
+      "name": "S3",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "RunV2_DBLGreaterThan"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "df086ed6-3875-4358-87a2-ddad2b6d55b4",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 670,
+        "y": 110,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "FiveSec"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_S2"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "0d096e84-bd07-40bf-87e2-1066f1066d83",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 92,
+        "y": 97,
+        "width": 200,
+        "height": 130
+      }
+    },
+    {
+      "name": "Terminate",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "b56a1747-b1b1-411e-bb14-dddceaeece21",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 390,
+        "y": 500,
+        "width": 200,
+        "height": 80
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_S2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S2",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "6344e65b-1919-4c9c-8368-e823b389e4ad",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_S3",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "S3",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "0dee118b-8007-45a7-9de1-ddae1f0c2c60",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Terminate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Terminate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "c258396e-10fc-459f-9642-c591f2e6e1a8",
+      "objType": "Action"
+    },
+    {
+      "name": "RunV2_DBLGreaterThan",
+      "desc": "",
+      "actType": "atRunExtApp",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "makeInputFileCode": "return @\"..\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt \" + V2_Dbl.ToString() + \" 110.0\";",
+      "exePath": "..\\Other\\GreaterThan.exe",
+      "processOutputFileCode": "StreamReader reader = File.OpenText(@\"..\\EMRALDTests\\ActionsTest\\GreaterThanResults.txt\");\nvar s = reader.ReadLine();\nreader.Dispose();\nList<String> retStates = new List<String>();\nif (s == \"True\")\n{\n    retStates.Add(\"+OK\");\n}\nelse\n{\n    retStates.Add(\"+Fail\");\n}\n\nretStates.Add(\"-S3\");\n\nreturn retStates;",
+      "codeVariables": [
+        "V2_Dbl"
+      ],
+      "id": "40e65105-7dd9-4cb4-9a2a-7e52c5171555",
+      "objType": "Action"
+    },
+    {
+      "name": "Set_V1",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "if((V4_String == \"Hello\") && (V3_Bool == true))\n  return V1_Int * 2;\nelse\n  return 100;",
+      "variableName": "V1_Int",
+      "codeVariables": [
+        "V2_Dbl",
+        "V3_Bool",
+        "V4_String"
+      ],
+      "id": "4a31aeaa-4670-45b8-b3c1-c296d266112a",
+      "objType": "Action"
+    },
+    {
+      "name": "SetV2",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "if(V4_String == \"Reset\")\n  return 0.555;\nelse\n  return V2_Dbl * V1_Int;",
+      "variableName": "V2_Dbl",
+      "codeVariables": [
+        "V1_Int",
+        "V4_String"
+      ],
+      "id": "61d91794-d717-4c44-8b60-962a7dfe0d13",
+      "objType": "Action"
+    },
+    {
+      "name": "SetV4_String",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "if(V2_Dbl > .555)\n  return \"Reset\";\nelse\n  return \"Hello\";",
+      "variableName": "V4_String",
+      "codeVariables": [
+        "V2_Dbl"
+      ],
+      "id": "7aa953db-7b84-4eeb-ad42-9e48e841834d",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "FiveSec",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "time": "PT5S",
+      "id": "013c4076-d72a-4080-92a2-d0ec1f489b92",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "V1_Int",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": "100",
+      "type": "int",
+      "id": "6ce64c61-ec9b-4dab-ac74-671cf3bdfef6",
+      "objType": "Variable"
+    },
+    {
+      "name": "V2_Dbl",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": "0.555",
+      "type": "double",
+      "id": "0f2e44d7-65c1-4c4d-9d80-94d6097f46c0",
+      "objType": "Variable"
+    },
+    {
+      "name": "V3_Bool",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": true,
+      "type": "bool",
+      "id": "a77cb264-054b-43ac-8cbf-e5fcdbdb7d30",
+      "objType": "Variable"
+    },
+    {
+      "name": "V4_String",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": "Hello",
+      "type": "string",
+      "id": "b62b7098-66a0-4490-a5a2-0fb930dc0b6f",
+      "objType": "Variable"
+    }
+  ],
+  "version": 1,
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

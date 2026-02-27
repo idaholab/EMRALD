@@ -9,7 +9,7 @@ import {
   Radio,
   RadioGroup,
   Select,
-  SelectChangeEvent,
+  type SelectChangeEvent,
   Table,
   TableBody,
   TableContainer,
@@ -20,8 +20,8 @@ import {
 } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
 import { useVariableFormContext } from '../VariableFormContext';
-import { AccrualVarTableType } from '../../../../types/ItemTypes';
-import { ChangeEvent, useEffect, useState } from 'react';
+import type { AccrualVarTableType } from '../../../../types/EMRALD_Model';
+import { type ChangeEvent, useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -44,7 +44,7 @@ const StateTable = () => {
       const defaultTypes = accrualStatesData.map((state) => state.type);
       setTypes(defaultTypes);
 
-      const defaultAccrualTables = accrualStatesData.map((state) => state.accrualTable || []);
+      const defaultAccrualTables = accrualStatesData.map((state) => state.accrualTable);
       setAccrualTables(defaultAccrualTables);
     }
   }, [
@@ -165,10 +165,12 @@ const StateTable = () => {
         >
           <InputLabel id="rate-label">{min ? 'Rate' : 'Multiplication Rate'}</InputLabel>
           <Select
-            aria-labelledby='rate-label'
+            aria-labelledby="rate-label"
             defaultValue={multRates[index]}
             value={multRates[index]}
-            onChange={(event: SelectChangeEvent<string>) => handleMultRateChange(event, index)}
+            onChange={(event: SelectChangeEvent) => {
+              handleMultRateChange(event, index);
+            }}
             label={min ? 'Rate' : 'Multiplication Rate'}
           >
             <MenuItem value="trSeconds">{min ? 'Sec' : 'Second'}</MenuItem>
@@ -193,143 +195,162 @@ const StateTable = () => {
           </StyledTableRow>
         </TableHead>
         <TableBody>
-          {accrualStatesData &&
-            accrualStatesData.map((item, index) => (
-              <StyledTableRow key={index}>
-                <StyledTableCell>
-                  <Typography variant="h6">{item.stateName}</Typography>
-                </StyledTableCell>
-                <StyledTableCell>
-                  {types[index] && (
-                    <RadioGroup
-                      sx={{ margin: '8px' }}
-                      aria-label="status-value"
-                      name="status-value"
-                      value={types[index]}
-                      onChange={(event) => handleTypeChange(event, index)}
-                      row
-                    >
-                      <FormControlLabel
-                        value="ctMultiplier"
-                        control={<Radio checked={types[index] === 'ctMultiplier'} />}
-                        label="Static"
-                      />
-                      <FormControlLabel
-                        value="ctTable"
-                        control={<Radio checked={types[index] === 'ctTable'} />}
-                        label="Dynamic"
-                      />
-                    </RadioGroup>
-                  )}
-                </StyledTableCell>
-                {types[index] === 'ctMultiplier' ? (
-                  <StyledTableCell>
-                    <TextField
-                      label="Accrual Multiplication Factor"
-                      variant="outlined"
-                      size="small"
-                      multiline
-                      margin="normal"
-                      type="number"
-                      value={accrualMults[index]}
-                      onChange={(event) => handleStaticAccrualMultChange(event, index)}
+          {accrualStatesData?.map((item, index) => (
+            <StyledTableRow key={index}>
+              <StyledTableCell>
+                <Typography variant="h6">{item.stateName}</Typography>
+              </StyledTableCell>
+              <StyledTableCell>
+                {types[index] && (
+                  <RadioGroup
+                    sx={{ margin: '8px' }}
+                    aria-label="status-value"
+                    name="status-value"
+                    value={types[index]}
+                    onChange={(event) => {
+                      handleTypeChange(event, index);
+                    }}
+                    row
+                  >
+                    <FormControlLabel
+                      value="ctMultiplier"
+                      control={<Radio checked={types[index] === 'ctMultiplier'} />}
+                      label="Static"
                     />
-                    <Typography>per</Typography>
-                    {getMultRateOptions(index)}
-                  </StyledTableCell>
-                ) : (
-                  <StyledTableCell>
-                    <Button onClick={() => toggleMinimize(index)}>
-                      {tableMinimized[index] ? 'Expand Table' : 'Hide Table'}
-                    </Button>
-                    <Button onClick={() => addRow(index)}>Add Row</Button>
-
-                    <TableContainer component={Paper}>
-                      <Table>
-                        <TableHead>
-                          <StyledTableRow>
-                            <StyledTableCell>
-                              <Box display={'flex'} alignItems={'center'}>
-                                <Typography sx={{ mx: 1 }}>Simulation Time</Typography>{' '}
-                                {getMultRateOptions(index, true)}
-                              </Box>
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              <Box display={'flex'} alignItems={'center'}>
-                                <Typography sx={{ mx: 1 }}>Accrual Rate</Typography>{' '}
-                                {getMultRateOptions(index, true)}
-                              </Box>
-                            </StyledTableCell>
-                            <StyledTableCell>
-                              <Typography sx={{ mx: 1 }}>Command</Typography>
-                            </StyledTableCell>
-                          </StyledTableRow>
-                        </TableHead>
-                        <TableBody>
-                          {accrualTables[index] &&
-                            !tableMinimized[index] &&
-                            accrualTables[index].map((item: number[], idx: number) => (
-                              <StyledTableRow key={idx}>
-                                <StyledTableCell>
-                                  <TextField
-                                    label="Simulation Time"
-                                    variant="outlined"
-                                    size="small"
-                                    margin="normal"
-                                    type="number"
-                                    value={item[0]}
-                                    onChange={(event): void =>
-                                      handleAccrualTableChange(event, index, idx, 0)
-                                    }
-                                    sx={{ width: '90%' }}
-                                  />
-                                </StyledTableCell>
-                                <StyledTableCell sx={{ display: 'flex' }}>
-                                  <TextField
-                                    label="Accrual Rate"
-                                    variant="outlined"
-                                    size="small"
-                                    margin="normal"
-                                    type="number"
-                                    value={item[1]}
-                                    onChange={(event): void =>
-                                      handleAccrualTableChange(event, index, idx, 1)
-                                    }
-                                    sx={{ width: '85%' }}
-                                  />
-                                </StyledTableCell>
-                                <StyledTableCell>
-                                  <Tooltip title="Add Row Below">
-                                    <AddIcon
-                                      sx={{ cursor: 'pointer', ml: 1 }}
-                                      onClick={() => addRowBelow(index, idx)}
-                                    />
-                                  </Tooltip>
-                                  <Tooltip title="Delete Row">
-                                    <DeleteIcon
-                                      sx={{ cursor: 'pointer', ml: 3 }}
-                                      onClick={() => deleteRow(index, idx)}
-                                    />
-                                  </Tooltip>
-                                </StyledTableCell>
-                              </StyledTableRow>
-                            ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </StyledTableCell>
+                    <FormControlLabel
+                      value="ctTable"
+                      control={<Radio checked={types[index] === 'ctTable'} />}
+                      label="Dynamic"
+                    />
+                  </RadioGroup>
                 )}
-
+              </StyledTableCell>
+              {types[index] === 'ctMultiplier' ? (
                 <StyledTableCell>
-                  <Tooltip title="Delete State">
-                    <DeleteIcon
-                      sx={{ cursor: 'pointer', ml: 3 }}
-                      onClick={() => deleteAccrualState(index)}
-                    />
-                  </Tooltip>
+                  <TextField
+                    label="Accrual Multiplication Factor"
+                    variant="outlined"
+                    size="small"
+                    multiline
+                    margin="normal"
+                    type="number"
+                    value={accrualMults[index]}
+                    onChange={(event) => {
+                      handleStaticAccrualMultChange(event, index);
+                    }}
+                  />
+                  <Typography>per</Typography>
+                  {getMultRateOptions(index)}
                 </StyledTableCell>
-              </StyledTableRow>
-            ))}
+              ) : (
+                <StyledTableCell>
+                  <Button
+                    onClick={() => {
+                      toggleMinimize(index);
+                    }}
+                  >
+                    {tableMinimized[index] ? 'Expand Table' : 'Hide Table'}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      addRow(index);
+                    }}
+                  >
+                    Add Row
+                  </Button>
+
+                  <TableContainer component={Paper}>
+                    <Table>
+                      <TableHead>
+                        <StyledTableRow>
+                          <StyledTableCell>
+                            <Box display={'flex'} alignItems={'center'}>
+                              <Typography sx={{ mx: 1 }}>Simulation Time</Typography>{' '}
+                              {getMultRateOptions(index, true)}
+                            </Box>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <Box display={'flex'} alignItems={'center'}>
+                              <Typography sx={{ mx: 1 }}>Accrual Rate</Typography>{' '}
+                              {getMultRateOptions(index, true)}
+                            </Box>
+                          </StyledTableCell>
+                          <StyledTableCell>
+                            <Typography sx={{ mx: 1 }}>Command</Typography>
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      </TableHead>
+                      <TableBody>
+                        {accrualTables[index] &&
+                          !tableMinimized[index] &&
+                          accrualTables[index].map((item: number[], idx: number) => (
+                            <StyledTableRow key={idx}>
+                              <StyledTableCell>
+                                <TextField
+                                  label="Simulation Time"
+                                  variant="outlined"
+                                  size="small"
+                                  margin="normal"
+                                  type="number"
+                                  value={item[0]}
+                                  onChange={(event): void => {
+                                    handleAccrualTableChange(event, index, idx, 0);
+                                  }}
+                                  sx={{ width: '90%' }}
+                                />
+                              </StyledTableCell>
+                              <StyledTableCell sx={{ display: 'flex' }}>
+                                <TextField
+                                  label="Accrual Rate"
+                                  variant="outlined"
+                                  size="small"
+                                  margin="normal"
+                                  type="number"
+                                  value={item[1]}
+                                  onChange={(event): void => {
+                                    handleAccrualTableChange(event, index, idx, 1);
+                                  }}
+                                  sx={{ width: '85%' }}
+                                />
+                              </StyledTableCell>
+                              <StyledTableCell>
+                                <Tooltip title="Add Row Below">
+                                  <AddIcon
+                                    sx={{ cursor: 'pointer', ml: 1 }}
+                                    onClick={() => {
+                                      addRowBelow(index, idx);
+                                    }}
+                                  />
+                                </Tooltip>
+                                <Tooltip title="Delete Row">
+                                  <DeleteIcon
+                                    sx={{ cursor: 'pointer', ml: 3 }}
+                                    onClick={() => {
+                                      deleteRow(index, idx);
+                                    }}
+                                  />
+                                </Tooltip>
+                              </StyledTableCell>
+                            </StyledTableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </StyledTableCell>
+              )}
+
+              <StyledTableCell>
+                <Tooltip title="Delete State">
+                  <DeleteIcon
+                    sx={{ cursor: 'pointer', ml: 3 }}
+                    onClick={() => {
+                      deleteAccrualState(index);
+                    }}
+                  />
+                </Tooltip>
+              </StyledTableCell>
+            </StyledTableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>

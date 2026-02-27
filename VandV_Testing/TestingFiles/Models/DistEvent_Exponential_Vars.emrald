@@ -1,0 +1,191 @@
+{
+  "id": "286e15ab-e3be-4dc3-8e78-a580071f9253",
+  "name": "DistEvTest1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Event",
+        "Done"
+      ],
+      "id": "f0c348a7-e63d-4e0d-af34-d42a34b7b03c",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Done",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "0359ac6e-8af1-4c5a-88fb-f8cbc79d4c07",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 640,
+        "y": 340.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Event",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Done"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "47c31279-5b06-4c99-81c2-1cac366d5f17",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 160.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "ExponentialDist"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Event"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "a32b8b82-bcbb-43b9-85bb-4fa63435f9f3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 20.5,
+        "width": 200,
+        "height": 130
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Done",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "30ab7dd9-279a-49ac-802e-46624990dee6",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Event",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Event",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "e8592cf8-673b-48bf-bc1d-5170e8b5d4cb",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "ExponentialDist",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "distType": "dtExponential",
+      "parameters": [
+        {
+          "name": "Rate",
+          "value": "0.1",
+          "timeRate": "trDays",
+          "useVariable": true,
+          "variable": "Dbl_Rate"
+        },
+        {
+          "value": "0",
+          "timeRate": "trDays"
+        },
+        {
+          "value": "5000",
+          "timeRate": "trDays"
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "onVarChange": "ocResample",
+      "id": "c8b63058-89fe-4760-9bae-13115f35bbb2",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dbl_Mean",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 12,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "6ee43bda-bae3-401f-b002-c318ea1714c3",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_Rate",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0.1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "4f262a7d-037f-41e0-adc5-ba8b382d9945",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_STD",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "c8f98d73-dffb-4688-a5e3-336d4bf52915",
+      "objType": "Variable"
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

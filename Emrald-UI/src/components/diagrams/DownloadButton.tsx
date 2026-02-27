@@ -1,5 +1,5 @@
 import React from 'react';
-import { useReactFlow, getNodesBounds, getViewportForBounds, Node } from 'reactflow';
+import { useReactFlow, getNodesBounds, getViewportForBounds, type Node } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { FaCamera } from 'react-icons/fa';
 import { ControlButton } from 'reactflow';
@@ -23,17 +23,17 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ diagramName }) => {
   const onClick = async () => {
     const nodesBounds = getNodesBounds(getNodes() as Node[]);
     const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
-    const reactFlowViewport = document.querySelector('.react-flow__viewport') as HTMLElement;
+    const reactFlowViewport = document.querySelector('.react-flow__viewport');
     if (reactFlowViewport) {
       try {
-        const dataUrl = await toPng(reactFlowViewport, {
+        const dataUrl = await toPng(reactFlowViewport as HTMLElement, {
           backgroundColor: '#ffffff',
           width: imageWidth,
           height: imageHeight,
           style: {
             width: String(imageWidth),
             height: String(imageHeight),
-            transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+            transform: `translate(${viewport.x.toString()}px, ${viewport.y.toString()}px) scale(${viewport.zoom.toString()})`,
           },
         });
         downloadImage(dataUrl, diagramName);
@@ -46,7 +46,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ diagramName }) => {
   };
 
   return (
-    <ControlButton onClick={onClick}>
+    <ControlButton onClick={() => void onClick()}>
       <FaCamera />
     </ControlButton>
   );

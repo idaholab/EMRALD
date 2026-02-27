@@ -8,10 +8,10 @@ const VarCondition = () => {
   return (
     <>
       <CodeEditorWithVariables
-        scriptCode={scriptCode || ''}
+        scriptCode={scriptCode ?? ''}
         setScriptCode={setScriptCode}
         variableList={appData.value.VariableList}
-        codeVariables={codeVariables || []}
+        codeVariables={codeVariables ?? []}
         addToUsedVariables={addToUsedVariables}
         heading={<span>Evaluate Code (c#) - Must return a boolean value!</span>}
       />

@@ -1,0 +1,259 @@
+{
+  "objType": "EMRALD_Model",
+  "name": "PersistentEventTest",
+  "desc": "This tests if events can persist across states.",
+  "version": 1,
+  "versionHistory": [],
+  "emraldVersion": 3.1,
+  "DiagramList": [
+    {
+      "id": "7d155a82-c985-4c14-afe2-0e34a15e9581",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "TempExit",
+        "EventHappened",
+        "Term"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "ExtSimList": [],
+  "StateList": [
+    {
+      "id": "556b8fb3-1220-442a-8fdc-aab7eb5c1c11",
+      "name": "EventHappened",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoToTerm"
+      ],
+      "geometryInfo": {
+        "x": 381.3011467237026,
+        "y": 167.14570815285592,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "2017537d-f60e-41c5-a513-f64d67afd494",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "Dist",
+        "Timer"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToKey"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToTemp"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "d8c4f67b-c51e-4ae7-8bf9-e520915d8750",
+      "name": "TempExit",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "TempExit"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoToStart"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 377.9582761503668,
+        "y": -152.52309147759948,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "47a3021f-0647-425b-bce4-9d5223506bb1",
+      "name": "Term",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 709.1207128928786,
+        "y": 254.05281258322304,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "2b4f28ad-f4ad-4042-b4af-cba8d1b056fe",
+      "name": "GoToKey",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "EventHappened",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "a3f68511-31a5-4918-9126-73655d4ed531",
+      "name": "GoToStart",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Start",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "a4b17a09-5a2f-4b35-bdd3-75e0f555c036",
+      "name": "GoToTemp",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "TempExit",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "5ffa3d8e-230b-4648-a08d-920eddfb2d56",
+      "name": "GoToTerm",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Term",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    }
+  ],
+  "EventList": [
+    {
+      "id": "4e8e7697-2ba4-41de-a25b-a612f96e5572",
+      "name": "Dist",
+      "desc": "",
+      "evType": "etDistribution",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "distType": "dtNormal",
+      "dfltTimeRate": "trDays",
+      "persistent": true,
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": 5,
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 0.001,
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 4,
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 6,
+          "useVariable": false
+        }
+      ]
+    },
+    {
+      "id": "f07d627a-ad3f-4a18-b238-9541e24dcb8d",
+      "name": "TempExit",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT0S"
+    },
+    {
+      "id": "a5c9b802-d7c9-4134-b86c-77bb4408d855",
+      "name": "Timer",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT1H"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": []
+}

@@ -1,0 +1,245 @@
+{
+  "id": "16711ec3-9363-4e41-9420-0785a560d938",
+  "name": "DefaultVars",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Eval",
+        "CntGood",
+        "CurTimeGood"
+      ],
+      "id": "2a657138-6469-415d-a670-8c461c21d067",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "CntGood",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "e35ee007-911d-4347-bdf2-22da68abe419",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 790.5,
+        "y": 100.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "CurTimeGood",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "e8e11a59-c3d1-434c-9aaa-8c1ad66ca1ab",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 770.5,
+        "y": 260.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Eval",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "CntCorrect",
+        "EvalTime"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_CntGood"
+          ],
+          "moveFromCurrent": false
+        },
+        {
+          "actions": [
+            "Goto_CurTimeGood"
+          ],
+          "moveFromCurrent": false
+        }
+      ],
+      "id": "fafaacf4-e2a6-4850-83c6-d9be776bdadf",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 450.5,
+        "y": 140.5,
+        "width": 200,
+        "height": 170
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [
+        "IncCnt"
+      ],
+      "events": [
+        "new event"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Eval"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "8ca9112e-ae53-47ab-b2c6-b433eb837870",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 154.5,
+        "y": 59.5,
+        "width": 200,
+        "height": 150
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_CntGood",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "CntGood",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "42e62ee5-cbef-4814-bac6-03d4eb45c894",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_CurTimeGood",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "CurTimeGood",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "85c533d6-3fc0-4237-9a66-0ac8f76dd345",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Eval",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Eval",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "93578895-2993-4778-82ca-0a06cf5be8c0",
+      "objType": "Action"
+    },
+    {
+      "name": "IncCnt",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "scriptCode": "return Int_Cnt +1;",
+      "variableName": "Int_Cnt",
+      "codeVariables": [],
+      "id": "b6435fc6-8e78-4d52-bfbb-657e91555ddf",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "CntCorrect",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etVarCond",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [
+        "Int_Cnt"
+      ],
+      "code": "return Int_Cnt == RunIdx;",
+      "id": "30ed83eb-7f5d-4b52-bec2-6e588f752a49",
+      "objType": "Event"
+    },
+    {
+      "name": "EvalTime",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etVarCond",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "code": "return CurTime == 1.0;",
+      "id": "1ef5faed-87ef-4415-81c2-e56a70f6df79",
+      "objType": "Event"
+    },
+    {
+      "name": "new event",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "useVariable": false,
+      "time": "PT1H",
+      "timeVariableUnit": "",
+      "fromSimStart": false,
+      "id": "b72a25a6-fe80-4bc6-8615-3f52a9d630db",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Int_Cnt",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "resetOnRuns": false,
+      "type": "int",
+      "id": "555c7e23-a4bd-442c-aaa3-3368d61029fd",
+      "objType": "Variable"
+    }
+  ],
+  "templates": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

@@ -1,0 +1,7 @@
+Simulation = MultiThread_VarChange
+Runtime = 00.00:00:00
+Runs = 10 of 10
+---------------------------
+- End Sim Variable Values -
+---------------------------
+Var = 5

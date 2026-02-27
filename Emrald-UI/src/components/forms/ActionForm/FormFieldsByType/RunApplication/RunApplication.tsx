@@ -10,23 +10,16 @@ import {
   Select,
   InputLabel,
 } from '@mui/material';
-import { ReturnProcessType, useActionFormContext } from '../../ActionFormContext';
+import { type ReturnProcessType, useActionFormContext } from '../../ActionFormContext';
 import { useVariableContext } from '../../../../../contexts/VariableContext';
 import CodeVariables from '../../../../common/CodeVariables';
-import { ReactElement, useEffect, useState } from 'react';
-import * as CustomForms from './CustomForms/index';
+import { type ReactElement, useEffect, useState } from 'react';
+import { CustomForms } from './CustomForms/index';
 import { startCase } from 'lodash';
 import React from 'react';
 import SelectComponent from '../../../../common/SelectComponent';
 import { TextFieldComponent } from '../../../../common';
-
-// Define the type for the custom form components
-type CustomFormComponents = {
-  [key: string]: React.ComponentType<any>;
-};
-
-// Explicitly cast CustomForms to the defined type
-const customFormsTyped = CustomForms as CustomFormComponents;
+import type { CustomFormType } from '../../../../../types/EMRALD_Model';
 
 const RunApplication = () => {
   const {
@@ -49,26 +42,23 @@ const RunApplication = () => {
   } = useActionFormContext();
 
   const { variableList } = useVariableContext();
-  const [applicationType, setApplicationType] = useState(raType || 'code');
-  const [customFormType, setCustomFormType] = useState<string>(formData?.caType || '');
-  const [options, setOptions] = useState<string[]>(['MAAP']);
+  const [applicationType, setApplicationType] = useState(raType ?? 'code');
+  const [customFormType, setCustomFormType] = useState<CustomFormType | undefined>(
+    formData?.caType,
+  );
+  const [options, setOptions] = useState<CustomFormType[]>(['MAAP']);
   const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
   const [localPreCode, setLocalPreCode] = useState('');
   const [hasInitialCode, setHasInitialCode] = useState(false);
 
   useEffect(() => {
-    // Dynamically import components
-    const importComponents = async () => {
-      const components = await import('./CustomForms/index');
-      setOptions(Object.keys(components) as string[]);
-    };
-    importComponents();
+    setOptions(Object.keys(CustomForms) as CustomFormType[]);
   }, []);
 
   useEffect(() => {
     //  Set selected component when customFormType changes
-    if (customFormType && customFormsTyped[customFormType]) {
-      setSelectedComponent(React.createElement(customFormsTyped[customFormType]));
+    if (customFormType) {
+      setSelectedComponent(React.createElement(CustomForms[customFormType]));
     } else {
       setSelectedComponent(null);
     }
@@ -85,9 +75,9 @@ const RunApplication = () => {
     }
   });
 
-  const handleSetCustomFormType = (value: string) => {
+  const handleSetCustomFormType = (value: CustomFormType) => {
     setCustomFormType(value);
-    setFormData((prev: any) => ({ ...prev, caType: value }));
+    setFormData((prev) => ({ ...prev, caType: value }));
   };
 
   const handleApplicationTypeChange = (value: string) => {
@@ -101,7 +91,9 @@ const RunApplication = () => {
         <RadioGroup
           name="controlled-radio-buttons-group"
           value={applicationType}
-          onChange={(e) => handleApplicationTypeChange(e.target.value)}
+          onChange={(e) => {
+            handleApplicationTypeChange(e.target.value);
+          }}
           row
         >
           <FormControlLabel value="code" control={<Radio />} label="Use Code" />
@@ -120,7 +112,9 @@ const RunApplication = () => {
                 defaultLanguage="csharp"
                 language="csharp"
                 value={localPreCode}
-                onChange={(value) => setMakeInputFileCode(value || '')}
+                onChange={(value) => {
+                  setMakeInputFileCode(value ?? '');
+                }}
                 options={{
                   minimap: { enabled: false },
                   snippetSuggestions: 'inline',
@@ -129,7 +123,7 @@ const RunApplication = () => {
 
               <TextFieldComponent
                 label="Executable Location"
-                value={exePath || ''}
+                value={exePath ?? ''}
                 setValue={setExePath}
               />
               <br />
@@ -192,7 +186,9 @@ const RunApplication = () => {
                     defaultLanguage="csharp"
                     language="csharp"
                     value={processOutputFileCode}
-                    onChange={(value) => setProcessOutputFileCode(value || '')}
+                    onChange={(value) => {
+                      setProcessOutputFileCode(value ?? '');
+                    }}
                     options={{
                       minimap: { enabled: false },
                       snippetSuggestions: 'inline',
@@ -216,8 +212,10 @@ const RunApplication = () => {
         <Box display={'flex'} flexDirection={'column'}>
           <SelectComponent
             label="Custom Application Type"
-            value={customFormType || ''}
-            setValue={(name) => handleSetCustomFormType(name)}
+            value={customFormType ?? ''}
+            setValue={(name) => {
+              handleSetCustomFormType(name as CustomFormType);
+            }}
           >
             {options.map((option) => (
               <MenuItem value={option} key={option}>

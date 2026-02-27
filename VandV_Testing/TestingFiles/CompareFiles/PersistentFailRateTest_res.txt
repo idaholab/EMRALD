@@ -1,0 +1,8 @@
+Simulation = PersistentEventTest
+Runtime = 00.00:00:00
+Runs = 1 of 1
+
+EventHappened Occurred 1 times, Probability =1, MeanTime = 12.22:55:25 +/- 00.00:00:00.00
+---------------------------
+- End Sim Variable Values -
+---------------------------

@@ -1,7 +1,8 @@
 {
-  "id": "37d4f79e-7cbc-4ec8-acff-f0c47ccbff59",
-  "name": "NormDistTest",
+  "id": "eb147c21-6fc0-4827-a5dc-1070c3d36342",
+  "name": "DistEvTest1",
   "desc": "",
+  "version": 1,
   "DiagramList": [
     {
       "name": "Main",
@@ -11,36 +12,15 @@
       "diagramLabel": "Plant",
       "states": [
         "Start",
-        "Eval",
-        "AboveMean",
-        "Done",
-        "UnderFifth"
+        "Event",
+        "Done"
       ],
-      "id": "70bbbf21-5a30-4108-a6e0-ba332a5e92c0",
+      "id": "ee207720-091b-4b3c-b9f1-4db5ddf7cfd2",
       "objType": "Diagram",
       "required": false
     }
   ],
   "StateList": [
-    {
-      "name": "AboveMean",
-      "desc": "",
-      "stateType": "stKeyState",
-      "diagramName": "Main",
-      "immediateActions": [
-        "Goto_Done"
-      ],
-      "events": [],
-      "eventActions": [],
-      "id": "9bfe0f6e-e719-42bb-a62c-67f9fb2ed362",
-      "objType": "State",
-      "geometryInfo": {
-        "x": 710.6666870117188,
-        "y": 67,
-        "width": 200,
-        "height": 100
-      }
-    },
     {
       "name": "Done",
       "desc": "",
@@ -49,46 +29,32 @@
       "immediateActions": [],
       "events": [],
       "eventActions": [],
-      "id": "378e8a9e-6e13-4129-bd53-50413b86a35e",
+      "id": "daab2746-d854-4469-83a1-f16e62d4605c",
       "objType": "State",
       "geometryInfo": {
-        "x": 796.8292803529832,
-        "y": 259.46199623483125,
+        "x": 640,
+        "y": 340.5,
         "width": 200,
         "height": 80
       }
     },
     {
-      "name": "Eval",
+      "name": "Event",
       "desc": "",
-      "stateType": "stStandard",
+      "stateType": "stKeyState",
       "diagramName": "Main",
-      "immediateActions": [],
-      "events": [
-        "GreaterThanMean",
-        "Fifth"
+      "immediateActions": [
+        "Goto_Done"
       ],
-      "eventActions": [
-        {
-          "actions": [
-            "Goto_AboveMean"
-          ],
-          "moveFromCurrent": true
-        },
-        {
-          "actions": [
-            "Goto_UnderFifth"
-          ],
-          "moveFromCurrent": false
-        }
-      ],
-      "id": "bd1c0e92-1a7e-46b1-a729-2b4569bf1cd3",
+      "events": [],
+      "eventActions": [],
+      "id": "f2016922-54d6-4fc4-9193-eef58e603d8a",
       "objType": "State",
       "geometryInfo": {
-        "x": 190.81108405941825,
-        "y": 320.9694058777856,
+        "x": 330,
+        "y": 160.5,
         "width": 200,
-        "height": 170
+        "height": 100
       }
     },
     {
@@ -98,62 +64,27 @@
       "diagramName": "Main",
       "immediateActions": [],
       "events": [
-        "WeibullEvent"
+        "WeibullDist"
       ],
       "eventActions": [
         {
           "actions": [
-            "Goto_Eval"
+            "Goto_Event"
           ],
           "moveFromCurrent": true
         }
       ],
-      "id": "9c6abac9-bb05-4f96-9a5b-b53e12462212",
+      "id": "2a854ad1-d1eb-4257-805e-4962e8104496",
       "objType": "State",
       "geometryInfo": {
-        "x": 232.5,
-        "y": 43.333335876464844,
+        "x": 20,
+        "y": 20.5,
         "width": 200,
-        "height": 120
-      }
-    },
-    {
-      "name": "UnderFifth",
-      "desc": "",
-      "stateType": "stKeyState",
-      "diagramName": "Main",
-      "immediateActions": [
-        "Goto_Done"
-      ],
-      "events": [],
-      "eventActions": [],
-      "id": "19ca5e48-5311-48ae-aa58-3d7320321277",
-      "objType": "State",
-      "geometryInfo": {
-        "x": 707.3333740234375,
-        "y": 441.6667175292969,
-        "width": 200,
-        "height": 100
+        "height": 130
       }
     }
   ],
   "ActionList": [
-    {
-      "name": "Goto_AboveMean",
-      "desc": "",
-      "actType": "atTransition",
-      "mainItem": false,
-      "mutExcl": true,
-      "newStates": [
-        {
-          "toState": "AboveMean",
-          "prob": 1,
-          "failDesc": ""
-        }
-      ],
-      "id": "1e01e77e-cea9-4db2-ac5b-97c76aa79254",
-      "objType": "Action"
-    },
     {
       "name": "Goto_Done",
       "desc": "",
@@ -167,112 +98,97 @@
           "failDesc": ""
         }
       ],
-      "id": "17f0126e-4813-4dab-943f-03b23b5bf7f0",
+      "id": "b7c0c5bb-46d1-4192-865b-2544ec7a556e",
       "objType": "Action"
     },
     {
-      "name": "Goto_Eval",
+      "name": "Goto_Event",
       "desc": "",
       "actType": "atTransition",
       "mainItem": false,
       "mutExcl": true,
       "newStates": [
         {
-          "toState": "Eval",
+          "toState": "Event",
           "prob": -1,
           "failDesc": ""
         }
       ],
-      "id": "e5e59371-3916-4f3c-98ad-e1cbd020e25f",
-      "objType": "Action"
-    },
-    {
-      "name": "Goto_UnderFifth",
-      "desc": "",
-      "actType": "atTransition",
-      "mainItem": false,
-      "mutExcl": true,
-      "newStates": [
-        {
-          "toState": "UnderFifth",
-          "prob": 1,
-          "failDesc": ""
-        }
-      ],
-      "id": "77257419-e367-45bc-bb07-5f63be08b65d",
+      "id": "c0a209a8-7565-44d6-8f9c-146d0accfe94",
       "objType": "Action"
     }
   ],
   "EventList": [
     {
-      "name": "Fifth",
-      "desc": "",
-      "mainItem": false,
-      "evType": "etVarCond",
-      "allItems": true,
-      "triggerStates": [],
-      "varNames": [],
-      "code": "return CurTime < 3.534;",
-      "id": "76df4ab6-9533-4faa-9c4f-e3595538ed51",
-      "objType": "Event"
-    },
-    {
-      "name": "GreaterThanMean",
-      "desc": "",
-      "mainItem": false,
-      "evType": "etVarCond",
-      "allItems": true,
-      "triggerStates": [],
-      "varNames": [],
-      "code": "return CurTime > 3.939;",
-      "id": "060f3bd4-effb-4d17-9227-7de5c6a46cf5",
-      "objType": "Event"
-    },
-    {
-      "name": "WeibullEvent",
+      "name": "WeibullDist",
       "desc": "",
       "mainItem": false,
       "evType": "etDistribution",
       "allItems": true,
       "triggerStates": [],
       "varNames": [],
-      "shape": 24,
-      "scale": 4,
       "distType": "dtWeibull",
       "parameters": [
         {
           "name": "Shape",
-          "useVariable": false,
-          "value": 24
+          "value": "2",
+          "useVariable": false
         },
         {
           "name": "Scale",
-          "timeRate": "trHours",
-          "useVariable": false,
-          "value": 4
+          "value": 1,
+          "useVariable": false
         },
         {
-          "name": "Minimum",
-          "timeRate": "trHours",
-          "useVariable": false,
-          "value": 0
+          "value": "0",
+          "timeRate": "trHours"
         },
         {
-          "name": "Maximum",
-          "timeRate": "trYears",
-          "useVariable": false,
-          "value": 1000
+          "value": "5000",
+          "timeRate": "trHours"
         }
       ],
       "dfltTimeRate": "trHours",
-      "id": "3470e1b9-25b7-4913-938a-7e962a220ff7",
+      "onVarChange": "ocResample",
+      "id": "41eea5b3-bbda-41a7-9945-a392b48c7fbe",
       "objType": "Event"
     }
   ],
   "LogicNodeList": [],
-  "VariableList": [],
-  "version": 1,
-  "objType": "EMRALD_Model",
+  "VariableList": [
+    {
+      "name": "Dbl_Mean",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 12,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "90901646-76ae-4c2e-bfab-9bbafca38d1c",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_Rate",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 0.1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "b1c811cc-c7c9-469e-91cd-661f297b7926",
+      "objType": "Variable"
+    },
+    {
+      "name": "Dbl_STD",
+      "desc": "",
+      "varScope": "gtGlobal",
+      "value": 1,
+      "resetOnRuns": true,
+      "type": "double",
+      "id": "313780f2-41d1-4b15-9373-d8fce26e1977",
+      "objType": "Variable"
+    }
+  ],
   "ExtSimList": [],
-  "emraldVersion": 3
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
 }

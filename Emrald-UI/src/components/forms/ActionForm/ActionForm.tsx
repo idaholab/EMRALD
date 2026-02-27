@@ -3,13 +3,9 @@ import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import MainDetailsForm from '../MainDetailsForm';
-import { Action } from '../../../types/Action';
+import type { Action, State, Event, ActionType } from '../../../types/EMRALD_Model';
 import { useActionFormContext } from './ActionFormContext';
-import { ActionType, MainItemTypes } from '../../../types/ItemTypes';
 import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';
-import { State } from '../../../types/State';
-import { Event } from '../../../types/Event';
-
 interface ActionFormProps {
   actionData?: Action;
   event?: Event;
@@ -48,9 +44,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
   }, []);
 
   // Map action types to their respective sub-components and props
-  const actionTypeToComponent: {
-    [key in ActionType]: { component: React.FC<any>; props: any };
-  } = {
+  const actionTypeToComponent: Record<ActionType, { component: React.FC<any>; props: any }> = {
     atTransition: { component: Transition, props: {} },
     atCngVarVal: { component: ChangeVarValue, props: {} },
     at3DSimMsg: { component: ExtSimulation, props: {} },
@@ -64,7 +58,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.Action}
+          itemType={'Action'}
           type={actType}
           setType={setActType}
           typeOptions={actionTypeOptions}
@@ -76,15 +70,14 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
           error={hasError}
           errorMessage="An action with this name already exists, or includes an invalid character."
           reset={reset}
-          handleSave={() => handleSave(event, state)}
+          handleSave={() => { handleSave(event, state); }}
           reqPropsFilled={reqPropsFilled}
         >
           {/* Render the appropriate sub-component based on selected action type */}
-          {actType &&
-            React.createElement(
-              actionTypeToComponent[actType].component,
-              actionTypeToComponent[actType].props,
-            )}
+          {React.createElement(
+            actionTypeToComponent[actType].component,
+            actionTypeToComponent[actType].props,
+          )}
         </MainDetailsForm>
       </form>
     </Box>

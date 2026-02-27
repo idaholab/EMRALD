@@ -1,0 +1,316 @@
+{
+  "id": "8120fa07-dc1d-4f83-915f-9e0dd5a4826f",
+  "name": "JsonVarExeTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "End",
+        "GT",
+        "LT",
+        "RunCompare"
+      ],
+      "id": "e871c284-6a66-4713-ba46-9d83177fc808",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "End",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "b75c6189-33e4-445f-8b2c-9c7e6f90bdac",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 879.9119262695312,
+        "y": 240.46022033691406,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "GT",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_End"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "eca30978-aa39-4951-826a-1e0d1e5208d3",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 570.2755737304688,
+        "y": 139.73294067382812,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "LT",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_End"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "0e4364a1-2944-4b15-b821-cfee6a61f1a8",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 569.8210144042969,
+        "y": 339.5511169433594,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "RunCompare",
+      "desc": "",
+      "stateType": "stStandard",
+      "diagramName": "Main",
+      "immediateActions": [
+        "RunCompExe"
+      ],
+      "events": [
+        "IsGT",
+        "IsLT"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_GT"
+          ],
+          "moveFromCurrent": true
+        },
+        {
+          "actions": [
+            "Goto_LT"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "fe02b70e-9de5-43d5-9ad7-32ef95f1cbee",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 289.7329406738281,
+        "y": 200.19317626953125,
+        "width": 200,
+        "height": 190
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [
+        "SetVar2"
+      ],
+      "events": [
+        "OneMin"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_RunCompare"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "c443d68d-1831-47f7-afe8-e6f7509e59a9",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 19.639190673828125,
+        "y": 190.36931800842285,
+        "width": 200,
+        "height": 130
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_End",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "End",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "e742f940-cad2-4ce8-abbd-af96b3786cdf",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_GT",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "GT",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "937467d4-45cc-4d8e-8197-7efdd2ee4fbd",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_LT",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "LT",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "9dcac636-aa4d-44d5-81ec-1e3940bf7e50",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_RunCompare",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "RunCompare",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "f6831baa-1d01-43f0-ad7e-63ce78c37d6a",
+      "objType": "Action"
+    },
+    {
+      "name": "RunCompExe",
+      "desc": "",
+      "actType": "atRunExtApp",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [],
+      "makeInputFileCode": "return @\"..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar1.json ..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar2.json ..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\VarCompRes.json\";",
+      "exePath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\JSON_GreaterThan.exe",
+      "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
+      "codeVariables": [
+        "CompRes"
+      ],
+      "id": "9b0c3691-4fb5-4901-b436-d79f158f2aac",
+      "objType": "Action"
+    },
+    {
+      "id": "98b7542d-fd6f-46bb-9a77-b7deb86abc06",
+      "name": "SetVar2",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "TestVar2",
+      "scriptCode": "if ((RunIdx % 2) == 0)\r\n  return 10;\r\nelse\r\n  return 1;"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "IsGT",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etVarCond",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [
+        "CompRes"
+      ],
+      "code": "return CompRes;",
+      "id": "3f7b3d83-55fc-4ed8-a96a-98e39eef30e4",
+      "objType": "Event"
+    },
+    {
+      "name": "IsLT",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etVarCond",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [
+        "CompRes"
+      ],
+      "code": "return !CompRes;",
+      "id": "6697612e-40e4-43a2-ad17-002b823533da",
+      "objType": "Event"
+    },
+    {
+      "name": "OneMin",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etTimer",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "time": "PT1M",
+      "id": "7138043f-f701-417f-b4c3-b70eede2ecfb",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "CompRes",
+      "desc": "",
+      "varScope": "gtDocLink",
+      "value": true,
+      "docLink": "$.['Result']",
+      "docType": "dtJSON",
+      "docPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\VarCompRes.json",
+      "type": "bool",
+      "pathMustExist": false,
+      "id": "2d89eea0-675e-4d1d-895a-ec689ca22156",
+      "objType": "Variable"
+    },
+    {
+      "name": "TestVar2",
+      "varScope": "gtDocLink",
+      "value": 0,
+      "type": "double",
+      "objType": "Variable",
+      "id": "31e1693b-325b-4ee9-8fe6-aacb8d733900",
+      "desc": "",
+      "docType": "dtJSON",
+      "docPath": "..\\..\\..\\VandV_Testing\\TestingFiles\\Other\\TestVar2.json",
+      "docLink": "$.['Value']",
+      "pathMustExist": true,
+      "resetOnRuns": true
+    }
+  ],
+  "objType": "EMRALD_Model",
+  "ExtSimList": [],
+  "emraldVersion": 3,
+  "multiThreadInfo": {
+  }
+}

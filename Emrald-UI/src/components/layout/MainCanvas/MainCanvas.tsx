@@ -37,10 +37,11 @@ const MainCanvas: React.FC = () => {
         </SvgIcon>
       ),
       name: 'New Logic Tree',
-      content: 
-      <LogicNodeFormContextProvider>
-        <LogicNodeForm setAsRoot />
-      </LogicNodeFormContextProvider>,
+      content: (
+        <LogicNodeFormContextProvider>
+          <LogicNodeForm setAsRoot />
+        </LogicNodeFormContextProvider>
+      ),
     },
     {
       icon: (
@@ -92,8 +93,12 @@ const MainCanvas: React.FC = () => {
     },
   ];
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    setOpen(!open);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
   // const storedHistory = JSON.parse(sessionStorage.getItem('dataHistory') || '[]');
 
   const { addWindow } = useWindowContext();
@@ -147,8 +152,11 @@ const MainCanvas: React.FC = () => {
             <SpeedDialAction
               key={action.name}
               icon={action.icon}
-              tooltipTitle={action.name}
-              onClick={() => { addWindow(action.name, action.content); handleClose(); }}
+              slotProps={{ tooltip: { title: action.name } }}
+              onClick={() => {
+                addWindow(action.name, action.content);
+                handleClose();
+              }}
             />
           ))}
         </SpeedDial>

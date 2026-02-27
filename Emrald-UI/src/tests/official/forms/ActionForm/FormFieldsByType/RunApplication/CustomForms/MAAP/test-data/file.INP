@@ -11,3 +11,5 @@ INCLUDE file.inc
 
 C Empty, should be parsed as an identifier
 INCLUDE
+
+DOSE PARAMETER FILE filename.PAR

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace XmppMessageClient
 {
-    public static class ConfigHelper
+    public static class XMPPConfigHelper
     {
         public static IConfiguration GetConfiguration()
         {

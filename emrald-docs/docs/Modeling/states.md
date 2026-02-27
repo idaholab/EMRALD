@@ -9,7 +9,7 @@
   In the diagram that you want your state to be added to, right-click anywhere in the diagram window (not on any objects) and click, "New State." <br>
   <img src="/images/Modeling/states/NewState1.png" alt="New State Step 1">
 
-  Type in a state name, an optional description, and, if the diagram is a single state diagram, what the logic tree evaluation should be. Press "SAVE". The state will open up in the diagram window in the Modeling Area.<br> 
+  Type in a state name, an optional description, and, if the diagram is a single state diagram, what the logic tree evaluation should be. Press "SAVE". The state will open in the diagram window in the Modeling Area.<br> 
   <img src="/images/Modeling/states/NewState2.png" alt="New State Step 2"><br>
   <img src="/images/Modeling/states/NewState3.png" alt="New State Step 3"><br>
 
@@ -22,49 +22,49 @@
 On the Left Navigation Frame, click on the tab (All or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Edit Properties".<br>
 <img src="/images/Modeling/states/EditStateOpt1.png" alt="Edit State Option 1"><br>
 
-The properties window will open up in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if the diagram that the state belongs to is a single state diagram. Remember that states only evaluate to a boolean expression if the diagram it belongs to is a single state diagram. To view the boolean expression of the state, use [option two](#option-2) for editing states.<br>
-<img src="/images/Modeling/states/EditStateOpt1_2.png" alt="Edit State Option 2 Step 2" style="width:450px">
+The properties window will open in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if the diagram that the state belongs to is a single state diagram. Remember that states only evaluate to a boolean expression if the diagram it belongs to is a single state diagram. To view the boolean expression of the state, use [option two](#option-2) for editing states.<br>
+<img src="/images/Modeling/states/EditStateOpt1_2.png" alt="Edit State Option 2 Step 2" width="450">
 
 #### Option 2:<br>
 In the diagram window, right-click in the middle of the state and click "State Properties...".<br>
 <img src="/images/Modeling/states/EditStateOpt2.png" alt="Edit State Option 2"><br>
 
-The properties window will open up in the diagram window. <br>
+The properties window will open in the diagram window. <br>
 <img src="/images/Modeling/states/EditStateOpt2_2.png" alt="Edit State Option 2 Step 2">
 
 
 ## State Properties
-  State properties depend on the type of diagram. All diagram states have lists of events in the "Event Actions" list, and associated with each event is a "Exit Parent State" property. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon (<img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/> ) to the right of the event and any arrows going from the action will turn black. If there are no transition actions.<br>
+  State properties depend on the type of diagram. All diagram states have lists of events in the "Event Actions" list and associated with each event is a "Exit Parent State" property. This property tells the simulation to exit the state after the events actions are executed. This adds a door with arrow icon to the right of the event, and any arrows going from the action will turn black if there are no transition actions.
+  <img src="/images/Modeling/states/exit-icon.png" alt="Start" width="18"/>
   
   Note that the exit property is set and edited in the event forms, not the state forms.
-  <img src="/images/Modeling/states/ExitPropertyInEventProperties.png" alt="Event Properties Exit Option" style="width:450px"><br>
+  <img src="/images/Modeling/states/ExitPropertyInEventProperties.png" alt="Event Properties Exit Option" width="450"><br>
 
 ### Single State Diagrams (System, Component)
 Single State diagrams such as system and components have an additional status value. This field is used for logic tree evaluations. 
 They must have at least one state with a "True" value and one with a "False". The "Unknown" value can be used if it is not to have any effect on the logic evaluation. 
-See the following screenshots of the CCS System diagram as an example, there should never be a green dashed arrow in the diagram and the events for all transition
-actions should have a exit symbol.<br>
+See the following screenshots of the CCS System diagram as an example, there should never be a green dashed arrow in the diagram and the events for all transition actions should have an exit symbol.<br>
 
 The Single State diagram representing the CCS System.
-<img src="/images/Modeling/states/StatusValueExample.png" alt="Single State Diagram Example" style="width:500px"><br>
+<img src="/images/Modeling/states/StatusValueExample.png" alt="Single State Diagram Example" width="500"><br>
 
 The CCS_Sys_Active State Properties window with "True" selected as the Status Value.
-<img src="/images/Modeling/states/StatusValueTrue.png" alt="Status Value True" style="width:450px"><br>
+<img src="/images/Modeling/states/StatusValueTrue.png" alt="Status Value True" width="450"><br>
 
 The CCS_Sys_Failed State Properties window with "False" selected as the Status Value.
-<img src="/images/Modeling/states/StatusValueFalse.png" alt="Status Value False" style="width:450px"><br>
+<img src="/images/Modeling/states/StatusValueFalse.png" alt="Status Value False" width="450"><br>
 
 
 ## Deleting a State
 **Option 1:** <br> 
   On the Left Navigation Frame, click on the tab (All, Global, or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Delete".<br>
-  <img src="/images/Modeling/states/DeleteStateOpt1.png" alt="Delete State Option 1 Step 1" style="width:300px">
+  <img src="/images/Modeling/states/DeleteStateOpt1.png" alt="Delete State Option 1 Step 1" width="300">
 
   A confirmation window will appear in the Modeling Area. Click "DELETE".<br>
   <img src="/images/Modeling/states/DeleteStateWarn.png" alt="Delete State Option 1 Step 2"><br>
 
   The state will be deleted and no longer listed in the Left Navigation Frame. <br>
-  <img src="/images/Modeling/states/DeleteStateOpt1_3.png" alt="Delete State Option 1 Step 3" style="width:200px"><br>
+  <img src="/images/Modeling/states/DeleteStateOpt1_3.png" alt="Delete State Option 1 Step 3" width="200"><br>
 
 **Option 2:** <br> 
   Open the Diagram containing the state and locate the state. Right-click on the state and click " Delete State".<br>
@@ -79,25 +79,28 @@ The CCS_Sys_Failed State Properties window with "False" selected as the Status V
 ## Types of States
 The type of state will be indicated by an icon in the header of the state. Those icons are included in the title of the respective section as well as in the [Icons: States](./icons.md#states) section.
 
-<h3>Start <img src="/images/Modeling/states/start.png" alt="Start" width="25"/></h3>
+### Start
+<img src="/images/Modeling/states/start.png" alt="Start" width="25"/>
 
 Start states are the states the model is in when the simulation begins. There must be at least one but can be more. All start states will be activated simultaneously.<br>
-<img src="/images/Modeling/states/StartState.png" alt="Start State" style="width:220px">
+<img src="/images/Modeling/states/StartState.png" alt="Start State" width="220">
 
 ### Standard
 A normal state representing no special conditions. It will have no icon in the Header.<br>
-<img src="/images/Modeling/states/StandardState.png" alt="Standard State" style="width:220px">
+<img src="/images/Modeling/states/StandardState.png" alt="Standard State" width="220">
 
-<h3>Key <img src="/images/Modeling/states/key.png" alt="Key" width="25"/></h3>
+### Key
+<img src="/images/Modeling/states/key.png" alt="Key" width="25"/>
 
 A key state is what is of interest in the model, it will be tracked and reported if the model is in this state at the end of a simulation. In comparison to traditional PRA, all "End Sates" would have a corresponding "Key State." <br>
-<img src="/images/Modeling/states/KeyState.png" alt="Key State" style="width:220px">
+<img src="/images/Modeling/states/KeyState.png" alt="Key State" width="220">
 
 
-<h3>Terminal <img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/></h3>
+### Terminal
+<img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/>
 
-A user-defined simulation stopping point. A terminal state is not required but the simulation will run until the end time parameter is reached. However, it is recommend that terminal states be used to end all simulations when desired stop conditions are met for shortened computing time.<br>
-<img src="/images/Modeling/states/TerminalState.png" alt="Terminal State" style="width:220px">
+A user-defined simulation stopping point. A terminal state is not required but the simulation will run until the end time parameter is reached. However, it is recommended that terminal states be used to end all simulations when desired stop conditions are met for shortened computing time.<br>
+<img src="/images/Modeling/states/TerminalState.png" alt="Terminal State" width="220">
 
 
 ## Immediate Actions
@@ -107,7 +110,7 @@ A user-defined simulation stopping point. A terminal state is not required but t
   An icon on the left of the action shows what type of action it is. Refer to the [Actions](./icons.md#Actions) section of the Icons page to see what icons are associated with each action type. 
   
   ::: tip Note 
-  A Transition Action in Immediate Actions area can not exit the state (black arrow), but adds the "too" state as current state (dotted green arrow). See the [Elements of a Diagram: Arrows](./diagrams.md#arrows) section for more information.
+  A Transition Action in Immediate Actions area cannot exit the state (black arrow) but adds the "too" state as current state (dotted green arrow). See the [Elements of a Diagram: Arrows](./diagrams.md#arrows) section for more information.
   :::
 
 ### Adding an Immediate Action  
@@ -126,7 +129,7 @@ See [Actions](/Modeling/actions.md) for more information.
 
 ## Event Actions
   Event Actions are event/action combinations taken when the event condition is met. 
-  <img src="/images/Modeling/states/EventActionsSection.png" alt="Event Actions Section" style="width:220px"><br>
+  <img src="/images/Modeling/states/EventActionsSection.png" alt="Event Actions Section" width="220"><br>
 An icon on the left of the action shows what type of action it is. See [Icons](/Modeling/icons.md) for descriptions of each icon.
 
 ### Adding an Event

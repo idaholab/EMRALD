@@ -32,11 +32,11 @@ namespace Sop.Collections.BTree
 			PromoteIndexOfNode = 0;
 
 			// Make the current item pointer point to null since we will add an item and addition to a balanced Btree will re-arrange the slots and nodes thereby invalidating the current item pointer. nullifying it is the simpler behavior. The higher level code will have to implement a different approach to updating the current item pointer if it needs to.
-			SetCurrentItemAddress(null, 0);
+			SetCurrentItemAddress(null!, 0);
 			Root.Count++;
 
 			TreeNode.ResetArray(TempSlots, null);
-			TempParent = null;
+			TempParent = null!;
 		}
 		/// <summary>
 		/// Remove "Item" from the tree. Doesn't throw exception if "Item" is not found
@@ -70,11 +70,11 @@ namespace Sop.Collections.BTree
 			if (Root != null)
 			{
 				Root.Clear();
-				SetCurrentItemAddress(null, 0);
+				SetCurrentItemAddress(null!, 0);
 				Root.Count = 0;
 				if (TempChildren != null)
 					TreeNode.ResetArray(TempChildren, null);
-				TempParent = null;
+				TempParent = null!;
 				if (TempParentChildren != null)
 					TreeNode.ResetArray(TempParentChildren, null);
 				if (TempSlots != null)
@@ -109,7 +109,7 @@ namespace Sop.Collections.BTree
 				{
 					bool r = Root.Search(this, Item, GoToFirstInstance);
 					TreeNode.ResetArray(TempSlots, null);
-					TempParent = null;
+					TempParent = null!;
 					return r;
 				}
 				return true;	// current entry is equal to ObjectToSearch!!
@@ -277,49 +277,51 @@ namespace Sop.Collections.BTree
 			TempChildren = new TreeNode[SlotLength + 2];
 		}
 
-		/// <summary>
-		/// Returns current item, null if end of Btree.
-		/// </summary>
-		public object CurrentEntry
-		{
-			get
-			{
-				if (CurrentItem.Node != null)
-				{
-					if (CurrentItem.Node.Slots[CurrentItem.NodeItemIndex] != null)
-						return CurrentItem.Node.Slots[CurrentItem.NodeItemIndex];
-					else
-						SetCurrentItemAddress(null, 0);
-				}
-				return null;
-			}
-		}
+    /// <summary>
+    /// Returns current item, null if end of Btree.
+    /// </summary>
+    public object CurrentEntry
+    {
+      get
+      {
+        if (CurrentItem.Node != null)
+        {
+          if (CurrentItem.Node.Slots[CurrentItem.NodeItemIndex] != null)
+            return CurrentItem.Node.Slots[CurrentItem.NodeItemIndex];
+          else
+            SetCurrentItemAddress(null!, 0);
+        }
+        return null!; // Use null-forgiving operator to suppress warning
+      }
+    }
 
-		//internal System.Collections.Generic.List<TreeNode> RecycleBuffer = new System.Collections.Generic.List<TreeNode>(20);
-		//internal void RecycleNode(TreeNode n)
-		//{
-		//    if (RecycleBuffer.Count < 20)
-		//        RecycleBuffer.Add(n);
-		//}
-		//internal TreeNode GetNode()
-		//{
-		//    TreeNode r = null;
-		//    if (RecycleBuffer.Count > 0)
-		//    {
-		//        r = RecycleBuffer[RecycleBuffer.Count - 1];
-		//        RecycleBuffer.RemoveAt(RecycleBuffer.Count - 1);
-		//    }
-		//    return r;
-		//}
+    //internal System.Collections.Generic.List<TreeNode> RecycleBuffer = new System.Collections.Generic.List<TreeNode>(20);
+    //internal void RecycleNode(TreeNode n)
+    //{
+    //    if (RecycleBuffer.Count < 20)
+    //        RecycleBuffer.Add(n);
+    //}
+    //internal TreeNode GetNode()
+    //{
+    //    TreeNode r = null;
+    //    if (RecycleBuffer.Count > 0)
+    //    {
+    //        r = RecycleBuffer[RecycleBuffer.Count - 1];
+    //        RecycleBuffer.RemoveAt(RecycleBuffer.Count - 1);
+    //    }
+    //    return r;
+    //}
 
-		/// <summary>
-		/// Delete the current item from the tree. Tree is maintained to be balanced and sorted.
-		/// </summary>
-		internal protected void Remove()
+    /// <summary>
+    /// Delete the current item from the tree. Tree is maintained to be balanced and sorted.
+    /// </summary>
+    internal protected void Remove()
 		{
-			object Temp = null;
-			if (CurrentItem.Node != null)
-				Temp = CurrentItem.Node.Slots[CurrentItem.NodeItemIndex];
+			object? Temp = null;
+      if (CurrentItem.Node == null)
+        return;
+			
+      Temp = CurrentItem.Node.Slots[CurrentItem.NodeItemIndex];
 			if (Temp != null)
 			{
 				CurrentItem.Node.Remove(this);
@@ -331,7 +333,7 @@ namespace Sop.Collections.BTree
 
 				// Make the current item pointer point to null since we just deleted the current item. There is no efficient way to point the current item
 				// pointer to point to the next or previous item. In BPlus this is possible but since this is not BPLus..
-				SetCurrentItemAddress(null, 0);
+				SetCurrentItemAddress(null!, 0);
 				Root.Count--;
 				Temp = null;
 
@@ -343,7 +345,7 @@ namespace Sop.Collections.BTree
 		/// <summary>
 		/// Get/Set Comparer object used in sorting items of the collection
 		/// </summary>
-		internal protected IComparer Comparer = null;
+		internal protected IComparer? Comparer = null;
 		/// <summary>
 		/// Get: returns System.Comparer object wrapper so it can be used by BTree if no comparer
 		/// was provided by user
@@ -353,7 +355,7 @@ namespace Sop.Collections.BTree
 			get
 			{
 				if (comparerWrapper == null)
-					comparerWrapper = new BTreeComparer(Comparer);
+					comparerWrapper = new BTreeComparer(Comparer!);
 				return comparerWrapper;
 			}
 		}
@@ -365,7 +367,7 @@ namespace Sop.Collections.BTree
 		/// <summary>
 		/// This holds the Root Node (parentmost) of the TreeNodes
 		/// </summary>
-		internal TreeRootNode Root = null;
+		internal TreeRootNode Root = null!;
 
 		/// <summary>
 		/// Utility function to assign/replace current item w/ a new item.
@@ -387,12 +389,12 @@ namespace Sop.Collections.BTree
 		// pTempParent - temporary parent node of the newly split nodes.
 		// pTempChildren - temporary holds pointers to the left & right
 		//	child nodes of pTempParent.
-		private object[] TempSlots = null;
-		private object TempParent = null;
+		private object[] TempSlots = null!;
+		private object? TempParent = null!;
 		// Temp Children nodes. Only 2 since only left & right child nodes will be handled.
-		private TreeNode[] TempChildren = null;
+		private TreeNode[] TempChildren = null!;
 		private TreeNode[] TempParentChildren = new TreeNode[2];
 
-		private BTreeComparer comparerWrapper = null;
+		private BTreeComparer comparerWrapper = null!;
 	}
 }

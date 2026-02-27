@@ -16,7 +16,7 @@ const VariableChangesPiece = () => {
       <Box sx={{ mr: 2 }}>
         <SelectComponent
           label="Select"
-          value={onVarChange ? onVarChange : ''}
+          value={onVarChange ?? undefined}
           setValue={setOnVarChange}
           sx={{ mt: 0 }}
         >

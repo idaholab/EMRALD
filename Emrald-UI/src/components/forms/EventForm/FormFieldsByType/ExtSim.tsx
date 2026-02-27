@@ -29,7 +29,7 @@ const ExtSim = () => {
     <div>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
         <SelectComponent
-          value={extEventType ? extEventType : ''}
+          value={extEventType ?? undefined}
           setValue={setExtEventType}
           label="External Event Type"
           fullWidth
@@ -52,7 +52,7 @@ const ExtSim = () => {
           <>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
               <SelectComponent
-                value={variable ? variable : ''}
+                value={variable ?? ''}
                 setValue={setVariable}
                 label="External Sim Variable"
                 fullWidth
@@ -67,10 +67,10 @@ const ExtSim = () => {
               </SelectComponent>
             </Box>
             <CodeEditorWithVariables
-              scriptCode={scriptCode ? scriptCode : ''}
+              scriptCode={scriptCode ?? ''}
               setScriptCode={setScriptCode}
               variableList={appData.value.VariableList}
-              codeVariables={codeVariables || []}
+              codeVariables={codeVariables ?? []}
               addToUsedVariables={addToUsedVariables}
               heading={<span>Evaluate Code (c#) - Must return a boolean value!</span>}
             />

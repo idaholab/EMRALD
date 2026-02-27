@@ -1,0 +1,439 @@
+{
+  "id": "0",
+  "name": "PersistentEventVarChange",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "de664f77-a1fe-4600-98da-cc8ccf9de5ce",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtSingle",
+      "diagramLabel": "Component",
+      "states": [
+        "Start",
+        "Dist",
+        "Intermediate",
+        "Arbitrary_True",
+        "Arbitrary_False",
+        "VarChange",
+        "Term",
+        "Dist2"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "d8c09dd6-ca75-4614-aa5b-aeb90c9cfa96",
+      "name": "Arbitrary_False",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTo_Term"
+      ],
+      "geometryInfo": {
+        "x": 626.0794333032801,
+        "y": -307.680755989464,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "False"
+    },
+    {
+      "id": "f3ff497e-3f75-4205-b944-28346fd184b9",
+      "name": "Arbitrary_True",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GoTo_Term"
+      ],
+      "geometryInfo": {
+        "x": 643.7283172699811,
+        "y": -167.1115326154719,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "True"
+    },
+    {
+      "id": "f846825f-12ae-4327-abfa-576dce2cbfc4",
+      "name": "Dist",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "Distribution",
+        "Wait"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Arb"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Intermediate"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 364.00000000000006,
+        "y": 14,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "01544640-2c4d-49b1-aab9-c4c8b97e4d18",
+      "name": "Dist2",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "Distribution"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Arb"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 1218.2701117590093,
+        "y": 76.12573253208319,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "802c684c-e06e-472c-9332-04504e613004",
+      "name": "Intermediate",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "Wait1hr"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_VarChange"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 661.0000000000002,
+        "y": 36,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "de5b324d-8d5d-46bd-918a-42ce296c992c",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "Wait1hr"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Dist"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "4aef7fc7-4efa-4c6b-9935-c143570acc1f",
+      "name": "Term",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 951.8700037685303,
+        "y": -228.87320154307014,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "df5091de-33fa-41c6-b508-5dc56ffd07ab",
+      "name": "VarChange",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "Wait"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GoTo_Dist2"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "VarChange"
+      ],
+      "geometryInfo": {
+        "x": 955.0343619408065,
+        "y": 161.3049885859129,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "7393927a-db26-40d1-bf67-7462508fad03",
+      "name": "GoTo_Arb",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Arbitrary_True",
+          "prob": 0.5,
+          "failDesc": ""
+        },
+        {
+          "toState": "Arbitrary_False",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "a2cbb83a-eb04-407a-8357-1a4a90c68ae4",
+      "name": "GoTo_Dist",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Dist",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "7290014c-02b4-406f-900d-484d93b3d2cc",
+      "name": "GoTo_Dist2",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Dist2",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "163fee8a-706a-4e50-bc32-125d6b41ad76",
+      "name": "GoTo_Intermediate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Intermediate",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "2762f204-3c1c-49be-b767-e8e70f7c9b5e",
+      "name": "GoTo_Term",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Term",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "e8de2e2b-9b44-447c-94d3-9cc26dfa6de7",
+      "name": "GoTo_VarChange",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "VarChange",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "mutExcl": true
+    },
+    {
+      "id": "3f49b4d0-52a9-414a-b84d-e90577c56fd7",
+      "name": "VarChange",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Min",
+      "scriptCode": "return 4;"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "9109f1cb-1de9-434f-9779-2fd441a47cd3",
+      "name": "Distribution",
+      "desc": "",
+      "evType": "etDistribution",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "distType": "dtNormal",
+      "dfltTimeRate": "trDays",
+      "persistent": true,
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": 5,
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "useVariable": true,
+          "variable": "Min"
+        },
+        {
+          "name": "Maximum",
+          "value": 10,
+          "useVariable": false
+        }
+      ],
+      "onVarChange": "ocResample"
+    },
+    {
+      "id": "cf74155f-a2b4-468b-aae0-781c75adb2a7",
+      "name": "Wait",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT0S"
+    },
+    {
+      "id": "aa4373ff-60c3-498e-af24-f9b2dc222496",
+      "name": "Wait1hr",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT1H"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Min",
+      "varScope": "gtGlobal",
+      "value": "0",
+      "type": "double",
+      "objType": "Variable",
+      "id": "c4de3947-f135-420d-ba62-56fa733268a2",
+      "desc": "",
+      "resetOnRuns": true
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": [],
+  "multiThreadInfo": {
+    "ToCopyForRefs": [],
+    "AssignedTime": "2025-08-26T16:11:38.9932656-06:00"
+  }
+}

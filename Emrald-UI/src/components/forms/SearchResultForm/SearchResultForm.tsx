@@ -1,49 +1,22 @@
 import ItemTypeMenuResults from '../../layout/Header/SearchBar/ItemTypeMenuResults';
-import { Diagram } from '../../../types/Diagram';
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { ExtSim } from '../../../types/ExtSim';
-import { LogicNode } from '../../../types/LogicNode';
-import { Variable } from '../../../types/Variable';
-import { Event } from '../../../types/Event';
-import { ReactNode } from 'react';
+import type { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { ReactNode } from 'react';
+import type { ModelItem } from '../../../types/ModelUtils';
 
 interface searchFormProps {
-  diagrams: Diagram[];
-  states: State[];
-  actions: Action[];
-  events: Event[];
-  extSims: ExtSim[];
-  logicNodes: LogicNode[];
-  variables: Variable[];
-  handleItemClick: (event: any, item: any) => void;
-  getModel: (item: Diagram | State | Action | Event, direction: any) => ReactNode;
+  model: EMRALD_Model;
+  getModel: (item: ModelItem, direction: string) => ReactNode;
+  expandable?: boolean;
 }
 
 const SearchResultForm: React.FC<React.PropsWithChildren<searchFormProps>> = ({
-  diagrams,
-  states,
-  actions,
-  events,
-  extSims,
-  logicNodes,
-  variables,
-  handleItemClick,
+  model,
   getModel,
+  expandable,
 }) => {
   return (
     <>
-      <ItemTypeMenuResults
-        diagrams={diagrams}
-        states={states}
-        actions={actions}
-        events={events}
-        handleItemClick={handleItemClick}
-        getModel={getModel}
-        extSims={extSims}
-        logicNodes={logicNodes}
-        variables={variables}
-      />
+      <ItemTypeMenuResults model={model} getModel={getModel} expandable={expandable} />
     </>
   );
 };

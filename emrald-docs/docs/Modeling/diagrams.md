@@ -1,33 +1,33 @@
 # Diagrams
-  Each diagram represents a particular piece of the model and the various conditions or states that this piece of the model can be in. These pieces correlate to aspects of traditional PRA modeling and range from small-scale components to a large scope, overall plant response and design. The scope of the diagram indicates the type of diagram: Single State or Multi State. The single state or multi state type indicates whether or not the diagram can be in multiple states at once or not. 
-  A diagram contains multiple states with the events that can occur, actions that can be executed and variables used. These all define how the simulation may sift through the diagram over time.
-  Single State diagrams can also be evaluated to a Boolean depending on which state they are currently in. This is a main feature that when combined with a Component Logic Event, can greatly simplify a model. Unlike the more general Multi State diagrams, these diagrams are restricted to only be in one state at a time, in order to execute the evaluation process.
+  Each diagram represents a particular piece of the model and the various conditions or states that this piece of the model can be in. These pieces correlate to aspects of traditional PRA modeling and range from small-scale components to a large scope, overall plant response and design. The scope of the diagram indicates the type of diagram: Single State or Multi State. The single state or multi state type indicates whether the diagram can be in multiple states at once or not. 
+  A diagram contains multiple states with the events that can occur, actions that can be executed and variables used. These all define how the simulation may shift through the diagram over time.
+  Single State diagrams can also be evaluated to a Boolean depending on which state they are currently in. This is a main feature that when combined with a Component Logic Event, can greatly simplify a model. Unlike the more general Multi State diagrams, these diagrams are restricted to only being in one state at a time, in order to execute the evaluation process.
 
 ## Creating a New Diagram
-  In the left Navigation Frame, right click on "Diagrams" and select "New Diagram" from the drop down menu. <br>
+  In the left Navigation Frame, right click on "Diagrams" and select "New Diagram" from the drop-down menu. <br>
   <img src="/images/Modeling/diagrams/NewDiagram1.png" alt="Right Click for New Diagram" style="width:300px;">
 
-  Or select "New Diagram" from the right side drop down menu. 
+  Or select "New Diagram" from the right-side drop-down menu. 
   <img src="/images/Modeling/diagrams/NewDiagram1_1.png" alt="Click New Diagram" style="width:300px;">
 
   There are three options when filling out the form, all seen in the properties window.
   <img src="/images/Modeling/diagrams/NewDiagram2.png" alt="New Diagram Dialogue Box" style="width:500px;">
 
   **Option 1 (Create Diagram):**
-  Fill out the dialogue box. A description is optional. Click the Type dropdown menu to select the type of diagram you would like to create. The different types are Single State and Multi State. More information on these types are in the [Types of Diagrams](#types-of-diagrams) section. Ensure the correct type of diagram is selected as switching between diagram types can sometimes cause errors due to the differing modeling options. <br>
-  After entering the diagram type, name, and optional description, you must enter the diagram label. This is the group the diagram will be under in the Left Navigation Frame. If you want your diagram to be part of an existing group, then  enter the existing group name for the label exactly as it appears in the Left Navigation Frame. If you want your diagram to be in a new group in the Left Navigation Frame, then enter a unique name for the diagram label. <br>
+  Fill out the dialogue box. The description is optional. Click the Type dropdown menu to select the type of diagram you would like to create. The different types are Single State and Multi State. More information on these types is in the [Types of Diagrams](#types-of-diagrams) section. Ensure the correct type of diagram is selected as switching between diagram types can sometimes cause errors due to the differing modeling options. <br>
+  After entering the diagram type, name, and optional description, you must enter the diagram label. This is the group the diagram will be under in the Left Navigation Frame. If you want your diagram to be part of an existing group, then enter the existing group name for the label exactly as it appears in the Left Navigation Frame. If you want your diagram to be in a new group in the Left Navigation Frame, then enter a unique name for the diagram label. <br>
   <img src="/images/Modeling/diagrams/NewDiagram2_1.png" alt="New Diagram Dialogue Box" style="width:500px;">
 
   **Option 2 (Import Diagram):**
-  Click "Choose File" to import an existing diagram from another project. See the details for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section for instructions on how to resolve conflicts if there are any. Note that when importing a diagram, you will be directed to a conflict resolution screen even if there are no conflicts. Diagrams can only be imported from project files that have only one diagram in it. If you would like to import more than one diagram at a time, see the details for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section.
+  Click "Choose File" to import an existing diagram from another project. See the details for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section for instructions on how to resolve conflicts if there are any. Note that when importing a diagram, you will be directed to a conflict resolution screen even if there are no conflicts. Diagrams can only be imported from project files that have only one diagram in them. If you would like to import more than one diagram at a time, see the details for Merge in the [Top Menu Bar](./webUIOverview.md#top-menu-bar) section.
   <img src="/images/Modeling/diagrams/NewDiagram_Import.png" alt="New Diagram Dialogue Box" style="width:500px;">
 
   **Option 3 (From Template):**
-  Click "From Template" to create a diagram that is modeled off of a previously built template. Click one of the created templates shown on the right-hand side and click "Save". For more information on creating and using templates, go to the [Templates](/Modeling/templates.md) section. 
+  Click "From Template" to create a diagram that is modeled off a previously built template. Click one of the created templates shown on the right-hand side and click "Save". For more information on creating and using templates, go to the [Templates](/Modeling/templates.md) section. 
   <img src="/images/Modeling/diagrams/NewDiagram_FromTemplate.png" alt="New Diagram Dialogue Box" style="width:500px;">
 
   **Continued for All Options:**
-  Once you have completed filling the fields, press "SAVE". The diagram will appear in the left navigation frame. If the diagram was created from a template, it will be in the same category as the diagram it was made from was in. <br>
+  Once you have completed filling the fields, press "SAVE". The diagram will appear in the left navigation frame. If the diagram was created from a template, it would be in the same category as the diagram it was made from was in. <br>
   
   <img src="/images/Modeling/diagrams/NewDiagram3.png" alt="New Diagram Created">
 
@@ -67,7 +67,7 @@
   See [States](/Modeling/states.md) for more information.
 
 ### <span style="color:blue"> Events </span>
-  Events monitor for specified criteria and can have one or more actions that are executed when that criteria is met. <br>
+  Events monitor for specified criteria and can have one or more actions that are executed when that criterion is met. <br>
 
   See [Events](/Modeling/events.md) for more information.
 
@@ -77,7 +77,7 @@
   See [Actions](/Modeling/actions.md) for more information.
 
 ### Arrows
-  Arrows indicate movement from one state to another. <span style="color:gray">Solid Gray arrows</span> indicate that the state exits the current state and moves to the new state upon completion of the action. <span style="color:green">**Dotted green arrows**</span> indicate that the simulation will not exit the current state, but will add the new state as a "Current State" in the model. <br>
+  Arrows indicate movement from one state to another. <span style="color:gray">Solid Gray arrows</span> indicate that the state exits the current state and moves to the new state upon completion of the action. <span style="color:green">**Dotted green arrows**</span> indicate that the simulation will not exit the current state but will add the new state as a "Current State" in the model. <br>
 
 ## Types of Diagrams
   The following diagram types correspond with traditional PRA modeling. The key difference in the types of diagrams is if the diagram can only be in a single state or multiple states concurrently and the ability to evaluate for a boolean value.
@@ -92,11 +92,11 @@
 
 ### Single State
   Single State diagrams are meant to be small diagrams for capturing all behaviors of individual components. All basic events for components in traditional PRA can be captured in a single state diagram.
-  Single State diagrams means you can only be in one state at a time and that a boolean value is associated with the different states. At least one state must have a "0" value and at least one state must have a "1" value assigned. (See the Single State Diagrams subsection in [State Properties](./states.md#single-state-diagrams) for more information.) <br>
+  Single State diagrams mean you can only be in one state at a time and that a boolean value is associated with the different states. At least one state must have a "0" value and at least one state must have a "1" value assigned. (See the Single State Diagrams subsection in [State Properties](./states.md#single-state-diagrams) for more information.) <br>
   
   <img src="/images/Modeling/diagrams/SampleComponentDiagram.png" alt="Sample Component Diagram">
-  This example is a pump that has three states, standby, active and failed. When the demand event for the pump's use is triggered, the pump either moves to active or failed depending on random sampling. This would be equivalent to a "Fails to Start" basic event in traditional PRA.
-  When in the active state, a failure rate event would sample and determine when the pump will fail and move to the failed state. This is equivalent to a "Fails to Run" basic event in traditional PRA.
+  This example is a pump that has three states: Standby, Active and Failed. When the demand event for the pump's use is triggered, the pump either moves to Active or Failed depending on random sampling. This would be equivalent to a "Fails to Start" basic event in traditional PRA.
+  When in the Active state, a failure rate event would sample and determine when the pump will fail and move to the Failed state. This is equivalent to a "Fails to Run" basic event in traditional PRA.
   In this example, a stop event resets or returns the pump to the standby state.
 
 #### Key Points

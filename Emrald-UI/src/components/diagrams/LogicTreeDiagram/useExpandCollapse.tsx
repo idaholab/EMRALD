@@ -1,17 +1,15 @@
-import { useMemo } from "react";
-import { Node, Edge } from "reactflow";
-import Dagre from "@dagrejs/dagre";
+import { useMemo } from 'react';
+import type { Edge } from 'reactflow';
+import Dagre from '@dagrejs/dagre';
+import type { LNode } from './useLogicTreeDiagram';
 
-export type UseExpandCollapseOptions = {
+export interface UseExpandCollapseOptions {
   layoutNodes?: boolean;
   treeWidth?: number;
   treeHeight?: number;
-};
+}
 
-function filterCollapsedChildren(
-  dagre: Dagre.graphlib.Graph,
-  node: Node
-) {
+function filterCollapsedChildren(dagre: Dagre.graphlib.Graph, node: LNode) {
   // 🚨 The current types for some of dagre's methods are incorrect. In future
   // versions of dagre this should be fixed, but for now we need to cast the return
   // value to keep TypeScript happy.
@@ -25,23 +23,20 @@ function filterCollapsedChildren(
   // of its children from the graph *and* any of their children.
   if (!node.data.expanded) {
     while (children?.length) {
-      const child = children.pop()!;
-
-      children.push(...(dagre.successors(child) as unknown as string[]));
-      dagre.removeNode(child);
+      const child = children.pop();
+      if (child) {
+        children.push(...(dagre.successors(child) as unknown as string[]));
+        dagre.removeNode(child);
+      }
     }
   }
 }
 
 function useExpandCollapse(
-  nodes: Node[],
+  nodes: LNode[],
   edges: Edge[],
-  {
-    layoutNodes = true,
-    treeWidth = 220,
-    treeHeight = 100,
-  }: UseExpandCollapseOptions = {}
-): { nodes: Node[]; edges: Edge[] } {
+  { layoutNodes = true, treeWidth = 220, treeHeight = 100 }: UseExpandCollapseOptions = {},
+) {
   return useMemo(() => {
     if (!layoutNodes) return { nodes, edges };
 
@@ -49,7 +44,7 @@ function useExpandCollapse(
     // properties.
     const dagre = new Dagre.graphlib.Graph()
       .setDefaultEdgeLabel(() => ({}))
-      .setGraph({ rankdir: "TB" });
+      .setGraph({ rankdir: 'TB' });
 
     // 2. Add each node and edge to the dagre graph. Instead of using each node's
     // intrinsic width and height, we tell dagre to use the `treeWidth` and
@@ -91,7 +86,7 @@ function useExpandCollapse(
 
         const { x, y } = dagre.node(node.id);
 
-        const type = "custom";
+        const type = 'custom';
         const position = { x, y };
         // 🚨 `filterCollapsedChildren` *mutates* the data object of a node. React
         // will not know the data has changed unless we create a new object here.

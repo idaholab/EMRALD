@@ -1,48 +1,201 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
-using SimulationEngine;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using Matrix.Xmpp.PubSub;
+using MessageDefLib;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NLog;
+using SimulationDAL;
+using SimulationEngine;
 
 namespace CommandLineCP
 {
+  public class ConsoleMessageOutput : IMessageDispHandling
+  {
+    private readonly object _consoleLock = new object();
+    private bool _clearOnMsg = false; // equivalent to chkClearOnMsg.Checked
+
+    // Optional: allow configuration
+    public bool ClearOnMessage
+    {
+      get { return _clearOnMsg; }
+      set { _clearOnMsg = value; }
+    }
+
+    public void IncomingEMRALDMsg(string sender, TMsgWrapper msg)
+    {
+      lock (_consoleLock)
+      {
+        if (_clearOnMsg)
+        {
+          Console.Clear();
+        }
+
+        Console.WriteLine("From : " + sender);
+        Console.WriteLine("JSON String:");
+        Console.WriteLine(JsonConvert.SerializeObject(msg, Formatting.Indented));
+        Console.WriteLine();
+      }
+    }
+
+    public void IncomingOtherMsg(string sender, string msg)
+    {
+      lock (_consoleLock)
+      {
+        Console.WriteLine("Unidentified Message");
+        Console.WriteLine("From : " + sender);
+        Console.WriteLine("Raw String:");
+        Console.WriteLine(msg);
+        Console.WriteLine();
+      }
+    }
+
+    public void OnConnectCng()
+    {
+      lock (_consoleLock)
+      {
+        Console.WriteLine("Connection status changed");
+        Console.WriteLine();
+        // In console, we can't maintain a list UI, but we could optionally
+        // request and display resources if needed
+      }
+    }
+
+    public void Clear()
+    {
+      if (_clearOnMsg)
+      {
+        Console.Clear();
+      }
+    }
+  }
+
   class Program
   {
-    static void Main(string[] args)
+    static int[] threadRunCnt; // runs each thread has done
+    static int numRuns = 0; // total runs to do
+    static int numThreads = 1; // number of threads being used
+    static object lockObj = new object(); // for thread-safe console updates
+
+    // Changed to async Task Main
+    static async Task Main(string[] args)
     {
-      Progress progress = new Progress();
-      bool execute = false;
       string model = null;
-      JSONRun modelRun = new JSONRun("");
-      //JObject optionsJ;
-      //SimulationDAL.Globals.simID = 1;
-      for (int i = 0; i < args.Length; i++) // Loop through array
+      JSONRun modelRun = null; // create if not JSON new JSONRun("", "", DispResults);
+
+      // Check if first argument is a JSON file
+      if (args.Length > 0)
       {
-        string argument = args[i];
+        string firstArg = args[0];
+        bool isJSON = false;
+        try
+        {
+          isJSON = Path.GetExtension(firstArg).Equals(".json", StringComparison.OrdinalIgnoreCase);
+        }
+        catch { }
+
+        if (isJSON)
+        {
+          if (!File.Exists(firstArg))
+          {
+            Console.WriteLine("Invalid path for JSON options file: " + firstArg);
+            return;
+          }
+
+          string optionsJsonStr = File.ReadAllText(firstArg);
+          JSONRun simRun = new JSONRun(optionsJsonStr, "", DispResults); //will read the model from the json param
+          if (simRun.error != "")
+          {
+            Console.Write(simRun.error);
+          }
+          else
+          {
+            // Initialize thread tracking before running simulation
+            numRuns = simRun.options.runct;
+            numThreads = simRun.options.threads.HasValue && simRun.options.threads.Value > 0
+                         ? simRun.options.threads.Value
+                         : 1;
+            threadRunCnt = new int[numThreads];
+
+            // Initialize all thread counts to 0
+            for (int i = 0; i < numThreads; i++)
+            {
+              threadRunCnt[i] = 0;
+            }
+
+            if (simRun.options.threads > 0)
+            {
+              Console.WriteLine("Using " + simRun.options.threads + " threads.");
+            }
+
+            Console.WriteLine(simRun.options.runct + " runs of - " + simRun.options.inpfile);
+
+            // Await the async RunSim method
+            string jsonResult = await simRun.RunSim();
+
+            if (jsonResult != "")
+            {
+              Console.WriteLine(jsonResult);
+              Console.WriteLine("run -Help for instructions");
+              return;
+            }
+
+            if (simRun.error == "")
+            {
+              Console.Write("\r{0}%   ", 100);
+              Console.WriteLine("");
+            }
+            else
+            {
+              Console.WriteLine("");
+              Console.WriteLine(simRun.error);
+              Console.WriteLine("run -Help for instructions");
+              return;
+            }
+          }
+
+          Console.WriteLine("done");
+          return;
+        }
+        else
+        {
+          modelRun = new JSONRun("", "", DispResults);
+        }
+      }
+
+      // Process command-line arguments
+      for (int i = 0; i < args.Length; i++)
+      {
+        string argument = args[i].ToLower();
         switch (argument)
         {
           case "-help":
-          case "-HELP":
           case "-h":
           case "-H":
-          case "help":
-          case "HELP":
+          case "-HELP":
+            Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
             Console.WriteLine("-n \"run count\"");
-            Console.WriteLine("-i \"input model path.\"");
-            Console.WriteLine("-r \"results output file, defaults to JSON_Results.json in run directory\"");
-            //Console.WriteLine("-o \"paths output file\"");
-            Console.WriteLine("-jsonStats \"If specified, writes path statistics to json output file at specified directory\"");
+            Console.WriteLine("-i \"input model path\"");
+            Console.WriteLine("-r \"results output file\"");
+            Console.WriteLine("-o \"paths output file\"");
+            Console.WriteLine("-jsonStats \"write path statistics to json output file at specified directory\"");
             Console.WriteLine("-t \"max run time\"");
+            Console.WriteLine("-e \"execute\"");
             Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
             Console.WriteLine("-s \"initial random number seed\"");
+            Console.WriteLine("-threads \"number of threads to use for parallel execution\"");
             Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
                               "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                               "    Example: -d basic [10 20]");
-            Console.WriteLine("-JSON_Params \"JSON file path for parameter to run to the model. (also see -JSON_Help)\"");
-            Console.WriteLine("-JSON_Help \"Syntax for running from a JSON file for parameters\"");
+            Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
+            Console.WriteLine("Options JSON file - ");
+            Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+            Environment.Exit(0);
             break;
 
-          case "-JSON-Help":
+          case "-json-help":
             Console.WriteLine("Syntax for running from a JSON file :" + Environment.NewLine +
                               "{" + Environment.NewLine +
                               "  \"runct\": [integer - Total number of runs]," + Environment.NewLine +
@@ -51,18 +204,21 @@ namespace CommandLineCP
                               "  \"jsonRes\": \"[string - path of where to save JSON results file]\"," + Environment.NewLine +
                               "  \"runtime\": \"[string - Days.hours:min:sec 1.02:03:04]\"," + Environment.NewLine +
                               "  \"seed\": [integer - initial random number seed]," + Environment.NewLine +
+                              "  \"threads\": [integer - number of threads to use]," + Environment.NewLine +
                               "  \"debug\": \"[string - debug option \"basic\"\"detailed\"\"off\"]\"," + Environment.NewLine +
                               "  \"debugStartIdx\": [integer - debug start run index]," + Environment.NewLine +
                               "  \"debugEndIdx\": [integer - debug end run index]," + Environment.NewLine +
+                              "  \"pathResultsInterval\": [integer - how often to save path results]," + Environment.NewLine +
                               "  \"variables\": [ " + Environment.NewLine +
                               "    \"[string - variable watch name if any]\"," + Environment.NewLine +
                               "    \"[string - ...]\"," + Environment.NewLine +
                               "    \"[string - last variable watch name]\"" + Environment.NewLine +
                               "  ] " + Environment.NewLine +
                               "}");
+            Environment.Exit(0);
             break;
 
-          case "-n": //run count            
+          case "-n": // run count            
             try
             {
               modelRun.options.runct = Int32.Parse(args[i + 1]);
@@ -71,31 +227,32 @@ namespace CommandLineCP
             {
               Console.WriteLine("Invalid syntax for -n, must be an integer.");
             }
-
             ++i;
             break;
 
-
-          case "-i": //path to input file            
+          case "-i": // path to input file            
             try
             {
-              modelRun.options.inpfile = args[i + 1];
+              string filePath = args[i + 1];
+              if (!File.Exists(filePath))
+              {
+                Console.Write("invalid input file path - " + filePath);
+                return;
+              }
+              else
+              {
+                modelRun.options.inpfile = filePath;
+                model = filePath;
+              }
             }
             catch
             {
               Console.WriteLine("Invalid syntax for -i, must be a string.");
             }
-
-            if (!File.Exists(modelRun.options.inpfile))
-            {
-              Console.Write("invalid input file path - " + modelRun.options.inpfile);
-              return;
-            }
-
             ++i;
             break;
 
-          case "-r": //path to output file
+          case "-r": // path to output file
             try
             {
               modelRun.options.resout = args[i + 1];
@@ -104,12 +261,22 @@ namespace CommandLineCP
             {
               Console.WriteLine("Invalid syntax for -r, must be a string.");
             }
-
             ++i;
             break;
 
+          case "-o": // path to paths and timing output file (alternate to -jsonStats)
+            try
+            {
+              modelRun.options.jsonRes = args[i + 1];
+            }
+            catch
+            {
+              Console.WriteLine("Invalid syntax for -o, must be a string.");
+            }
+            ++i;
+            break;
 
-          case "-jsonStats": //path to paths and timing output file
+          case "-jsonstats": // path to paths and timing output file
             try
             {
               modelRun.options.jsonRes = args[i + 1];
@@ -118,45 +285,65 @@ namespace CommandLineCP
             {
               Console.WriteLine("Invalid syntax for -jsonStats, must be a string.");
             }
-
             ++i;
             break;
 
-          case "-t": //max run time  
+          case "-t": // max run time  
             try
             {
               modelRun.options.runtime = args[i + 1];
             }
             catch
             {
-              Console.WriteLine("Invalid syntax for -jsonStats, must be a string.");
+              Console.WriteLine("Invalid syntax for -t, must be a string.");
             }
-
             ++i;
             break;
 
-          case "-m": //monitor
-
+          case "-threads": // number of threads
             try
             {
-              string curA = args[i + 1];
-              if (curA[0] == '[')
-              {
-                curA = curA.TrimStart('[');
-                while (curA[curA.Length - 1] != ']')
-                {
-                  modelRun.options.variables.Add(curA);
-                  ++i;
-                  curA = args[i + 1];
-                }
+              modelRun.options.threads = Int32.Parse(args[i + 1]);
+            }
+            catch
+            {
+              Console.WriteLine("Invalid syntax for -threads, must be an integer.");
+            }
+            ++i;
+            break;
 
-                curA = curA.TrimEnd(']');
-                modelRun.options.variables.Add(curA);
+          case "-rintrv": // results interval
+            try
+            {
+              modelRun.options.pathResultsInterval = int.Parse(args[i + 1]);
+            }
+            catch
+            {
+              Console.WriteLine("-rIntrv option must be a valid integer number");
+            }
+            ++i;
+            break;
+
+          case "-m": // monitor
+            try
+            {
+              string arg = args[i + 1];
+              if (arg[0] == '[')
+              {
+                arg = arg.TrimStart('[');
+                while (arg[arg.Length - 1] != ']')
+                {
+                  modelRun.options.variables.Add(arg);
+                  ++i;
+                  arg = args[i + 1];
+                }
+                arg = arg.TrimEnd(']');
+                modelRun.options.variables.Add(arg);
                 ++i;
               }
               else
               {
-                modelRun.options.variables.Add(curA);
+                modelRun.options.variables.Add(arg);
                 ++i;
               }
             }
@@ -166,7 +353,7 @@ namespace CommandLineCP
             }
             break;
 
-          case "-s":
+          case "-s": // seed
             try
             {
               modelRun.options.seed = Int32.Parse(args[i + 1]);
@@ -175,91 +362,88 @@ namespace CommandLineCP
             {
               Console.WriteLine("Invalid syntax for -s, must be an integer.");
             }
-
             ++i;
             break;
 
-          case "-d": //debug the runs
+          case "-d": // debug the runs
             string strLev = args[i + 1];
             modelRun.options.debug = strLev;
-            switch (strLev.ToUpper())
+            switch (strLev.ToLower())
             {
-              case "BASIC":
+              case "basic":
+                ConfigData.debugLev = LogLevel.Info;
                 break;
-
-              case "DETAILED":
+              case "detailed":
+                ConfigData.debugLev = LogLevel.Debug;
                 break;
-
-              case "OFF":
+              case "off":
+                ConfigData.debugLev = LogLevel.Off;
                 break;
-
               default:
                 Console.Write("invalid option for debug must be \"basic\", \"detailed\", or \"off\". ");
                 break;
             }
             ++i;
 
-            string arg = args[i + 1];
-            if (arg[0] == '[')
+            if (i + 1 < args.Length)
             {
-              try
+              string arg = args[i + 1];
+              if (arg[0] == '[')
               {
-                //get the start index
-                arg = arg.TrimStart('[');
-                if (arg.EndsWith(","))
-                  arg = arg.TrimEnd(',');
-                modelRun.options.debugStartIdx = int.Parse(arg);
-                ++i;
+                try
+                {
+                  // get the start index
+                  arg = arg.TrimStart('[');
+                  if (arg.EndsWith(","))
+                    arg = arg.TrimEnd(',');
+                  modelRun.options.debugStartIdx = int.Parse(arg);
+                  ConfigData.debugRunStart = modelRun.options.debugStartIdx;
+                  ++i;
 
-                //get the end index
-                arg = args[i + 1];
-                if (!arg.EndsWith("]"))
+                  // get the end index
+                  arg = args[i + 1];
+                  if (!arg.EndsWith("]"))
+                  {
+                    Console.Write("invalid option for debug range. Use [startIndex endIndex]");
+                    return;
+                  }
+                  arg = arg.TrimEnd(']');
+                  modelRun.options.debugEndIdx = int.Parse(arg);
+                  ConfigData.debugRunEnd = modelRun.options.debugEndIdx;
+                  ++i;
+                }
+                catch
                 {
                   Console.Write("invalid option for debug range. Use [startIndex endIndex]");
-                  return;
                 }
-                arg = arg.TrimEnd(']');
-                modelRun.options.debugEndIdx = int.Parse(arg);
-                ++i;
               }
-              catch
-              {
-                Console.Write("invalid option for debug range. Use [startIndex endIndex]");
-              }
-
-              ++i;
             }
-
             break;
-
-
-
-
-            //case "-x": //path to Extternal Sims TODO
-            //  {
-            //    if (File.Exists(args[i+1]))
-            //    {
-            //      extSims.Add(args[i + 1]);
-            //    }
-            //    else
-            //    {
-            //      Console.Write("invalid input external sim path - " + args[i + 1]);
-            //      return;
-            //    }
-
-            //    string model3DPath = args[i + 1]; 
-            //    //cbNeutrino.Checked = true;
-            //    ++i;
-            //    break;
-            //  }
-
-
         }
+      }
+
+      // Initialize thread tracking
+      numRuns = modelRun.options.runct;
+      numThreads = modelRun.options.threads.HasValue && modelRun.options.threads.Value > 0
+                   ? modelRun.options.threads.Value
+                   : 1;
+      threadRunCnt = new int[numThreads];
+
+      // Initialize all thread counts to 0
+      for (int i = 0; i < numThreads; i++)
+      {
+        threadRunCnt[i] = 0;
+      }
+
+      if (modelRun.options.threads > 0)
+      {
+        Console.WriteLine("Using " + modelRun.options.threads + " threads.");
       }
 
       Console.WriteLine(modelRun.options.runct + " runs of - " + modelRun.options.inpfile);
 
-      string res = modelRun.RunSim(progress);
+      // Await the async RunSim method
+      string res = await modelRun.RunSim();
 
       if (res != "")
       {
@@ -268,30 +452,9 @@ namespace CommandLineCP
         return;
       }
 
-      while(progress.done == false)
-      {
-        Console.Write("\r{0}% /", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% -", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% \\" , progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% |", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% /", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% -", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% \\", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-        Console.Write("\r{0}% |", progress.percentDone);
-        System.Threading.Thread.Sleep(300);
-      }
-
-      
       if (modelRun.error == "")
       {
-        Console.Write("\r{0}%", 100);
+        Console.Write("\r{0}%   ", 100);
         Console.WriteLine("");
       }
       else
@@ -303,7 +466,33 @@ namespace CommandLineCP
       }
 
       Console.WriteLine("done");
-    }    
-  }
+    }
 
+    public static void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
+    {
+      lock (lockObj)
+      {
+        // Assign the runs done for this thread
+        int tNum = threadNum ?? 0; // Use 0 if threadNum is null
+        if ((threadRunCnt != null) && (tNum < threadRunCnt.Length))
+        {
+          threadRunCnt[tNum] = runCnt;
+        }
+
+        // Sum all the runs from each thread
+        int totDoneRuns = 0;
+        for (int i = 0; i < threadRunCnt.Length; i++)
+        {
+          totDoneRuns += threadRunCnt[i];
+        }
+
+        // Calculate percentage
+        double percentComplete = numRuns > 0 ? (totDoneRuns * 100.0 / numRuns) : 0;
+
+        // Rewrite console line with progress
+        Console.Write("\rProgress: {0:F1}% ({1}/{2} runs) - Runtime: {3:hh\\:mm\\:ss}   ",
+                      percentComplete, totDoneRuns, numRuns, runTime);
+      }
+    }
+  }
 }

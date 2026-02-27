@@ -5,7 +5,7 @@ import Sidebar from './components/layout/Sidebar/Sidebar';
 import theme from './theme';
 import MainCanvas from './components/layout/MainCanvas/MainCanvas';
 import EmraldContextWrapper from './contexts/EmraldContextWrapper';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import useErrorBoundary from './hooks/useErrorBoundary';
 
 function ErrorBoundary({ children }: { children: ReactNode }) {

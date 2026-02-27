@@ -1,7 +1,7 @@
 import findCircuits from 'elementary-circuits-directed-graph';
 import TimelineLink from './TimelineLink';
 import TimelineNode from './TimelineNode';
-import { NodeTimes, TimelineGraph } from './types';
+import type { NodeTimes, TimelineGraph } from './types';
 import { getKeyTimes } from './util';
 
 /**
@@ -25,7 +25,7 @@ export default class SankeyTimeline {
    */
   private addKeyTimes(...times: number[]) {
     times.forEach((time) => {
-      if (this.keyTimes.indexOf(time) < 0) {
+      if (!this.keyTimes.includes(time)) {
         this.keyTimes.push(time);
         this.keyTimes.sort((a, b) => a - b);
       }
@@ -112,7 +112,7 @@ export default class SankeyTimeline {
       if (!adjList[target]) {
         adjList[target] = [];
       }
-      if (adjList[source].indexOf(target) < 0) {
+      if (!adjList[source].includes(target)) {
         adjList[source].push(target);
       }
     });
@@ -171,7 +171,7 @@ export default class SankeyTimeline {
       possiblePaths.push([id]);
     } else {
       target.incomingLinks
-        .filter((link) => exclude.indexOf(link.id) < 0)
+        .filter((link) => !exclude.includes(link.id))
         .forEach((link) => {
           if (link.isCircular) {
             exclude.push(link.id);
@@ -192,9 +192,7 @@ export default class SankeyTimeline {
   public get graph(): TimelineGraph {
     return {
       links: Object.values(this.links),
-      nodes: Object.values(this.nodes).sort(
-        (a, b) => a.links.length - b.links.length,
-      ),
+      nodes: Object.values(this.nodes).sort((a, b) => a.links.length - b.links.length),
     };
   }
 
@@ -268,9 +266,7 @@ export default class SankeyTimeline {
    * @returns Nodes with no outputs.
    */
   public get sinkNodes(): TimelineNode[] {
-    return Object.values(this.nodes).filter(
-      (node) => node.outgoingLinks.length === 0,
-    );
+    return Object.values(this.nodes).filter((node) => node.outgoingLinks.length === 0);
   }
 
   /**
@@ -279,8 +275,6 @@ export default class SankeyTimeline {
    * @returns Nodes with no inputs.
    */
   public get sourceNodes(): TimelineNode[] {
-    return Object.values(this.nodes).filter(
-      (node) => node.incomingLinks.length === 0,
-    );
+    return Object.values(this.nodes).filter((node) => node.incomingLinks.length === 0);
   }
 }

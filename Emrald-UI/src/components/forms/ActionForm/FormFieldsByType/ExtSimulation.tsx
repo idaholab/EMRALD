@@ -1,10 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  MenuItem,
-  TextField,
-} from '@mui/material';
+import { Box, Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useActionFormContext } from '../ActionFormContext';
 import 'react-duration-control/dist/react-duration-control.css';
@@ -47,8 +41,7 @@ const ExtSimulation: React.FC = () => {
   useEffect(() => {
     if (simEndTime) {
       const simEndTimeDuration = dayjs.duration(simEndTime);
-      // @ts-ignore: Ignore TypeScript error for the existence of `$ms` property
-      setMilliseconds(simEndTimeDuration.$ms || 0);
+      setMilliseconds(simEndTimeDuration.$ms ?? 0);
     }
   }, [simEndTime]);
 
@@ -86,7 +79,9 @@ const ExtSimulation: React.FC = () => {
               <Checkbox
                 sx={{ p: '0 9px' }}
                 checked={openSimVarParams}
-                onChange={(e) => setOpenSimVarParams(e.target.checked)}
+                onChange={(e) => {
+                  setOpenSimVarParams(e.target.checked);
+                }}
               />
             }
             label="Use variable for items below"
@@ -127,7 +122,9 @@ const ExtSimulation: React.FC = () => {
                 value={sim3DModelRef}
                 size="small"
                 fullWidth
-                onChange={(e) => setSim3DModelRef(e.target.value)}
+                onChange={(e) => {
+                  setSim3DModelRef(e.target.value);
+                }}
               ></TextField>
               <br />
               <br />
@@ -136,7 +133,9 @@ const ExtSimulation: React.FC = () => {
                 value={sim3DConfigData}
                 size="small"
                 fullWidth
-                onChange={(e) => setSim3DConfigData(e.target.value)}
+                onChange={(e) => {
+                  setSim3DConfigData(e.target.value);
+                }}
               ></TextField>
             </div>
           )}

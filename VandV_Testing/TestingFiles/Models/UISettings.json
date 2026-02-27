@@ -1,0 +1,142 @@
+{
+  "SettingsByModel": [
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\PersistentEventVarChange_EventInactive.emrald",
+      "RunCount": "100000",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Basic",
+      "DebugFromRun": "1",
+      "DebugToRun": "1000",
+      "CheckedVars": [],
+      "Threads": "0"
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\MultiThreadVarChange.emrald",
+      "RunCount": "1000",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": "",
+      "CheckedVars": [],
+      "Threads": "1"
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\MultiThreadDocVar.emrald",
+      "RunCount": "1000",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": "",
+      "CheckedVars": [
+        "DocVar"
+      ],
+      "Threads": "1"
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\MultiThreadExeTest.emrald",
+      "RunCount": "10",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Detailed",
+      "DebugFromRun": "1",
+      "DebugToRun": "10",
+      "CheckedVars": [
+        "CompRes",
+        "TestVar2"
+      ],
+      "Threads": "2"
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\JsonVarExeTest.emrald",
+      "RunCount": "10",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Detailed",
+      "DebugFromRun": "1",
+      "DebugToRun": "10",
+      "CheckedVars": [
+        "CompRes",
+        "TestVar2"
+      ],
+      "Threads": ""
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\JsonVarExeTest.json",
+      "RunCount": "1000",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": "",
+      "CheckedVars": [],
+      "Threads": ""
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\MultiThreadEvalVar.emrald",
+      "RunCount": "100",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Basic",
+      "DebugFromRun": "1",
+      "DebugToRun": "100",
+      "CheckedVars": [],
+      "Threads": "0"
+    },
+    {
+      "Filename": "C:\\VS_Projects\\EMRALD\\VandV_Testing\\TestingFiles\\Models\\ChangeVarTestMulti.emrald",
+      "RunCount": "100",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "Basic",
+      "DebugFromRun": "1",
+      "DebugToRun": "100",
+      "CheckedVars": [],
+      "Threads": "0"
+    },
+    {
+      "Filename": "C:\\Users\\PRESSR\\Downloads\\MultiThreadEvalVar.emrald",
+      "RunCount": "1000",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "",
+      "DebugLevel": "",
+      "DebugFromRun": "",
+      "DebugToRun": "",
+      "CheckedVars": [],
+      "Threads": ""
+    },
+    {
+      "Filename": "C:\\Users\\PRESSR\\Downloads\\PersistentEventVarChange_EventInactive.emrald",
+      "RunCount": "1",
+      "MaxRunTime": "365.00:00:00",
+      "BasicResultsLocation": "c:\\temp\\NewSimResults.txt",
+      "PathResultsLocation": "c:\\temp\\PathResults.json",
+      "Seed": "1",
+      "DebugLevel": "Detailed",
+      "DebugFromRun": "1",
+      "DebugToRun": "1",
+      "CheckedVars": [],
+      "Threads": ""
+    }
+  ]
+}

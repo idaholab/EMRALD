@@ -12,13 +12,9 @@ import DraggableContainer from './DraggableContainer';
 import { Typography } from '@mui/material';
 
 const WindowComponent: React.FC = () => {
-  const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize } =
-    useWindowContext();
+  const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize } = useWindowContext();
 
-  const openWindows = useMemo(
-    () => windows.filter((window) => !window.minimized),
-    [windows],
-  );
+  const openWindows = useMemo(() => windows.filter((window) => !window.minimized), [windows]);
 
   return (
     <>
@@ -30,14 +26,16 @@ const WindowComponent: React.FC = () => {
           fullScreen={window.maximized}
         >
           <Card
-            onMouseDown={() => bringToFront(window)}
+            onMouseDown={() => {
+              bringToFront(window);
+            }}
             style={{
               width: '100%',
               height: '100%',
               position: 'relative',
               boxShadow: '0 3px 6px rgba(0, 0, 0, 0.16)',
               zIndex: window.id === windows[windows.length - 1].id ? 2 : 1,
-              paddingBottom: '0px',  // Ensure no padding at the bottom
+              paddingBottom: '0px', // Ensure no padding at the bottom
             }}
           >
             <Box
@@ -63,34 +61,34 @@ const WindowComponent: React.FC = () => {
               >
                 <Typography>{window.title}</Typography>
               </Box>
-              <Box sx={{position: 'relative', top: '-2px', display: 'flex', flexWrap: 'nowrap'}}>
+              <Box sx={{ position: 'relative', top: '-2px', display: 'flex', flexWrap: 'nowrap' }}>
                 <IconButton
                   aria-label="minimize"
-                  onClick={() => toggleMinimize(window)}
+                  onClick={() => {
+                    toggleMinimize(window);
+                  }}
                   sx={{
                     color: (theme) => theme.palette.grey[500],
                   }}
                 >
-                  {!window.minimized && !window.maximized ? (
-                    <HorizontalRuleIcon />
-                  ) : null}
+                  {!window.minimized && !window.maximized ? <HorizontalRuleIcon /> : null}
                 </IconButton>
                 <IconButton
                   aria-label="maximize"
-                  onClick={() => toggleMaximize(window)}
+                  onClick={() => {
+                    toggleMaximize(window);
+                  }}
                   sx={{
                     color: (theme) => theme.palette.grey[500],
                   }}
                 >
-                  {window.maximized ? (
-                    <CloseFullscreenIcon />
-                  ) : (
-                    <CropSquareIcon />
-                  )}
+                  {window.maximized ? <CloseFullscreenIcon /> : <CropSquareIcon />}
                 </IconButton>
                 <IconButton
                   aria-label="close"
-                  onClick={() => handleClose(window.id)}
+                  onClick={() => {
+                    handleClose(window.id);
+                  }}
                   sx={{
                     color: (theme) => theme.palette.grey[500],
                   }}
@@ -100,14 +98,16 @@ const WindowComponent: React.FC = () => {
               </Box>
             </Box>
             <CardContent
-              sx={{ height: 'calc(100% - 55px)', overflow: 'auto', p: 0, '&:last-child': {
-                paddingBottom: '0px',
-              } }}
+              sx={{
+                height: 'calc(100% - 55px)',
+                overflow: 'auto',
+                p: 0,
+                '&:last-child': {
+                  paddingBottom: '0px',
+                },
+              }}
             >
-              <Box
-                sx={{ height: '96%', width: '100%' }}
-                className={`droppable-area-${window.id}`}
-              >
+              <Box sx={{ height: '96%', width: '100%' }} className={`droppable-area-${window.id}`}>
                 {window.content}
               </Box>
             </CardContent>

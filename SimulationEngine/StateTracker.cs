@@ -244,12 +244,12 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                 case EnModifiableTypes.mtVar: //don't check if there are related IDs for these
-                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)) //see if the code is triggered)
+                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx)) //see if the code is triggered)
                     retList.Add(item);
                   break;
                 case EnModifiableTypes.mtState:
                   if ((curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || ((item.eventData is StateCngEvent) && !(item.eventData as StateCngEvent).ifInState)) && //in cur states or not wanting in current states
-                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx))
+                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx))
                     retList.Add(item);
                   break;
                 default:
@@ -264,7 +264,7 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                   if((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) && 
-                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                     retList.Add(item);
                   break;
 
@@ -273,7 +273,7 @@ namespace SimulationTracking
                   if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0)) 
                   {
                     if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
+                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                       retList.Add(item);
                   }
                   
@@ -706,7 +706,7 @@ namespace SimulationTracking
     /// <summary>
     /// external simulation server to process external events
     /// </summary>
-    private EMRALDMsgServer sim3DServer;
+    private ISimMessaging sim3DServer;
     //todo store these in ExternalSim object and adjust code for multiple simulations
     private bool extSimRunning = false;
     private bool emraldStopping3D = false;
@@ -730,8 +730,13 @@ namespace SimulationTracking
     private bool tempStateCngCheck = false; //see if there was a state change because of an external sim message 
     //public TLogEvCallBack logFunc = null;
     public bool keepExtSimEvs = true;
+
     //keep track of last external events so that we can trigger internal events if needed
     Dictionary<string, SimEventType> lastExtEvTypes = new Dictionary<string, SimEventType>();
+
+    //Save Persistent events so they only get resampled if past the sampled time. 
+    private Dictionary<string, TimeMoveEvent> PersistentEvs = new Dictionary<string, TimeMoveEvent>();
+
     //private bool debugLog = false;//todo remove
     //private TimeStateVariable toSave = null;
     //private TimeSpan sim3DStartTime;
@@ -748,8 +753,7 @@ namespace SimulationTracking
     public StateTracker(
       EmraldModel inLists,
       TimeSpan endTime, //max time allowed for events to occur
-      double in3dFrameRate,//todo remove obsolete
-      EMRALDMsgServer inSim3DServer,
+      ISimMessaging inSim3DServer,
       int desiredRuns
       )
     {
@@ -773,6 +777,7 @@ namespace SimulationTracking
       this.condEvList.Clear();
       this.stopped3DSims.Clear();
       this.curTime = new TimeSpan();
+      this.PersistentEvs.Clear();
 
       //TODO : 
       //this.sim3D.SendAction(Reset Sim
@@ -1113,6 +1118,9 @@ namespace SimulationTracking
       //timeEvList.PrintTimes();
       //pop the next time events and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
+      if (nextItem == null)
+        return false;
+      
       if ((idMatch > -1) && (idMatch != nextItem.id))
       {
         return false;
@@ -1336,19 +1344,60 @@ namespace SimulationTracking
           else
           {
 
-            TimeSpan evTime = timeEv.NextTime(curTime);
+            TimeSpan evTime;
+            TimeSpan createTime;
+
+            //default get a new time if persistent and not expired then it will be fixed 
+            bool savePersistent = true;
+            evTime = timeEv.NextTime(curTime);
+            createTime = curTime;
+            
+            //if persistent and time not expired then reuse the saved TimeMoveEvent info
+            if (this.PersistentEvs.ContainsKey(curEv.name))
+            {
+              //get the added time if not over max
+              bool overMaxTime = (PersistentEvs[curEv.name].whenCreated.TotalDays + PersistentEvs[curEv.name].time.TotalDays) > TimeSpan.MaxValue.TotalDays;
+              TimeSpan combiedTime = overMaxTime
+                ? TimeSpan.MaxValue
+                : (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time);
+              
+              if (combiedTime >= curTime)
+              {
+                savePersistent = false; //saved here so dont do the save later.
+                if (!overMaxTime)
+                  evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
+                else //over max time so keep the max time.
+                  evTime = TimeSpan.MaxValue;
+
+                createTime = PersistentEvs[curEv.name].whenCreated;
+              }
+            }
+
+
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
-              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, curTime);
+              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, createTime);
               if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
-                                                                         //todo : how to handle if next event is before the first timestep of a simulation 
-                                                                         //if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
+                                                                            //todo : how to handle if next event is before the first timestep of a simulation 
+                                                                            //  if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
               {
                 processEventList.Add(addTimeEv);
               }
               else //add it to the time list to occur in the correct order.
               {
                 timeEvList.AddTimedEvent(addTimeEv);
+              }
+
+              if (((TimeBasedEvent)curEv).persistent)
+              {
+                if (!this.PersistentEvs.ContainsKey(curEv.name))
+                {
+                  this.PersistentEvs.Add(curEv.name, new TimeMoveEvent(addTimeEv)); //copy it so that the time doesn't get adjusted as the simulation progresses
+                }
+                else if (savePersistent) //new sample so replace it
+                {
+                  this.PersistentEvs[curEv.name] = new TimeMoveEvent(addTimeEv);
+                }
               }
             }
           }
@@ -1449,7 +1498,56 @@ namespace SimulationTracking
             }
 
             curVarAct.SetVal(varItem, this.allLists, curTime, sim3DStartTime, this.allLists.curRunIdx);
-                    
+
+            //if it is an external sim variable then send a message
+            if (varItem is Sim3DVariable)
+            {
+              try
+              {
+                logger.Debug("DoExternalSimMessageAction.ComponentModifyAction: " + varItem.name);
+                //wait to make sure the 3D sim has started
+                while ((!this.extSimRunning) && (!this.emraldStopping3D))
+                {
+                  if (!this.extSimStarting)
+                  {
+                    logger.Debug("Ext Sim not running and trying to send message.");
+                    throw new Exception("Ext Sim not running and trying to send message.");
+                  }
+
+                  System.Threading.Thread.Sleep(10);
+                }
+
+               Sim3DVariable simVar = varItem as Sim3DVariable;
+                                
+                string setValue;
+                switch (simVar.dType.Name.ToUpper().Substring(0, 4))
+                {
+                  case "INT":
+                  case "INT3":
+                  case "DOUB":
+                  case "BOOL":
+                  case "TIME":
+                    setValue = simVar.dblValue.ToString();
+                    break;
+                  case "STRI":
+                    setValue = simVar.strValue;
+                    break;
+                  default:
+                    throw new Exception("Invalid Variable type");
+                }
+
+                var varMsg = new TMsgWrapper(MessageType.mtSimAction, "SetSimValue", curTime, "Adjust External Sim");
+                varMsg.simAction = new SimAction(SimActionType.atCompModify, curTime, new ItemData(simVar.sim3DNameId, setValue));
+
+                sim3DServer.SendMessage(varMsg, simVar.resourceName);
+
+                break;
+              }
+              catch (Exception)
+              {
+                logger.Debug("Failed to send external Sim message for modifying variable with action: " + curAct.name);
+              }
+            }
 
             try
             {
@@ -1460,18 +1558,17 @@ namespace SimulationTracking
                 if (curTimeEv.relatedIDs.Contains(varItem.id))
                 {
                   //get a new time for the event.
-
-                  TimeSpan lastSampledTime = ev.Key;
-                  //if (lastSampledTime < (TimeSpan.MaxValue - curTime))
-                  //{
-                  //  lastSampledTime = lastSampledTime + curTime;
-                  //}
+                  TimeSpan lastSampledTime = ev.Key;                  
 
                   TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
                   if (regotTime < TimeSpan.Zero) 
                     regotTime = TimeSpan.Zero;
 
                   timeEvList.ChangeEventTime(regotTime, ev.Value.eventStateActions.eventID);
+
+                  //adjust the saved persistent event time also if there is one
+                  if (this.PersistentEvs.ContainsKey(ev.Value.name))
+                    this.PersistentEvs[ev.Value.name].time = regotTime;
                 }
               }
             }
@@ -1479,6 +1576,30 @@ namespace SimulationTracking
             {
               throw new Exception("Failed to adjust event time for changes to " + curAct.name, e);
             }
+
+            //see if there are any persistent not in the time event list to update
+            foreach (var persEvItem in this.PersistentEvs.Values)
+            {
+              TimeBasedEvent curTimeEv = (TimeBasedEvent)persEvItem.eventData;
+              if (!timeEvList.HasEvent(curTimeEv.id))                {
+                  
+                  if (curTimeEv.relatedIDs.Contains(varItem.id))
+                  { 
+                    if (curTimeEv.onVarChangeEnum == EnOnChangeTask.ocAdjust)
+                    {
+                      throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
+                    }
+                    
+                  TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
+                  if (regotTime < TimeSpan.Zero)
+                    regotTime = TimeSpan.Zero;
+
+                  //adjust the saved persistent event time 
+                  persEvItem.time = regotTime;
+                }
+              }
+            }
+            
 
             
 
@@ -1537,7 +1658,7 @@ namespace SimulationTracking
             //create a dictionary with just the last state time.
             Dictionary<int, TimeSpan> curStatesTime = this.curStates.Select(i => i).ToDictionary(i => i.Key, i => i.Value.times[i.Value.times.Count - 1]);
 
-            curRunExeAct.RunExtApp(curStatesTime, this.curTime, this.allLists, ref addStates, ref leaveStates);
+            curRunExeAct.RunExtApp(curStatesTime, this.curTime, this.allLists, ref addStates, ref leaveStates, this.allLists.threadNum == null ? false : true);
 
             foreach (int id in leaveStates)
             {
@@ -1573,13 +1694,15 @@ namespace SimulationTracking
             }
 
 
-            //update any doc variables that were marked as used now that code is executed.
-            foreach (string varName in curRunExeAct.codeVariables)
+            //update any doc variables now that code is executed so they try to update if needed.
+            foreach (SimVariable curVar in allLists.allVariables.Values)
             {
-              SimVariable curVar = allLists.allVariables.FindByName(varName);
               if ((curVar != null) && (curVar.varScope == EnVarScope.gtDocLink))
               {
-                changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
+                object o1 = curVar.NoUpdateValue;
+                object o2 = curVar.GetValue(true);
+                if (!object.Equals(o1, o2))
+                  changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
               }
             }
 
@@ -1588,7 +1711,6 @@ namespace SimulationTracking
             {
               changedItems.AddChangedID(EnModifiableTypes.mtVar, curRunExeAct.assignVariable.id);
             }
-
 
             //update any doc variables that were marked as used now that code is executed.
             foreach (string varName in curRunExeAct.codeVariables)
@@ -1636,11 +1758,11 @@ namespace SimulationTracking
                   ++conCnt;
                   if (!sim3DServer.GetResources().Contains(cur3DAct.resourceName))
                   {
-                    logger.Error("Lost XMPP connection");
+                    logger.Error("Lost coupling connection");
 
                     if (conCnt > 60)
                     {
-                      logger.Error("End wait for XMPP reconnection");
+                      logger.Error("End wait for coupling reconnection");
                       throw new Exception("No external client code named - " + cur3DAct.resourceName);
                     }
 
@@ -1656,11 +1778,7 @@ namespace SimulationTracking
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
                 sim3DServer.evCallBackFunc = Sim3DEventOccurred;
 
-                //TActionData startup = new TActionData(T3DActionType.atStartSim);
-                //startup.time = (int)(sim3DFameRate * 1500); 
-                //startup.itemName = sim3dPath;// "C:\\Program Files2\\INL_FUSimServer\\houdini\\hip\\fu_sim_testRoom_v12.hipnc";
-                //if (sim3DServer.SendAction(new TActionPacketData(startup)))  //initialize it
-                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
+                if (sim3DServer.SendMessage(msg, cur3DAct.resourceName)) 
                 {
                   extSimStarting = true;
                   emraldStopping3D = false;

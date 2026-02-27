@@ -1,5 +1,6 @@
 # Running Component Tests
-To run the component tests, run the command `npm run test` in the EMRALD or Emrald-UI directories.
+To run the component tests, run the command `npm run test` in the EMRALD or Emrald-UI directories. This command reports the tests results in the terminal window and listens for file changes to automatically re-run relevant tests.
+This command outputs a report of the tests that were run. To share this report, copy the text from the terminal starting with the line "TAP version 13".
 
 # Creating Component Tests
 

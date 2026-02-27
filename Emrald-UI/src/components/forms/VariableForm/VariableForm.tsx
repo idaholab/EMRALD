@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import { Variable } from '../../../types/Variable';
+import type { Variable, VarScope } from '../../../types/EMRALD_Model';
 import MainDetailsForm from '../MainDetailsForm';
 import TextField from '@mui/material/TextField';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
@@ -13,7 +13,6 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DocLinkFields from './FormFieldsByType/DocLinkFields';
 import ExtSimFields from './FormFieldsByType/ExtSimFields';
-import { MainItemTypes, VarScope } from '../../../types/ItemTypes';
 import AccrualFields from './FormFieldsByType/AccrualFields';
 import { useVariableFormContext } from './VariableFormContext';
 
@@ -75,7 +74,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={MainItemTypes.Variable}
+          itemType={'Variable'}
           type={type}
           setType={setType}
           handleTypeChange={handleTypeChange}
@@ -88,20 +87,22 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           name={name}
           desc={desc}
           setDesc={setDesc}
-          handleSave={() => handleSave(variableData)}
+          handleSave={() => {
+            handleSave(variableData);
+          }}
           reset={reset}
           handleNameChange={handleNameChange}
           nameError={hasError}
           error={hasError}
           errorMessage="A variable with this name already exists, or the name contains an invalid character."
-          reqPropsFilled={name && varScope && value !== '' ? true : false}
+          reqPropsFilled={name && value !== '' ? true : false}
         >
           <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
             <InputLabel id="scope-label">Scope</InputLabel>
             <Select
-              aria-labelledby='scope-label'
+              aria-labelledby="scope-label"
               value={varScope}
-              onChange={(event: SelectChangeEvent<string>) => {
+              onChange={(event: SelectChangeEvent) => {
                 setVarScope(event.target.value as VarScope);
                 if (event.target.value === 'gtAccrual') {
                   setType('double');
@@ -127,7 +128,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                   type="number"
                   size="small"
                   value={value}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleFloatValueChange(e)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    handleFloatValueChange(e);
+                  }}
                   fullWidth
                 />
               ) : type == 'bool' ? (
@@ -141,7 +144,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                     labelId="value"
                     id="value"
                     value={value as string}
-                    onChange={(event: SelectChangeEvent<string>) => handleBoolValueChange(event)}
+                    onChange={(event: SelectChangeEvent) => {
+                      handleBoolValueChange(event);
+                    }}
                     label="Start Value"
                     fullWidth
                   >
@@ -157,7 +162,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                   type="string"
                   size="small"
                   value={value}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleStringValueChange(e)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    handleStringValueChange(e);
+                  }}
                   fullWidth
                 />
               )}
@@ -166,36 +173,36 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 control={
                   <Checkbox
                     checked={resetOnRuns ? true : false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setResetOnRuns(e.target.checked)
-                    }
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setResetOnRuns(e.target.checked);
+                    }}
                   />
                 }
               />
               {varScope === 'gt3DSim' && (
-                <ExtSimFields sim3DId={sim3DId ? sim3DId : ''} setSim3DId={setSim3DId} />
+                <ExtSimFields sim3DId={sim3DId ?? ''} setSim3DId={setSim3DId} />
               )}
             </>
           )}
           {varScope === 'gtDocLink' && (
             <DocLinkFields
-              docType={docType ? docType : ''}
+              docType={docType ?? ''}
               setDocType={setDocType}
-              docPath={docPath ? docPath : ''}
+              docPath={docPath ?? ''}
               setDocPath={setDocPath}
-              docLink={docLink ? docLink : ''}
+              docLink={docLink ?? ''}
               setDocLink={setDocLink}
               pathMustExist={pathMustExist}
               setPathMustExist={setPathMustExist}
-              regExpLine={regExpLine || 0}
-              begPosition={begPosition || 0}
+              regExpLine={regExpLine ?? 0}
+              begPosition={begPosition ?? 0}
               setRegExpLine={setRegExpLine}
               setBegPosition={setBegPosition}
               setShowRegExFields={setShowRegExFields}
-              showRegExFields={showRegExFields || false}
-              numChars={numChars || 0}
+              showRegExFields={showRegExFields ?? false}
+              numChars={numChars ?? 0}
               setNumChars={setNumChars}
-              showNumChars={showNumChars || false}
+              showNumChars={showNumChars ?? false}
               setShowNumChars={setShowNumChars}
               value={value}
               type={type}
@@ -203,8 +210,8 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 type === 'int' || type === 'double'
                   ? handleFloatValueChange
                   : type == 'bool'
-                  ? handleBoolValueChange
-                  : handleStringValueChange
+                    ? handleBoolValueChange
+                    : handleStringValueChange
               }
             />
           )}

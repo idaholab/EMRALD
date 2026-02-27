@@ -2,12 +2,12 @@ import { Handle, Position } from 'reactflow';
 import './TreeNode.scss';
 import { Box, IconButton, TextField } from '@mui/material';
 import { FaLink } from 'react-icons/fa';
-import { Close as DeleteIcon } from '@mui/icons-material';
+import DeleteIcon from '@mui/icons-material/Close';
 import { PiNotePencilDuotone } from 'react-icons/pi';
-import useLogicNodeTreeDiagram, { NodeType } from '../useLogicTreeDiagram';
+import useLogicNodeTreeDiagram, { type NodeType } from '../useLogicTreeDiagram';
 import React from 'react';
 import GateTypeIcon from '../IconTypes/GateTypeIcon';
-import { GateType } from '../../../../types/ItemTypes';
+import type { GateType } from '../../../../types/EMRALD_Model';
 import LogicTreeNodeDropTarget from '../../../drag-and-drop/LogicTreeNodeDroppable';
 import ExpandedIcon from '../IconTypes/ExpandedIcon';
 
@@ -65,7 +65,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
             alignItems: 'center',
             p: '8px',
           }}
-          onClick={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
         >
           {/* Left container with icon */}
           <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
@@ -79,11 +81,15 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           {editingTitle ? (
             <TextField
               value={editedTitle}
-              onChange={(event) => setEditedTitle(event.target.value)}
-              onBlur={() => handleTitleBlur(type, label)}
+              onChange={(event) => {
+                setEditedTitle(event.target.value);
+              }}
+              onBlur={() => {
+                handleTitleBlur(type, label);
+              }}
               fullWidth
               variant="outlined"
-              inputProps={{ maxLength: 20, style: { fontSize: '12px' } }}
+              slotProps={{ htmlInput: { maxLength: 20, style: { fontSize: '12px' } } }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   padding: '6px',
@@ -97,7 +103,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
             <Box
               className="tree-node__header"
               sx={{ flex: 1 }}
-              onDoubleClick={() => handleDoubleClick('title', label)}
+              onDoubleClick={() => {
+                handleDoubleClick('title', label);
+              }}
             >
               {editedTitle ? editedTitle : label}
             </Box>
@@ -108,7 +116,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
             {type === 'comp' ? (
               <IconButton
                 aria-label="close"
-                onClick={() => goToDiagram(label)}
+                onClick={() => {
+                  goToDiagram(label);
+                }}
                 sx={{ marginLeft: '5px', width: 22, height: 22, p: '6px' }}
               >
                 <FaLink className="tree-node__control-bar control-icon" />
@@ -119,7 +129,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
             {type !== 'root' ? ( // Only show delete button if not root
               <IconButton
                 aria-label="close"
-                onClick={() => removeNode(parentName, label, type)}
+                onClick={() => {
+                  removeNode(parentName, label, type);
+                }}
                 sx={{ p: 0, ml: '5px' }}
               >
                 <DeleteIcon sx={{ height: 16, width: 16 }} />
@@ -131,7 +143,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
         </Box>
 
         <Box
-          onClick={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
           sx={{
             maxWidth: '220px',
             maxHeight: '73px',
@@ -145,13 +159,17 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           {editingDescription ? (
             <TextField
               value={editedDescription}
-              onChange={(event) => setEditedDescription(event.target.value)}
-              onBlur={() => handleDescriptionBlur(type, label)}
+              onChange={(event) => {
+                setEditedDescription(event.target.value);
+              }}
+              onBlur={() => {
+                handleDescriptionBlur(type, label);
+              }}
               multiline
               fullWidth
               variant="outlined"
               autoFocus
-              inputProps={{ style: { fontSize: '12px' } }}
+              slotProps={{ htmlInput: { style: { fontSize: '12px' } } }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   padding: '6px',
@@ -161,7 +179,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           ) : (
             <Box
               className="tree-node__body"
-              onDoubleClick={() => handleDoubleClick('description', description)}
+              onDoubleClick={() => {
+                handleDoubleClick('description', description);
+              }}
             >
               {editedDescription ? editedDescription : description}
             </Box>

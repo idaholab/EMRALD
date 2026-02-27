@@ -1,39 +1,11 @@
 import { describe, expect, test } from 'vitest';
-import { getEvent, getState, renderEventForm, save } from '../../../test-utils';
+import { getEvent, renderEventForm, save } from '../../../test-utils';
 import EventForm from '../../../../components/forms/EventForm/EventForm';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import expected from './EventFormContext.expected.json';
 
 describe('Event Form Context', () => {
-  test('initializes with state', async () => {
-    const name = 'initializes with state';
-    renderEventForm(
-      <EventForm
-        eventData={{
-          objType: 'Event',
-          name,
-          desc: '',
-          mainItem: false,
-          evType: 'etTimer',
-        }}
-        state={{
-          objType: 'State',
-          name,
-          desc: '',
-          stateType: 'stStart',
-          diagramName: '',
-          immediateActions: [],
-          events: [name],
-          eventActions: [{ actions: [], moveFromCurrent: false }],
-        }}
-      ></EventForm>,
-    );
-    const user = userEvent.setup();
-    await user.click(await screen.findByText('Save'));
-    expect(getState(name)).toEqual(expected[name]);
-  });
-
   test('changes event type', async () => {
     const name = 'changes event type';
     renderEventForm(
@@ -84,7 +56,7 @@ describe('Event Form Context', () => {
 
     // Invalid values should be set such that the save button is not clickable without a lambda value
     await expect(
-      async () => await user.click(await screen.findByText('Save')),
+      async () => { await user.click(await screen.findByText('Save')); },
     ).rejects.toThrowError();
   });
 

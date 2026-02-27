@@ -33,164 +33,164 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+    #region Windows Form Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.lstItems = new System.Windows.Forms.ListBox();
-            this.txtRefPath = new System.Windows.Forms.TextBox();
-            this.txtRelPath = new System.Windows.Forms.TextBox();
-            this.lstToCopy = new System.Windows.Forms.ListBox();
-            this.btnAddCopy = new System.Windows.Forms.Button();
-            this.btnRemoveCopy = new System.Windows.Forms.Button();
-            this.btnOK = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.lblRefPath = new System.Windows.Forms.Label();
-            this.lblRelPath = new System.Windows.Forms.Label();
-            this.lblItems = new System.Windows.Forms.Label();
-            this.lblToCopy = new System.Windows.Forms.Label();
-            this.SuspendLayout();
-            // 
-            // lstItems
-            // 
-            this.lstItems.FormattingEnabled = true;
-            this.lstItems.ItemHeight = 16;
-            this.lstItems.Location = new System.Drawing.Point(12, 32);
-            this.lstItems.Name = "lstItems";
-            this.lstItems.Size = new System.Drawing.Size(200, 340);
-            this.lstItems.TabIndex = 0;
-            this.lstItems.SelectedIndexChanged += new System.EventHandler(this.lstItems_SelectedIndexChanged);
-            // 
-            // lblItems
-            // 
-            this.lblItems.AutoSize = true;
-            this.lblItems.Location = new System.Drawing.Point(12, 12);
-            this.lblItems.Name = "lblItems";
-            this.lblItems.Size = new System.Drawing.Size(82, 17);
-            this.lblItems.TabIndex = 100;
-            this.lblItems.Text = "Item Names";
-            // 
-            // txtRefPath
-            // 
-            this.txtRefPath.Location = new System.Drawing.Point(230, 50);
-            this.txtRefPath.Name = "txtRefPath";
-            this.txtRefPath.ReadOnly = true;
-            this.txtRefPath.Size = new System.Drawing.Size(500, 22);
-            this.txtRefPath.TabIndex = 1;
-            // 
-            // lblRefPath
-            // 
-            this.lblRefPath.AutoSize = true;
-            this.lblRefPath.Location = new System.Drawing.Point(230, 30);
-            this.lblRefPath.Name = "lblRefPath";
-            this.lblRefPath.Size = new System.Drawing.Size(61, 17);
-            this.lblRefPath.TabIndex = 101;
-            this.lblRefPath.Text = "Ref Path";
-            // 
-            // txtRelPath
-            // 
-            this.txtRelPath.Location = new System.Drawing.Point(230, 100);
-            this.txtRelPath.Name = "txtRelPath";
-            this.txtRelPath.ReadOnly = true;
-            this.txtRelPath.Size = new System.Drawing.Size(500, 22);
-            this.txtRelPath.TabIndex = 2;
-            // 
-            // lblRelPath
-            // 
-            this.lblRelPath.AutoSize = true;
-            this.lblRelPath.Location = new System.Drawing.Point(230, 80);
-            this.lblRelPath.Name = "lblRelPath";
-            this.lblRelPath.Size = new System.Drawing.Size(60, 17);
-            this.lblRelPath.TabIndex = 102;
-            this.lblRelPath.Text = "Rel Path";
-            // 
-            // lstToCopy
-            // 
-            this.lstToCopy.FormattingEnabled = true;
-            this.lstToCopy.ItemHeight = 16;
-            this.lstToCopy.Location = new System.Drawing.Point(230, 160);
-            this.lstToCopy.Name = "lstToCopy";
-            this.lstToCopy.Size = new System.Drawing.Size(500, 148);
-            this.lstToCopy.TabIndex = 3;
-            // 
-            // lblToCopy
-            // 
-            this.lblToCopy.AutoSize = true;
-            this.lblToCopy.Location = new System.Drawing.Point(230, 140);
-            this.lblToCopy.Name = "lblToCopy";
-            this.lblToCopy.Size = new System.Drawing.Size(111, 17);
-            this.lblToCopy.TabIndex = 103;
-            this.lblToCopy.Text = "Items to copy";
-            // 
-            // btnAddCopy
-            // 
-            this.btnAddCopy.Location = new System.Drawing.Point(750, 160);
-            this.btnAddCopy.Name = "btnAddCopy";
-            this.btnAddCopy.Size = new System.Drawing.Size(75, 28);
-            this.btnAddCopy.TabIndex = 4;
-            this.btnAddCopy.Text = "Add";
-            this.btnAddCopy.UseVisualStyleBackColor = true;
-            this.btnAddCopy.Click += new System.EventHandler(this.btnAddCopy_Click);
-            // 
-            // btnRemoveCopy
-            // 
-            this.btnRemoveCopy.Location = new System.Drawing.Point(750, 200);
-            this.btnRemoveCopy.Name = "btnRemoveCopy";
-            this.btnRemoveCopy.Size = new System.Drawing.Size(75, 28);
-            this.btnRemoveCopy.TabIndex = 5;
-            this.btnRemoveCopy.Text = "Remove";
-            this.btnRemoveCopy.UseVisualStyleBackColor = true;
-            this.btnRemoveCopy.Click += new System.EventHandler(this.btnRemoveCopy_Click);
-            // 
-            // btnOK
-            // 
-            this.btnOK.Location = new System.Drawing.Point(550, 390);
-            this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(90, 35);
-            this.btnOK.TabIndex = 6;
-            this.btnOK.Text = "OK";
-            this.btnOK.Enabled = false;
-            this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.Location = new System.Drawing.Point(650, 390);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(90, 35);
-            this.btnCancel.TabIndex = 7;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
-            // FormMultiThreadRefs
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(850, 450);
-            this.Controls.Add(this.lblItems);
-            this.Controls.Add(this.lstItems);
-            this.Controls.Add(this.lblRefPath);
-            this.Controls.Add(this.txtRefPath);
-            this.Controls.Add(this.lblRelPath);
-            this.Controls.Add(this.txtRelPath);
-            this.Controls.Add(this.lblToCopy);
-            this.Controls.Add(this.lstToCopy);
-            this.Controls.Add(this.btnAddCopy);
-            this.Controls.Add(this.btnRemoveCopy);
-            this.Controls.Add(this.btnOK);
-            this.Controls.Add(this.btnCancel);
-            this.Name = "FormMultiThreadRefs";
-            this.Text = "MultiThread Path References";
-            this.Load += new System.EventHandler(this.FormMultiThreadRefs_Load);
-            this.ResumeLayout(false);
-            this.PerformLayout();
-        }
-
-        #endregion
+    /// <summary>
+    /// Required method for Designer support - do not modify
+    /// the contents of this method with the code editor.
+    /// </summary>
+    private void InitializeComponent()
+    {
+      lstItems = new System.Windows.Forms.ListBox();
+      txtRefPath = new System.Windows.Forms.TextBox();
+      txtRelPath = new System.Windows.Forms.TextBox();
+      lstToCopy = new System.Windows.Forms.ListBox();
+      btnAddCopy = new System.Windows.Forms.Button();
+      btnRemoveCopy = new System.Windows.Forms.Button();
+      btnOK = new System.Windows.Forms.Button();
+      btnCancel = new System.Windows.Forms.Button();
+      lblRefPath = new System.Windows.Forms.Label();
+      lblRelPath = new System.Windows.Forms.Label();
+      lblItems = new System.Windows.Forms.Label();
+      lblToCopy = new System.Windows.Forms.Label();
+      SuspendLayout();
+      // 
+      // lstItems
+      // 
+      lstItems.FormattingEnabled = true;
+      lstItems.ItemHeight = 15;
+      lstItems.Location = new System.Drawing.Point(10, 30);
+      lstItems.Name = "lstItems";
+      lstItems.Size = new System.Drawing.Size(176, 319);
+      lstItems.TabIndex = 0;
+      lstItems.SelectedIndexChanged += lstItems_SelectedIndexChanged;
+      // 
+      // txtRefPath
+      // 
+      txtRefPath.Location = new System.Drawing.Point(201, 47);
+      txtRefPath.Name = "txtRefPath";
+      txtRefPath.ReadOnly = true;
+      txtRefPath.Size = new System.Drawing.Size(438, 23);
+      txtRefPath.TabIndex = 1;
+      // 
+      // txtRelPath
+      // 
+      txtRelPath.Location = new System.Drawing.Point(201, 94);
+      txtRelPath.Name = "txtRelPath";
+      txtRelPath.ReadOnly = true;
+      txtRelPath.Size = new System.Drawing.Size(438, 23);
+      txtRelPath.TabIndex = 2;
+      // 
+      // lstToCopy
+      // 
+      lstToCopy.FormattingEnabled = true;
+      lstToCopy.ItemHeight = 15;
+      lstToCopy.Location = new System.Drawing.Point(201, 150);
+      lstToCopy.Name = "lstToCopy";
+      lstToCopy.Size = new System.Drawing.Size(438, 139);
+      lstToCopy.TabIndex = 3;
+      // 
+      // btnAddCopy
+      // 
+      btnAddCopy.Location = new System.Drawing.Point(656, 150);
+      btnAddCopy.Name = "btnAddCopy";
+      btnAddCopy.Size = new System.Drawing.Size(66, 26);
+      btnAddCopy.TabIndex = 4;
+      btnAddCopy.Text = "Add";
+      btnAddCopy.UseVisualStyleBackColor = true;
+      btnAddCopy.Click += btnAddCopy_Click;
+      // 
+      // btnRemoveCopy
+      // 
+      btnRemoveCopy.Location = new System.Drawing.Point(656, 188);
+      btnRemoveCopy.Name = "btnRemoveCopy";
+      btnRemoveCopy.Size = new System.Drawing.Size(66, 26);
+      btnRemoveCopy.TabIndex = 5;
+      btnRemoveCopy.Text = "Remove";
+      btnRemoveCopy.UseVisualStyleBackColor = true;
+      btnRemoveCopy.Click += btnRemoveCopy_Click;
+      // 
+      // btnOK
+      // 
+      btnOK.Enabled = false;
+      btnOK.Location = new System.Drawing.Point(481, 366);
+      btnOK.Name = "btnOK";
+      btnOK.Size = new System.Drawing.Size(79, 33);
+      btnOK.TabIndex = 6;
+      btnOK.Text = "OK";
+      btnOK.UseVisualStyleBackColor = true;
+      btnOK.Click += btnOK_Click;
+      // 
+      // btnCancel
+      // 
+      btnCancel.Location = new System.Drawing.Point(569, 366);
+      btnCancel.Name = "btnCancel";
+      btnCancel.Size = new System.Drawing.Size(79, 33);
+      btnCancel.TabIndex = 7;
+      btnCancel.Text = "Cancel";
+      btnCancel.UseVisualStyleBackColor = true;
+      btnCancel.Click += btnCancel_Click;
+      // 
+      // lblRefPath
+      // 
+      lblRefPath.AutoSize = true;
+      lblRefPath.Location = new System.Drawing.Point(201, 28);
+      lblRefPath.Name = "lblRefPath";
+      lblRefPath.Size = new System.Drawing.Size(51, 15);
+      lblRefPath.TabIndex = 101;
+      lblRefPath.Text = "Ref Path";
+      // 
+      // lblRelPath
+      // 
+      lblRelPath.AutoSize = true;
+      lblRelPath.Location = new System.Drawing.Point(201, 75);
+      lblRelPath.Name = "lblRelPath";
+      lblRelPath.Size = new System.Drawing.Size(50, 15);
+      lblRelPath.TabIndex = 102;
+      lblRelPath.Text = "Rel Path";
+      // 
+      // lblItems
+      // 
+      lblItems.AutoSize = true;
+      lblItems.Location = new System.Drawing.Point(10, 11);
+      lblItems.Name = "lblItems";
+      lblItems.Size = new System.Drawing.Size(189, 15);
+      lblItems.TabIndex = 100;
+      lblItems.Text = "Item Names (* items not assigned)";
+      // 
+      // lblToCopy
+      // 
+      lblToCopy.AutoSize = true;
+      lblToCopy.Location = new System.Drawing.Point(201, 131);
+      lblToCopy.Name = "lblToCopy";
+      lblToCopy.Size = new System.Drawing.Size(79, 15);
+      lblToCopy.TabIndex = 103;
+      lblToCopy.Text = "Items to copy";
+      // 
+      // FormMultiThreadRefs
+      // 
+      AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+      AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      ClientSize = new System.Drawing.Size(744, 422);
+      Controls.Add(lblItems);
+      Controls.Add(lstItems);
+      Controls.Add(lblRefPath);
+      Controls.Add(txtRefPath);
+      Controls.Add(lblRelPath);
+      Controls.Add(txtRelPath);
+      Controls.Add(lblToCopy);
+      Controls.Add(lstToCopy);
+      Controls.Add(btnAddCopy);
+      Controls.Add(btnRemoveCopy);
+      Controls.Add(btnOK);
+      Controls.Add(btnCancel);
+      Name = "FormMultiThreadRefs";
+      Text = "MultiThread Path References";
+      Load += FormMultiThreadRefs_Load;
+      ResumeLayout(false);
+      PerformLayout();
     }
+
+    #endregion
+  }
 }

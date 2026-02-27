@@ -1,0 +1,168 @@
+{
+  "id": "78d910f1-d80e-47f2-a388-6ad39094157a",
+  "name": "DistEvTest1",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramTemplate": "",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "Event",
+        "Done"
+      ],
+      "id": "f7d50d34-917f-4613-966d-2d263b830e6a",
+      "objType": "Diagram",
+      "required": false
+    }
+  ],
+  "StateList": [
+    {
+      "name": "Done",
+      "desc": "",
+      "stateType": "stTerminal",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [],
+      "eventActions": [],
+      "id": "b354c4cb-cf1f-4b1f-a5dc-f4afcac372ee",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 640,
+        "y": 340.5,
+        "width": 200,
+        "height": 80
+      }
+    },
+    {
+      "name": "Event",
+      "desc": "",
+      "stateType": "stKeyState",
+      "diagramName": "Main",
+      "immediateActions": [
+        "Goto_Done"
+      ],
+      "events": [],
+      "eventActions": [],
+      "id": "37f7ed34-be1c-4286-96b3-f64cc00d4ec8",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 330,
+        "y": 160.5,
+        "width": 200,
+        "height": 100
+      }
+    },
+    {
+      "name": "Start",
+      "desc": "",
+      "stateType": "stStart",
+      "diagramName": "Main",
+      "immediateActions": [],
+      "events": [
+        "NormalDist"
+      ],
+      "eventActions": [
+        {
+          "actions": [
+            "Goto_Event"
+          ],
+          "moveFromCurrent": true
+        }
+      ],
+      "id": "be150bbf-0f7f-4bad-ba17-7c0ed0ce4252",
+      "objType": "State",
+      "geometryInfo": {
+        "x": 20,
+        "y": 20.5,
+        "width": 200,
+        "height": 130
+      }
+    }
+  ],
+  "ActionList": [
+    {
+      "name": "Goto_Done",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "0f72e3fa-104c-4fc4-a3f1-c452eb2ad952",
+      "objType": "Action"
+    },
+    {
+      "name": "Goto_Event",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": false,
+      "mutExcl": true,
+      "newStates": [
+        {
+          "toState": "Event",
+          "prob": -1,
+          "failDesc": ""
+        }
+      ],
+      "id": "0e990f22-41ec-4d54-ac11-2efca38b6d03",
+      "objType": "Action"
+    }
+  ],
+  "EventList": [
+    {
+      "name": "NormalDist",
+      "desc": "",
+      "mainItem": false,
+      "evType": "etDistribution",
+      "allItems": true,
+      "triggerStates": [],
+      "varNames": [],
+      "distType": "dtNormal",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": "12",
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 1,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 0,
+          "timeRate": "trHours",
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 24,
+          "timeRate": "trHours",
+          "useVariable": false
+        }
+      ],
+      "dfltTimeRate": "trHours",
+      "id": "7428f665-1678-467a-b7ca-266ae90b113f",
+      "objType": "Event"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.1,
+  "versionHistory": []
+}

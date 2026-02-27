@@ -14,12 +14,11 @@ import { useVariableContext } from '../../../../../../../../contexts/VariableCon
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
-import { MAAPFormData } from '../maap';
 
 const Outputs = () => {
   const { formData, setFormData, setVariableName } = useCustomForm();
-  const [docLinkVariable, setDocLinkVariable] = useState<string>(formData.docLinkVariable || '');
-  const [output, setOutput] = useState<string>(formData.output || '');
+  const [docLinkVariable, setDocLinkVariable] = useState<string>(formData?.docLinkVariable ?? '');
+  const [output, setOutput] = useState<string>(formData?.output ?? '');
   const { variableList } = useVariableContext();
 
   const docLinkVariables = variableList.value
@@ -27,14 +26,15 @@ const Outputs = () => {
     .map(({ name }) => name);
 
   useEffect(() => {
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = {
-        ...prevFormData,
-        docLinkVariable: docLinkVariable,
-        output: output,
-      };
-      return data;
-    });
+    setFormData((prevFormData) =>
+      prevFormData
+        ? {
+            ...prevFormData,
+            docLinkVariable: docLinkVariable,
+            output: output,
+          }
+        : undefined,
+    );
 
     setVariableName(docLinkVariable);
   }, [docLinkVariable, output, setDocLinkVariable, setOutput]);
@@ -52,8 +52,12 @@ const Outputs = () => {
             options={docLinkVariables}
             value={docLinkVariable}
             renderInput={(params) => <TextField {...params} label="Doc Link Variables" />}
-            onChange={(_, event) => setDocLinkVariable(event || '')}
-            onInputChange={(_, newInputValue) => setDocLinkVariable(newInputValue)}
+            onChange={(_, event) => {
+              setDocLinkVariable(event ?? '');
+            }}
+            onInputChange={(_, newInputValue) => {
+              setDocLinkVariable(newInputValue);
+            }}
             sx={{ width: '250px' }}
             size="small"
           />
@@ -64,7 +68,9 @@ const Outputs = () => {
               id="output-variables"
               label="Output"
               value={output || ''}
-              onChange={(event) => setOutput(event.target.value)}
+              onChange={(event) => {
+                setOutput(event.target.value);
+              }}
             >
               <MenuItem value="true">Core Uncovery</MenuItem>
               <MenuItem value="false" disabled>

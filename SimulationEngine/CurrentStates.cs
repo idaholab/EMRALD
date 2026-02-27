@@ -74,7 +74,7 @@ namespace SimulationTracking
     public MyBitArray bitMap { get { return _bitMap; } }
     //public bool trackStateMovement = true;
 
-    public void Clear()
+    public new void Clear()
     {
       base.Clear();
       this._bitMap = new MyBitArray(_bitMap.Length);
@@ -213,6 +213,7 @@ namespace SimulationTracking
       {
         State inState = toState.diagram.HasAStateInCurrentStates(_bitMap);
         if (inState != null)
+        {
 #if DEBUG
           throw new Exception("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
         //return;
@@ -220,6 +221,7 @@ namespace SimulationTracking
           logger.Info("Already in a state for the diagram " + toState.diagram.name + " can't add go into another one.");
           return;
 #endif
+        }
       }
 
       List<int> addList = new List<int>();
@@ -250,7 +252,7 @@ namespace SimulationTracking
         foreach (var v in model.allVariables.Values)
         {
           varVals[v.name].AddRange(curStatePath.varValues[v.name]);
-          varVals[v.name].Add(v.value);
+          varVals[v.name].Add(v.GetValue(true));
         }
         
         
@@ -278,7 +280,7 @@ namespace SimulationTracking
         actionNames.Add(evName);
         foreach (var v in model.allVariables.Values)
         {
-          varVals[v.name].Add(v.value);
+          varVals[v.name].Add(v.GetValue(true)); //use getValue(true) so default value is used if it has an issue getting the value and it isn't required on startup
         }
       }
       //}
@@ -335,7 +337,7 @@ namespace SimulationTracking
           SimulationEngine.ResultState curResState = null;
           SimulationEngine.EnterExitCause curCause = null;
           SimulationEngine.ResultState updateItem = null;
-          string causeKey = "";
+          //string causeKey = "";
           string evName = "";
           string actName = "";
 

@@ -3,11 +3,7 @@
 ## Initial Screen
 
 ![Initial Screen](/images/Modeling/webUIOverview/InitialScreenSectionHighlights.png) <br>
-This is the screen you will see when you first open the EMRALD model editor. It contains the
-<span style="color:red">Modeling Area</span> which is the main workspace,
-<span style="color:green">Top Menu Bar</span>, and
-<span style="color:blue">Left Navigation Frame</span>
-which are editing and navigation panes that will be explained in the following sections.
+This is the screen you will see when you first open the EMRALD model editor. It contains the <span style="color:red">Modeling Area</span>, which is the main workspace, <span style="color:green">Top Menu Bar</span>, and <span style="color:blue">Left Navigation Frame</span> which are editing and navigation panes that will be explained in the following sections.
 
 ## Top Menu Bar
 
@@ -28,35 +24,36 @@ which are editing and navigation panes that will be explained in the following s
 
   ![Open File to Merge Window](/images/Modeling/webUIOverview/Merge_1.png)<br>
   
-  If there are diagrams or components with identical names in the models being merged, a conflict window will appear with a list of all of the identically named items. There are three options of how to resolve the conflict.
+  If there are diagrams or components with identical names in the models being merged, a conflict window will appear with a list of all the identically named items. There are three ways to resolve the conflict.
     - Overwrite: The item being merged in will replace the item in the base project.
     - Ignore: The item being merged in will be disregarded and the item in the base project will remain unchanged.
     - Rename: The item being merged in can be renamed and made a new and separate item. A text box will appear in an adjacent column where you can edit the new name of the item being merged in. <br>
 
   ![Open File to Merge Window](/images/Modeling/webUIOverview/Merge_3.png)
 
-Once you complete your conflict resolution choices, click ""Submit"" and the model will merge into the base model accordingly.
+Once you complete your conflict resolution choices, click "Submit" and the model will merge into the base model accordingly.
 
 - **Open:** Browse to open an existing project.
 - **Save:** Operates like a standard "Save As" to save the current project.
-- **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.<br><div style="width:400px">![Export Template Window](/images/Modeling/webUIOverview/ExportTemplate.png)</div>
+- **Export Templates:** Allows you to save any project template items for use in other projects. When clicked from the dropdown menu, the following window appears in the Modeling Area.
+<img src="/images/Modeling/webUIOverview/ExportTemplate.png" alt="Export Template Window" width="400" />
 - **Load Demo:** Exits the current project and loads the demo project as with any changing of projects, unsaved changes in the current project would be lost.
 
 **Download** <br>
 
-  <img src="/images/Modeling/webUIOverview/TopMenuDownload.png" alt="Download Menu" style="width:500px;">
+  <img src="/images/Modeling/webUIOverview/TopMenuDownload.png" alt="Download Menu" width="500">
 
   - **Solver Engine:** Downloads the EMRALD model solver which is a separate executable.
-  - **Client Tester:** Downloads an example test client that couples with EMRALD through message protocal. For use in testing and developing custom software coupling.
+  - **Client Tester:** Downloads an example test client that couples with EMRALD through message protocol. For use in testing and developing custom software coupling.
   - **Client Tester Source:** Downloads the source code for the Client Tester.
 
 **Help** <br>
-  <img src="/images/Modeling/webUIOverview/TopMenuHelp.png" alt="Help Menu" style="width:500px;"><br>
-  Directs you to the main documentation page for the Emrald application, as shown below <br>
-  <img src="/images/Modeling/webUIOverview/Documentation.png" alt="Help Window" style="width:500px;"> <br>
+  <img src="/images/Modeling/webUIOverview/TopMenuHelp.png" alt="Help Menu" width="500"><br>
+  Directs you to the main documentation page for the EMRALD application, as shown below <br>
+  <img src="/images/Modeling/webUIOverview/Documentation.png" alt="Help Window" width="500"> <br>
 
 **About** <br>
-  <img src="/images/Modeling/webUIOverview/TopMenuAbout.png" alt="About Menu" style="width:500px;"> <br>
+  <img src="/images/Modeling/webUIOverview/TopMenuAbout.png" alt="About Menu" width="500"> <br>
   This redirects you to the INL [EMRALD Website](https://google.com) as shown below.<br>
 
   ![About Menu](/images/Modeling/webUIOverview/AboutRedirect.png) <br>
@@ -70,16 +67,16 @@ This top half of the Left Navigation Frame allows you to access your Diagrams, L
 
 **Diagrams** <br>
 
-<img src="/images/Modeling/webUIOverview/DiagramsExpanded.png" alt="Diagrams Expanded" style="width:300px;">
+<img src="/images/Modeling/webUIOverview/DiagramsExpanded.png" alt="Diagrams Expanded" width="300">
 <br>
 
-By default Diagrams are sorted by Plant, Component, and System Diagrams. However, these categories can be customized by the currently open model or for specific modeling needs. Double clicking on the folders will expand them to reveal the inidividual diagrams. Double clicking on the individual diagrams will open them in the Modeling Area.
+By default, Diagrams are sorted by Plant, Component, and System Diagrams. However, these categories can be customized by the currently open model or for specific modeling needs. Double clicking on the folders will expand them to reveal the individual diagrams. Double clicking on the individual diagrams will open them in the Modeling Area.
 
-Each diagram represents a particular piece of the model and the various conditions or states that this piece of the model can be in. These pieces correlate to aspects of traditional PRA modeling and range from small-scale components to a large scope, overall plant response and design. A diagram contains multiple states with the events that can occur, actions that can be executed and variables used. These all define how the simulation may sift through the diagram over time.
+Each diagram represents a particular piece of the model and the various conditions or states that this piece of the model can be in. These pieces correlate to aspects of traditional PRA modeling and range from small-scale components to a large scope, overall plant response and design. A diagram contains multiple states with the events that can occur, actions that can be executed and variables used. These all define how the simulation may shift through the diagram over time.
 
-Additionally, some diagrams, Component and State, can also be evaluated to a Boolean depending on which stat they are currently in. This is a main feature that when combined with a Component Logic Event, can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only be in one state at a time, in order to execute the evaluation process.
+Additionally, some diagrams, Component and State, can also be evaluated to a Boolean depending on which state they are currently in. This is a main feature that when combined with a Component Logic Event, can greatly simplify a model. Unlike the more general plant response diagrams, these diagrams are restricted to only being in one state at a time, in order to execute the evaluation process.
 
-Breif descriptions of each diagram type will be explained below but for more information, see [Diagrams](/Modeling/diagrams.md).
+Brief descriptions of each diagram type will be explained below but for more information, see [Diagrams](/Modeling/diagrams.md).
 
 - Plant<br>
 
@@ -97,11 +94,11 @@ Breif descriptions of each diagram type will be explained below but for more inf
 
 - System<br>
   ![Diagrams System Expanded](/images/Modeling/webUIOverview/SystemDiagram.png) <br>
-  System Diagrams are mainly just a catigorization, but behave similarly to component diagrams.
+  System Diagrams are mainly just a categorization but behave similarly to component diagrams.
   A Fault Tree from traditional modeling could be directly converted into System diagram with just two states and a "Component Logic" event used to determine the boolean logic from component diagrams. See [Logic Trees](/Modeling/logicTree.md) and [Events](/Modeling/events.md) for more information. The two states for this diagram are "Active" and "Failed", with a "Component Logic" event in the active state evaluating the assigned logic whenever a component diagram state changes. If the logic ever evaluates to false, then the current state shifts from "Active" to "Failed". This is similar to a typical PRA model except the logic does not contain any probabilities, just references to the Component diagrams.
 
 **Logic Tree** <br>
-All of logic trees are accessible in this section. Double clicking on the individual Logic Trees will open them in the Modeling Area. <br>
+All your logic trees are accessible in this section. Double clicking on the individual Logic Trees will open them in the Modeling Area. <br>
 
 ![Logic Tree Expanded](/images/Modeling/webUIOverview/LogicTree.png) <br>
 Logic Trees utilize boolean gates to solve for the top value of the tree which can inform "Component Logic" [events](/Modeling/events.md) in [diagrams](/Modeling/diagrams.md). <br>
@@ -109,8 +106,8 @@ Logic Trees utilize boolean gates to solve for the top value of the tree which c
 See [Logic Tree](/Modeling/logicTree.md) for more information.
 
 **External Sims** <br>
-All of your external simulation links will be available in this section. <br>
-<img src="/images/Modeling/webUIOverview/ExternalSimsExpanded.png" alt="External Sims Expanded" style="width:300px;">
+All your external simulation links will be available in this section. <br>
+<img src="/images/Modeling/webUIOverview/ExternalSimsExpanded.png" alt="External Sims Expanded" width="300">
 <br>
 
 The External simulations are defined coupled links to an external code, such as physics models that inform the EMRALD model. This is used for special coupling cases to simply run an executable and process the results, use a "Run Application" action as described in the Run Application section of [Types of Actions](./actions.md#types-of-actions).<br>
@@ -123,13 +120,10 @@ The bottom half of the Left Navigation Frame allows you to access your Actions, 
 
 **Tabs**<br>
 
-  <!--TODO-If have time, make this look nice. 
-  I tried but the only way I can unstack the two images in the Global column is to make the column too wide for the text area-Courtney -->
-
 | <div style="width:150px">All</div>                     | <div style="width:500px">Global</div>                                                                                                                                                       | <div style="width:150px">Local</div>                             |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | ![All Tab](/images/Modeling/webUIOverview/AllTabs.png) | ![Global Tab](/images/Modeling/webUIOverview/GlobalTabs.png)  ![Global Tab](/images/Modeling/webUIOverview/GlobalTabOptions.png)                                                              | ![Local Tab](/images/Modeling/webUIOverview/LocalTabs.png)       |
-| Items from every diagram in the project.               | Shows items can be used in any diagram. New Global items must be created through the right-click option of the selected type. Items created in a specific diagram are local to that diagram | Items present in the diagram currently open and being worked on. |
+| Items from every diagram in the project.               | Shows items can be used in any diagram. New Global items must be created through the right-click option of the selected type. Items created in a specific diagram are local to that diagram | Items present in the diagram that are currently open and being worked on. |
 
 **Actions**<br>
 Actions change the properties or cause movement though a model during a simulation run. <br>
@@ -137,7 +131,7 @@ Actions change the properties or cause movement though a model during a simulati
 See [Actions](/Modeling/actions.md) for more information.
 
 **Events**<br>
-Events monitor for specified criteria and can have one or more actions that are executed when that criteria is met. <br>
+Events monitor for specified criteria and can have one or more actions that are executed when that criterion is met. <br>
 
 See [Events](/Modeling/events.md) for more information.
 
@@ -153,8 +147,8 @@ See [States](/Modeling/states.md) for more information.
 
 ## Modeling Area
 
-### Drop Down Menu
-The drop down menu, as shown below, is used to create diagrams, logic trees, actions, events, variables, and connect external simulations. Simply hover the mouse over the '+' icon and the menu will appear below. Although some of these can be created in other ways, this drop down is a simple tool that groups together creating each of these various parts. Each of these parts have their own section of documentation explaining it. Clicking on any option pulls up the form to create that part.<br>
+### Drop-Down Menu
+The drop-down menu, as shown below, is used to create diagrams, logic trees, actions, events, variables, and connect external simulations. Simply hover the mouse over the '+' icon and the menu will appear below. Although some of these can be created in other ways, this drop down is a simple tool that groups together creating each of these various parts. Each of these parts have their own section of documentation explaining it. Clicking on any option pulls up the form to create that part.<br>
 
 ![Drop Down Menu](/images/Modeling/webUIOverview/DropDownMenu.png)
 

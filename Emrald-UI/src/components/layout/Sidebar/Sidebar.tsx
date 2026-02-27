@@ -48,12 +48,16 @@ const Sidebar = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: '#008080',
+          backgroundColor: '#2FA770',
         },
       }}
     >
       <Toolbar />
-      <ResizeHandle onMouseDown={(_event: React.MouseEvent<HTMLElement>) => handleMouseDown()} />
+      <ResizeHandle
+        onMouseDown={() => {
+          handleMouseDown();
+        }}
+      />
       <Box sx={{ overflow: 'auto' }}>
         <MenuAccordion
           panels={diagramPanels}
@@ -86,8 +90,12 @@ const Sidebar = () => {
           open={true}
           title="Delete Confirmation"
           submitText="delete"
-          onSubmit={() => deleteItem()}
-          onClose={() => closeDeleteConfirmation()}
+          onSubmit={() => {
+            deleteItem();
+          }}
+          onClose={() => {
+            closeDeleteConfirmation();
+          }}
         >
           <Typography>
             Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other

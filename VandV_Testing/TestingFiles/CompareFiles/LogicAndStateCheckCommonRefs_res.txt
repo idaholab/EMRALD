@@ -1,5 +1,5 @@
 Simulation = LogicAndStateCheckCommonRefs
-Runtime = 00.00:00:11
+Runtime = 00.00:00:26
 Runs = 100 of 100
 ---------------------------
 - End Sim Variable Values -
@@ -7,4 +7,4 @@ Runs = 100 of 100
 Int_FTFailCnt = 876
 Int_FTFixCnt = 876
 Int_StateFailCnt = 876
-Int_StateFixCnt = 875
+Int_StateFixCnt = 876

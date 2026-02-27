@@ -753,8 +753,7 @@
                 "desc",
                 "gateType",
                 "compChildren",
-                "gateChildren",
-                "isRoot"
+                "gateChildren"
             ]
         },
         "Variable": {

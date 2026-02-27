@@ -1,0 +1,326 @@
+{
+  "id": "0",
+  "name": "Dynamic_XML_Var_Example",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "679e06f6-6cbd-4b3b-a17e-5bce5a518f1d",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Start",
+        "TimerLoop",
+        "WaitingOnRate",
+        "HitRate",
+        "Done"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "72e515e5-43e6-4ad6-8c13-2535a747f0a1",
+      "name": "Done",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 209.1420038575037,
+        "y": 228.9346225190971,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "073b750f-f6b9-4059-af6c-73a77a0b7135",
+      "name": "HitRate",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "Goto_Done"
+      ],
+      "geometryInfo": {
+        "x": 481.62038743210627,
+        "y": 85.76801420023813,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "e117e929-dd13-47c8-9487-05f4a516b5d4",
+      "name": "Start",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "Goto_TimerLoop",
+        "Goto_WaitOnRate"
+      ],
+      "geometryInfo": {
+        "x": -165.59367322634986,
+        "y": -91.85096673560075,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "dd6e9ccb-3b62-41f0-b9df-d2988213e976",
+      "name": "TimerLoop",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "OneHour"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "TimeLoop"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "Set_PresionPath",
+        "Set_ReadRate"
+      ],
+      "geometryInfo": {
+        "x": -104.49999999999997,
+        "y": 199.3402460446136,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c01b2d19-289d-4cac-a9ba-66e0ae48917c",
+      "name": "WaitingOnRate",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "RateGT_X"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "Goto_HitRate"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 192.64815497284258,
+        "y": -83.12899837869233,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "0ae96c7e-a03e-48af-a54c-94647b0636d9",
+      "name": "Goto_Done",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "bfc7f9d5-4ffc-4c8a-b255-d408b8d9c97a",
+      "name": "Goto_HitRate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "HitRate",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "945ae87b-aab8-48e3-913e-8b893b965524",
+      "name": "Goto_TimerLoop",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "TimerLoop",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "1e47aa2c-4600-4b0a-94dd-314c02effb1d",
+      "name": "Goto_WaitOnRate",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "WaitingOnRate",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "c81fa3a7-9e42-4083-8fe0-236e77d99c5b",
+      "name": "Set_PresionPath",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Str_PresionPath",
+      "scriptCode": "// Convert the double to an integer by truncating the decimal part\r\nint hoursInt = (int)CurTime;\r\n\r\n// Determine the number of digits in the integer value\r\nint digits = hoursInt.ToString().Length;\r\n\r\n// Format the string with leading zeros (you can adjust the number of leading zeros if needed)\r\nstring formattedString = $\"P{hoursInt:D4}\"; // Change 3 to desired number of leading zeros\r\n\r\nreturn formattedString;"
+    },
+    {
+      "id": "d7ee57c3-1a6b-4107-9206-51276996ad7a",
+      "name": "Set_ReadRate",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [
+        "Str_P_C_U1"
+      ],
+      "variableName": "Dbl_ReadRate",
+      "scriptCode": "return double.Parse(Str_P_C_U1);\r\n\r\n        "
+    },
+    {
+      "id": "804e65d7-1140-4847-b3b4-74bd296e13df",
+      "name": "TimeLoop",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "TimerLoop",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    }
+  ],
+  "EventList": [
+    {
+      "id": "56de716a-d303-49a4-b71e-b88ac4da78e8",
+      "name": "OneHour",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT1H"
+    },
+    {
+      "id": "4efe84ed-7a70-4f13-8ff5-ee5218dfb502",
+      "name": "RateGT_X",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [
+        "Dbl_ReadRate"
+      ],
+      "code": "return Dbl_ReadRate > 0.01;"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dbl_ReadRate",
+      "varScope": "gtGlobal",
+      "value": 0,
+      "type": "double",
+      "objType": "Variable",
+      "id": "a9f21657-1129-466e-8292-3f7433c152ed",
+      "desc": "",
+      "resetOnRuns": true
+    },
+    {
+      "name": "Str_P_C_U1",
+      "varScope": "gtDocLink",
+      "value": "NotSet",
+      "type": "string",
+      "objType": "Variable",
+      "id": "23e7f352-7763-4b62-8537-f6cd4785709e",
+      "desc": "",
+      "docType": "dtXML",
+      "docPath": "..\\Other\\presion.xml",
+      "docLink": "/Presiones/%Str_PresionPath/text()",
+      "pathMustExist": true,
+      "resetOnRuns": true
+    },
+    {
+      "name": "Str_PresionPath",
+      "varScope": "gtGlobal",
+      "value": "P0000",
+      "type": "string",
+      "objType": "Variable",
+      "id": "34bbab48-24c8-4c53-9661-4f605c682095",
+      "desc": "",
+      "resetOnRuns": true
+    }
+  ],
+  "ExtSimList": [],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3,
+  "templates": []
+}

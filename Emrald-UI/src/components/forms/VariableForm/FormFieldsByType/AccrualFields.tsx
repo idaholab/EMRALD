@@ -15,7 +15,9 @@ const AccrualFields = () => {
         control={
           <Checkbox
             checked={resetOnRuns}
-            onChange={(e) => setResetOnRuns(e.target.checked)}
+            onChange={(e) => {
+              setResetOnRuns(e.target.checked);
+            }}
           ></Checkbox>
         }
       ></FormControlLabel>

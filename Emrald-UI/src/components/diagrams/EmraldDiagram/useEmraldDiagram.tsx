@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNodesState, useEdgesState, Edge, Node, Connection, updateEdge } from 'reactflow';
+import {
+  useNodesState,
+  useEdgesState,
+  type Edge,
+  type Node,
+  type Connection,
+  reconnectEdge,
+} from 'reactflow';
 import EmraldDiagram, { currentDiagram } from './EmraldDiagram';
 import { v4 as uuidv4 } from 'uuid';
 // Edges
 import getEventActionEdges from './Edges/EventActionEdge';
 import getImmediateActionEdges from './Edges/ImmediateActionEdge';
 // Types
-import { State } from '../../../types/State';
-import { Action } from '../../../types/Action';
-import { Event } from '../../../types/Event';
+import type { State, Action, Event, Diagram } from '../../../types/EMRALD_Model';
 // Contexts
 import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useStateContext } from '../../../contexts/StateContext';
@@ -21,7 +26,6 @@ import EventForm from '../../forms/EventForm/EventForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
 import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import { Diagram } from '../../../types/Diagram';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -47,9 +51,9 @@ const useEmraldDiagram = () => {
   const { addWindow } = useWindowContext();
 
   // Get the edges for the state nodes
-  const getEdges = (stateNodes: Node[]) => {
+  const getEdges = (stateNodes: Node<{ state: State }>[]) => {
     setEdges([]);
-    stateNodes.forEach((stateNode: Node) => {
+    stateNodes.forEach((stateNode) => {
       const { state }: { state: State } = stateNode.data;
       getEventActionEdges(
         stateNode.id,
@@ -71,7 +75,7 @@ const useEmraldDiagram = () => {
     });
   };
 
-  const onEdgeClick = (_event: any, edge: Edge) => {
+  const onEdgeClick = (_event: React.MouseEvent, edge: Edge) => {
     // Highlight selected edge so its easier to see its connection and label
     setEdges((eds) =>
       eds.map((e) => {
@@ -79,7 +83,12 @@ const useEmraldDiagram = () => {
           return {
             ...e,
             style: { ...e.style, stroke: '#e3961c' },
-            labelStyle: { ...e.labelStyle, fill: '#e3961c', fontWeight: 'bold', transform: 'translateY(-10px)' },
+            labelStyle: {
+              ...e.labelStyle,
+              fill: '#e3961c',
+              fontWeight: 'bold',
+              transform: 'translateY(-10px)',
+            },
           };
         } else {
           return {
@@ -88,23 +97,23 @@ const useEmraldDiagram = () => {
             labelStyle: { ...e.labelStyle, fill: 'transparent' },
           };
         }
-      })
+      }),
     );
   };
 
-  const onPaneClick = (_event: any) => {
+  const onPaneClick = () => {
     // reset edge color when the user clicks away
     getEdges(nodes);
   };
 
   // Double Clicks
-  const onNodeDoubleClick = (_event: any, node: Node) => {
+  const onNodeDoubleClick = (_event: React.MouseEvent, node: Node<{ state?: State }>) => {
     if (node.data.state) {
       addWindow(`Edit State: ${node.data.state.name}`, <StateForm stateData={node.data.state} />);
     }
   };
 
-  const onEventDoubleClick = (e: any, event: Event | undefined, state: State) => {
+  const onEventDoubleClick = (e: React.MouseEvent, event: Event | undefined, state: State) => {
     e.preventDefault();
     e.stopPropagation();
     if (!event) {
@@ -118,7 +127,7 @@ const useEmraldDiagram = () => {
     );
   };
 
-  const onActionDoubleClick = (e: any, action: Action) => {
+  const onActionDoubleClick = (e: React.MouseEvent, action?: Action) => {
     e.preventDefault();
     e.stopPropagation();
     if (!action) {
@@ -139,8 +148,8 @@ const useEmraldDiagram = () => {
       const targetNode = nodes.find((node) => node.id === connection.target);
       const targetState = getStateByStateId(connection.target);
       let currentAction: Action | undefined;
-      if (connection.sourceHandle && connection.sourceHandle.includes('*')) {
-        currentAction = getActionByActionId(connection.sourceHandle?.split('*')[1]);
+      if (connection.sourceHandle?.includes('*')) {
+        currentAction = getActionByActionId(connection.sourceHandle.split('*')[1]);
       } else {
         currentAction = getActionByActionId(connection.sourceHandle);
       }
@@ -165,8 +174,8 @@ const useEmraldDiagram = () => {
 
       // Add new state to action
       addNewStateToAction(currentAction, {
-        toState: targetState?.name,
-        prob: currentAction.newStates && currentAction.newStates.length >= 1 ? 0 : -1, // If only a single newState default to -1
+        toState: targetState?.name ?? '',
+        prob: currentAction?.newStates && currentAction.newStates.length >= 1 ? 0 : -1, // If only a single newState default to -1
         varProb: null,
         failDesc: '',
       });
@@ -189,7 +198,7 @@ const useEmraldDiagram = () => {
     [edges],
   );
 
-  const isValidConnection = (_connection: Connection) => {
+  const isValidConnection = () => {
     // Check if source and target nodes are the same
     // if (connection.source === connection.target) { //TODO: This needs to be revisited in the future. Currently, nodes can connect to themselves but its hard to tell with the react flow lines
     //   return false; // Prevent the connection
@@ -208,24 +217,24 @@ const useEmraldDiagram = () => {
       return;
     }
 
-    if (currentAction && currentAction.newStates) {
+    if (currentAction?.newStates) {
       // Remove the old newStates.toState with the new state we are connecting.
       currentAction.newStates = currentAction.newStates.filter(
-        (newState) => newState.toState !== oldState.name,
+        (newState) => newState.toState !== oldState?.name,
       );
       addNewStateToAction(currentAction, {
-        toState: targetState?.name,
+        toState: targetState?.name ?? '',
         prob: -1,
         varProb: null,
         failDesc: '',
       });
 
-      setEdges((els) => updateEdge(oldEdge, newConnection, els));
+      setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
     }
   }, []);
 
   // Update the state node position
-  const onNodeDragStop = (_event: React.MouseEvent, node: Node) => {
+  const onNodeDragStop = (_event: React.MouseEvent, node: Node<{ state: State }>) => {
     updateStatePosition(node.data.state, node.position);
   };
 
@@ -235,7 +244,7 @@ const useEmraldDiagram = () => {
   };
 
   // Check if the new states are in the current diagram
-  const isStateInCurrentDiagram = (action: Action) => {
+  const isStateInCurrentDiagram = (action?: Action) => {
     if (!action) return false;
     const newStates = getActionNewStates(action);
     return newStates.every((newState) => currentDiagram.value.states.includes(newState));
@@ -246,43 +255,45 @@ const useEmraldDiagram = () => {
     const newStates = getActionNewStates(action);
     newStates.forEach((newState) => {
       const stateDetails = getStateByStateName(newState);
-      const { diagramName } = stateDetails;
-      const diagram = getDiagramByDiagramName(diagramName);
-      addWindow(diagramName, <EmraldDiagram diagram={diagram} />, {
-        x: 75,
-        y: 25,
-        width: 1300,
-        height: 700,
-      });
+      if (stateDetails) {
+        const { diagramName } = stateDetails;
+        const diagram = getDiagramByDiagramName(diagramName);
+        if (diagram) {
+          addWindow(diagramName, <EmraldDiagram diagram={diagram} />, {
+            x: 75,
+            y: 25,
+            width: 1300,
+            height: 700,
+          });
+        }
+      }
     });
   };
 
   // Build the state nodes
   const getStateNodes = () => {
-    if (topDiagram.states) {
-      let stateNodes = topDiagram.states.map((state) => {
-        let stateDetails = getStateByStateName(state);
-        const { x, y } = {
-          x: stateDetails.geometryInfo?.x || 0,
-          y: stateDetails.geometryInfo?.y || 0,
-        };
-        return {
-          id: `${stateDetails.id}`,
-          position: { x, y },
-          type: 'custom',
-          data: {
-            label: state,
-            state: stateDetails,
-          },
-        };
-      });
-      setNodes(stateNodes);
-    }
+    const stateNodes = topDiagram.states.map((state) => {
+      const stateDetails = getStateByStateName(state);
+      const { x, y } = {
+        x: stateDetails?.geometryInfo?.x ?? 0,
+        y: stateDetails?.geometryInfo?.y ?? 0,
+      };
+      return {
+        id: stateDetails?.id ?? '',
+        position: { x, y },
+        type: 'custom',
+        data: {
+          label: state,
+          state: stateDetails,
+        },
+      };
+    });
+    setNodes(stateNodes);
   };
 
   // Initialize the edges for the state nodes
   useEffect(() => {
-    if (nodes && !loading) {
+    if (!loading) {
       getEdges(nodes); // Only call getEdges when nodes are available and loading is false
     }
   }, [nodes, loading]);

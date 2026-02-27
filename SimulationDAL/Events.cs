@@ -1,6 +1,7 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -12,6 +13,7 @@ using MessageDefLib;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MyStuff.Collections;
 using Newtonsoft.Json;
+using NLog;
 using ScriptEngineNS;
 
 namespace SimulationDAL
@@ -20,7 +22,7 @@ namespace SimulationDAL
   public abstract class Event : BaseObjInfo
   {
     protected List<int> _relatedIDs = new List<int>(); //IDs of items used to evaluate this event. 
-    protected MyBitArray _relatedIDsBitSet = null;
+    protected MyBitArray _relatedIDsBitSet = null!;
     public bool mainItem = false;
     public string rootPath = "";
     //protected virtual EnModifiableTypes GetModType() { return EnModifiableTypes.mtNone; }
@@ -60,7 +62,7 @@ namespace SimulationDAL
     {
       if (_relatedIDs.Count > 0)
       {
-        _relatedIDsBitSet = new MyBitArray(_relatedIDs.Max()+1);
+        _relatedIDsBitSet = new MyBitArray(_relatedIDs.Max() + 1);
         for (int i = 0; i < this.relatedIDs.Count(); ++i)
         {
           _relatedIDsBitSet[_relatedIDs[i]] = true;
@@ -131,7 +133,7 @@ namespace SimulationDAL
     {
       //stub to do in classes if needed
     }
-    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       //override in the different types if it is possible that the item has something for the scanType 
       return new List<ScanForReturnItem>();
@@ -143,23 +145,24 @@ namespace SimulationDAL
     public CondBasedEvent(string inName)
       : base(inName) { }
 
-    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx);
+    public abstract bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx);
 
     //public override bool DeleteFromDB(LookupLists lists) { return base.DeleteFromDB(lists); }
   }
 
-  public class StateCngEvent : CondBasedEvent //etStateCng
+  public class StateCngEvent : CondBasedEvent //etStateCngevalEvOnStateEntry
   {
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
-    private MyBitArray changed = null; //all changed items for an EventTriggered call on this event
+    public bool evalEvOnStateEntry = true;
+    private MyBitArray changed = null!; //all changed items for an EventTriggered call on this event
 
     protected override EnEventType GetEvType() { return EnEventType.etStateCng; }
 
     public StateCngEvent() : base("") { }
 
-    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null)
+    public StateCngEvent(string inName, bool inIfInState, bool inAllItems = true, List<int> inStates = null!)
       : base(inName)
     {
       this.ifInState = inIfInState;
@@ -214,25 +217,31 @@ namespace SimulationDAL
 
       this.ifInState = Convert.ToBoolean(dynObj.ifInState);
       this.allItems = Convert.ToBoolean(dynObj.allItems);
-      
-      //Now Done in LoadOBjLinks()
-      ////load the Trigger States.
-      //if (dynObj.triggerStates != null)
-      //{
-      //  this.relatedIDs.Clear();
-      //  foreach (dynamic stateName in dynObj.triggerStates)
-      //  {
-      //    State trigState = lists.allStates.FindByName(stateName);
-      //    if (trigState == null)
-      //    {
-      //      throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
-      //    }
+      if (dynObj.evalEvOnStateEntry != null)
+        this.evalEvOnStateEntry = Convert.ToBoolean(dynObj.evalEvOnStateEntry);
+      else
+      {
+        this.evalEvOnStateEntry = this.ifInState; //default to true if using ifInState flag.
+      }
 
-      //    this.relatedIDs.Add(trigState.id);
-      //  }
-      //}
+        //Now Done in LoadOBjLinks()
+        ////load the Trigger States.
+        //if (dynObj.triggerStates != null)
+        //{
+        //  this.relatedIDs.Clear();
+        //  foreach (dynamic stateName in dynObj.triggerStates)
+        //  {
+        //    State trigState = lists.allStates.FindByName(stateName);
+        //    if (trigState == null)
+        //    {
+        //      throw new Exception("Could not find State - " + stateName + ", to add as a trigger state");
+        //    }
 
-      processed = true;
+        //    this.relatedIDs.Add(trigState.id);
+        //  }
+        //}
+
+        processed = true;
       return true;
     }
 
@@ -268,9 +277,9 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
-      //make a bitset for the changed item and do operations that are needed for a match
+      // Make a bitset for the changed item and do operations that are needed for a match
       if (changed == null)
       {
         changed = new MyBitArray(curStates.Length);
@@ -280,29 +289,47 @@ namespace SimulationDAL
 
       changed = ((ChangedIDs)otherData).stateIDs_BS;
 
-      //are there related items that have changed
-      if (changed.And(_relatedIDsBitSet).BitCount() == 0)
-        return false;
-
-      //find the items that are appicable for entry or exit
-      if (ifInState) //in the specified state/s
+      // If initial evaluation, evaluate all current states
+      if (initialEval && this.evalEvOnStateEntry)
       {
-        //get all the states we are current in and are in the realted IDS.
-        if (!this.allItems) //can only use ones we just entered
-          changed = _relatedIDsBitSet.And(curStates.And(changed));
-        else
+        // Consider all current states that are in the related IDs
+        if (ifInState)
+        {
+          // Get all the states we are currently in and are in the related IDs
           changed = _relatedIDsBitSet.And(curStates);
-      }
-      else //exiting the specified state/s
-      {
-        //get all the states we are not in current states and are in the realted IDS.
-        if (!this.allItems) //can only use ones we just exited
-          changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
+        }
         else
+        {
+          // Get all the states we are not in current states and are in the related IDs
           changed = _relatedIDsBitSet.And(curStates.Not());
+        }
+      }
+      else
+      {
+        // Are there related items that have changed
+        if (changed.And(_relatedIDsBitSet).BitCount() == 0)
+          return false;
+
+        // Find the items that are applicable for entry or exit
+        if (ifInState) // In the specified state/s
+        {
+          // Get all the states we are currently in and are in the related IDs
+          if (!this.evalEvOnStateEntry) // Can only use ones we just entered
+            changed = _relatedIDsBitSet.And(curStates.And(changed));
+          else
+            changed = _relatedIDsBitSet.And(curStates);
+        }
+        else // Exiting the specified state/s
+        {
+          // Get all the states we are not in current states and are in the related IDs
+          if (!this.evalEvOnStateEntry) // Can only use ones we just exited
+            changed = _relatedIDsBitSet.And(curStates.Not().And(changed));
+          else
+            changed = _relatedIDsBitSet.And(curStates.Not());
+        }
       }
 
-      //return if in one of or all the states as specified
+      // Return if in one of or all the states as specified
       if (this.allItems)
         return (changed.BitCount() == relatedIDs.Count());
       else
@@ -325,9 +352,9 @@ namespace SimulationDAL
       //}
     }
 
-    public override  void Reset()
+    public override void Reset()
     {
-      this.changed = null;
+      this.changed = null!;
     }
   }
 
@@ -337,7 +364,7 @@ namespace SimulationDAL
     //bool onSuccess;//true if our logic evaluation is looking for a true.
     public bool successSpace = true;
     public bool triggerOnFalse = false;
-    private LogicNode logicTop = null;
+    private LogicNode logicTop = null!;
     private Dictionary<int, bool?> lastEvalVal = new Dictionary<int, bool?>(); //what value did the tree have last time it was evaluated for the given state (hash is state ID)
     //private bool? lastEvalVal = null; //what value did the tree have last time it was evaluated
 
@@ -426,13 +453,13 @@ namespace SimulationDAL
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
       bool evalBool = true;
       int evalRes = logicTop.Evaluate(curStates, successSpace);
-      if((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
+      if ((evalRes == 0) || (evalRes == -1)) //false or unknown so dont trigger.
       {
-        evalBool =  false;
+        evalBool = false;
       }
       //else should be 1 so value is true
 
@@ -475,15 +502,20 @@ namespace SimulationDAL
       //  logicTop.LookupRelatedItems(all, addToList);
       //}
     }
+
+    public override void Reset()
+    {
+      this.lastEvalVal.Clear();
+    }
   }
 
   public class EvalVarEvent : CondBasedEvent //etVarCond
-  {
-    
+  {    
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
-    protected VariableList varList = null;
+    protected VariableList varList = null!;
+    protected string modelPath = ""; //save here because we cant get it from EventTriggered. 
     //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
 
     //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
@@ -505,7 +537,7 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.Value.id);
         }
 
-      
+
 
       compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
     }
@@ -517,10 +549,10 @@ namespace SimulationDAL
       string compCodeStr = compCode.Replace("\n", "\\n").Replace("\r", "\\r");
       string codeHasVars = varList == null ? "False" : "True";
       string varNames = "";
-            
+
       if (varList != null)
       {
-        foreach(var i in varList.Values)
+        foreach (var i in varList.Values)
         {
           varNames += ", \"" + i.name + "\"";
         }
@@ -528,14 +560,14 @@ namespace SimulationDAL
       }
       //varNames = string.Join(",", varList.Values);
 
-      string retStr = null;
+      string retStr = null!;
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
       //                "\"code\":\"" + compCodeStr + "\"";
 
       retStr = retStr + Environment.NewLine;
 
       retStr = retStr + "\"code\":\"" + compCodeStr + "\"";
-      
+
       return retStr;
     }
 
@@ -582,10 +614,10 @@ namespace SimulationDAL
       }
 
       if (varList == null)
-        varList = new VariableList(); 
+        varList = new VariableList();
 
       if (dynObj.varNames != null)
-      {     
+      {
         foreach (var varName in dynObj.varNames)
         {
           SimVariable curVar = lists.allVariables.FindByName((string)varName);
@@ -596,13 +628,13 @@ namespace SimulationDAL
           this.AddRelatedItem(curVar.id);
         }
       }
-      
+
       return true;
     }
 
 
 
-    public virtual bool CompileCompCode()
+    public virtual bool CompileCompCode(string modelPath)
     {
       compiledComp.Code = compCode;
 
@@ -643,11 +675,11 @@ namespace SimulationDAL
       return this.compiled;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
       if (!this.compiled)
       {
-        if (!CompileCompCode())
+        if (!CompileCompCode(modelPath))
           throw new Exception("Code failed compile, can not evaluate");
       }
 
@@ -668,9 +700,9 @@ namespace SimulationDAL
 
       try
       {
-         result = compiledComp.EvaluateBool();
+        result = compiledComp.EvaluateBool();
       }
-      catch(Exception e)
+      catch (Exception e)
       {
         throw new Exception("Event \"" + this.name + "\" - Failed to run code. error - " + e.Message);
       }
@@ -700,7 +732,7 @@ namespace SimulationDAL
       //varItem.LookupRelatedItems(all, addToList);
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var itemList = new List<ScanForReturnItem>();
 
@@ -721,25 +753,36 @@ namespace SimulationDAL
       return itemList;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
-      //find the file references in the code and look for a match of the oldRef and replace.         
-      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
+      //find the file references in the code and look for a match of the oldRef and replace.
+     if (!modelPath.EndsWith(@"\"))
+        modelPath += @"\";
 
-      if (paths.Count >= 0)
+      newRef = CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath + newRef));
+
+      string newRefEscaped = newRef.Replace("\\", "\\\\").Replace("\"", "\\\"");
+      var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRefEscaped);
+
+      if (paths.Count <= 0)
         throw new Exception("Failed to find string in the path " + oldRef + " in the source of the Evaluate Variable Event.");
-
+      else
+      {
+        compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
+        compiled = false;
+        CompileCompCode(modelPath);
+      }
     }
   }
 
   public class ExtSimEv : EvalVarEvent //et3dSimEv
   {
     public SimEventType extEventType = SimEventType.etCompEv;
-    protected string variable = null;
+    protected string variable = null!;
 
 
     public ExtSimEv() : base() { }
-    
+
     public ExtSimEv(string inName, string inCompCode, VariableList inVarList, Sim3DVariable sim3dVar, SimEventType evType = SimEventType.etCompEv)
       : base(inName, inCompCode, inVarList)
     {
@@ -751,7 +794,7 @@ namespace SimulationDAL
         this.AddRelatedItem(sim3dVar.id);
       }
       else
-        this.variable = null;
+        this.variable = null!;
     }
 
     protected override EnEventType GetEvType() { return EnEventType.et3dSimEv; }
@@ -772,12 +815,11 @@ namespace SimulationDAL
       }
       //varNames = string.Join(",", varList.Values);
 
-      string retStr = null;
+      string retStr = null!;
       retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
       //                "\"code\":\"" + compCodeStr + "\"";
 
-      if (extEventType != null)
-        retStr = retStr + "," + Environment.NewLine + "\"extEventType\":" + this.extEventType;
+      retStr = retStr + "," + Environment.NewLine + "\"extEventType\":" + this.extEventType;
 
       if (variable != null)
         retStr = retStr + "," + Environment.NewLine + "\"variable\":" + this.variable;
@@ -801,13 +843,13 @@ namespace SimulationDAL
 
         dynObj = ((dynamic)obj).Event;
       }
-      
+
       if (dynObj.extEventType != null)
       {
         this.extEventType = (SimEventType)Enum.Parse(typeof(SimEventType), (string)dynObj.extEventType, true);
 
         //if (dynObj.varNames == null)
-          //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
+        //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
       }
 
       //3D simulation var condition has a variable link
@@ -834,48 +876,49 @@ namespace SimulationDAL
         this.varList.Add(curVar);
         this.AddRelatedItem(curVar.id);
       }
-        
+
 
 
       processed = true;
       return true;
     }
 
-    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, int runIdx)
+    public override bool EventTriggered(MyBitArray curStates, object otherData, TimeSpan curSimTime, TimeSpan start3DTime, TimeSpan nextEvTime, bool initialEval, int runIdx)
     {
       Dictionary<string, SimEventType> evTypes = (Dictionary<string, SimEventType>)otherData;
       switch (extEventType)
       {
         case SimEventType.etCompEv: //works just like a eval var event
-          return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, runIdx));
-          break;
+          return (evTypes.ContainsValue(SimEventType.etCompEv) && base.EventTriggered(curStates, otherData, curSimTime, start3DTime, nextEvTime, initialEval, runIdx));
+         
 
         case SimEventType.etEndSim:
           return evTypes.ContainsValue(SimEventType.etEndSim);
-          break;
+          
 
         case SimEventType.etPing:
           return evTypes.ContainsValue(SimEventType.etPing);
-          break;
+          
 
-        default:          
+        default:
           NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
           logger.Info("Error = externalSim event type not allowed " + extEventType.ToString());
           break;
+          
       }
-      
+
       return false;
     }
 
     public virtual bool CompileCompCode()
     {
       if (extEventType == SimEventType.etCompEv)
-        return base.CompileCompCode();
+        return base.CompileCompCode(modelPath);
       else
         return true;
     }
 
-    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType)
+    public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       var itemList = new List<ScanForReturnItem>();
 
@@ -891,7 +934,7 @@ namespace SimulationDAL
       return itemList;
     }
 
-    public void UpdatePathRefs(string oldRef, string newRef)
+    public new void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
@@ -902,15 +945,32 @@ namespace SimulationDAL
     }
   }
 
-  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust}
+  public enum EnOnChangeTask { ocIgnore, ocResample, ocAdjust }
 
   public abstract class TimeBasedEvent : Event
   {
+    private bool _persistent = false;
     protected EnOnChangeTask onVarChange = EnOnChangeTask.ocIgnore;
     protected override EnEventType GetEvType() { return EnEventType.etTimer; }
+    public bool persistent { get { return _persistent; } }
+    public EnOnChangeTask onVarChangeEnum { get { return onVarChange; } }
 
     public TimeBasedEvent(string inName)
       : base(inName) { }
+
+    public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
+    {
+      dynamic dynObj = (dynamic)obj;
+      
+      if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
+        return false;
+
+      if (dynObj.persistent != null)
+        _persistent = (Boolean)dynObj.persistent;
+
+      processed = true;
+      return true;
+    }
 
     public abstract TimeSpan NextTime(TimeSpan curTime);
 
@@ -927,13 +987,13 @@ namespace SimulationDAL
       {
         case EnOnChangeTask.ocIgnore:
           return oldOccurTime;
-          break;
+          
         case EnOnChangeTask.ocResample:
           return NextTime(curTime) - (curTime - sampledTime);
-          break;
+          
         case EnOnChangeTask.ocAdjust:
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
-          break;
+          
         default:
           throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
@@ -948,7 +1008,7 @@ namespace SimulationDAL
   public class TimerEvent : TimeBasedEvent //etTimer
   {
     public EnTimeRate timerVariableUnit = EnTimeRate.trHours;
-    protected SimVariable timeVariable = null;
+    protected SimVariable timeVariable = null!;
     protected bool fromSimStart = false;
     public TimeSpan time = TimeSpan.FromTicks(0);
 
@@ -1134,7 +1194,7 @@ namespace SimulationDAL
     //public int FailureFuncID { get { return _FailureFuncID; } set { this.linksModified = true; _FailureFuncID = value; } }
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
     public TimeSpan compMissionTime = TimeSpan.FromHours(24);
-    protected SimVariable lambdaVariable = null;
+    protected SimVariable lambdaVariable = null!;
     
     protected override EnEventType GetEvType() { return EnEventType.etFailRate; }
 
@@ -1321,9 +1381,10 @@ namespace SimulationDAL
   {
     public class DistribParams
     {
-      public string name { get; set; }
+      public string name { get; set; } = "";
       public string? variable { get; set; }
       public double? value { get; set; }
+      public bool? useVariable { get; set; }
       public EnTimeRate timeRate { get; set; }
 
     }
@@ -1331,7 +1392,7 @@ namespace SimulationDAL
     protected EnDistType _distType = EnDistType.dtNormal;
     protected EnTimeRate dfltTimeRate = EnTimeRate.trHours;
     //protected Object _mathFuncs = null;
-    protected VariableList vars = null;
+    protected VariableList vars = null!;
 
     protected override EnEventType GetEvType() { return EnEventType.etDistribution; }
 
@@ -1352,7 +1413,7 @@ namespace SimulationDAL
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
       vars = lists.allVariables;
-      dynamic dynObj = null;
+      dynamic dynObj = null!;
       try
       {
         dynObj = (dynamic)obj;
@@ -1398,7 +1459,7 @@ namespace SimulationDAL
         }
 
         string paramsStr = Convert.ToString(dynObj.parameters);
-        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr);
+        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr)!;
       }
       catch
       {
@@ -1456,7 +1517,7 @@ namespace SimulationDAL
       {
         foreach (DistribParams p in this._dParams)
         {
-          if (p.variable != null)
+          if (((p.useVariable == null) || (bool)p.useVariable) && p.variable != null)
           {
             var v = vars.FindByName(p.variable);
             valuePs.Add(Convert.ToDouble(v.value));
@@ -1479,49 +1540,49 @@ namespace SimulationDAL
         switch (this._distType)
         {
           case EnDistType.dtExponential:
-            sampled = (new Exponential((double)valuePs[0], SingleRandom.Instance)).Sample();
+            sampled = (new Exponential((double)valuePs[0]!, SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtNormal: //mean and standard deviation
-            sampled = (new Normal((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+            sampled = (new Normal((double)valuePs[0]!,
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtWeibull:
-            sampled = (new Weibull((double)valuePs[0], (double)valuePs[1], SingleRandom.Instance)).Sample();
+            sampled = (new Weibull((double)valuePs[0]!, (double)valuePs[1]!, SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtLogNormal:
-            sampled = (new LogNormal((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+            sampled = (new LogNormal((double)valuePs[0]!,
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtUniform:
-            sampled = (new ContinuousUniform((double)valuePs[0],
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate),
+            sampled = (new ContinuousUniform((double)valuePs[0]!,
+                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtTriangular:
-            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate), //min
-                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2], _dParams[0].timeRate),   //max
-                                    (double)valuePs[0], //mode or peak
+            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate), //min
+                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2]!, _dParams[0].timeRate),   //max
+                                    (double)valuePs[0]!, //mode or peak
                                     SingleRandom.Instance)).Sample();
             distTimeRate = _dParams[0].timeRate;
             break;
           case EnDistType.dtGamma:
-            sampled = (new Gamma((double)valuePs[0],
-                                 ((double)valuePs[1]), //shape
+            sampled = (new Gamma((double)valuePs[0]!,
+                                 ((double)valuePs[1]!), //shape
                                     SingleRandom.Instance)).Sample(); //rate
             distTimeRate = _dParams[1].timeRate;
             break;
           case EnDistType.dtGompertz:
             //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
 
-            double shape = (double)valuePs[0]; //shape
-            double scale = (double)valuePs[1]; //scale
+            double shape = (double)valuePs[0]!; //shape
+            double scale = (double)valuePs[1]!; //scale
             double r = SingleRandom.Instance.NextDouble();
             sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
 
@@ -1530,7 +1591,7 @@ namespace SimulationDAL
 
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-            break;
+            
         }
       }
       catch
@@ -1544,7 +1605,7 @@ namespace SimulationDAL
       {
         sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
       }
-      catch (OverflowException e)
+      catch (OverflowException)
       {
         sampledTime = TimeSpan.MaxValue;
       }
@@ -1558,13 +1619,13 @@ namespace SimulationDAL
       {
         TimeSpan minTime = TimeSpan.Zero;
         if (valuePs[valuePs.Count - 1]  != null)
-          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2], _dParams[valuePs.Count - 2].timeRate);
+          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2]!, _dParams[valuePs.Count - 2].timeRate);
         if (sampledTime < minTime)
           return minTime;
 
         TimeSpan maxTime = TimeSpan.MaxValue;
         if (valuePs[valuePs.Count - 1] != null)
-          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1], _dParams[valuePs.Count - 1].timeRate);
+          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1]!, _dParams[valuePs.Count - 1].timeRate);
         if (sampledTime > maxTime)
           return maxTime;
       }
@@ -1593,22 +1654,22 @@ namespace SimulationDAL
           case EnDistType.dtExponential:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           case EnDistType.dtNormal: //mean and standard deviation
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           case EnDistType.dtWeibull:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           case EnDistType.dtLogNormal:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            break;
+            
           default:
             throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-            break;
+            
         }
       }
 
@@ -1705,7 +1766,7 @@ namespace SimulationDAL
           if (exception)
             throw new Exception("Failed to find Event - " + name);
           else
-            return null;
+            return null!;
         }
       }
       catch
@@ -1713,13 +1774,13 @@ namespace SimulationDAL
         if (exception)
           throw new Exception("Failed to find Event - " + name);
         else
-          return null;
+          return null!;
       }
     }
 
     public static Event CreateNewEvent(EnEventType evType)
     {
-      Event retEv = null;
+      Event retEv = null!;
 
       switch (evType)
       {
@@ -1781,7 +1842,7 @@ namespace SimulationDAL
         {
           var item = wrapper;
           curName = (string)item.name;
-          Event curItem = null;
+          Event curItem = null!;
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
           {
@@ -1868,7 +1929,7 @@ namespace SimulationDAL
         {
           try
           {
-            ((EvalVarEvent)item.Value).CompileCompCode();
+            ((EvalVarEvent)item.Value).CompileCompCode(lists.rootPath);
           }
           catch (Exception e)
           {
@@ -1893,7 +1954,7 @@ namespace SimulationDAL
       foreach (var curItem in this.Values)
       {
         curItem.rootPath = lists.rootPath;
-        foundList.AddRange(curItem.ScanFor(scanType));
+        foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
       }
 
       return foundList;

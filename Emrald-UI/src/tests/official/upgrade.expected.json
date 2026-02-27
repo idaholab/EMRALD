@@ -204,8 +204,7 @@
         "gateType": "gtAnd",
         "gateChildren": [],
         "compChildren": [],
-        "isRoot": true,
-        "rootName": "LogicNode1"
+        "isRoot": true
       }
     ],
     "VariableList": [

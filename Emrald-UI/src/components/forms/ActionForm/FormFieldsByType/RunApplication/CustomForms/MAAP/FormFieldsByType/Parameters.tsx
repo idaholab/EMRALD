@@ -5,68 +5,43 @@ import {
   TableCell,
   TableBody,
   TextField,
-  Checkbox,
-  MenuItem,
-  FormControlLabel,
+  Autocomplete,
+  InputAdornment,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { SelectComponent } from '../../../../../../../common';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
-import { Parameter } from '../MAAPTypes';
-import { MAAPFormData } from '../maap';
+import { MAAPToString } from '../Parser/maap-to-string';
+import { FaLink } from 'react-icons/fa6';
 
 const Parameters = () => {
   const { formData, setFormData } = useActionFormContext();
-  const [useVariable, setUseVariable] = useState<{ [key: string]: boolean }>({});
-  const [variable, setVariable] = useState<{ [key: string]: string }>({});
-  const [parameters, setParameters] = useState<Parameter[]>([]);
 
-  const maapForm = formData as MAAPFormData;
+  const variables = appData.value.VariableList.map(({ name }) => name);
 
-  useEffect(() => {
-    setUseVariable(
-      maapForm?.parameters?.reduce((accumulator: Record<string, boolean>, param) => {
-        accumulator[param.id as string] = param.useVariable;
-        return accumulator;
-      }, {}) || {},
-    );
-    setVariable(
-      maapForm?.parameters?.reduce((accumulator: Record<string, string>, param) => {
-        accumulator[param.id as string] = param.variable || '';
-        return accumulator;
-      }, {}) || {},
-    );
-  }, []);
+  // Variables used to control React's rendering state.
+  const [useVariable, setUseVariable] = useState<boolean[]>([]);
 
   useEffect(() => {
-    setParameters(maapForm?.parameters || []);
+    const v: boolean[] = [];
+    const s: string[] = [];
+    const l: string[] = [];
+    formData?.parameters?.forEach((parameter, i) => {
+      v[i] = parameter.value.useVariable === true;
+      l[i] = new MAAPToString().expressionToString(parameter.value);
+      if (v[i] && parameter.value.type === 'identifier') {
+        s[i] = parameter.value.value;
+      }
+    });
+    setUseVariable(v);
   }, [formData?.parameters]);
 
-  const handleSetVariable = (variableName: string, row: Parameter) => {
-    setVariable((prev) => ({ ...prev, [row.id as string]: variableName }));
-    const updatedParameters = parameters.map((param) =>
-      param.id === row.id ? { ...param, variable: variableName } : param,
-    );
-    setParameters(updatedParameters);
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, parameters: updatedParameters };
-      return data;
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      caType: 'MAAP',
     });
-  };
-
-  const handleCheckbox = (row: Parameter) => {
-    const value = !useVariable[row.id as string];
-    setUseVariable((prev) => ({ ...prev, [row.id as string]: value }));
-    const updatedParameters = parameters.map((param) =>
-      param.id === row.id ? { ...param, useVariable: value } : param,
-    );
-    setParameters(updatedParameters);
-    setFormData((prevFormData: MAAPFormData) => {
-      const data: MAAPFormData = { ...prevFormData, parameters: updatedParameters };
-      return data;
-    });
-  };
+  }, [useVariable]);
 
   return (
     <Table sx={{ minWidth: 650 }} size="small">
@@ -82,39 +57,61 @@ const Parameters = () => {
         </TableRow>
       </TableHead>
       <TableBody>
-        {parameters?.map((row: Parameter, idx: number) => (
+        {formData?.parameters?.map((row, idx) => (
           <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <TableCell component="th" scope="row">
-              {row.name}
+              {row.target.type === 'call_expression'
+                ? new MAAPToString().callExpressionToString(row.target)
+                : row.target.value}
             </TableCell>
             <TableCell>
-              {useVariable[row.id as string] ? (
-                <SelectComponent
-                  value={variable[row.id as string] || ''}
-                  label={'EMRALD Variable'}
-                  setValue={(e) => handleSetVariable(e, row)}
-                  sx={{ width: 223, mt: 0 }}
-                >
-                  {appData.value.VariableList.map((variable) => (
-                    <MenuItem key={variable.name} value={variable.name}>
-                      {variable.name}
-                    </MenuItem>
-                  ))}
-                </SelectComponent>
-              ) : (
-                <TextField size="small" value={row.value} />
-              )}
-            </TableCell>
-            <TableCell align="center">
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={useVariable[row.id as string] || false}
-                    value={useVariable[row.id as string] || false}
-                    onChange={() => handleCheckbox(row)}
+              <Autocomplete
+                freeSolo
+                aria-label="Use Variable"
+                size="small"
+                disablePortal
+                options={variables}
+                value={new MAAPToString().expressionToString(row.value)}
+                sx={{ width: 300 }}
+                onChange={(_, newValue) => {
+                  row.value = {
+                    type: 'identifier',
+                    value: newValue ?? '',
+                    useVariable: true,
+                  };
+                  setUseVariable((old) => {
+                    old[idx] = true;
+                    return old;
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                        startAdornment: useVariable[idx] ? (
+                          <InputAdornment position="start">
+                            <FaLink color="#008362" />
+                          </InputAdornment>
+                        ) : undefined,
+                      },
+                    }}
+                    sx={{ input: { color: useVariable[idx] ? '#008362' : 'inherit' } }}
+                    onChange={(e) => {
+                      row.value = {
+                        type: 'identifier',
+                        value: e.target.value,
+                        useVariable: false,
+                      };
+                      setUseVariable((old) => {
+                        old[idx] = false;
+                        return old;
+                      });
+                    }}
                   />
-                }
-                label="Use Variable"
+                )}
+                getOptionLabel={(option) => option.toString()}
               />
             </TableCell>
           </TableRow>

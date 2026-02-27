@@ -1,11 +1,11 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { State } from '../../types/State';
+import type { State } from '../../types/EMRALD_Model';
 import { Box } from '@mui/material';
 
 import StateTable from '../forms/VariableForm/FormFieldsByType/StateTable';
 import {
-  AccrualStateItem,
+  type AccrualStateItem,
   useVariableFormContext,
 } from '../forms/VariableForm/VariableFormContext';
 
@@ -14,23 +14,25 @@ const StateDropTarget: React.FC = () => {
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
-    drop: (item: State) => {
-      const newStateItem: AccrualStateItem = {
-        stateName: item.name,
-        accrualMult: 1,
-        multRate: 'trHours',
-        accrualTable: [],
-        type: 'ctMultiplier',
-      };
-      if (accrualStatesData) {
-        const exists = accrualStatesData.some(
-          (state) => state.stateName === newStateItem.stateName,
-        );
-        if (item && !exists) {
-          setAccrualStatesData(sortNewStates([...accrualStatesData, newStateItem]));
+    drop: (item?: State) => {
+      if (item) {
+        const newStateItem: AccrualStateItem = {
+          stateName: item.name,
+          accrualMult: 1,
+          multRate: 'trHours',
+          accrualTable: [],
+          type: 'ctMultiplier',
+        };
+        if (accrualStatesData) {
+          const exists = accrualStatesData.some(
+            (state) => state.stateName === newStateItem.stateName,
+          );
+          if (!exists) {
+            setAccrualStatesData(sortNewStates([...accrualStatesData, newStateItem]));
+          }
+        } else {
+          setAccrualStatesData(sortNewStates([newStateItem]));
         }
-      } else {
-        setAccrualStatesData(sortNewStates([newStateItem]));
       }
     },
     collect: (monitor) => ({

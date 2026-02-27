@@ -12,13 +12,21 @@ import {
 } from '@mui/material';
 import { useEventFormContext } from '../EventFormContext';
 import { useDrop } from 'react-dnd';
-import { State } from '../../../../types/State';
+import type { State } from '../../../../types/EMRALD_Model';
 import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const StateChange = () => {
-  const { allItems, ifInState, setAllItems, setIfInState, triggerStates, setTriggerStates } =
-    useEventFormContext();
+  const {
+    allItems,
+    ifInState,
+    setAllItems,
+    setIfInState,
+    triggerStates,
+    setTriggerStates,
+    evalEvOnStateEntry,
+    setEvalEvOnStateEntry,
+  } = useEventFormContext();
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -35,7 +43,7 @@ const StateChange = () => {
   });
   const backgroundColor = isOver ? 'lightgreen' : 'white';
   const removeTriggerState = (name: string) => {
-    var newTriggerStates = triggerStates;
+    let newTriggerStates = triggerStates;
     if (newTriggerStates) {
       newTriggerStates = newTriggerStates.filter((state) => state !== name);
       setTriggerStates(newTriggerStates);
@@ -43,33 +51,50 @@ const StateChange = () => {
   };
   return (
     <div>
-      <RadioGroup
-        name="radio-buttons-group"
-        value={ifInState}
-        onChange={(e) => setIfInState(e.target.value === 'true' ? true : false)}
-        sx={{ display: 'flex', flexDirection: 'row' }}
-      >
+      <div style={{ display: 'flex', alignItems: ifInState ? 'flex-start' : 'flex-end' }}>
+        <RadioGroup
+          name="radio-buttons-group"
+          value={ifInState}
+          onChange={(e) => {
+            setIfInState(e.target.value === 'true');
+            setEvalEvOnStateEntry(e.target.value === 'true');
+          }}
+          sx={{ display: 'flex', flexDirection: 'column' }}
+        >
+          <FormControlLabel
+            value="true"
+            control={<Radio />}
+            label="On Enter State/s"
+            checked={ifInState}
+          />
+          <FormControlLabel
+            value="false"
+            control={<Radio />}
+            label="On Exit State/s"
+            checked={!ifInState}
+          />
+        </RadioGroup>
         <FormControlLabel
-          value="true"
-          control={<Radio />}
-          label="On Enter State/s"
-          checked={ifInState}
+          label={ifInState ? 'Or already in state' : 'Or already out of state'}
+          control={
+            <Checkbox
+              checked={evalEvOnStateEntry ? true : false}
+              onChange={(e) => {
+                setEvalEvOnStateEntry(e.target.checked);
+              }}
+            />
+          }
         />
-        <FormControlLabel
-          value="false"
-          control={<Radio />}
-          label="On Exit State/s"
-          checked={!ifInState}
-        />
-      </RadioGroup>
-
+      </div>
       <FormControlLabel
         label="All Items"
         value={allItems}
         control={
           <Checkbox
             checked={allItems ? true : false}
-            onChange={(e) => setAllItems(e.target.checked)}
+            onChange={(e) => {
+              setAllItems(e.target.checked);
+            }}
           />
         }
       />
@@ -98,7 +123,9 @@ const StateChange = () => {
                       <Tooltip title="Delete Row">
                         <DeleteIcon
                           sx={{ cursor: 'pointer', ml: 3 }}
-                          onClick={() => removeTriggerState(name)}
+                          onClick={() => {
+                            removeTriggerState(name);
+                          }}
                         />
                       </Tooltip>
                     </StyledTableCell>
