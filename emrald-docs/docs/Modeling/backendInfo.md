@@ -32,13 +32,17 @@ Users can define scripts in the following locations:
 All custom user scripts can use the following default variables:
 - **CurTime** type[double]: The current time of the simulation in hours.
 - **RunIdx** type[int]: The current index or count of simulations run in this batch.
+- **RootPath** type[string]: Full path to the current location of the EMRALD model being run. When multi-threading, this points to the temporary copy used for that thread.
+- **OrigRootPath** type[string]: Full path to the original EMRALD model being run.
+- **Rand** type[Random]: Random object backed by the system RNG; when a seed is supplied, results are reproducible.
+- **MultiThreaded** type[bool]: True if the run is executing in multi-threaded mode.
 
 
 The "Run Application" action, see Run Application under [Types of Actions](./actions.md#types-of-actions), also has the following:
 Preprocess Code
-- **ExePath** type[string]: The path to the application being run.
+- **ExePath** type[string]: Full path to the EMRALD simulation engine executable.
 Postprocess Code
-- **ExeExitCode** type[int]: Exit code of the application that ran.
+- **ExeExitCode** type[int]: (Postprocess only) Exit code from running the linked executable.
 - **OutputFile** type[string]: The path to any text written to standard out when executing the application.
 
 
