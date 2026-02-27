@@ -132,7 +132,7 @@ The bottom half of the Left Navigation Frame allows you to access your Actions, 
 | Items from every diagram in the project.               | Shows items can be used in any diagram. New Global items must be created through the right-click option of the selected type. Items created in a specific diagram are local to that diagram | Items currently open and being worked on in the diagram. |
 
 **Actions**<br>
-Actions change the properties or cause movement though a model during a simulation run. <br>
+Actions change the properties or cause movement through a model during a simulation run. <br>
 
 See [Actions](/Modeling/actions.md) for more information.
 
