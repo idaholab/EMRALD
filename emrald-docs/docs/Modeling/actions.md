@@ -136,7 +136,7 @@ same type as the assigned variable or an error will occur. Other variables from 
 ### External Simulation Message
 <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/>  
 
-Listed as "Ext. Sim Message" in the drop-down menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./xmppProtocol.md#xmpp-protocol) for details on coupling code to EMRALD.
+Listed as "Ext. Sim Message" in the drop-down menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./couplingProtocols.md#xmpp-protocol) for details on coupling code to EMRALD.
 
 <img src="/images/Modeling/actions/ExtSimMessageOptions.png" alt="External Simulation Message Options" width="500"/>
 
