@@ -61,7 +61,7 @@ export default defineConfig({
             text: 'Coupling',
             link: '/Modeling/couplingProtocols',
             items: [
-              { text: 'Protocols', link: '/Modeling/couplingProtocols' },
+              { text: 'Protocols ', link: '/Modeling/couplingProtocols' }, 
               { text: 'WebSocket Instructions', link: '/Modeling/webSocketCoupling' },
             ],
           },
