@@ -9,7 +9,7 @@ Actions that are triggered immediately are listed in the **Immediate Actions** s
 ## Creating a New Action
 
 **Option 1:** <br>
-Open the Diagram you would like your action to be in. Locate the State you would like to add the action to and either right-click on the immediate action label or on the event you would like to add it to. Click "New Action". <br>
+Open the Diagram where you would like your action to appear. Locate the State you would like to add the action to and either right-click on the "Immediate actions" label or on the event you would like to add it to. Next click "New Action". <br>
 ![New Action 1_1](/images/Modeling/actions/NewAction1.png)
 
 Fill out the dialogue box and press "SAVE". A description is optional.
@@ -22,7 +22,7 @@ The action will appear in the Immediate Actions list or Event that you initially
 ![New Action 4_1](/images/Modeling/actions/NewAction4_1.png)<br>
 
 **Option 2:** <br>
-Click on the Global tab in the Left Navigation Frame Modeling Pieces Tabs. The descriptor for each section under the tab should have changed to Global.<br>
+Click on the Global tab in the Left Navigation Frame Modeling Pieces tabs. The descriptor for each section under the tab should have changed to Global.<br>
 ![New Action 1_2](/images/Modeling/webUIOverview/GlobalTabs.png)
 
 Then right click on Global Actions. A dropdown menu will appear, click on "New Action". <br>
@@ -38,13 +38,13 @@ The action will appear in the Global Actions list. <br>
 
 ## Adding an Existing Action
 
-In the Left Navigation Frame, locate the action you would like to re-use. Click and hold on to the action and drag it to the Event Actions section until a plus symbol shows and release your mouse.<br>
+In the Left Navigation Frame, locate the action you would like to re-use. Click and hold on to the action and drag it to the Event Actions section until a plus symbol shows and release your mouse button.<br>
 ![Add an Existing Action 1](/images/Modeling/actions/AddExistingAction1.png)
 
 The event will appear in the Event Actions section.<br>
 ![Add an Existing Action 2](/images/Modeling/actions/AddExistingAction2.png)
 
-You can also add an action in this way to the Immediate Actions section. You would just instead drag it to the Immediate Actions section and it would appear there.
+You can also use this method to add an action to the Immediate Actions section. Instead, you would just drag it to the Immediate Actions section and it would appear there.
 
 ## Editing an Action
 **Option 1:** <br>
@@ -60,7 +60,7 @@ The Action Properties window should appear in the Modeling Area.<br>
 Open the Diagram containing the action and locate the action. Right-click on the action and click "Action Properties".<br>
 ![Edit an Action Option 2](/images/Modeling/actions/EditActionOpt2.png)
 
-The Action Properties window should appear in the Diagram Window.<br>
+The Action Properties window should appear in the Diagram window.<br>
 ![Edit an Action Option 2 Step 2](/images/Modeling/actions/EditActionOpt2_2.png)
 
 ## Removing an Action
@@ -77,7 +77,7 @@ On the Left Navigation Frame, click on the tab (All, Global, or Local) where you
 <img src="/images/Modeling/actions/DeleteActionInList.png" style="width:300px;">
 <br>
 
-A confirmation window will appear in the Modeling Area. Click "DELETE." <br>
+A confirmation window will appear in the Modeling Area. Click "DELETE". <br>
 ![Delete Action Option 1 Step 2](/images/Modeling/actions/DeleteActionInList_2.png)<br>
 
 The action will be deleted from the entire model and no longer be listed in the Left Navigation Frame. <br>
@@ -89,59 +89,59 @@ The action will be deleted from the entire model and no longer be listed in the 
  Open the Diagram containing the action and locate the action. Right-click on the action and click "Delete Action".<br>
 ![Deleting an Action in a State](/images/Modeling/actions/DeleteActionInState.png)
 
-A confirmation window will appear in the Modeling Area. Click "DELETE." <br>
+A confirmation window will appear in the Modeling Area. Click "DELETE". <br>
 ![Delete Action Option 1 Step 2](/images/Modeling/actions/DeleteActionInList_2.png)<br>
 
 The action will no longer be listed in the state and will no longer be listed in the Left Navigation Frame. <br>
 ![Delete an Action in a State Step 2](/images/Modeling/actions/DeleteActionInState_2.png)</br>
-Use "[Remove Action](#removing-an-action)" to just remove it from the selected state.
+Use "[Remove Action](#removing-an-action)" to remove it from the selected state only.
 
 ## Types of Actions
 
 <h3>Transition <img src="/images/Modeling/actions/TransitionArrow.png" alt="Transition" width="25"/></h3>
 
-A transition action always adds the state it references to the current state list, meaning that it is now in that state during the simulation. If the event is marked as "Exit" when it occurs, (See [State Properties](./states.md#state-properties) and [Editing an Event](./events.md#editing-an-event) for more information) then the model is
+A transition action always adds the state it references to the current state list, meaning that it is now in that state during the simulation. If the event is marked as "Exit" when it occurs, (see [State Properties](./states.md#state-properties) and [Editing an Event](./events.md#editing-an-event) for more information) then the model is
 moving from the one state to the other. A solid black arrow indicates moving, and a dashed green indicated adding to the current states. A transition action in 
-the "Immediate Actions" list (See [Immediate and Event Actions](#immediate-and-event-actions) for more information) will always be adding to the current states because there is no event with an exit property and it would be bad modeling to exit a state immediately after entering, making it possible for other immediate actions to not be executed.
+the "Immediate Actions" list (see [Immediate and Event Actions](#immediate-and-event-actions) for more information) will always be adding to the current states because there is no event with an exit property, and it would be bad practice in modeling to exit a state immediately after entering, preventing other immediate actions from being executed.
 
 <img src="/images/Modeling/actions/TransitionActionOptions.png" alt="Transition Action Options" width="500"/>
 
 - **Mutually Exclusive:** Check this box if you would like the action to transition to one and only one of the states in the list. If not checked, all destinations must either 
 add up to 100% or use "Remaining" on the last destination and one of the destinations will be sampled. If checked, then multiple or no destinations could be added 
-to the current state list. A sample is taken for each item and all the destinations that meet the stated probability are chosen.  
+to the current state list. A sample is taken for each item, and all the destinations that meet the stated probability are chosen.  
 - **State Table:** 
-To add a new destination state, go to the Left Navigation Window, click and hold on to the desired state and drag it to the table until a plus symbol shows and release your mouse.<br>
+To add a new destination state, go to the Left Navigation Window, click and hold on to the desired state. Then, drag it to the table until a plus symbol shows and release your mouse button.<br>
 ![Add a State to an Action 1](/images/Modeling/actions/StateToAction1.png)
 
 The state will be listed in the table.<br>
 ![Add a State to an Action 2](/images/Modeling/actions/StateToAction2.png)
 
-Then fill in the probability. 
-You can either fill in a constant value from 0.0 to 1.0 in the second column or you can choose a variable probability in the third column by clicking the field then 
+Then, fill in the probability. 
+You can either fill in a constant value from 0.0 to 1.0 in the second column or you can choose a variable probability in the third column by clicking the field and then 
 clicking the variable you want to define the probability. The variable allows you to dynamically change the rate according to other conditions, but if the variable
 changes after entering the state, a new sample will not be made.
 
 <h3>Change Variable Value <img src="/images/Modeling/actions/varCond.png" alt="Change Variable Value" width="25"/></h3>  
-Listed as "Change Var Value" in the dropdown menu. This action changes the value of a variable according to a user defined script.
+Listed as "Change Var Value" in the drop-down menu. This action changes the value of a variable according to a user-defined script.
 
 <img src="/images/Modeling/actions/ChangeVarValueOptions.png" alt="Change Variable Value Options" width="500"/>
 
 - **Variable:** Click the field to expand the drop down menu of variables you created in the model. Click on the variable to be updated. 
 The value returned by the script is assigned to the variable, so one must be selected in order to create the event. 
-- **New Value Code (c#):** Type or copy and paste into this text field. The script must have a return value and that value must be the
+- **New Value Code (c#):** Type or copy and paste into this text field. The script must have a return value, and that value must be the
 same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section.
-- **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" dropdown menu.
+- **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" drop-down menu.
 
 <h3>External Simulation Message <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/></h3>  
 
-Listed as "Ext. Sim Message" in the dropdown menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./xmppProtocol.md#xmpp-protocol) for details on coupling code to EMRALD.
+Listed as "Ext. Sim Message" in the drop-down menu. This action sends a message to an external code through coupled communication messaging protocol. See [XMPP Protocol](./xmppProtocol.md#xmpp-protocol) for details on coupling code to EMRALD.
 
 <img src="/images/Modeling/actions/ExtSimMessageOptions.png" alt="External Simulation Message Options" width="500"/>
 
 See [External Simulation Message Action](./externalSims.md#external-simulation-message-action) for more information.
 
 <h3>Run Application <img src="/images/Modeling/actions/cogwheel.png" alt="Run Application" width="25"/></h3>  
-Runs user defined scripts to both execute an external piece of code and process the results to direct state changes.</br>
+Runs user-defined scripts to both execute an external piece of code and process the results to direct state changes.</br>
 
 <img src="/images/Modeling/actions/RunApplicationOptions.png" alt="Run Application Options" width="500"/>
 
@@ -154,11 +154,11 @@ return "c:/somepath/file.txt" to open a specific file.
 - **Postprocess Code (C#):** Type or copy and paste into this text field the C# code you would like to be executed after the executable is finished.
 If the "State List" return type is selected, this code typically processes the results of the executable and determines what to do because of them. It must return a list of states to enter or exit.
 It is recommened that you use a C# compiler to test and debug code before entering it. See the video [Coupling an Executable](https://www.youtube.com/watch?v=SZzNcougc9k&list=PLX2nBoWRisnXWhC2LD9j4jV0iFzQbRcFX&index=6) for detailed instructions and an example.
-- **Variables used in code:**  A list of variables available in the model. Click the check box to identify which variables are used in the code.
-Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. 
+- **Variables Used in Code:**  A list of variables available in the model. Click the check box to identify which variables are used in the code.
+Pre-existing variables such as "CurTime", are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. 
 
 ## Summary of Icons
-Below is a table of icons that either identify the type of action (left hand side of action item) or identify the status of an action (right hand side of action item).
+Below is a table of icons that either identify the type of action (left-hand side of action item) or identify the status of an action (right-hand side of action item).
 
 |<div style="width:100px">Icon</div>|<div style="width:300px">Description</div>|
 |---|---|

@@ -26,7 +26,7 @@ Diagram elements are tabulated by States, Events, Actions, and Arrows in the fol
   |![Timer Icon](/images/Modeling/events/alarm.png)|Timer Icon|
   |<div style="width:25px">![Failure Rate Icon](/images/Modeling/events/dice.png)</div>|Failure Rate Icon|
   |<div style="width:25px">![Distribution Rate Icon](/images/Modeling/events/dist.png)</div>|Distribution Rate Icon|
-  |<div style="width:25px">![Exit Parent State Icon](/images/Modeling/events/exit-icon.png)</div>|Exit Parent state when Event is triggered Icon|
+  |<div style="width:25px">![Exit Parent State Icon](/images/Modeling/events/exit-icon.png)</div>|Exit Parent state when Event is a Triggered Icon|
 
   See [Events](/Modeling/events.md) for more information.
 
@@ -39,8 +39,8 @@ Diagram elements are tabulated by States, Events, Actions, and Arrows in the fol
   |<div style="width:25px">![External Simulation Message](/images/Modeling/actions/extSim.png)</div>|External Simulation Message Action|
   |![Run Application](/images/Modeling/actions/cogwheel.png)|Run Application Action|
   |**Status Icons**| |
-  |<img src="/images/Modeling/actions/connector.gif" alt="Arrow Icon" width="25"/>|This click and drag from this icon to connect the action to a state.|  
-  |![Link Icon](/images/Modeling/actions/link.png)|This icon appears instead of an arrow, when the transition goes to a state not in the current diagram.|
+  |<img src="/images/Modeling/actions/connector.gif" alt="Arrow Icon" width="25"/>|Click and drag from this icon to connect the action to a state.|  
+  |![Link Icon](/images/Modeling/actions/link.png)|This icon appears instead of an arrow, when the transition goes to a state that is not in the current diagram.|
 
 <!-- |<div style="width:25px">![Missing Information Action Icon](/images/Modeling/actions/questionOrange.png)</div>|This icon appears when the action is not fully defined| -->
 <!-- |<img src="/images/Modeling/actions/delete2.png" alt="Red X Icon" width="25"/>|This icon appears when there is an error with the item. Hover over name (not the X) to see a description of the error.| -->
@@ -50,8 +50,8 @@ Diagram elements are tabulated by States, Events, Actions, and Arrows in the fol
 ## Arrows
   |<div style="width:100px">Icon</div>|<div style="width:300px">Description</div>|
   |---|---|
-  |<div style="width:150px">![Green Arrow](/images/Modeling/icons/GreenArrow.png)</div>|Indicates a split or adding a new state to the "current states" list when the action is executed, while staying in the state with the event that occured.|
-  |<div style="width:150px">![Black Arrow](/images/Modeling/icons/GrayArrow.png)</div>|Indicates forced exititing from one state to another when the action is executed.|
+  |<div style="width:150px">![Green Arrow](/images/Modeling/icons/GreenArrow.png)</div>|Indicates a split or adding a new state to the "current states" list when the action is executed, while staying in the state with the event that occurred.|
+  |<div style="width:150px">![Black Arrow](/images/Modeling/icons/GrayArrow.png)</div>|Indicates forced exiting from one state to another when the action is executed.|
 
   See [Arrows](./diagrams.md#arrows) on the Diagrams page for more information.
 
