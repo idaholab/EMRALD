@@ -32,6 +32,7 @@ interface VariableFormContextType {
   varScope: VarScope;
   value: number | string | boolean;
   sim3DId?: string;
+  extSim?: string;
   resetOnRuns?: boolean;
   docType?: string;
   docPath?: string;
@@ -57,6 +58,7 @@ interface VariableFormContextType {
   setDocLink: React.Dispatch<React.SetStateAction<string | undefined>>;
   setVarScope: React.Dispatch<React.SetStateAction<VarScope>>;
   setSim3DId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setExtSim: React.Dispatch<React.SetStateAction<string | undefined>>;
   setPathMustExist: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   handleTypeChange: (newType: VariableType) => void;
   handleNameChange: (updatedName: string) => void;
@@ -85,20 +87,21 @@ export const useVariableFormContext = (): VariableFormContextType => {
 const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [accrualStatesData, setAccrualStatesData] = useState<AccrualStateItem[]>();
   const { handleClose } = useWindowContext();
-  const [name, setName] = useState<string>('Int_');
+  const [name, setName] = useState('Int_');
   const [originalName, setOriginalName] = useState<string>();
   const [namePrefix, setNamePrefix] = useState<string>();
-  const [desc, setDesc] = useState<string>('');
+  const [desc, setDesc] = useState('');
   const [type, setType] = useState<VariableType>('int');
   const [varScope, setVarScope] = useState<VarScope>('gtGlobal');
   const [value, setValue] = useState<number | string | boolean>('');
   const [sim3DId, setSim3DId] = useState<string>();
-  const [resetOnRuns, setResetOnRuns] = useState<boolean | undefined>(true);
+  const [extSim, setExtSim] = useState<string>();
+  const [resetOnRuns, setResetOnRuns] = useState<boolean>();
   const [docType, setDocType] = useState<string | undefined>();
   const [docPath, setDocPath] = useState<string | undefined>();
   const [docLink, setDocLink] = useState<string | undefined>();
   const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [hasError, setHasError] = useState(false);
   const variable = useSignal<Variable>(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
   const [regExpLine, setRegExpLine] = useState<number>();
@@ -123,8 +126,8 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     if (variableData.name) {
       setName(variableData.name);
       setOriginalName(variableData.name);
-      const prefix: string = variableData.name.split('_')[1]
-        ? variableData.name.split('_')[0] + '_'
+      const prefix = variableData.name.split('_')[1]
+        ? (variableData.name.split('_')[0] ?? '') + '_'
         : '';
       setNamePrefix(prefix);
     } else {
@@ -133,23 +136,24 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setDesc(variableData.desc ?? '');
     setType(variableData.type);
     setVarScope(variableData.varScope);
-    variableData.value !== undefined && setValue(String(variableData.value));
+    setValue(String(variableData.value));
     variableData.sim3DId && setSim3DId(variableData.sim3DId);
+    variableData.extSim && setExtSim(variableData.extSim);
     setResetOnRuns(variableData.resetOnRuns);
     variableData.docType && setDocType(variableData.docType);
     variableData.docPath && setDocPath(variableData.docPath);
     variableData.docLink && setDocLink(variableData.docLink);
-    variableData.pathMustExist && setPathMustExist(variableData.pathMustExist);
+    typeof variableData.pathMustExist !== 'undefined' && setPathMustExist(variableData.pathMustExist);
     variableData.accrualStatesData && setAccrualStatesData(variableData.accrualStatesData);
-    if (variableData.regExpLine !== undefined) {
+    if (typeof variableData.regExpLine !== 'undefined') {
       setShowRegExFields(true);
       setRegExpLine(variableData.regExpLine);
     }
-    if (variableData.begPosition) {
+    if (typeof variableData.begPosition !== 'undefined') {
       setShowRegExFields(true);
       setBegPosition(variableData.begPosition);
     }
-    if (variableData.numChars) {
+    if (typeof variableData.numChars !== 'undefined') {
       setShowNumChars(true);
       setNumChars(variableData.numChars);
     }
@@ -165,7 +169,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
 
   const handleTypeChange = (newType: VariableType) => {
     if (name.split('_')[1]) {
-      const updatedPrefix: string = PREFIXES[newType] || PREFIXES.default;
+      const updatedPrefix: string = PREFIXES[newType] ?? PREFIXES.default;
       setNamePrefix(updatedPrefix);
 
       const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
@@ -192,6 +196,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setVarScope('gtGlobal'); // Default value for varScope
     setValue(''); // Default value for value
     setSim3DId(undefined); // Reset to undefined
+    setExtSim(undefined);
     setResetOnRuns(true); // Reset to true
     setDocType(undefined); // Reset to undefined
     setDocPath(undefined); // Reset to undefined
@@ -209,6 +214,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       desc,
       varScope,
       sim3DId,
+      extSim,
       docType: docType as DocVarType,
       docPath,
       docLink,
@@ -223,6 +229,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     // Remove undefined properties from the JSON
     Object.keys(variable.value).forEach((key) =>
       variable.value[key as keyof Variable] === undefined
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         ? delete variable.value[key as keyof Variable]
         : {},
     );
@@ -260,6 +267,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         varScope,
         value,
         sim3DId,
+        extSim,
         resetOnRuns,
         docType,
         docPath,
@@ -285,6 +293,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         setDocLink,
         setVarScope,
         setSim3DId,
+        setExtSim,
         setPathMustExist,
         handleTypeChange,
         handleNameChange,

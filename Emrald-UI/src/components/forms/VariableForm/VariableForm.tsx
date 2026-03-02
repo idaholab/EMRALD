@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 import type { Variable, VarScope } from '../../../types/EMRALD_Model';
 import MainDetailsForm from '../MainDetailsForm';
 import TextField from '@mui/material/TextField';
@@ -29,6 +28,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     varScope,
     value,
     sim3DId,
+    extSim,
     resetOnRuns,
     docType,
     docPath,
@@ -48,6 +48,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     setDocLink,
     setVarScope,
     setSim3DId,
+    setExtSim,
     setPathMustExist,
     handleTypeChange,
     handleNameChange,
@@ -180,7 +181,12 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 }
               />
               {varScope === 'gt3DSim' && (
-                <ExtSimFields sim3DId={sim3DId ?? ''} setSim3DId={setSim3DId} />
+                <ExtSimFields
+                  sim3DId={sim3DId ?? ''}
+                  setSim3DId={setSim3DId}
+                  extSim={extSim ?? ''}
+                  setExtSim={setExtSim}
+                />
               )}
             </>
           )}
