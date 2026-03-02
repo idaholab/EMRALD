@@ -240,15 +240,17 @@ const useLogicNodeTreeDiagram = () => {
   const removeNode = (parentNode: string, nodeName: string, type: NodeType) => {
     const parentLogicNode = getLogicNodeByName(parentNode);
     const nodeToRemove = getLogicNodeByName(nodeName);
-    if (!parentLogicNode || !nodeToRemove) {
+    if (!parentLogicNode) {
       return;
     }
     if (type === 'gate') {
-      if (nodeToRemove.gateChildren.length > 0) {
-        recurseAndDeleteChildren(nodeToRemove);
-      }
-      if (canDeleteNode(nodeName)) {
-        deleteLogicNode(nodeToRemove.id);
+      if (nodeToRemove) {
+        if (nodeToRemove.gateChildren.length > 0) {
+          recurseAndDeleteChildren(nodeToRemove);
+        }
+        if (canDeleteNode(nodeName)) {
+          deleteLogicNode(nodeToRemove.id);
+        }
       }
       if (parentNode) {
         parentLogicNode.gateChildren = parentLogicNode.gateChildren.filter(
