@@ -916,6 +916,7 @@ export interface Variable {
    * Optional. For variables of varScope gt3DSim, this is the external simulations name of the variable. It is used in sending a message to the external simulation.
    */
   sim3DId?: string
+  extSim?: string
   changeLog?: ChangeLog
   /**
    * Flag to indicate the user want to do cumulative statistics in the results.
