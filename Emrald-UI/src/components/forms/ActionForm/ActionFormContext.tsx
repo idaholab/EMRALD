@@ -252,14 +252,17 @@ const ActionFormContextProvider: React.FC<PropsWithChildren> = ({ children }) =>
       desc,
       actType,
       newStates: newStateItems
-        ? newStateItems.map((newStateItem): NewState => {
-            return {
+        ? newStateItems.map((newStateItem): NewState => newStateItem.probType === 'fixed' ? {
+              toState: newStateItem.toState,
+              prob: Number(newStateItem.prob),
+              failDesc: newStateItem.failDesc ?? '',
+            } : {
               toState: newStateItem.toState,
               prob: Number(newStateItem.prob),
               failDesc: newStateItem.failDesc ?? '',
               varProb: newStateItem.varProb,
-            };
-          })
+            }
+          )
         : undefined,
       mutExcl: mutuallyExclusive,
       codeVariables: ['atCngVarVal', 'atRunExtApp'].includes(actType) ? codeVariables : undefined,

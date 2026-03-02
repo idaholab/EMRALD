@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import {
   Box,
   Checkbox,
@@ -38,7 +39,7 @@ const StateChange = () => {
       }
     },
     collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+      isOver: monitor.isOver(),
     }),
   });
   const backgroundColor = isOver ? 'lightgreen' : 'white';
@@ -50,7 +51,7 @@ const StateChange = () => {
     }
   };
   return (
-    <div>
+    <>
       <div style={{ display: 'flex', alignItems: ifInState ? 'flex-start' : 'flex-end' }}>
         <RadioGroup
           name="radio-buttons-group"
@@ -99,7 +100,7 @@ const StateChange = () => {
         }
       />
       <Box
-        ref={drop}
+        ref={drop as unknown as Ref<unknown>}
         sx={{ mt: 3 }}
         style={{
           height: '100%',
@@ -149,7 +150,7 @@ const StateChange = () => {
           </Box>
         )}
       </Box>
-    </div>
+    </>
   );
 };
 

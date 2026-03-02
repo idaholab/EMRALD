@@ -38,9 +38,8 @@ namespace UnitAndIntegrationTesting
     {
       // Reset IDs and the public async Task number generator so tests don't fail when run together
       SingleNextIDs.Instance.ResetAllIDs();
-      SingleRandom.Reset();
+      SingleRandom.Reset(0);
       // set up the public async Task number generator so it starts with the same key each time.
-      ConfigData.seed = 0;
       if (model != null)
         model.rootPath = CommonFunctions.NormalizeGetFullPath(MainTestDir() + ModelFolder());
     }
@@ -112,6 +111,7 @@ namespace UnitAndIntegrationTesting
       SetupTheTest(testName, mainModel);
 
       DistEvent ev = new DistEvent();
+
       //use a sample JSON piece to set the values
       string fileLoc = MainTestDir() + ModelFolder() + testName + ".json";
       string jsonModel = "";
@@ -126,8 +126,8 @@ namespace UnitAndIntegrationTesting
 
       //test for correct value, known because of key used in public async Task
       TimeSpan s = ev.NextTime(TimeSpan.FromSeconds(0));
-      Assert.True(s.TotalMilliseconds == 276367885.3593);
-      
+      Assert.True(s.TotalMilliseconds == 276367885.3593); 
+
     }
 
 

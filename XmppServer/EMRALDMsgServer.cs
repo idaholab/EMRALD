@@ -2,8 +2,10 @@
 
 using Matrix;
 using Matrix.Xmpp.Base;
+using Matrix.Xmpp.PubSub.Event;
 using Matrix.Xmpp.Roster;
 using MessageDefLib;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -54,9 +56,10 @@ namespace XmppMessageServer
 
     public TEventCallBack evCallBackFunc { set { _evCallBackFunc = value; } }
 
-    public EMRALDMsgServer(string passwd, IAppSettingsService appSettingsService)
+    
+    public EMRALDMsgServer(string passwd)
     {
-      _xmppMsgServer = new XmppMessageServer(m_port, passwd, appSettingsService);
+      _xmppMsgServer = new XmppMessageServer(m_port, passwd);
       _xmppMsgServer.SetMessageClient(this);
     }
 

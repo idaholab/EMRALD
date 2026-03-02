@@ -23,6 +23,7 @@ namespace MessageDefLib
   //{
   //  public string info { get; set; } //JSON string of data specifications by the external code
   //}
+
   public class ItemData
   {
     public ItemData(string inNameId, string inValue)//, CompMsgType type)
@@ -73,7 +74,7 @@ namespace MessageDefLib
     public TimeSpan endTime { get; set; } //time in global run time of when to end the simulation
     public int seed { get; set; } //optional random seed from to start with
     public int numRuns { get; set; } //planned number of runs 
-    public int curRun { get; set; }
+    public int curRun { get; set; } //current run
     public string configData { get; set; } //any additional information required by the client to setup run. Set by the user in the controller or EMRALD model.
   }
 
@@ -90,12 +91,11 @@ namespace MessageDefLib
       simInfo = null;
       itemData = null;
     }
-    public SimAction(SimInfo startupInfo, TimeSpan actTime)
+    public SimAction(SimInfo startupInfo)
     {
       actType = SimActionType.atOpenSim;
       simInfo = startupInfo;
       itemData = null;
-      time = actTime;
     }
     public SimAction(SimActionType type, TimeSpan actTime, ItemData compModData)
     {

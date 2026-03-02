@@ -203,7 +203,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setEventStateIndex(eventIndex);
         setMoveFromCurrent(state.eventActions[eventIndex].moveFromCurrent);
       }
-      if (eventData.allItems) {
+      if (typeof eventData.allItems !== 'undefined') {
         setAllItems(eventData.allItems);
       }
       setOnSuccess(eventData.onSuccess);
@@ -214,7 +214,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setTimerMilliseconds(dayjs.duration(eventData.time).asMilliseconds());
       }
       eventData.useVariable && setUseVariable(eventData.useVariable);
-      if (eventData.lambda) {
+      if (typeof eventData.lambda !== 'undefined') {
         setLambda(eventData.lambda);
       }
       eventData.onVarChange && setOnVarChange(eventData.onVarChange);
@@ -484,8 +484,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
     } else if (evType === 'etStateCng') {
       event.value = {
         ...event.value,
-        ifInState: ifInState ?? false,
-        allItems: allItems ?? true,
+        ifInState: typeof ifInState === 'undefined' ? false : ifInState,
+        allItems: typeof allItems === 'undefined' ? true : allItems,
         triggerStates,
         evalEvOnStateEntry: evalEvOnStateEntry
       };

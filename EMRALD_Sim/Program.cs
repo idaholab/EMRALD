@@ -18,7 +18,7 @@ namespace EMRALD_Sim
     private static string _logFilePath;
 
     /// <summary>
-    /// The main entry point for the application.
+    /// Application entry point: sets up logging, config/services, and launches the main form.
     /// </summary>
     [STAThread]
     static void Main(string[] args)
@@ -56,6 +56,8 @@ namespace EMRALD_Sim
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
+        EnsureConfigFileExists();
+
         var services = new ServiceCollection();
         ConfigureServices(services, ConfigHelper.GetConfiguration(), args);
 
@@ -74,6 +76,9 @@ namespace EMRALD_Sim
       }
     }
 
+    /// <summary>
+    /// Registers app services and options into the DI container.
+    /// </summary>
     private static void ConfigureServices(ServiceCollection services, IConfiguration configuration, string[] args)
     {
       try
@@ -94,11 +99,17 @@ namespace EMRALD_Sim
       }
     }
 
+    /// <summary>
+    /// Global WinForms thread exception handler.
+    /// </summary>
     private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
     {
       HandleFatalException("UI Thread", e.Exception);
     }
 
+    /// <summary>
+    /// Global unhandled exception handler for non-UI threads.
+    /// </summary>
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
       Exception ex = e.ExceptionObject as Exception;
@@ -145,6 +156,9 @@ namespace EMRALD_Sim
       }
     }
 
+    /// <summary>
+    /// Centralized fatal exception logger and user notifier.
+    /// </summary>
     private static void HandleFatalException(string source, Exception ex)
     {
       try
@@ -190,6 +204,9 @@ namespace EMRALD_Sim
       }
     }
 
+    /// <summary>
+    /// Append a timestamped message to the error log; swallow failures.
+    /// </summary>
     private static void LogMessage(string message)
     {
       try
@@ -200,6 +217,52 @@ namespace EMRALD_Sim
       catch
       {
         // If logging fails, don't crash the app
+      }
+    }
+
+    /// <summary>
+    /// Ensure UISettings.json exists and is valid JSON; create minimal file if missing/invalid.
+    /// </summary>
+    private static void EnsureConfigFileExists()
+    {
+      string uiSettingsPath = CommonFunctions.NormalizeCombine(AppContext.BaseDirectory, "UISettings.json");
+      try
+      {
+        bool create = false;
+        if (!File.Exists(uiSettingsPath))
+        {
+          create = true;
+        }
+        else
+        {
+          // Validate JSON
+          var text = File.ReadAllText(uiSettingsPath);
+          if (string.IsNullOrWhiteSpace(text))
+          {
+            create = true;
+          }
+          else
+          {
+            try
+            {
+              Newtonsoft.Json.Linq.JToken.Parse(text);
+            }
+            catch
+            {
+              create = true;
+            }
+          }
+        }
+
+        if (create)
+        {
+          // Store as an empty list of options (matches updated saver)
+          File.WriteAllText(uiSettingsPath, "[]");
+        }
+      }
+      catch
+      {
+        // Swallow; configuration builder will still treat the file as optional
       }
     }
   }

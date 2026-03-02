@@ -1,13 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
-using SimulationEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
+using Newtonsoft.Json.Linq;
+using SimulationEngine;
 using Testing;
+using WebSocketTestServer;
+using Xunit;
 
 namespace SysAndRegressionTesting
 {
@@ -124,6 +126,7 @@ namespace SysAndRegressionTesting
       //Change the default settings as needed for the test seed default set to 0 for testing.
       optionsJ["inpfile"] = MainTestDir() + ModelFolder() + testName + ".emrald";
       optionsJ["runct"] = 100;
+      optionsJ["seed"] = 0;
       optionsJ["threads"] = 2;
 
       JSONRun testRun = new JSONRun(optionsJ.ToString());
@@ -245,6 +248,48 @@ namespace SysAndRegressionTesting
       //CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
+      Compare(dir, testName, optionsJ);
+    }
+
+
+    [Fact]
+    [Description("Test a External Simulation linking with the EMRALD model using WebSocketServer")]
+    public async Task CoupledSimWebSocketTest()
+    {
+      string testName = GetCurrentMethodName(); // function name must match the model name
+
+      // Setup directory for unit test 
+      string dir = SetupTestDir(testName);
+      // initial options, and optional results to save/test
+      JObject optionsJ = SetupJSON(dir, testName);
+
+      SimulationEngine.Options_cur options = optionsJ.ToObject<SimulationEngine.Options_cur>();
+
+      // start the connection server
+      using var host = new WebSocketServerHost();
+      await host.StartAsync();                // start the server
+      await Task.Delay(3000);                 // small buffer for startup (can trim as needed)
+
+      // Change the default settings as needed for the test
+      options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
+      options.runct = 5;
+      options.seed = 1;
+      options.variables = new List<string> { "TridiumVal" };
+      options.couplingInfo = new CouplingData
+      {
+        couplingType = CouplingType.WebSocket,
+        couplingURL = host.WsUri.ToString(), // e.g., "ws://localhost:52743/"
+        timeout = 10
+      };
+      options.opsVer = 1.02;
+
+      var testRun = new JSONRun(options);
+      Assert.True(await TestRunSim(testRun));
+
+      // Uncomment to update the validation files after they’re verified
+      //CopyToValidated(dir, testName, optionsJ);
+
+      // compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
     }
   }

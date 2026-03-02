@@ -722,6 +722,10 @@
           "type": "string",
           "description": "Optional. For variables of varScope gt3DSim, this is the external simulations name of the variable. It is used in sending a message to the external simulation."
         },
+        "extSim": {
+          "type": "string",
+          "description": "Optional. For variables of varScope gt3DSim, this is the external simulation the variable is linked to."
+        },
         "changeLog": {
           "$ref": "#/definitions/ChangeLog"
         },

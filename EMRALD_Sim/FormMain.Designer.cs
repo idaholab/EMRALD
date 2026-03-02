@@ -34,8 +34,8 @@ namespace EMRALD_Sim
       menuStrip1 = new System.Windows.Forms.MenuStrip();
       fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      defaultLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       openModel = new System.Windows.Forms.OpenFileDialog();
       tabXMPP = new System.Windows.Forms.TabPage();
       panel1 = new System.Windows.Forms.Panel();
@@ -156,8 +156,16 @@ namespace EMRALD_Sim
       label7 = new System.Windows.Forms.Label();
       splitter3 = new System.Windows.Forms.Splitter();
       panel4 = new System.Windows.Forms.Panel();
+      tcCouplingTypeInfo = new System.Windows.Forms.TabControl();
+      tpXMPP = new System.Windows.Forms.TabPage();
       lbExtSimLinks = new System.Windows.Forms.CheckedListBox();
+      tpWebSocket = new System.Windows.Forms.TabPage();
+      tbWebSocketURL = new System.Windows.Forms.TextBox();
+      label22 = new System.Windows.Forms.Label();
       panel10 = new System.Windows.Forms.Panel();
+      gbCoupleType = new System.Windows.Forms.GroupBox();
+      rbWebSocket = new System.Windows.Forms.RadioButton();
+      rbXMPP = new System.Windows.Forms.RadioButton();
       label12 = new System.Windows.Forms.Label();
       tabLog = new System.Windows.Forms.TabPage();
       rtbLog = new System.Windows.Forms.RichTextBox();
@@ -196,7 +204,11 @@ namespace EMRALD_Sim
       panel12.SuspendLayout();
       panel14.SuspendLayout();
       panel4.SuspendLayout();
+      tcCouplingTypeInfo.SuspendLayout();
+      tpXMPP.SuspendLayout();
+      tpWebSocket.SuspendLayout();
       panel10.SuspendLayout();
+      gbCoupleType.SuspendLayout();
       tabLog.SuspendLayout();
       SuspendLayout();
       // 
@@ -213,22 +225,28 @@ namespace EMRALD_Sim
       // 
       // fileToolStripMenuItem
       // 
-      fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, recentToolStripMenuItem }); fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+      fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { openToolStripMenuItem, recentToolStripMenuItem });
+      fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
       fileToolStripMenuItem.Text = "File";
       // 
       // openToolStripMenuItem
       // 
       openToolStripMenuItem.Name = "openToolStripMenuItem";
-      openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+      openToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
       openToolStripMenuItem.Text = "Open";
-      openToolStripMenuItem.Click += openToolStripMenuItem_Click;      
+      openToolStripMenuItem.Click += openToolStripMenuItem_Click;
       // 
       // recentToolStripMenuItem
       // 
       recentToolStripMenuItem.Name = "recentToolStripMenuItem";
-      recentToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+      recentToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
       recentToolStripMenuItem.Text = "Recent";
+      // 
+      // defaultLoadToolStripMenuItem
+      // 
+      defaultLoadToolStripMenuItem.Name = "defaultLoadToolStripMenuItem";
+      defaultLoadToolStripMenuItem.Size = new System.Drawing.Size(32, 19);
       // 
       // openModel
       // 
@@ -1166,7 +1184,7 @@ namespace EMRALD_Sim
       cbClearTemps.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       cbClearTemps.Name = "cbClearTemps";
       cbClearTemps.Size = new System.Drawing.Size(119, 19);
-      cbClearTemps.TabIndex = 41;
+      cbClearTemps.TabIndex = 10;
       cbClearTemps.Text = "Clear Thread Files";
       cbClearTemps.UseVisualStyleBackColor = true;
       cbClearTemps.Visible = false;
@@ -1177,7 +1195,7 @@ namespace EMRALD_Sim
       bttnPathRefs.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       bttnPathRefs.Name = "bttnPathRefs";
       bttnPathRefs.Size = new System.Drawing.Size(132, 30);
-      bttnPathRefs.TabIndex = 40;
+      bttnPathRefs.TabIndex = 9;
       bttnPathRefs.Text = "Edit Path References";
       bttnPathRefs.UseVisualStyleBackColor = true;
       bttnPathRefs.Visible = false;
@@ -1200,7 +1218,7 @@ namespace EMRALD_Sim
       tbThreads.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       tbThreads.Name = "tbThreads";
       tbThreads.Size = new System.Drawing.Size(26, 23);
-      tbThreads.TabIndex = 38;
+      tbThreads.TabIndex = 8;
       tbThreads.Visible = false;
       tbThreads.Leave += tbThreads_Leave;
       // 
@@ -1211,7 +1229,7 @@ namespace EMRALD_Sim
       cbMultiThreaded.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       cbMultiThreaded.Name = "cbMultiThreaded";
       cbMultiThreaded.Size = new System.Drawing.Size(107, 19);
-      cbMultiThreaded.TabIndex = 37;
+      cbMultiThreaded.TabIndex = 7;
       cbMultiThreaded.Text = "Multi Threaded";
       cbMultiThreaded.UseVisualStyleBackColor = true;
       cbMultiThreaded.CheckedChanged += cbMultiThreaded_CheckedChanged;
@@ -1222,7 +1240,7 @@ namespace EMRALD_Sim
       tbSavePath2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       tbSavePath2.Name = "tbSavePath2";
       tbSavePath2.Size = new System.Drawing.Size(433, 23);
-      tbSavePath2.TabIndex = 27;
+      tbSavePath2.TabIndex = 4;
       tbSavePath2.Text = "c:\\temp\\PathResults.json";
       tbSavePath2.Leave += Leave_SaveSettings;
       // 
@@ -1232,7 +1250,7 @@ namespace EMRALD_Sim
       button2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       button2.Name = "button2";
       button2.Size = new System.Drawing.Size(88, 27);
-      button2.TabIndex = 28;
+      button2.TabIndex = 5;
       button2.Text = "Open";
       button2.UseVisualStyleBackColor = true;
       button2.Click += button2_Click_1;
@@ -1253,7 +1271,7 @@ namespace EMRALD_Sim
       tbSeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       tbSeed.Name = "tbSeed";
       tbSeed.Size = new System.Drawing.Size(116, 23);
-      tbSeed.TabIndex = 35;
+      tbSeed.TabIndex = 11;
       tbSeed.Leave += tbSeed_Leave;
       // 
       // label18
@@ -1397,7 +1415,7 @@ namespace EMRALD_Sim
       button3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       button3.Name = "button3";
       button3.Size = new System.Drawing.Size(88, 27);
-      button3.TabIndex = 25;
+      button3.TabIndex = 3;
       button3.Text = "Open";
       button3.UseVisualStyleBackColor = true;
       button3.Click += button3_Click;
@@ -1408,7 +1426,7 @@ namespace EMRALD_Sim
       button4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       button4.Name = "button4";
       button4.Size = new System.Drawing.Size(88, 27);
-      button4.TabIndex = 25;
+      button4.TabIndex = 6;
       button4.Text = "View Diagram";
       button4.UseVisualStyleBackColor = true;
       button4.Click += button4_Click;
@@ -1419,7 +1437,7 @@ namespace EMRALD_Sim
       tbSavePath.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       tbSavePath.Name = "tbSavePath";
       tbSavePath.Size = new System.Drawing.Size(433, 23);
-      tbSavePath.TabIndex = 24;
+      tbSavePath.TabIndex = 2;
       tbSavePath.Text = "c:\\temp\\NewSimResults.txt";
       tbSavePath.Leave += Leave_SaveSettings;
       // 
@@ -1439,7 +1457,7 @@ namespace EMRALD_Sim
       tbMaxSimTime.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       tbMaxSimTime.Name = "tbMaxSimTime";
       tbMaxSimTime.Size = new System.Drawing.Size(170, 23);
-      tbMaxSimTime.TabIndex = 22;
+      tbMaxSimTime.TabIndex = 1;
       tbMaxSimTime.Text = "365.00:00:00";
       tbMaxSimTime.Leave += Leave_SaveSettings;
       // 
@@ -1469,7 +1487,7 @@ namespace EMRALD_Sim
       tbRunCnt.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       tbRunCnt.Name = "tbRunCnt";
       tbRunCnt.Size = new System.Drawing.Size(116, 23);
-      tbRunCnt.TabIndex = 19;
+      tbRunCnt.TabIndex = 0;
       tbRunCnt.Text = "1000";
       tbRunCnt.Leave += tbRunCnt_Leave;
       // 
@@ -1479,7 +1497,7 @@ namespace EMRALD_Sim
       btnStartSims.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       btnStartSims.Name = "btnStartSims";
       btnStartSims.Size = new System.Drawing.Size(88, 27);
-      btnStartSims.TabIndex = 0;
+      btnStartSims.TabIndex = 12;
       btnStartSims.Text = "Run";
       btnStartSims.UseVisualStyleBackColor = true;
       btnStartSims.Click += btnStartSims_Click;
@@ -1514,6 +1532,7 @@ namespace EMRALD_Sim
       lbMonitorVars.Name = "lbMonitorVars";
       lbMonitorVars.Size = new System.Drawing.Size(198, 263);
       lbMonitorVars.TabIndex = 1;
+      lbMonitorVars.ItemCheck += lbMonitorVars_ItemCheck;
       lbMonitorVars.Leave += lbMonitorVars_Leave;
       // 
       // panel14
@@ -1549,7 +1568,7 @@ namespace EMRALD_Sim
       // 
       // panel4
       // 
-      panel4.Controls.Add(lbExtSimLinks);
+      panel4.Controls.Add(tcCouplingTypeInfo);
       panel4.Controls.Add(panel10);
       panel4.Dock = System.Windows.Forms.DockStyle.Left;
       panel4.Location = new System.Drawing.Point(0, 0);
@@ -1558,28 +1577,116 @@ namespace EMRALD_Sim
       panel4.Size = new System.Drawing.Size(198, 290);
       panel4.TabIndex = 1;
       // 
+      // tcCouplingTypeInfo
+      // 
+      tcCouplingTypeInfo.Controls.Add(tpXMPP);
+      tcCouplingTypeInfo.Controls.Add(tpWebSocket);
+      tcCouplingTypeInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+      tcCouplingTypeInfo.ItemSize = new System.Drawing.Size(0, 1);
+      tcCouplingTypeInfo.Location = new System.Drawing.Point(0, 55);
+      tcCouplingTypeInfo.Margin = new System.Windows.Forms.Padding(1);
+      tcCouplingTypeInfo.Name = "tcCouplingTypeInfo";
+      tcCouplingTypeInfo.Padding = new System.Drawing.Point(1, 1);
+      tcCouplingTypeInfo.SelectedIndex = 0;
+      tcCouplingTypeInfo.Size = new System.Drawing.Size(198, 235);
+      tcCouplingTypeInfo.TabIndex = 1;
+      // 
+      // tpXMPP
+      // 
+      tpXMPP.Controls.Add(lbExtSimLinks);
+      tpXMPP.Location = new System.Drawing.Point(4, 5);
+      tpXMPP.Name = "tpXMPP";
+      tpXMPP.Padding = new System.Windows.Forms.Padding(3);
+      tpXMPP.Size = new System.Drawing.Size(190, 226);
+      tpXMPP.TabIndex = 0;
+      tpXMPP.UseVisualStyleBackColor = true;
+      // 
       // lbExtSimLinks
       // 
       lbExtSimLinks.CheckOnClick = true;
       lbExtSimLinks.Dock = System.Windows.Forms.DockStyle.Fill;
       lbExtSimLinks.FormattingEnabled = true;
-      lbExtSimLinks.Location = new System.Drawing.Point(0, 27);
+      lbExtSimLinks.Location = new System.Drawing.Point(3, 3);
       lbExtSimLinks.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       lbExtSimLinks.Name = "lbExtSimLinks";
-      lbExtSimLinks.Size = new System.Drawing.Size(198, 263);
+      lbExtSimLinks.Size = new System.Drawing.Size(184, 220);
       lbExtSimLinks.TabIndex = 1;
       lbExtSimLinks.Click += lbExtSimLinks_Click;
+      // 
+      // tpWebSocket
+      // 
+      tpWebSocket.Controls.Add(tbWebSocketURL);
+      tpWebSocket.Controls.Add(label22);
+      tpWebSocket.Location = new System.Drawing.Point(4, 14);
+      tpWebSocket.Name = "tpWebSocket";
+      tpWebSocket.Padding = new System.Windows.Forms.Padding(3);
+      tpWebSocket.Size = new System.Drawing.Size(190, 217);
+      tpWebSocket.TabIndex = 1;
+      tpWebSocket.UseVisualStyleBackColor = true;
+      // 
+      // tbWebSocketURL
+      // 
+      tbWebSocketURL.Dock = System.Windows.Forms.DockStyle.Top;
+      tbWebSocketURL.Location = new System.Drawing.Point(3, 18);
+      tbWebSocketURL.Name = "tbWebSocketURL";
+      tbWebSocketURL.Size = new System.Drawing.Size(184, 23);
+      tbWebSocketURL.TabIndex = 1;
+      tbWebSocketURL.TextChanged += tbWebSocketURL_TextChanged;
+      // 
+      // label22
+      // 
+      label22.AutoSize = true;
+      label22.Dock = System.Windows.Forms.DockStyle.Top;
+      label22.Location = new System.Drawing.Point(3, 3);
+      label22.Name = "label22";
+      label22.Size = new System.Drawing.Size(90, 15);
+      label22.TabIndex = 0;
+      label22.Text = "WebSocket URL";
       // 
       // panel10
       // 
       panel10.BackColor = System.Drawing.Color.Gainsboro;
+      panel10.Controls.Add(gbCoupleType);
       panel10.Controls.Add(label12);
       panel10.Dock = System.Windows.Forms.DockStyle.Top;
       panel10.Location = new System.Drawing.Point(0, 0);
       panel10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       panel10.Name = "panel10";
-      panel10.Size = new System.Drawing.Size(198, 27);
+      panel10.Size = new System.Drawing.Size(198, 55);
       panel10.TabIndex = 0;
+      // 
+      // gbCoupleType
+      // 
+      gbCoupleType.Controls.Add(rbWebSocket);
+      gbCoupleType.Controls.Add(rbXMPP);
+      gbCoupleType.Location = new System.Drawing.Point(4, 24);
+      gbCoupleType.Name = "gbCoupleType";
+      gbCoupleType.Size = new System.Drawing.Size(191, 27);
+      gbCoupleType.TabIndex = 1;
+      gbCoupleType.TabStop = false;
+      // 
+      // rbWebSocket
+      // 
+      rbWebSocket.AutoSize = true;
+      rbWebSocket.Checked = true;
+      rbWebSocket.Location = new System.Drawing.Point(67, 3);
+      rbWebSocket.Name = "rbWebSocket";
+      rbWebSocket.Size = new System.Drawing.Size(84, 19);
+      rbWebSocket.TabIndex = 1;
+      rbWebSocket.TabStop = true;
+      rbWebSocket.Text = "WebSocket";
+      rbWebSocket.UseVisualStyleBackColor = true;
+      rbWebSocket.CheckedChanged += rbWebSocket_CheckedChanged;
+      // 
+      // rbXMPP
+      // 
+      rbXMPP.AutoSize = true;
+      rbXMPP.Location = new System.Drawing.Point(0, 3);
+      rbXMPP.Name = "rbXMPP";
+      rbXMPP.Size = new System.Drawing.Size(57, 19);
+      rbXMPP.TabIndex = 0;
+      rbXMPP.Text = "XMPP";
+      rbXMPP.UseVisualStyleBackColor = true;
       // 
       // label12
       // 
@@ -1688,8 +1795,14 @@ namespace EMRALD_Sim
       panel14.ResumeLayout(false);
       panel14.PerformLayout();
       panel4.ResumeLayout(false);
+      tcCouplingTypeInfo.ResumeLayout(false);
+      tpXMPP.ResumeLayout(false);
+      tpWebSocket.ResumeLayout(false);
+      tpWebSocket.PerformLayout();
       panel10.ResumeLayout(false);
       panel10.PerformLayout();
+      gbCoupleType.ResumeLayout(false);
+      gbCoupleType.PerformLayout();
       tabLog.ResumeLayout(false);
       ResumeLayout(false);
       PerformLayout();
@@ -1832,5 +1945,13 @@ namespace EMRALD_Sim
     private System.Windows.Forms.ComboBox cbCurThread;
     private System.Windows.Forms.Button bttnPathRefs;
     private System.Windows.Forms.CheckBox cbClearTemps;
+    private System.Windows.Forms.GroupBox gbCoupleType;
+    private System.Windows.Forms.RadioButton rbXMPP;
+    private System.Windows.Forms.RadioButton rbWebSocket;
+    private System.Windows.Forms.TabControl tcCouplingTypeInfo;
+    private System.Windows.Forms.TabPage tpXMPP;
+    private System.Windows.Forms.TabPage tpWebSocket;
+    private System.Windows.Forms.Label label22;
+    private System.Windows.Forms.TextBox tbWebSocketURL;
   }
 }

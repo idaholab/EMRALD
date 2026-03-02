@@ -672,6 +672,9 @@ namespace SimulationDAL
       scriptRunner.AddVariable("ExtSimStartTime", typeof(double));
       scriptRunner.AddVariable("RootPath", typeof(string));
       scriptRunner.AddVariable("OrigRootPath", typeof(string));
+      // Expose the engine’s shared RNG so user scripts can consume the same deterministic stream
+      scriptRunner.AddVariable("Rand", typeof(Random));
+
 
       //add all the variables needed
       if (codeVariables != null)
@@ -687,7 +690,8 @@ namespace SimulationDAL
               (varName != "ExtSimStartTime") &&
               (varName != "RunIdx") &&
               (varName != "OrigRootPath") &&
-              (varName != "RootPath"))
+              (varName != "RootPath") &&
+              (varName != "Rand"))
           {
             scriptRunner.AddVariable(varName, var.dType);
           }
@@ -869,6 +873,7 @@ namespace SimulationDAL
         scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
         scriptRunner.SetVariable("RootPath", typeof(string), lists.rootPath);
         scriptRunner.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
+        scriptRunner.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
 
         if (codeVariables != null)
         {
@@ -1116,6 +1121,7 @@ namespace SimulationDAL
       scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
       scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       scriptRunner.SetVariable("RootPath", typeof(string), lists.rootPath);
+      scriptRunner.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
 
       if (codeVariables != null)
       {
@@ -1450,6 +1456,7 @@ namespace SimulationDAL
       makeInputFileCompEval.AddVariable("RootPath", typeof(string));
       makeInputFileCompEval.AddVariable("OrigRootPath", typeof(string));
       makeInputFileCompEval.AddVariable("MultiThreaded", typeof(bool));
+      makeInputFileCompEval.AddVariable("Rand", typeof(Random));
 
 
       //add all the variables needed
@@ -1468,7 +1475,8 @@ namespace SimulationDAL
               (varName != "ExePath") &&
               (varName != "RootPath") &&
               (varName != "OrigRootPath") &&
-              (varName != "MultiThreaded"))
+              (varName != "MultiThreaded") &&
+              (varName != "Rand"))
           {
             makeInputFileCompEval.AddVariable(varName, var.dType);
           }
@@ -1523,6 +1531,7 @@ namespace SimulationDAL
       processOutputFileCompEval.AddVariable("OrigRootPath", typeof(string));
       processOutputFileCompEval.AddVariable("ExePath", typeof(string));
       processOutputFileCompEval.AddVariable("MultiThreaded", typeof(bool));
+      processOutputFileCompEval.AddVariable("Rand", typeof(Random));
 
       //add all the variables needed
       if (codeVariables != null)
@@ -1539,7 +1548,8 @@ namespace SimulationDAL
               (varName != "ExeExitCode") &&
               (varName != "ExePath") &&
               (varName != "OrigRootPath") &&
-              (varName != "RootPath"))
+              (varName != "RootPath") &&
+              (varName != "Rand"))
           {
             processOutputFileCompEval.AddVariable(varName, var.dType);
           }
@@ -1659,6 +1669,7 @@ namespace SimulationDAL
         makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
         makeInputFileCompEval.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
         makeInputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
+        makeInputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
 
       }
 
@@ -1790,6 +1801,7 @@ namespace SimulationDAL
         processOutputFileCompEval.SetVariable("ExePath", typeof(string), CommonFunctions.NormalizeGetDirectoryName(fullExePath));
         processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
         processOutputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
+        processOutputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
         //processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
         //Set all the variable values
         if (codeVariables != null)
@@ -1805,16 +1817,17 @@ namespace SimulationDAL
         }
       }
 
-      if (processOutputFileCompEval == null)
-        throw new Exception("Script engine not assigned should not happen.");
-
       switch (this.returnProcess)
       {
         case ReturnType.rtNone:
-          processOutputFileCompEval.EvaluateGeneric();
+          if (processOutputFileCompEval != null)
+            processOutputFileCompEval.EvaluateGeneric();
           break;
 
-        case ReturnType.rtStateList:        
+        case ReturnType.rtStateList:
+          if (processOutputFileCompEval == null)
+            throw new Exception("Script engine not assigned should not happen.");
+
           List<String> retStates = processOutputFileCompEval.EvaluateStrList();
           System.Threading.Thread.Sleep(10);
 
@@ -1853,8 +1866,11 @@ namespace SimulationDAL
           }
           break;
         case ReturnType.rtVar:
-          if(assignVariable != null)
-            assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric()); 
+          if (processOutputFileCompEval == null)
+            throw new Exception("Script engine not assigned should not happen.");
+          if (assignVariable == null)
+            throw new Exception("Missing variable to assign value, should not happen.");
+          assignVariable.SetValue(processOutputFileCompEval.EvaluateGeneric()); 
           break;
 
         default: //do nothing
