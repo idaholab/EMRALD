@@ -1,4 +1,4 @@
-import React from 'react';
+import type { Ref } from 'react';
 import { useDrop } from 'react-dnd';
 import type { State } from '../../types/EMRALD_Model';
 import { Box } from '@mui/material';
@@ -30,7 +30,7 @@ const ActionDropTarget: React.FC = () => {
       }
     },
     collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+      isOver: monitor.isOver(),
     }),
   });
 
@@ -38,7 +38,7 @@ const ActionDropTarget: React.FC = () => {
 
   return (
     <Box
-      ref={drop}
+      ref={drop as unknown as Ref<unknown>}
       sx={{ mt: 3 }}
       style={{
         height: '100%',
