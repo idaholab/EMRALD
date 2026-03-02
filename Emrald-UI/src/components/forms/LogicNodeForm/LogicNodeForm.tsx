@@ -22,6 +22,7 @@ interface LogicNodeFormProps {
   component?: string;
   editing?: boolean;
   setAsRoot?: boolean;
+  fromSidebar?: boolean;
 }
 
 const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
@@ -31,6 +32,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   component,
   editing,
   parentNodeName,
+  fromSidebar,
 }) => {
   const {
     name,
@@ -62,7 +64,15 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   } = useLogicNodeFormContext();
 
   useEffect(() => {
-    initializeForm(logicNodeData, editing, component, parentNodeName, nodeType, gateType);
+    initializeForm(
+      logicNodeData,
+      editing,
+      component,
+      parentNodeName,
+      nodeType,
+      gateType,
+      fromSidebar ? true : undefined,
+    );
   }, []);
 
   return (
@@ -215,7 +225,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           >
             <FormControlLabel
               label="Make available as Top or Subtree"
-              disabled={availableAsTopOrSubtree()}
+              disabled={fromSidebar === true || availableAsTopOrSubtree()}
               control={
                 <Checkbox
                   checked={isRoot ? true : false}
