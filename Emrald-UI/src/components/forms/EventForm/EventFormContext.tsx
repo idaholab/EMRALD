@@ -214,7 +214,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         setTimerMilliseconds(dayjs.duration(eventData.time).asMilliseconds());
       }
       eventData.useVariable && setUseVariable(eventData.useVariable);
-      if (eventData.lambda) {
+      if (typeof eventData.lambda !== 'undefined') {
         setLambda(eventData.lambda);
       }
       eventData.onVarChange && setOnVarChange(eventData.onVarChange);
