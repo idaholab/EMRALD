@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useSignal } from '@preact/signals-react';
@@ -59,6 +59,7 @@ interface LogicNodeFormContextType {
     parentNodeName?: string,
     nodeType?: 'gate' | 'comp',
     gateType?: GateType,
+    isRoot?: boolean,
   ) => void;
 }
 
@@ -121,6 +122,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     parentNodeName?: string,
     nodeType?: 'gate' | 'comp',
     gateType?: GateType,
+    isRoot?: boolean,
   ) => {
     setLogicNodeData(logicNodeInfo);
     setEditing(editing);
@@ -160,6 +162,9 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setCompDiagram(component ?? '');
     setDefaultValues(current?.stateValues && current.stateValues.length > 0 ? false : true);
     setGateTypeValue(gateType ?? ('gtAnd' as GateType));
+    if (typeof isRoot !== 'undefined') {
+      setIsRoot(isRoot);
+    }
   };
 
   const availableAsTopOrSubtree = () => {
