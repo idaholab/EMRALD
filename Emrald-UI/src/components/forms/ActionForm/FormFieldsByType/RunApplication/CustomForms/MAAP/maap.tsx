@@ -3,7 +3,7 @@ import { useCustomForm } from '../useCustomForm';
 import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
 import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
-import InputParse from './Parser';
+import { parser } from './Parser';
 import { parse as parameterParser } from './Parser/maap-par-parser';
 import { useActionFormContext } from '../../../../ActionFormContext';
 import useRunApplication from '../../useRunApplication';
@@ -291,14 +291,14 @@ const MAAP = () => {
       if (inputFile) {
         const fileString = await inputFile.text();
         try {
-          const data = InputParse.parse(fileString, { locations: false }).output;
+          const data = parser.parse(fileString, { locations: false }).output;
 
           const parameters: MAAPSourceElement[] = [];
           let initiators: MAAPSourceElement[] = [];
           const inputBlocks: MAAPConditionalBlockStatement[] = [];
           const fileRefs: string[] = [];
 
-          data.value.forEach((sourceElement) => {
+          data?.value.forEach((sourceElement) => {
             switch (sourceElement.type) {
               case 'file':
                 fileRefs.push(sourceElement.value);
@@ -343,7 +343,7 @@ const MAAP = () => {
                   initiators,
                   inputBlocks,
                   fileRefs,
-                  sourceElements: data.value,
+                  sourceElements: data?.value,
                   needsUpgrade: false
                 }
               : undefined,
