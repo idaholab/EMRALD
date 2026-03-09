@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import type { SystemStyleObject } from '@mui/system/styleFunctionSx';
 import { startCase } from 'lodash';
 import { downloadOptions, projectOptions, templateSubMenuOptions } from './menuOptions';
 import { useAssembledData } from '../../../hooks/useAssembledData';
@@ -24,8 +23,9 @@ interface MenuButtonProps {
   title: string;
   options?: typeof projectOptions | typeof downloadOptions;
   handleClick?: () => void;
-  sx?: SystemStyleObject;
+  sx?: Record<string, number>;
   openVersionDialog?: () => void;
+  handleModelError?: (message: string) => void;
 }
 
 const MenuButton: React.FC<MenuButtonProps> = ({
@@ -35,6 +35,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   handleClick,
   sx,
   openVersionDialog,
+  handleModelError,
 }) => {
   const { newProject, mergeNewData, populateNewData, compareData } = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
@@ -42,14 +43,14 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   const { addWindow } = useWindowContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subAnchorEl, setSubAnchorEl] = useState<null | HTMLElement>(null);
-  const [open, setOpen] = useState<boolean>(false);
-  const [subMenuOpen, setSubMenuOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState(false);
+  const [subMenuOpen, setSubMenuOpen] = useState(false);
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
-  const [showNewProjectDialog, setShowNewProjectDialog] = useState<boolean>(false);
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
 
   const subMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -102,16 +103,16 @@ const MenuButton: React.FC<MenuButtonProps> = ({
         setShowNewProjectDialog(true);
         break;
       case 'Open':
-        projectOptions.Open(populateNewData, updateFileName);
+        projectOptions.Open(populateNewData, updateFileName, handleModelError);
         break;
       case 'Merge':
-        projectOptions.Merge(mergeNewData);
+        projectOptions.Merge(mergeNewData, handleModelError);
         break;
       case 'Save':
         await projectOptions.Save();
         break;
       case 'Load Results':
-        projectOptions['Load Results'](addWindow);
+        projectOptions['Load Results'](addWindow, handleModelError);
         break;
       // Add cases for other menu items as needed
       case 'Templates':
@@ -119,7 +120,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
         projectOptions[option]();
         break;
       case 'Compare':
-        projectOptions.Compare(compareData);
+        projectOptions.Compare(compareData, handleModelError);
         break;
       default:
         // The default case currently handles all download menu options which don't take any arguments
@@ -134,7 +135,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
     let content; // Declare the variable outside the if statement
     switch (option) {
       case 'Import Templates':
-        templateSubMenuOptions['Import Templates'](mergeTemplateToList);
+        templateSubMenuOptions['Import Templates'](mergeTemplateToList, handleModelError);
         break;
       case 'Export Templates':
         content = templateSubMenuOptions['Export Templates'](templatesList.value);

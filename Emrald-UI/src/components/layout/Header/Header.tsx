@@ -14,7 +14,7 @@ import SearchField from './SearchBar/SearchField';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { appData, updateAppData } from '../../../hooks/useAppData';
-import { Table } from '@mui/material';
+import { Alert, Table } from '@mui/material';
 
 const url: string = window.location.href;
 let emraldDocsUrl = 'https://emrald-docs.inl.gov/'; // Default URL
@@ -44,11 +44,13 @@ export default function Header() {
   const { name, desc, fileName, version, updateVersion, updateName, updateDescription } =
     useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
-  const [updatedName, setUpdatedName] = useState<string>('');
+  const [updatedName, setUpdatedName] = useState('');
   const [updatedDesc, setUpdatedDesc] = useState('');
-  const [updatedVersion, setUpdatedVersion] = useState<string>('');
+  const [updatedVersion, setUpdatedVersion] = useState('');
   const [versionDialog, setVersionDialog] = useState(false);
   const [changeDesc, setChangeDesc] = useState('');
+  const [modelErrorDialog, setModelErrorDialog] = useState(false);
+  const [modelErrorMessage, setModelErrorMessage] = useState('');
 
   useEffect(() => {
     setUpdatedName(name);
@@ -113,6 +115,10 @@ export default function Header() {
             openVersionDialog={() => {
               setVersionDialog(true);
             }}
+            handleModelError={(message) => {
+              setModelErrorDialog(true);
+              setModelErrorMessage(message);
+            }}
           />
           <MenuButton id={2} title="Download" options={downloadOptions} />
           <MenuButton id={3} title="Help" handleClick={() => window.open(emraldDocsUrl)} />
@@ -135,7 +141,8 @@ export default function Header() {
               setOpenDialog(true);
             }}
           >
-            {name ? name : 'Click Here to Name Project'} {version && version > 1 ? `v${version}` : ''}
+            {name ? name : 'Click Here to Name Project'}{' '}
+            {version && version > 1 ? `v${version.toString()}` : ''}
           </Typography>
           <Typography sx={{ fontSize: isMediumScreen ? '0.625em' : '0.75em' }}>
             {fileName ? fileName : ''}
@@ -271,6 +278,16 @@ export default function Header() {
             setChangeDesc(e.target.value);
           }}
         />
+      </DialogComponent>
+      <DialogComponent
+        open={modelErrorDialog}
+        title="Error Opening File"
+        onClose={() => {
+          setModelErrorDialog(false);
+        }}
+      >
+        An error occurred opening the selected file. Please check the error message below.
+        <Alert severity="error">{modelErrorMessage}</Alert>
       </DialogComponent>
     </AppBar>
   );
