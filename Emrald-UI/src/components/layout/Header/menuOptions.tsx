@@ -16,6 +16,7 @@ export const projectOptions = {
   Open(
     populateNewData: (openedModel?: EMRALD_Model) => void,
     setFileName?: (name: string) => void,
+    handleModelError?: (message: string) => void,
   ) {
     // Create a new file input element
     const fileInput = document.createElement('input');
@@ -30,7 +31,9 @@ export const projectOptions = {
 
       if (!selectedFile) return; // If no file is selected, exit
       const fileName = selectedFile.name; // Get the filename
-      setFileName && setFileName(fileName);
+      if (setFileName) {
+        setFileName(fileName);
+      }
       // Create a FileReader to read the file content
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -50,9 +53,12 @@ export const projectOptions = {
           } else {
             populateNewData(parsedContent);
           }
-        } catch (err) {
+        } catch (error) {
           console.error('Invalid JSON format');
-          console.error(err);
+          console.error(error);
+          if (handleModelError) {
+            handleModelError((error as Error).message);
+          }
         }
       };
       reader.readAsText(selectedFile); // Read the file as text
@@ -67,7 +73,10 @@ export const projectOptions = {
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
   },
-  Merge(mergeNewData: (newModel: EMRALD_Model) => void) {
+  Merge(
+    mergeNewData: (newModel: EMRALD_Model) => void,
+    handleModelError?: (message: string) => void,
+  ) {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file
@@ -97,8 +106,11 @@ export const projectOptions = {
               mergeNewData(upgradedModel);
             }
           }
-        } catch {
+        } catch (error) {
           console.error('Invalid JSON format');
+          if (handleModelError) {
+            handleModelError((error as Error).message);
+          }
         }
       };
       reader.readAsText(selectedFile); // Read the file as text
@@ -156,6 +168,7 @@ export const projectOptions = {
       windowId?: string | null,
       closePrevWindowId?: string,
     ) => void,
+    handleModelError?: (message: string) => void,
   ) => {
     // Create a new file input element
     const fileInput = document.createElement('input');
@@ -192,7 +205,10 @@ export const projectOptions = {
             </div>,
           );
         } catch (error) {
-          console.error('Invalid JSON format or other error:', error); // Add logging here
+          console.error('Invalid JSON format or other error:', error);
+          if (handleModelError) {
+            handleModelError((error as Error).message);
+          }
         }
         // You can now work with the JSON content here
       };
@@ -211,7 +227,10 @@ export const projectOptions = {
   'Clear Cached Data': () => {
     clearCacheData();
   },
-  Compare(compareData: (newModel: EMRALD_Model) => void) {
+  Compare(
+    compareData: (newModel: EMRALD_Model) => void,
+    handleModelError?: (message: string) => void,
+  ) {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file
@@ -246,8 +265,11 @@ export const projectOptions = {
               compareData(upgradedModel);
             }
           }
-        } catch {
+        } catch (error) {
           console.error('Invalid JSON format');
+          if (handleModelError) {
+            handleModelError((error as Error).message);
+          }
         }
         document.body.removeChild(fileInput);
         document.body.removeChild(inputLabel);
@@ -268,7 +290,10 @@ export const projectOptions = {
 };
 
 export const templateSubMenuOptions = {
-  'Import Templates': (mergeTemplateToList: (newTemplate: EMRALD_Model) => void) => {
+  'Import Templates': (
+    mergeTemplateToList: (newTemplate: EMRALD_Model) => void,
+    handleModelError?: (message: string) => void,
+  ) => {
     // Create a new file input element
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; // Set input type to file
@@ -299,8 +324,11 @@ export const templateSubMenuOptions = {
               }
             }
           });
-        } catch {
+        } catch (error) {
           console.error('Invalid JSON format');
+          if (handleModelError) {
+            handleModelError((error as Error).message);
+          }
         }
       };
       reader.readAsText(selectedFile); // Read the file as text
