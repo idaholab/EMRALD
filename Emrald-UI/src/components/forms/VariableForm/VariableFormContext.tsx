@@ -33,6 +33,9 @@ interface VariableFormContextType {
   value: number | string | boolean;
   sim3DId?: string;
   resetOnRuns?: boolean;
+  canMonitor?: boolean;
+  monitorInSim?: boolean;
+  cumulativeStats?: boolean;
   docType?: string;
   docPath?: string;
   docLink?: string;
@@ -52,6 +55,9 @@ interface VariableFormContextType {
   setType: React.Dispatch<React.SetStateAction<VariableType>>;
   setDesc: React.Dispatch<React.SetStateAction<string>>;
   setResetOnRuns: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setCanMonitor: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setMonitorInSim: React.Dispatch<React.SetStateAction<boolean | undefined>>;
+  setCumulativeStats: React.Dispatch<React.SetStateAction<boolean | undefined>>;
   setDocType: React.Dispatch<React.SetStateAction<string | undefined>>;
   setDocPath: React.Dispatch<React.SetStateAction<string | undefined>>;
   setDocLink: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -85,24 +91,27 @@ export const useVariableFormContext = (): VariableFormContextType => {
 const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [accrualStatesData, setAccrualStatesData] = useState<AccrualStateItem[]>();
   const { handleClose } = useWindowContext();
-  const [name, setName] = useState<string>('Int_');
+  const [name, setName] = useState('Int_');
   const [originalName, setOriginalName] = useState<string>();
   const [namePrefix, setNamePrefix] = useState<string>();
-  const [desc, setDesc] = useState<string>('');
+  const [desc, setDesc] = useState('');
   const [type, setType] = useState<VariableType>('int');
   const [varScope, setVarScope] = useState<VarScope>('gtGlobal');
   const [value, setValue] = useState<number | string | boolean>('');
   const [sim3DId, setSim3DId] = useState<string>();
   const [resetOnRuns, setResetOnRuns] = useState<boolean | undefined>(true);
-  const [docType, setDocType] = useState<string | undefined>();
-  const [docPath, setDocPath] = useState<string | undefined>();
-  const [docLink, setDocLink] = useState<string | undefined>();
-  const [pathMustExist, setPathMustExist] = useState<boolean | undefined>();
-  const [hasError, setHasError] = useState<boolean>(false);
-  const variable = useSignal<Variable>(emptyVariable);
+  const [canMonitor, setCanMonitor] = useState<boolean | undefined>(false);
+  const [monitorInSim, setMonitorInSim] = useState<boolean | undefined>(false);
+  const [cumulativeStats, setCumulativeStats] = useState<boolean | undefined>(false);
+  const [docType, setDocType] = useState<string>();
+  const [docPath, setDocPath] = useState<string>();
+  const [docLink, setDocLink] = useState<string>();
+  const [pathMustExist, setPathMustExist] = useState<boolean>();
+  const [hasError, setHasError] = useState(false);
+  const variable = useSignal(emptyVariable);
   const { updateVariable, createVariable } = useVariableContext();
   const [regExpLine, setRegExpLine] = useState<number>();
-  const [begPosition, setBegPosition] = useState<number | undefined>();
+  const [begPosition, setBegPosition] = useState<number>();
   const [showRegExFields, setShowRegExFields] = useState<boolean>();
   const [showNumChars, setShowNumChars] = useState<boolean>();
   const [numChars, setNumChars] = useState<number>();
@@ -133,9 +142,12 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setDesc(variableData.desc ?? '');
     setType(variableData.type);
     setVarScope(variableData.varScope);
-    variableData.value !== undefined && setValue(String(variableData.value));
+    setValue(String(variableData.value));
     variableData.sim3DId && setSim3DId(variableData.sim3DId);
     setResetOnRuns(variableData.resetOnRuns);
+    setCanMonitor(variableData.canMonitor);
+    setMonitorInSim(variableData.monitorInSim);
+    setCumulativeStats(variableData.cumulativeStats);
     variableData.docType && setDocType(variableData.docType);
     variableData.docPath && setDocPath(variableData.docPath);
     variableData.docLink && setDocLink(variableData.docLink);
@@ -193,6 +205,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
     setValue(''); // Default value for value
     setSim3DId(undefined); // Reset to undefined
     setResetOnRuns(true); // Reset to true
+    setCanMonitor(false);
+    setMonitorInSim(false);
+    setCumulativeStats(false);
     setDocType(undefined); // Reset to undefined
     setDocPath(undefined); // Reset to undefined
     setDocLink(undefined); // Reset to undefined
@@ -201,6 +216,7 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
   };
 
   const handleSave = (variableData?: Variable) => {
+    console.log(canMonitor);
     variable.value = {
       ...variable.value,
       id: variableData?.id ?? uuidv4(),
@@ -216,6 +232,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       value,
       accrualStatesData,
       resetOnRuns: resetOnRuns ?? true,
+      canMonitor,
+      monitorInSim,
+      cumulativeStats,
       regExpLine,
       begPosition,
       numChars,
@@ -261,6 +280,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         value,
         sim3DId,
         resetOnRuns,
+        canMonitor,
+        monitorInSim,
+        cumulativeStats,
         docType,
         docPath,
         docLink,
@@ -280,6 +302,9 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
         setType,
         setDesc,
         setResetOnRuns,
+        setCanMonitor,
+        setMonitorInSim,
+        setCumulativeStats,
         setDocType,
         setDocPath,
         setDocLink,

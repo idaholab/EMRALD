@@ -3,7 +3,16 @@ import StateDropTarget from '../../../drag-and-drop/StateDroppable';
 import { useVariableFormContext } from '../VariableFormContext';
 
 const AccrualFields = () => {
-  const { resetOnRuns, setResetOnRuns } = useVariableFormContext();
+  const {
+    resetOnRuns,
+    setResetOnRuns,
+    canMonitor,
+    setCanMonitor,
+    monitorInSim,
+    setMonitorInSim,
+    cumulativeStats,
+    setCumulativeStats,
+  } = useVariableFormContext();
 
   return (
     <>
@@ -18,9 +27,54 @@ const AccrualFields = () => {
             onChange={(e) => {
               setResetOnRuns(e.target.checked);
             }}
-          ></Checkbox>
+          />
         }
-      ></FormControlLabel>
+      />
+      <br />
+      <FormControlLabel
+        label="Allow Monitor in Simulation"
+        value={canMonitor}
+        control={
+          <Checkbox
+            checked={canMonitor}
+            onChange={(e) => {
+              setCanMonitor(e.target.checked);
+            }}
+          />
+        }
+      />
+      {canMonitor ? (
+        <>
+          <br />
+          <FormControlLabel
+            label="Monitor By Default"
+            value={monitorInSim}
+            control={
+              <Checkbox
+                checked={monitorInSim}
+                onChange={(e) => {
+                  setMonitorInSim(e.target.checked);
+                }}
+              />
+            }
+          />
+          <br />
+          <FormControlLabel
+            label="Monitor Cumulative Stats"
+            value={cumulativeStats}
+            control={
+              <Checkbox
+                checked={cumulativeStats}
+                onChange={(e) => {
+                  setCumulativeStats(e.target.checked);
+                }}
+              />
+            }
+          />
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

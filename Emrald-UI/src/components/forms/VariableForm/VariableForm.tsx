@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 import type { Variable, VarScope } from '../../../types/EMRALD_Model';
 import MainDetailsForm from '../MainDetailsForm';
 import TextField from '@mui/material/TextField';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
@@ -30,6 +29,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     value,
     sim3DId,
     resetOnRuns,
+    canMonitor,
+    monitorInSim,
+    cumulativeStats,
     docType,
     docPath,
     docLink,
@@ -43,6 +45,9 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     setType,
     setDesc,
     setResetOnRuns,
+    setCanMonitor,
+    setMonitorInSim,
+    setCumulativeStats,
     setDocType,
     setDocPath,
     setDocLink,
@@ -102,7 +107,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             <Select
               aria-labelledby="scope-label"
               value={varScope}
-              onChange={(event: SelectChangeEvent) => {
+              onChange={(event) => {
                 setVarScope(event.target.value as VarScope);
                 if (event.target.value === 'gtAccrual') {
                   setType('double');
@@ -144,7 +149,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                     labelId="value"
                     id="value"
                     value={value as string}
-                    onChange={(event: SelectChangeEvent) => {
+                    onChange={(event) => {
                       handleBoolValueChange(event);
                     }}
                     label="Start Value"
@@ -172,13 +177,58 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 label="Reset to initial value for every simulation run"
                 control={
                   <Checkbox
-                    checked={resetOnRuns ? true : false}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    checked={resetOnRuns}
+                    onChange={(e) => {
                       setResetOnRuns(e.target.checked);
                     }}
                   />
                 }
               />
+              <br />
+              <FormControlLabel
+                label="Allow Monitor in Simulation"
+                value={canMonitor}
+                control={
+                  <Checkbox
+                    checked={canMonitor}
+                    onChange={(e) => {
+                      setCanMonitor(e.target.checked);
+                    }}
+                  />
+                }
+              />
+              {canMonitor ? (
+                <>
+                  <br />
+                  <FormControlLabel
+                    label="Monitor By Default"
+                    value={monitorInSim}
+                    control={
+                      <Checkbox
+                        checked={monitorInSim}
+                        onChange={(e) => {
+                          setMonitorInSim(e.target.checked);
+                        }}
+                      />
+                    }
+                  />
+                  <br />
+                  <FormControlLabel
+                    label="Monitor Cumulative Stats"
+                    value={cumulativeStats}
+                    control={
+                      <Checkbox
+                        checked={cumulativeStats}
+                        onChange={(e) => {
+                          setCumulativeStats(e.target.checked);
+                        }}
+                      />
+                    }
+                  />
+                </>
+              ) : (
+                <></>
+              )}
               {varScope === 'gt3DSim' && (
                 <ExtSimFields sim3DId={sim3DId ?? ''} setSim3DId={setSim3DId} />
               )}
