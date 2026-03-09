@@ -116,9 +116,7 @@
       },
       "additionalProperties": false,
       "required": [
-        "name",
         "objType",
-        "desc",
         "version",
         "versionHistory",
         "DiagramList",
@@ -814,7 +812,8 @@
         "height": {
           "type": "number"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "CompChild": {
       "type": "array",
@@ -1309,6 +1308,9 @@
         },
         "units": {
           "type": "string"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "value"],
@@ -1409,6 +1411,9 @@
         },
         "value": {
           "type": "number"
+        },
+        "comments": {
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "value"],
@@ -1553,7 +1558,7 @@
           "const": "as_expression"
         },
         "value": {
-          "$ref": "#/definitions/MAAPIdentifier"
+          "$ref": "#/definitions/MAAPVariable"
         },
         "comments": {
           "$ref": "#/definitions/MAAPCommentArray"
@@ -1578,7 +1583,8 @@
           }
         }
       },
-      "required": ["row", "comments"]
+      "required": ["row", "comments"],
+      "additionalProperties": false
     },
     "MAAPPlotFilStatement": {
       "type": "object",
@@ -1755,10 +1761,7 @@
           }
         },
         "comments": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "$ref": "#/definitions/MAAPCommentArray"
         }
       },
       "required": ["type", "op", "value", "comments"],

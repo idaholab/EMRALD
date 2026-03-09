@@ -9,7 +9,9 @@ import { MAAPToString } from '../../Parser/maap-to-string';
 export const PureExpression: React.FC<{
   value: MAAPPureExpression;
 }> = ({ value }) => {
-  const [localValue, setLocalValue] = useState<string>(new MAAPToString().sourceElementToString(value.right));
+  const [localValue, setLocalValue] = useState<string>(
+    new MAAPToString().sourceElementToString(value.right),
+  );
   const variables = appData.value.VariableList.map(({ name }) => name);
 
   return (
@@ -61,7 +63,7 @@ export const PureExpression: React.FC<{
               }}
             />
           )}
-          getOptionLabel={(option) => option.toString()}
+          getOptionLabel={(option) => option}
         />
       ) : (
         <ExpressionType value={value.right} />

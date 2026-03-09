@@ -1,6 +1,7 @@
-import type { MAAPInpParser, Program, WrapperOptions } from './maap-parser-types';
-import safeMode from './safeMode';
+import type { parse } from './maap-inp-parser';
+import type { MAAPInpParser } from './maap-parser-types';
 import { MAAPToString } from './maap-to-string';
+import { safeMode } from './safeMode';
 
 /**
  * Wraps the parser with additional logic.
@@ -8,9 +9,7 @@ import { MAAPToString } from './maap-to-string';
  * @param parser - The parser to wrap.
  * @returns The wrapped parser.
  */
-export default function wrapper(
-  parser: (input: string, options?: WrapperOptions) => Program,
-): MAAPInpParser {
+export function wrapper(parser: typeof parse) {
   const maapInpParser: MAAPInpParser = {
     options: {
       safeMode: true,
@@ -20,7 +19,7 @@ export default function wrapper(
         ...maapInpParser.options,
         ...options,
       }),
-    toString: (input) => new MAAPToString(input).output,
+    toString: input => new MAAPToString(input).output,
   };
   return maapInpParser;
 }

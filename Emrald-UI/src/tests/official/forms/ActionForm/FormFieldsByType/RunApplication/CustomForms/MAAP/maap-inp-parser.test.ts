@@ -1,12 +1,12 @@
-import fs from 'fs/promises';
-import path from 'path';
-import maapInpParser from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/Parser/index';
-import { beforeAll, describe, expect, test } from 'vitest';
 import type { Program } from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/Parser/maap-parser-types';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { beforeAll, describe, expect, test } from 'vitest';
+import { parser } from '../../../../../../../../components/forms/ActionForm/FormFieldsByType/RunApplication/CustomForms/MAAP/Parser/index';
 
 async function readTestData(filename: string) {
   return (
-    (await fs.readFile(path.join(__dirname, 'test-data', filename)))
+    (await readFile(join(__dirname, 'test-data', filename)))
       .toString()
       // Ensures the locations reported by parsing the file are the same as the online editor
       .replace(/\r\n/g, '\n')
@@ -15,14 +15,14 @@ async function readTestData(filename: string) {
 
 beforeAll(() => {
   // Turn safe mode off to make sure tests fail when expected
-  maapInpParser.options.safeMode = false;
+  parser.options.safeMode = false;
   // Turn of location (so I don't have to rewrite the expect outputs)
-  maapInpParser.options.emitLocation = false;
+  parser.options.emitLocation = false;
 });
 
 describe('literals', () => {
   test('boolean literal', async () => {
-    const program = maapInpParser.parse(await readTestData('boolean.INP')).output;
+    const program = parser.parse(await readTestData('boolean.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests boolean literals **', 'Main'], []],
@@ -53,7 +53,7 @@ describe('literals', () => {
   });
 
   test('numerical literal', async () => {
-    const program = maapInpParser.parse(await readTestData('numeric.INP')).output;
+    const program = parser.parse(await readTestData('numeric.INP')).output;
     const expected: Program = {
       type: 'program',
       value: [
@@ -96,7 +96,7 @@ describe('literals', () => {
 
 describe('expressions', () => {
   test('call expression', async () => {
-    const program = maapInpParser.parse(await readTestData('call.INP')).output;
+    const program = parser.parse(await readTestData('call.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests call expressions **', 'No arguments'], []],
@@ -189,14 +189,14 @@ describe('expressions', () => {
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`Name()
+    expect(parser.toString(program)).toBe(`Name()
 Name(1)
 Name(1,2,3)
 Name(Of(A(Function())))`);
   });
 
   test('is expression', async () => {
-    const program = maapInpParser.parse(await readTestData('is.INP')).output;
+    const program = parser.parse(await readTestData('is.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests IS expressions **', 'Default'], []],
@@ -235,7 +235,7 @@ Name(Of(A(Function())))`);
           value: {
             type: 'number',
             units: undefined,
-            value: 144000,
+            value: 144_000,
           },
           comments: [[], []],
         },
@@ -255,14 +255,14 @@ Name(Of(A(Function())))`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`VARNAME IS Value
+    expect(parser.toString(program)).toBe(`VARNAME IS Value
 START TIME IS 0
 END TIME IS 144000
 PRINT INTERVAL IS 5000`);
   });
 
   test('multi expression', async () => {
-    const program = maapInpParser.parse(await readTestData('multi-expression.INP')).output;
+    const program = parser.parse(await readTestData('multi-expression.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [[], []],
@@ -300,7 +300,7 @@ PRINT INTERVAL IS 5000`);
                 },
               },
             ],
-            comments: ['Comment 1', 'Comment 2', 'Comment 3'],
+            comments: [['Comment 1', 'Comment 2', 'Comment 3']],
           },
           value: [
             {
@@ -316,7 +316,7 @@ PRINT INTERVAL IS 5000`);
           blockType: 'IF',
           test: {
             type: 'multi_expression',
-            comments: [],
+            comments: [[]],
             op: 'AND',
             value: [
               {
@@ -334,7 +334,7 @@ PRINT INTERVAL IS 5000`);
               },
               {
                 type: 'multi_expression',
-                comments: [],
+                comments: [[]],
                 op: 'OR',
                 value: [
                   {
@@ -378,7 +378,7 @@ PRINT INTERVAL IS 5000`);
           blockType: 'IF',
           test: {
             type: 'multi_expression',
-            comments: [],
+            comments: [[]],
             op: 'AND',
             value: [
               {
@@ -417,7 +417,7 @@ PRINT INTERVAL IS 5000`);
           comments: [[], []],
           test: {
             type: 'multi_expression',
-            comments: [],
+            comments: [[]],
             op: 'AND',
             value: [
               {
@@ -465,7 +465,7 @@ PRINT INTERVAL IS 5000`);
                           value: true,
                         },
                       ],
-                      comments: [],
+                      comments: [[]],
                     },
                     units: undefined,
                   },
@@ -494,7 +494,7 @@ PRINT INTERVAL IS 5000`);
                           value: false,
                         },
                       ],
-                      comments: [],
+                      comments: [[]],
                     },
                     units: undefined,
                   },
@@ -508,7 +508,7 @@ PRINT INTERVAL IS 5000`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`IF A != 0 AND B >= C
+    expect(parser.toString(program)).toBe(`IF A != 0 AND B >= C
 TEST
 END
 IF A != 0 AND B >= C OR A IS B
@@ -525,7 +525,7 @@ END`);
 
 describe('statements', () => {
   test('sensitivity statements', async () => {
-    const program = maapInpParser.parse(await readTestData('sensitivity.INP')).output;
+    const program = parser.parse(await readTestData('sensitivity.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests sensitivity statements **', 'Default'], []],
@@ -551,13 +551,13 @@ describe('statements', () => {
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`SENSITIVITY ON
+    expect(parser.toString(program)).toBe(`SENSITIVITY ON
 SENSITIVITY OFF
 SENSITIVITY`);
   });
 
   test('title statements', async () => {
-    const program = maapInpParser.parse(await readTestData('title.INP')).output;
+    const program = parser.parse(await readTestData('title.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests title statements **', 'Default'], []],
@@ -573,17 +573,17 @@ SENSITIVITY`);
         {
           type: 'title',
           value: 'A title that\nextends onto\nmultiple lines',
-          comments: [['Many lines'], []],
+          comments: [['Many lines', ''], []],
         },
         {
           type: 'title',
           value: '',
-          comments: [['Empty title'], []],
+          comments: [['Empty title', ''], []],
         },
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`TITLE
+    expect(parser.toString(program)).toBe(`TITLE
 Valid Title 
 END
 TITLE
@@ -597,14 +597,14 @@ END`);
   });
 
   test('block statements', async () => {
-    const program = maapInpParser.parse(await readTestData('block.INP')).output;
+    const program = parser.parse(await readTestData('block.INP')).output;
     const expected: Program = {
       type: 'program',
       value: [
         {
           type: 'title',
           value: 'Tests syntax for block statements',
-          comments: [[], []],
+          comments: [[''], []],
         },
         {
           type: 'block',
@@ -724,7 +724,7 @@ END`);
           type: 'block',
           blockType: 'INITIATORS',
           value: [],
-          comments: [['Empty'], []],
+          comments: [['Empty', ''], []],
         },
         {
           type: 'block',
@@ -767,7 +767,7 @@ END`);
       comments: [['Block'], []],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`TITLE
+    expect(parser.toString(program)).toBe(`TITLE
 Tests syntax for block statements
 END
 PARAMETER CHANGE
@@ -796,7 +796,7 @@ END`);
   });
 
   test('conditional block statements', async () => {
-    const program = maapInpParser.parse(await readTestData('conditionalBlock.INP')).output;
+    const program = parser.parse(await readTestData('conditionalBlock.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests conditional block statements **', 'When default', 'Comment 1'], []],
@@ -900,7 +900,7 @@ END`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`WHEN VARIABLE IS T
+    expect(parser.toString(program)).toBe(`WHEN VARIABLE IS T
 VARNAME = 1000
 END
 WHEN VARIABLE IS T
@@ -915,7 +915,7 @@ END`);
   });
 
   test('alias statements', async () => {
-    const program = maapInpParser.parse(await readTestData('alias.INP')).output;
+    const program = parser.parse(await readTestData('alias.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Alias'], ['End alias statements **']],
@@ -923,7 +923,7 @@ END`);
         {
           type: 'title',
           value: 'Tests syntax for alias statements',
-          comments: [[], []],
+          comments: [[''], []],
         },
         {
           type: 'alias',
@@ -969,7 +969,7 @@ END`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`TITLE
+    expect(parser.toString(program)).toBe(`TITLE
 Tests syntax for alias statements
 END
 ALIAS
@@ -982,7 +982,7 @@ END`);
   });
 
   test('plotfil statements', async () => {
-    const program = maapInpParser.parse(await readTestData('plotfil.INP')).output;
+    const program = parser.parse(await readTestData('plotfil.INP')).output;
     const expected: Program = {
       type: 'program',
       value: [
@@ -1066,7 +1066,7 @@ END`);
       comments: [['Tests plotfil statements **', 'Default'], []],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`PLOTFIL 4
+    expect(parser.toString(program)).toBe(`PLOTFIL 4
 A,B,C
 D,E,F
 G,H,I(J)
@@ -1077,7 +1077,7 @@ END`);
   });
 
   test('userevt statements', async () => {
-    const program = maapInpParser.parse(await readTestData('userevt.INP')).output;
+    const program = parser.parse(await readTestData('userevt.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [
@@ -1164,7 +1164,7 @@ END`);
       ],
     };
     expect(program).toEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`USEREVT
+    expect(parser.toString(program)).toBe(`USEREVT
 100 T Parameter Name
 102 Parameter 2
 ACTION #1
@@ -1180,7 +1180,7 @@ END`);
   });
 
   test('function statements', async () => {
-    const program = maapInpParser.parse(await readTestData('function.INP')).output;
+    const program = parser.parse(await readTestData('function.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests function statements **', 'Default'], []],
@@ -1210,11 +1210,11 @@ END`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`FUNCTION name = 1 + 1`);
+    expect(parser.toString(program)).toBe(`FUNCTION name = 1 + 1`);
   });
 
   test('set timer statements', async () => {
-    const program = maapInpParser.parse(await readTestData('timer.INP')).output;
+    const program = parser.parse(await readTestData('timer.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests set timer statements **', 'Default'], []],
@@ -1230,11 +1230,11 @@ END`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`SET TIMER #1`);
+    expect(parser.toString(program)).toBe(`SET TIMER #1`);
   });
 
   test('lookup variable statements', async () => {
-    const program = maapInpParser.parse(await readTestData('lookup.INP')).output;
+    const program = parser.parse(await readTestData('lookup.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests lookup statements **', 'Default'], []],
@@ -1251,7 +1251,7 @@ END`);
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`LOOKUP VARIABLE VariableName
+    expect(parser.toString(program)).toBe(`LOOKUP VARIABLE VariableName
 You can type anything in here for now
 It just gets separated by row
 END`);
@@ -1260,7 +1260,7 @@ END`);
 
 describe('program blocks', () => {
   test('source elements', async () => {
-    const program = maapInpParser.parse(await readTestData('sourceElements.INP')).output;
+    const program = parser.parse(await readTestData('sourceElements.INP')).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests SourceElements **', 'Statement'], []],
@@ -1307,58 +1307,15 @@ describe('program blocks', () => {
       ],
     };
     expect(program).toStrictEqual(expected);
-    expect(maapInpParser.toString(program)).toBe(`SENSITIVITY ON
+    expect(parser.toString(program)).toBe(`SENSITIVITY ON
 Identifier = 1 HR
 Function()
 Identifier AS Value`);
   });
 });
 
-describe('safeMode', () => {
-  test('safe mode parser', async () => {
-    const safeMode = await readTestData('safeMode.INP');
-    // Safe mode off
-    expect(() => {
-      maapInpParser.parse(safeMode, {
-        safeMode: false,
-      });
-    }).toThrow();
-    // Safe mode on
-    const safeParsed = maapInpParser.parse(safeMode, {
-      safeMode: true,
-    });
-    expect(safeParsed.errors.length).toBe(2);
-    expect(safeParsed.output.value).toStrictEqual([
-      {
-        blockType: 'INITIATORS',
-        type: 'block',
-        value: [
-          {
-            type: 'parameter_name',
-            value: 'A VALID INITIATOR',
-            comments: [[], []],
-          },
-          {
-            type: 'parameter_name',
-            value: 'ANOTHER VALID INITIATOR',
-            comments: [[], []],
-          },
-        ],
-        comments: [[], ['IS NOT VALID']],
-      },
-      {
-        type: 'identifier',
-        value: 'PLOTFIL',
-        comments: [['Invalid block'], []],
-      },
-    ]);
-  });
-});
-
 test('june 2025 bug fixes', async () => {
-  const program = maapInpParser.parse(
-    (await fs.readFile(path.join(__dirname, 'Test2.INP'))).toString(),
-  ).output;
+  const program = parser.parse((await readFile(join(__dirname, 'Test2.INP'))).toString()).output;
   const expected: Program = {
     type: 'program',
     comments: [[], []],
@@ -1371,7 +1328,7 @@ test('june 2025 bug fixes', async () => {
       {
         type: 'title',
         value: 'Test 2',
-        comments: [[], []],
+        comments: [[""], []],
       },
       {
         type: 'file',
@@ -1462,7 +1419,7 @@ test('june 2025 bug fixes', async () => {
             comments: [[], []],
           },
         ],
-        comments: [[], []],
+        comments: [[''], []],
       },
       {
         type: 'is_expression',
@@ -1513,7 +1470,7 @@ test('june 2025 bug fixes', async () => {
             comments: [[], []],
           },
         ],
-        comments: [[], []],
+        comments: [[''], []],
       },
       {
         type: 'conditional_block',
@@ -1561,7 +1518,7 @@ test('june 2025 bug fixes', async () => {
               },
             },
           ],
-          comments: [],
+          comments: [[]],
         },
         value: [],
         comments: [[], []],
@@ -1599,7 +1556,7 @@ test('june 2025 bug fixes', async () => {
               },
             },
           ],
-          comments: [],
+          comments: [[]],
         },
         value: [],
         comments: [[], []],

@@ -5,14 +5,12 @@ import { Assignment } from './Assignment';
 
 export const SourceElement: React.FC<{
   value: MAAPSourceElement;
-}> = ({ value }) => {
-  return (
-    <>
-      {value.type === 'assignment' ? (
-        <Assignment value={value} />
-      ) : (
-        <Typography m={2}>{new MAAPToString().sourceElementToString(value)}</Typography>
-      )}
-    </>
-  );
-};
+}> = ({ value }) => (
+  <>
+    {value.type === 'assignment' ? (
+      <Assignment value={value} />
+    ) : (
+      <Typography m={2}>{new MAAPToString().sourceElementToString(value)}</Typography>
+    )}
+  </>
+);

@@ -202,11 +202,11 @@ export interface Main_Model {
   /**
    * Name of the EMRALD model
    */
-  name: string
+  name?: string
   /**
    * description of the EMRALD model
    */
-  desc: string
+  desc?: string
   /**
    * Version of the EMRALD model schema
    */
@@ -372,7 +372,6 @@ export interface GeometryInfo {
   y?: number
   width?: number
   height?: number
-  [k: string]: unknown
 }
 export interface Action {
   /**
@@ -587,12 +586,13 @@ export interface MAAPExpressionBlock {
   type: "expression_block"
   value: MAAPExpression
   units?: string
+  comments?: MAAPCommentArray
 }
 export interface MAAPMultiPartExpression {
   type: "multi_expression"
   op: string
   value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[]
-  comments: string[]
+  comments: MAAPCommentArray
 }
 export interface MAAPIsExpression {
   target: MAAPVariable
@@ -615,6 +615,7 @@ export interface MAAPNumericLiteral {
 export interface MAAPTimerLiteral {
   type: "timer"
   value: number
+  comments?: MAAPCommentArray
 }
 export interface MAAPParameterName {
   type: "parameter_name"
@@ -649,7 +650,7 @@ export interface MAAPConditionalBlockStatement {
 export interface MAAPAsExpression {
   target: MAAPVariable
   type: "as_expression"
-  value: MAAPIdentifier
+  value: MAAPVariable
   comments: MAAPCommentArray
 }
 export interface MAAPAliasStatement {
@@ -666,7 +667,6 @@ export interface MAAPPlotFilStatement {
 export interface MAAPPlotFilBody {
   row: MAAPVariable[]
   comments: string[]
-  [k: string]: unknown
 }
 export interface MAAPUserEvtStatement {
   type: "user_evt"

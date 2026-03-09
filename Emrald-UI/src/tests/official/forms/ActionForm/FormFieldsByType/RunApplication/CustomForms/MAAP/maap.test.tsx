@@ -1,26 +1,28 @@
 import 'blob-polyfill';
 import { describe, expect, test } from 'vitest';
-import fs from 'fs/promises';
-import path from 'path';
-import {
-  ensureVariable,
-  getAction,
-  renderActionForm,
-  save,
-  selectOption,
-} from '../../../../../../../test-utils';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { getAction, renderActionForm, save, selectOption } from '../../../../../../../test-utils';
 import ActionForm from '../../../../../../../../components/forms/ActionForm/ActionForm';
 import userEvent from '@testing-library/user-event';
-import { findByRole, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import expected from './maap.expected.json';
 
 describe('MAAP Form', async () => {
-  const TestPAR = new File([await fs.readFile(path.join(__dirname, 'Test.PAR'))], 'Test.PAR', {
-    type: 'text/plain',
-  });
-  const TestINP = new File([await fs.readFile(path.join(__dirname, 'Test.INP'))], 'Test.INP', {
-    type: 'text',
-  });
+  const TestPAR = new File(
+    [new Uint8Array(await readFile(join(__dirname, 'Test.PAR')))],
+    'Test.PAR',
+    {
+      type: 'text/plain',
+    },
+  );
+  const TestINP = new File(
+    [new Uint8Array(await readFile(join(__dirname, 'Test.INP')))],
+    'Test.INP',
+    {
+      type: 'text',
+    },
+  );
 
   test('loads and parses files', async () => {
     const name = 'loads and parses files';
