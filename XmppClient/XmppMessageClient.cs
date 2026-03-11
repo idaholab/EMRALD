@@ -227,19 +227,27 @@ namespace XmppMessageClient
     private void SetLicense()
     {
       //To use this as a base for your project, you need to have an MatriX license
-      //Get a license and use project "Manage User Secrets" to set the license if you want to use this MatriX package 
-      //example 
-      /*
-      {
-        "Secrets": {
-          "XmppLicense": "YourLicenseCodeHere"
+        //Get a license and use project "Manage User Secrets" to set the license if you want to use this MatriX package 
+        //example 
+        /*
+        {
+          "Secrets": {
+            "XmppLicense": "YourLicenseCodeHere"
+          }
         }
-      }
-       */
+         */
+
+      //or put as an envirionment variable. 
+        //run the following in cmd: setx Secrets__XmppLicense "YourLicenseCodeHere"
+        //restart IDE
+
       try
       {
+        //pick which one.
         string lic = _appSettingsService.XmppLicense;  //the other option is to place your license code here, but do not distribute
-        if(lic != null)
+        //string lic = Environment.GetEnvironmentVariable("Secrets__XmppLicense");
+
+        if (lic != null)
           Matrix.License.LicenseManager.SetLicense(lic);
       }
       catch { } //failed to do license just continue with trial

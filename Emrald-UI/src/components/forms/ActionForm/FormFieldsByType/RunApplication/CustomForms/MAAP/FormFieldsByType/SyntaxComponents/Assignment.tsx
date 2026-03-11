@@ -45,7 +45,7 @@ export const Assignment: React.FC<{
             value.value.useVariable = variables.includes(newValue ?? '');
             setLocalValue(newValue ?? '');
           }}
-          renderInput={(params) => (
+          renderInput={params => (
             <TextField
               {...params}
               slotProps={{
@@ -70,7 +70,7 @@ export const Assignment: React.FC<{
               }}
             />
           )}
-          getOptionLabel={(option) => option.toString()}
+          getOptionLabel={option => option}
         />
       )}
     </Box>

@@ -34,8 +34,7 @@ namespace SimulationEngine
     public Options_cur options = new Options_cur();
     //private bool _done = false;
     private ISimMessaging _msgCoupler = null;
-    private readonly IAppSettingsService _appSettingsService = null!;
-
+    
     // Create attributes for objects
     private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
     private EmraldModel _model = null;
@@ -70,6 +69,9 @@ namespace SimulationEngine
     {
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
+      _error = LoadJson(_optsJsonStr, ref options);
+      if (_error != "")
+        throw new Exception("Error Loading JSON run options - " + error);
       _modelJsonStr = modelJsonStr;
       _progressCallBack = progressCallBack;
     }
@@ -419,7 +421,7 @@ namespace SimulationEngine
         optionsOut.debugEndIdx = optionsOut.runct;
       }
 
-      if (optionsOut.debugEndIdx < optionsOut.debugStartIdx)
+      if ((optionsOut.debug.ToUpper() != "OFF") && (optionsOut.debugEndIdx < optionsOut.debugStartIdx))
       {
         return "debugEndIdx must be greater than debugStartIdx";
       }
@@ -441,8 +443,7 @@ namespace SimulationEngine
             _msgCoupler = new WebApiCoupling(optionsOut.couplingInfo.couplingURL);
             break;
           case CouplingType.XMPP:
-            //todo figure out where _appSettingsService should come from. 
-            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword, _appSettingsService);
+            _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword);
             break;
           default:
             throw new Exception("Coupling Type not implemeted");

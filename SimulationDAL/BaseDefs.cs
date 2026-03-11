@@ -363,29 +363,11 @@ namespace SimulationDAL
 
   public class SingleRandom : Random
   {
-    //static SingleRandom _Instance;
-    //public static SingleRandom Instance
-    //{
-    //  get
-    //  {
-    //    if (_Instance == null)
-    //    {
-    //      if(ConfigData.seed == null)
-    //        _Instance = new SingleRandom();
-    //      else
-    //        _Instance = new SingleRandom((int)ConfigData.seed);
-    //    }
-    //    return _Instance;
-    //  }
-    //}
-
-    //private SingleRandom() : base() { }
-    //private SingleRandom(int seed) : base(seed) { }
-    //public static void Reset()
-    //{
-    //  _Instance = null;
-    //}
-    private static ThreadLocal<Random>? _threadLocalRandom = null;
+    // Use AsyncLocal so the same RNG instance flows across async/await continuations,
+    // avoiding resets when continuations resume on different threads (e.g., ReceiveLoop).
+    private static AsyncLocal<Random>? _asyncLocalRandom;
+    private static int _seedBase;
+    private static int _seedOffset;
 
     static SingleRandom()
     {
@@ -396,24 +378,29 @@ namespace SimulationDAL
     {
       get
       {
-        if (_threadLocalRandom == null)
+        if (_asyncLocalRandom == null)
           Reset();
-        var local = _threadLocalRandom;
-        return local!.Value ?? throw new Exception("ThreadLocal value is null"); //has null check, but still getting warning.
+
+        // Create a per-execution-context RNG the first time it's needed.
+        if (_asyncLocalRandom!.Value == null)
+        {
+          int seed = _seedBase + Interlocked.Increment(ref _seedOffset);
+          _asyncLocalRandom.Value = new Random(seed);
+        }
+
+        return _asyncLocalRandom.Value!;
       }
     }
 
     public static void Reset(int? seedOverride = null)
     {
-      _threadLocalRandom = new ThreadLocal<Random>(() =>
-      {
-        int? effectiveSeed = seedOverride ?? ConfigData.seed;
+      _seedBase = seedOverride ?? ConfigData.seed ?? Environment.TickCount;
+      _seedOffset = 0;
 
-        if (effectiveSeed == null)
-          return new Random();
-        else
-          return new Random((int)effectiveSeed);
-      });
+      // Start with a clean AsyncLocal container and seed the current context immediately
+      // so behaviour matches the previous implementation for the primary thread.
+      _asyncLocalRandom = new AsyncLocal<Random>();
+      _asyncLocalRandom.Value = new Random(_seedBase);
     }
   }
 

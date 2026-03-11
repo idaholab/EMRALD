@@ -1,0 +1,554 @@
+{
+  "id": "0",
+  "name": "CoupledSimWebSocketTest",
+  "desc": "",
+  "version": 1,
+  "DiagramList": [
+    {
+      "id": "ba56f36a-706a-4188-a06f-ba8bb1e1c715",
+      "name": "Main",
+      "desc": "",
+      "diagramType": "dtMulti",
+      "diagramLabel": "Plant",
+      "states": [
+        "Begin",
+        "Done",
+        "PipeBreak",
+        "PipeRepaired",
+        "EventDone",
+        "WithinBounds",
+        "OutsideBounds",
+        "ExtSimStart"
+      ],
+      "required": false,
+      "objType": "Diagram"
+    }
+  ],
+  "StateList": [
+    {
+      "id": "5b16159d-7077-49da-8128-11df61ad46ff",
+      "name": "Begin",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStart",
+      "events": [
+        "TimeUp",
+        "StartExtSim"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GotoEventDone"
+          ]
+        },
+        {
+          "moveFromCurrent": false,
+          "actions": [
+            "GotoExtSimStart"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": -353.4541830110421,
+        "y": -181.25735159227872,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "d274300c-a037-4960-a49e-29f47129d30c",
+      "name": "Done",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stTerminal",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 843.6278411849902,
+        "y": -84.46190046987647,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "4370ff95-e685-4bd6-a59c-8c9d87764855",
+      "name": "EventDone",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "TridiumHigh",
+        "TridiumLow"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GotoOutsideBounds"
+          ]
+        },
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GotoWithinBounds"
+          ]
+        }
+      ],
+      "immediateActions": [],
+      "geometryInfo": {
+        "x": 167.03672273751283,
+        "y": -124.6350931195289,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "43fc57f5-ea38-4182-bb72-fa12f076c87a",
+      "name": "ExtSimStart",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "BreakTime"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GotoPipeBreak"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "OpenExtSim"
+      ],
+      "geometryInfo": {
+        "x": -97.97529543447257,
+        "y": 123.82988728523617,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "95ed063e-d3d9-4d80-9735-f5409f2ce1ef",
+      "name": "OutsideBounds",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GotoDone"
+      ],
+      "geometryInfo": {
+        "x": 465.4185607899933,
+        "y": -164.89522629216023,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "c4932508-bdbd-46fa-ba38-5b45d26ee724",
+      "name": "PipeBreak",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [
+        "FixingPipeTime"
+      ],
+      "eventActions": [
+        {
+          "moveFromCurrent": true,
+          "actions": [
+            "GotoPipeRepaired"
+          ]
+        }
+      ],
+      "immediateActions": [
+        "SetFlowRate"
+      ],
+      "geometryInfo": {
+        "x": 240.3905392323702,
+        "y": 194.71013481826506,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "f146f68f-a93e-4d59-95d0-8f92b77c218a",
+      "name": "PipeRepaired",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stStandard",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "SetFlowrateFixed"
+      ],
+      "geometryInfo": {
+        "x": 677.6763403608152,
+        "y": 197.15146558196398,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    },
+    {
+      "id": "e1e32eb6-e1e5-43ee-9ca8-5c6c5ca7d854",
+      "name": "WithinBounds",
+      "desc": "",
+      "diagramName": "Main",
+      "stateType": "stKeyState",
+      "events": [],
+      "eventActions": [],
+      "immediateActions": [
+        "GotoDone"
+      ],
+      "geometryInfo": {
+        "x": 467.56005723534594,
+        "y": -4.425759320395628,
+        "width": 0,
+        "height": 0
+      },
+      "required": false,
+      "objType": "State",
+      "defaultSingleStateValue": "Ignore"
+    }
+  ],
+  "ActionList": [
+    {
+      "id": "9cf2fd1f-d8eb-4015-8037-cbab76cb8a78",
+      "name": "GotoDone",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "Done",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "a5d96782-4526-4c28-8153-fe1739326f55",
+      "name": "GotoEventDone",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "EventDone",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "274fe49b-a5e8-4829-838d-ad61a5fcc453",
+      "name": "GotoExtSimStart",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "ExtSimStart",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "4ffec78c-37a6-4658-985e-32b7e36d8f5c",
+      "name": "GotoOutsideBounds",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "OutsideBounds",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "1ebbc671-576c-43b2-9b34-5674c219cc41",
+      "name": "GotoPipeBreak",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "PipeBreak",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "db77591f-8067-4725-babc-92062d0a0564",
+      "name": "GotoPipeRepaired",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "PipeRepaired",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "f602c240-4f4f-4d5c-b869-826ddb1004c0",
+      "name": "GotoWithinBounds",
+      "desc": "",
+      "actType": "atTransition",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "newStates": [
+        {
+          "toState": "WithinBounds",
+          "prob": -1,
+          "varProb": null,
+          "failDesc": ""
+        }
+      ]
+    },
+    {
+      "id": "d8f7cd27-a34f-45f2-bcbc-2f8f86b96a14",
+      "name": "OpenExtSim",
+      "desc": "",
+      "actType": "at3DSimMsg",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "sim3DMessage": "atOpenSim",
+      "sim3DConfigData": "{\"data\":\"put Here\"}",
+      "sim3DModelRef": "c:/somePath",
+      "simEndTime": "P0DT5M",
+      "openSimVarParams": false,
+      "extSim": "MooseSim"
+    },
+    {
+      "id": "131dfb20-3e0e-441b-8986-1da978ce53c6",
+      "name": "SetFlowRate",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Dbl_FlowRate",
+      "scriptCode": "return Rand.NextDouble() * 5.0; "
+    },
+    {
+      "id": "d658b58e-299d-42b4-84b6-9815feb2f796",
+      "name": "SetFlowrateFixed",
+      "desc": "",
+      "actType": "atCngVarVal",
+      "mainItem": true,
+      "objType": "Action",
+      "required": false,
+      "codeVariables": [],
+      "variableName": "Dbl_FlowRate",
+      "scriptCode": "return 0;"
+    }
+  ],
+  "EventList": [
+    {
+      "id": "453defb2-a329-4f5b-b1aa-61dcac47080f",
+      "name": "BreakTime",
+      "desc": "",
+      "evType": "etDistribution",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "distType": "dtNormal",
+      "dfltTimeRate": "trSeconds",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": 100,
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 5,
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 50,
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 150,
+          "useVariable": false
+        }
+      ]
+    },
+    {
+      "id": "a0a4d895-38fe-49a0-87c7-73a92b585973",
+      "name": "FixingPipeTime",
+      "desc": "",
+      "evType": "etDistribution",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "distType": "dtNormal",
+      "dfltTimeRate": "trSeconds",
+      "parameters": [
+        {
+          "name": "Mean",
+          "value": 50,
+          "useVariable": false
+        },
+        {
+          "name": "Standard Deviation",
+          "value": 5,
+          "useVariable": false
+        },
+        {
+          "name": "Minimum",
+          "value": 20,
+          "useVariable": false
+        },
+        {
+          "name": "Maximum",
+          "value": 100,
+          "useVariable": false
+        }
+      ]
+    },
+    {
+      "id": "4fe0ce6c-e270-4d2c-a789-e2e841db79f4",
+      "name": "StartExtSim",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT1S"
+    },
+    {
+      "id": "0b52630d-b06f-4ee3-a6e2-be6b87c0326a",
+      "name": "TimeUp",
+      "desc": "",
+      "evType": "etTimer",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "time": "P0DT5M"
+    },
+    {
+      "id": "48290926-d0fe-4baa-8be2-14233bc2ec2e",
+      "name": "TridiumHigh",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [
+        "TridiumVal"
+      ],
+      "code": "return TridiumVal >= 500;"
+    },
+    {
+      "id": "02dabd19-ed40-45ed-a9d9-753628e158a1",
+      "name": "TridiumLow",
+      "desc": "",
+      "evType": "etVarCond",
+      "mainItem": true,
+      "required": false,
+      "objType": "Event",
+      "varNames": [
+        "TridiumVal"
+      ],
+      "code": "return TridiumVal < 500;"
+    }
+  ],
+  "LogicNodeList": [],
+  "VariableList": [
+    {
+      "name": "Dbl_FlowRate",
+      "varScope": "gt3DSim",
+      "value": -1,
+      "type": "double",
+      "objType": "Variable",
+      "id": "76421f03-3186-45fd-ba1b-db718e093cdf",
+      "desc": "",
+      "sim3DId": "epsilon3",
+      "resetOnRuns": true,
+      "extSim": "MooseSim"
+    },
+    {
+      "name": "TridiumVal",
+      "varScope": "gt3DSim",
+      "value": 0,
+      "type": "double",
+      "objType": "Variable",
+      "id": "329df2b4-f2c7-4490-bbaa-b903699cb9eb",
+      "desc": "",
+      "sim3DId": "T_FW",
+      "resetOnRuns": true,
+      "extSim": "MooseSim"
+    }
+  ],
+  "ExtSimList": [
+    {
+      "id": "02aa22af-8e29-42f9-9d4e-6897e7b7df10",
+      "name": "MooseSim",
+      "resourceName": "MooseEMRALDTranslation",
+      "objType": "ExtSim"
+    }
+  ],
+  "objType": "EMRALD_Model",
+  "emraldVersion": 3.2,
+  "versionHistory": [],
+  "templates": []
+}

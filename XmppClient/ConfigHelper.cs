@@ -16,7 +16,7 @@ namespace XmppMessageClient
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(AppContext.BaseDirectory);
             builder.AddJsonFile("AppSettings.json", optional: true, reloadOnChange: true);
-            builder.AddUserSecrets(assembly, optional: false);
+            builder.AddUserSecrets(assembly, optional: true);
                 
             return builder.Build();
         }

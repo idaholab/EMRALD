@@ -28,6 +28,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     varScope,
     value,
     sim3DId,
+    extSim,
     resetOnRuns,
     canMonitor,
     monitorInSim,
@@ -53,6 +54,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     setDocLink,
     setVarScope,
     setSim3DId,
+    setExtSim,
     setPathMustExist,
     handleTypeChange,
     handleNameChange,
@@ -230,7 +232,12 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
                 <></>
               )}
               {varScope === 'gt3DSim' && (
-                <ExtSimFields sim3DId={sim3DId ?? ''} setSim3DId={setSim3DId} />
+                <ExtSimFields
+                  sim3DId={sim3DId ?? ''}
+                  setSim3DId={setSim3DId}
+                  extSim={extSim ?? ''}
+                  setExtSim={setExtSim}
+                />
               )}
             </>
           )}

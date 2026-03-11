@@ -1,15 +1,15 @@
 # States
   A state is a logical representation for the condition of a component, person, system, process, etc. Each state has a Name, Immediate Action, and Event Action section.
   There are four different kinds of states: Start, Standard, Key, and Terminal.
-  The Header indicates what kind of state with an icon it is as well as the name of the state. The Immediate Action section lists actions taken when a new state is entered. The Event Action section lists events to look for when in this state and what action to take if the event is triggered.<br>
+  The Header indicates the type of state with an icon, as well as the name of the state. The Immediate Action section lists actions taken when a new state is entered. The Event Action section lists events to look for when in this state and what action to take if the event is triggered.<br>
   
   <img src="/images/Modeling/states/StateAnatomy.png" alt="State Anatomy" width="220"/>
 
 ## Creating a New State
-  In the diagram that you want your state to be added to, right-click anywhere in the diagram window (not on any objects) and click, "New State." <br>
+  In the diagram that you want your state to be added to, right-click anywhere in the Diagram window (not on any objects) and click, "New State". <br>
   <img src="/images/Modeling/states/NewState1.png" alt="New State Step 1">
 
-  Type in a state name, an optional description, and, if the diagram is a single state diagram, what the logic tree evaluation should be. Press "SAVE". The state will open in the diagram window in the Modeling Area.<br> 
+  Type in a state name, an optional description, and, if the diagram is a single state diagram, what the logic tree evaluation should be. Press "SAVE". The state will open up in the Diagram window in the Modeling Area.<br> 
   <img src="/images/Modeling/states/NewState2.png" alt="New State Step 2"><br>
   <img src="/images/Modeling/states/NewState3.png" alt="New State Step 3"><br>
 
@@ -22,14 +22,14 @@
 On the Left Navigation Frame, click on the tab (All or Local) where your state is located. If you are not sure which tab, click on the All tab. Right-click on the state and click "Edit Properties".<br>
 <img src="/images/Modeling/states/EditStateOpt1.png" alt="Edit State Option 1"><br>
 
-The properties window will open in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if the diagram that the state belongs to is a single state diagram. Remember that states only evaluate to a boolean expression if the diagram it belongs to is a single state diagram. To view the boolean expression of the state, use [option two](#option-2) for editing states.<br>
-<img src="/images/Modeling/states/EditStateOpt1_2.png" alt="Edit State Option 2 Step 2" width="450">
+The Properties window will open up in the Modeling Area. Note that because you are accessing the state properties from the Left Navigation Frame, the boolean evaluation value will not appear even if the diagram that the state belongs to is a single state diagram. Remember that states only evaluate to a boolean expression if the diagram it belongs to is a single state diagram. To view the boolean expression of the state, use [option two](#option-2) for editing states.<br>
+<img src="/images/Modeling/states/EditStateOpt1_2.png" alt="Edit State Option 2 Step 2" style="width:450px">
 
 #### Option 2:<br>
-In the diagram window, right-click in the middle of the state and click "State Properties...".<br>
+In the Diagram window, right-click in the middle of the state and click "State Properties...".<br>
 <img src="/images/Modeling/states/EditStateOpt2.png" alt="Edit State Option 2"><br>
 
-The properties window will open in the diagram window. <br>
+The Properties window will open up in the Diagram window. <br>
 <img src="/images/Modeling/states/EditStateOpt2_2.png" alt="Edit State Option 2 Step 2">
 
 
@@ -41,9 +41,10 @@ The properties window will open in the diagram window. <br>
   <img src="/images/Modeling/states/ExitPropertyInEventProperties.png" alt="Event Properties Exit Option" width="450"><br>
 
 ### Single State Diagrams (System, Component)
-Single State diagrams such as system and components have an additional status value. This field is used for logic tree evaluations. 
-They must have at least one state with a "True" value and one with a "False". The "Unknown" value can be used if it is not to have any effect on the logic evaluation. 
-See the following screenshots of the CCS System diagram as an example, there should never be a green dashed arrow in the diagram and the events for all transition actions should have an exit symbol.<br>
+Single State diagrams, such as system and components, have an additional status value. This field is used for logic tree evaluations. 
+They must have at least one state with a "True" value and one with a "False". The "Unknown" value can be used if it does not affect the logic evaluation. 
+See the following screenshots of the CCS System diagram as an example; there should never be a green-dashed arrow in the diagram and the events for all transition
+actions should have a exit symbol.<br>
 
 The Single State diagram representing the CCS System.
 <img src="/images/Modeling/states/StatusValueExample.png" alt="Single State Diagram Example" width="500"><br>
@@ -67,23 +68,23 @@ The CCS_Sys_Failed State Properties window with "False" selected as the Status V
   <img src="/images/Modeling/states/DeleteStateOpt1_3.png" alt="Delete State Option 1 Step 3" width="200"><br>
 
 **Option 2:** <br> 
-  Open the Diagram containing the state and locate the state. Right-click on the state and click " Delete State".<br>
+  Open the Diagram containing the state and locate the state. Right-click on the state and click "Delete State".<br>
   <img src="/images/Modeling/states/DeleteStateOpt2.png" alt="Edit State Option 2 Step 1">
 
   A confirmation window will appear in the Modeling Area. Click "DELETE".<br>
   <img src="/images/Modeling/states/DeleteStateWarn.png" alt="Delete State Option 1 Step 2"><br>
 
-  The state will no longer show in the diagram window and no longer will be listed in the Left Navigation Frame. <br>
+  The state will no longer show in the Diagram window and no longer will be listed in the Left Navigation Frame. <br>
   <img src="/images/Modeling/states/DeleteStateOpt2_2.png" alt="Edit State Option 2 Step 2">
 
 ## Types of States
-The type of state will be indicated by an icon in the header of the state. Those icons are included in the title of the respective section as well as in the [Icons: States](./icons.md#states) section.
+The type of state will be indicated by an icon in the header of the state. Those icons are included in the title of the respective section, as well as in the [Icons: States](./icons.md#states) section.
 
 ### Start
 <img src="/images/Modeling/states/start.png" alt="Start" width="25"/>
 
-Start states are the states the model is in when the simulation begins. There must be at least one but can be more. All start states will be activated simultaneously.<br>
-<img src="/images/Modeling/states/StartState.png" alt="Start State" width="220">
+Start states are the states the model is in when the simulation begins. There must be at least one, but there can be more. All start states will be activated simultaneously.<br>
+<img src="/images/Modeling/states/StartState.png" alt="Start State" style="width:220px">
 
 ### Standard
 A normal state representing no special conditions. It will have no icon in the Header.<br>
@@ -92,15 +93,15 @@ A normal state representing no special conditions. It will have no icon in the H
 ### Key
 <img src="/images/Modeling/states/key.png" alt="Key" width="25"/>
 
-A key state is what is of interest in the model, it will be tracked and reported if the model is in this state at the end of a simulation. In comparison to traditional PRA, all "End Sates" would have a corresponding "Key State." <br>
-<img src="/images/Modeling/states/KeyState.png" alt="Key State" width="220">
+A key state is the primary focus of interest in the model; it will be tracked and reported if the model is in this state at the end of a simulation. In comparison to traditional PRA, all "End States" would have a corresponding "Key State". <br>
+<img src="/images/Modeling/states/KeyState.png" alt="Key State" style="width:220px">
 
 
 ### Terminal
 <img src="/images/Modeling/states/red-dot.png" alt="Terminal" width="25"/>
 
-A user-defined simulation stopping point. A terminal state is not required but the simulation will run until the end time parameter is reached. However, it is recommended that terminal states be used to end all simulations when desired stop conditions are met for shortened computing time.<br>
-<img src="/images/Modeling/states/TerminalState.png" alt="Terminal State" width="220">
+A user-defined simulation stopping point. A terminal state is not required, but the simulation will run until the end time parameter is reached. However, it is recommend that terminal states be used to end all simulations when desired stop conditions are met for shortened computing time.<br>
+<img src="/images/Modeling/states/TerminalState.png" alt="Terminal State" style="width:220px">
 
 
 ## Immediate Actions
@@ -110,13 +111,13 @@ A user-defined simulation stopping point. A terminal state is not required but t
   An icon on the left of the action shows what type of action it is. Refer to the [Actions](./icons.md#Actions) section of the Icons page to see what icons are associated with each action type. 
   
   ::: tip Note 
-  A Transition Action in Immediate Actions area cannot exit the state (black arrow) but adds the "too" state as current state (dotted green arrow). See the [Elements of a Diagram: Arrows](./diagrams.md#arrows) section for more information.
+  A Transition Action in Immediate Actions area can not exit the state (black arrow), but adds the "too" state as a current state (dotted green arrow). See the [Elements of a Diagram: Arrows](./diagrams.md#arrows) section for more information.
   :::
 
 ### Adding an Immediate Action  
-To add an Immediate Action, you can either...<br>
+To add an Immediate Action, you can either follow Option 1 or Option 2.<br>
 
-**Option 1:** Right-click on the Immediate Action header in the state to create a new Immediate Action or <br>
+**Option 1:** Right-click on the Immediate Action header in the state to create a new Immediate Action. <br>
 <img src="/images/Modeling/actions/NewAction1.png" alt="New Action 1"><br>
 
 **Option 2:** Drag and drop an existing action into the Immediate Action section.<br>
@@ -133,9 +134,9 @@ See [Actions](/Modeling/actions.md) for more information.
 An icon on the left of the action shows what type of action it is. See [Icons](/Modeling/icons.md) for descriptions of each icon.
 
 ### Adding an Event
-To add an Event, you can either...<br>
+To add an Event, you can either follow Option 1 or Option 2.<br>
 
-**Option 1:** Right-click on the Event Actions header in the state to create a new event or <br>
+**Option 1:** Right-click on the Event Actions header in the state to create a new event. <br>
 <img src="/images/Modeling/events/NewEvent1.png" alt="New Event Step 1"><br>
 
 **Option 2:** Drag and drop an existing event into the Event Actions section.<br>
@@ -145,10 +146,10 @@ See [Creating a New Event](./events.md#creating-a-new-event) for detailed instru
 
 See [Events](/Modeling/events.md) for more information.
 
-### Adding an Action for an Event
-To add an action to an event, you can either...<br>
+### Adding an Action to an Event
+To add an action to an event, you can either follow Option 1 or Option 2.<br>
 
-**Option 1:** Under the Event Actions header, right-click on the event you want to add the action to create a new Event Action or <br>
+**Option 1:** Under the Event Actions header, right-click on the event you want to add the action to create a new Event Action. <br>
 <img src="/images/Modeling/states/AddNewEventAction.png" alt="New Event Action"><br>
 
 **Option 2:** Drag and drop an existing action into the Event Action section.<br>
@@ -156,4 +157,4 @@ To add an action to an event, you can either...<br>
 
 See [Creating a New Action](./actions.md#creating-a-new-action) for detailed instructions for Option 1. See [Adding an Existing Action](./actions.md#adding-an-existing-action) for detailed instructions for Option 2.
 
-See [Actions](/Modeling/actions.md) for more information on Actions.
+See [Actions](/Modeling/actions.md) for more information on actions.

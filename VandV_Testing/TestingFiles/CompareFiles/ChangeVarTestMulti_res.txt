@@ -2,9 +2,9 @@ Simulation = ChangeVarTest
 Runtime = 00.00:00:00
 Runs = 100 of 100
 
-Restofit Occurred 96 times, Probability =0.96, MeanTime = 00.00:00:05 +/- 00.00:00:00.00
+Restofit Occurred 92 times, Probability =0.92, MeanTime = 00.00:00:05 +/- 00.00:00:00.00
 
-2StDevAway Occurred 4 times, Probability =0.04, MeanTime = 00.00:00:05 +/- 00.00:00:00.00
+2StDevAway Occurred 8 times, Probability =0.08, MeanTime = 00.00:00:05 +/- 00.00:00:00.00
 ---------------------------
 - End Sim Variable Values -
 ---------------------------

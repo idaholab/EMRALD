@@ -125,7 +125,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
       addWindow(
         'New Logic Tree',
         <LogicNodeFormContextProvider>
-          <LogicNodeForm setAsRoot />
+          <LogicNodeForm setAsRoot fromSidebar={true} />
         </LogicNodeFormContextProvider>,
       );
     } else if (accordionPanel === 'External Sims') {

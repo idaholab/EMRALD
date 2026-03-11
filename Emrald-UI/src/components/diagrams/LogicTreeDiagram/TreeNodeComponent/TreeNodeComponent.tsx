@@ -5,7 +5,6 @@ import { FaLink } from 'react-icons/fa';
 import DeleteIcon from '@mui/icons-material/Close';
 import { PiNotePencilDuotone } from 'react-icons/pi';
 import useLogicNodeTreeDiagram, { type NodeType } from '../useLogicTreeDiagram';
-import React from 'react';
 import GateTypeIcon from '../IconTypes/GateTypeIcon';
 import type { GateType } from '../../../../types/EMRALD_Model';
 import LogicTreeNodeDropTarget from '../../../drag-and-drop/LogicTreeNodeDroppable';
@@ -37,8 +36,8 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
     expanded,
     expandable,
   } = data;
-  const { goToDiagram } = useLogicNodeTreeDiagram();
   const {
+    goToDiagram,
     editingTitle,
     editingDescription,
     editedDescription,

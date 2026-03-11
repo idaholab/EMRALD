@@ -644,7 +644,8 @@ namespace SimulationDAL
       compiledComp.AddVariable("ExtSimStartTime", typeof(double));
       compiledComp.AddVariable("NextEvTime", typeof(double));
       compiledComp.AddVariable("RootPath", typeof(string));
-      
+      compiledComp.AddVariable("Rand", typeof(Random));
+
 
       if (varList != null)
       {
@@ -655,7 +656,8 @@ namespace SimulationDAL
               (varItem.Value.name != "RunIdx") &&
               (varItem.Value.name != "ExtSimStartTime") &&
               (varItem.Value.name != "NextEvTime") &&
-              (varItem.Value.name != "RootPath"))
+              (varItem.Value.name != "RootPath") &&
+              (varItem.Value.name != "Seed"))
           {
             compiledComp.AddVariable(varItem.Value.name, varItem.Value.dType);
           }
@@ -688,6 +690,7 @@ namespace SimulationDAL
       compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
       compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
       compiledComp.SetVariable("RootPath", typeof(string), rootPath);
+      compiledComp.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
 
       if (varList != null) //assign the values to the variables if assigned
       {
@@ -1387,6 +1390,10 @@ namespace SimulationDAL
       public bool? useVariable { get; set; }
       public EnTimeRate timeRate { get; set; }
 
+      public static explicit operator double(DistribParams v)
+      {
+        throw new NotImplementedException();
+      }
     }
     protected List<DistribParams> _dParams = new List<DistribParams>();
     protected EnDistType _distType = EnDistType.dtNormal;
@@ -1512,20 +1519,26 @@ namespace SimulationDAL
     public override TimeSpan NextTime(TimeSpan curTime)
     {
       double sampled = 0.0;
-      List<double?> valuePs = new List<double?>();
+      Dictionary<string, DistribParams> distParams = [];
       try
       {
         foreach (DistribParams p in this._dParams)
         {
+          double? val = null;
           if (((p.useVariable == null) || (bool)p.useVariable) && p.variable != null)
           {
             var v = vars.FindByName(p.variable);
-            valuePs.Add(Convert.ToDouble(v.value));
+            val = Convert.ToDouble(v.value);
           }
           else if (p.value != null)
-            valuePs.Add(Convert.ToDouble(p.value));
-          else
-            valuePs.Add(null);
+          {
+            val = Convert.ToDouble(p.value);
+          }
+          distParams[p.name] = new DistribParams {
+            name = p.name,
+            value = val,
+            timeRate = p.timeRate,
+          };
         }
       }
       catch
@@ -1540,53 +1553,126 @@ namespace SimulationDAL
         switch (this._distType)
         {
           case EnDistType.dtExponential:
-            sampled = (new Exponential((double)valuePs[0]!, SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            if (distParams.TryGetValue("Rate", out DistribParams? rate))
+            {
+              sampled = new Exponential((double)rate.value!, SingleRandom.Instance).Sample();
+              distTimeRate = rate.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing required parameter rate for exponential distribution");
+            }
             break;
           case EnDistType.dtNormal: //mean and standard deviation
-            sampled = (new Normal((double)valuePs[0]!,
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
-                                    SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            if (
+              distParams.TryGetValue("Mean", out DistribParams? mean)
+              && distParams.TryGetValue("Standard Deviation", out DistribParams? std)
+            )
+            {
+              sampled = new Normal((double)mean.value!,
+                                      Globals.ConvertToNewTimeSpan(std.timeRate, (double)std.value!, mean.timeRate),
+                                      SingleRandom.Instance).Sample();
+              distTimeRate = mean.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or both required parameters mean and standard deviation for normal distribution");
+            }
             break;
           case EnDistType.dtWeibull:
-            sampled = (new Weibull((double)valuePs[0]!, (double)valuePs[1]!, SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[1].timeRate;
+            if (
+              distParams.TryGetValue("Shape", out DistribParams? shape)
+              && distParams.TryGetValue("Scale", out DistribParams? scale)
+            )
+            {
+              sampled = new Weibull((double)shape.value!, (double)scale.value!, SingleRandom.Instance).Sample();
+              distTimeRate = _dParams[1].timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or both required parameters shape and scale for Weibull distribution");
+            }
             break;
           case EnDistType.dtLogNormal:
-            sampled = (new LogNormal((double)valuePs[0]!,
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
-                                    SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            if (
+              distParams.TryGetValue("Mean", out DistribParams? mu)
+              && distParams.TryGetValue("Standard Deviation", out DistribParams? sigma)
+            )
+            {
+              sampled = new LogNormal((double)mu.value!,
+                                      Globals.ConvertToNewTimeSpan(sigma.timeRate, (double)sigma.value!, mu.timeRate),
+                                      SingleRandom.Instance).Sample();
+              distTimeRate = mu.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or both required parameters mean and standard deviation for lognormal distribution");
+            }
             break;
           case EnDistType.dtUniform:
-            sampled = (new ContinuousUniform((double)valuePs[0]!,
-                                    Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate),
-                                    SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            if (
+              distParams.TryGetValue("Minimum", out DistribParams? lower)
+              && distParams.TryGetValue("Maximum", out DistribParams? upper)
+            )
+            {
+              sampled = new ContinuousUniform((double)lower.value!,
+                                      Globals.ConvertToNewTimeSpan(upper.timeRate, (double)upper.value!, lower.timeRate),
+                                      SingleRandom.Instance).Sample();
+              distTimeRate = lower.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or both required parameters minimum and maximum for uniform distribution");
+            }
             break;
           case EnDistType.dtTriangular:
-            sampled = (new Triangular(Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1]!, _dParams[0].timeRate), //min
-                                    Globals.ConvertToNewTimeSpan(_dParams[2].timeRate, (double)valuePs[2]!, _dParams[0].timeRate),   //max
-                                    (double)valuePs[0]!, //mode or peak
-                                    SingleRandom.Instance)).Sample();
-            distTimeRate = _dParams[0].timeRate;
+            if (
+              distParams.TryGetValue("Minimum", out DistribParams? lowerT)
+              && distParams.TryGetValue("Maximum", out DistribParams? upperT)
+              && distParams.TryGetValue("Peak", out DistribParams? peak)
+            )
+            {
+              sampled = new Triangular(Globals.ConvertToNewTimeSpan(lowerT.timeRate, (double)lowerT.value!, peak.timeRate), //min
+                                      Globals.ConvertToNewTimeSpan(upperT.timeRate, (double)upperT.value!, peak.timeRate),   //max
+                                      (double)peak.value!, //mode or peak
+                                      SingleRandom.Instance).Sample();
+              distTimeRate = peak.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or more required parameters minimum, maximum, and peak for triangular distribution");
+            }
             break;
           case EnDistType.dtGamma:
-            sampled = (new Gamma((double)valuePs[0]!,
-                                 ((double)valuePs[1]!), //shape
-                                    SingleRandom.Instance)).Sample(); //rate
-            distTimeRate = _dParams[1].timeRate;
+            if (
+              distParams.TryGetValue("Shape", out DistribParams? shapeG)
+              && distParams.TryGetValue("Rate", out DistribParams? rateG)
+            )
+            {
+              sampled = new Gamma((double)shapeG.value!, (double)rateG!, SingleRandom.Instance).Sample();
+              distTimeRate = rateG.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or both required parameters shape and rate for gamma distribution");
+            }
             break;
           case EnDistType.dtGompertz:
             //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
+            if (
+              distParams.TryGetValue("Shape", out DistribParams? shapeO)
+              && distParams.TryGetValue("Scale", out DistribParams? scaleO)
+            )
+            {
+              double r = SingleRandom.Instance.NextDouble();
+              sampled = 1 / (double)scaleO.value! * Math.Log(Math.Log(1 - r) / -(double)shapeO.value! + 1);
 
-            double shape = (double)valuePs[0]!; //shape
-            double scale = (double)valuePs[1]!; //scale
-            double r = SingleRandom.Instance.NextDouble();
-            sampled = ((1 / scale) * Math.Log(Math.Log(1 - r) / -shape + 1));
-
-            distTimeRate = _dParams[1].timeRate;
+              distTimeRate = scaleO.timeRate;
+            }
+            else
+            {
+              throw new Exception("Missing one or both required parameters shape and scale for Gompertz distribution");
+            }
             break;
 
           default:
@@ -1594,9 +1680,9 @@ namespace SimulationDAL
             
         }
       }
-      catch
+      catch (Exception err)
       {
-        throw new Exception("Invalid parameters for distribution.");
+        throw new Exception("Invalid parameters for distribution: " + err);
       }
 
 
@@ -1618,14 +1704,14 @@ namespace SimulationDAL
       try
       {
         TimeSpan minTime = TimeSpan.Zero;
-        if (valuePs[valuePs.Count - 1]  != null)
-          minTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 2]!, _dParams[valuePs.Count - 2].timeRate);
+        if (distParams.TryGetValue("Minimum", out DistribParams? min))
+          minTime = Globals.NumberToTimeSpan((double)min.value!, min.timeRate);
         if (sampledTime < minTime)
           return minTime;
 
         TimeSpan maxTime = TimeSpan.MaxValue;
-        if (valuePs[valuePs.Count - 1] != null)
-          maxTime = Globals.NumberToTimeSpan((double)valuePs[valuePs.Count - 1]!, _dParams[valuePs.Count - 1].timeRate);
+        if (distParams.TryGetValue("Minimum", out DistribParams? max))
+          maxTime = Globals.NumberToTimeSpan((double)max.value!, max.timeRate);
         if (sampledTime > maxTime)
           return maxTime;
       }

@@ -301,3 +301,4 @@ instrumented
 *.iml
 *.ipr
 *.iws
+/WebSocketTestServer/.vscode

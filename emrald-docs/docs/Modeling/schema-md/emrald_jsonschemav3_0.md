@@ -1,4 +1,4 @@
-# EMRALD\_Model Schema
+﻿# EMRALD\_Model Schema
 
 ```txt
 EMRALD_Model
@@ -8,7 +8,7 @@ EMRALD model schema version 3.0
 
 | Abstract               | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                  |
 | :--------------------- | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------ |
-| Cannot be instantiated | Yes        | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD\_JsonSchemaV3\_0.json](../../out/EMRALD_JsonSchemaV3_0.json "open original schema") |
+| Cannot be instantiated | Yes        | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD\_JsonSchemaV3\_0.json](emrald_jsonschemav3_0.html "open original schema") |
 
 ## EMRALD\_Model Type
 
@@ -3473,3 +3473,4 @@ Reference this group by using
 
 | Property | Type | Required | Nullable | Defined by |
 | :------- | :--- | :------- | :------- | :--------- |
+

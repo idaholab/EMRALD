@@ -7,14 +7,12 @@ import { ExpressionType } from './ExpressionType';
 export const CallExpression: React.FC<{
   args: MAAPExpressionType[];
   value: MAAPIdentifier;
-}> = ({ args, value }) => {
-  return (
-    <>
-      {value.value}(
-      {args.map((arg) => (
-        <ExpressionType value={arg} />
-      ))}
-      )
-    </>
-  );
-};
+}> = ({ args, value }) => (
+  <>
+    {value.value}(
+    {args.map((arg) => (
+      <ExpressionType value={arg} />
+    ))}
+    )
+  </>
+);

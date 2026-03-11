@@ -4,11 +4,8 @@ import { Expression } from './Expression';
 export const ExpressionBlock: React.FC<{
   value: MAAPExpression;
   units?: string;
-}> = ({ value, units }) => {
-  return (
-    <>
-      (<Expression value={value} />)
-      {units ? <>&nbsp;{units}</> : ''}
-    </>
-  );
-};
+}> = ({ value, units }) => (
+  <>
+    <Expression value={value} />){units ? <>&nbsp;{units}</> : ''}
+  </>
+);
