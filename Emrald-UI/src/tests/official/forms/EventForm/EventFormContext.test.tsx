@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import { getEvent, renderEventForm, save } from '../../../test-utils';
-import EventForm from '../../../../components/forms/EventForm/EventForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { getEvent, renderEventForm, save } from '../../../test-utils';
 import expected from './EventFormContext.expected.json';
 
 describe('Event Form Context', () => {

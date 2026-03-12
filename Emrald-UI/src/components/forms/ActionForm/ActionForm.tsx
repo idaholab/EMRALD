@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MainDetailsForm from '../MainDetailsForm';
+import { MainDetailsForm } from '../MainDetailsForm';
 import type { Action, State, Event, ActionType } from '../../../types/EMRALD_Model';
 import { useActionFormContext } from './ActionFormContext';
 import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';

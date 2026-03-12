@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import StateValuesTable from './StateValuesTable';
 import { useLogicNodeFormContext } from './LogicNodeFormContext';
-import MainDetailsForm from '../MainDetailsForm';
+import { MainDetailsForm } from '../MainDetailsForm';
 
 interface LogicNodeFormProps {
   logicNodeData?: LogicNode;

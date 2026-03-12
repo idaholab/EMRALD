@@ -1,38 +1,38 @@
-import { useWindowContext } from '../../../contexts/WindowContext';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import EventForm from '../../forms/EventForm/EventForm';
-import VariableForm from '../../forms/VariableForm/VariableForm';
-import StateForm from '../../forms/StateForm/StateForm';
-import EmraldDiagram from '../../diagrams/EmraldDiagram/EmraldDiagram';
-import LogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
+import type {
+  Action,
+  Diagram,
+  Event,
+  ExtSim,
+  LogicNode,
+  MainItemType,
+  State,
+  Variable,
+} from '../../../types/EMRALD_Model';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { ReactFlowProvider } from 'reactflow';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
+import { useAlertContext } from '../../../contexts/AlertContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
+import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 import {
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../utils/ModelReferences';
-import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
-import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import TemplateForm from '../../forms/TemplateForm/TemplateForm';
-import type {
-  Diagram,
-  Action,
-  LogicNode,
-  Variable,
-  Event,
-  State,
-  ExtSim,
-  MainItemType,
-} from '../../../types/EMRALD_Model';
-import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useAlertContext } from '../../../contexts/AlertContext';
+import EmraldDiagram from '../../diagrams/EmraldDiagram/EmraldDiagram';
+import LogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
+import ActionForm from '../../forms/ActionForm/ActionForm';
+import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
+import DiagramForm from '../../forms/DiagramForm/DiagramForm';
+import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
+import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 import SearchResultForm from '../../forms/SearchResultForm/SearchResultForm';
+import StateForm from '../../forms/StateForm/StateForm';
+import TemplateForm from '../../forms/TemplateForm/TemplateForm';
+import VariableForm from '../../forms/VariableForm/VariableForm';
+import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
 
 // Define your Option and OptionsMapping types
 export interface Option {

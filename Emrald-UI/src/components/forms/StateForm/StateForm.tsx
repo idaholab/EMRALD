@@ -4,7 +4,7 @@ import React from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import type { State, DiagramType, StateEvalValue, StateType } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
-import MainDetailsForm from '../../forms/MainDetailsForm';
+import { MainDetailsForm } from '../../forms/MainDetailsForm';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useSignal } from '@preact/signals-react';
 import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';

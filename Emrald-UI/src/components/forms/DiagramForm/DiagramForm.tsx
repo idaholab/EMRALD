@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useState } from 'react';
 import { useSignal } from '@preact/signals-react';
 import Typography from '@mui/material/Typography';
-import MainDetailsForm from '../../forms/MainDetailsForm';
+import { MainDetailsForm } from '../../forms/MainDetailsForm';
 import { v4 as uuidv4 } from 'uuid';
 import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useWindowContext } from '../../../contexts/WindowContext';

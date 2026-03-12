@@ -1,22 +1,22 @@
-import { useState } from 'react';
 import type { Edge, Node } from 'reactflow';
-import type { Option } from '../../layout/ContextMenu/ContextMenu';
-import { useStateContext } from '../../../contexts/StateContext';
-import { useEventContext } from '../../../contexts/EventContext';
-import { useActionContext } from '../../../contexts/ActionContext';
+import type { Option } from '@/components/layout/ContextMenu/ContextMenu';
+import type { Action, Event, State } from '@/types/EMRALD_Model';
+import type { ModelItem } from '@/types/ModelUtils';
+import { useState } from 'react';
+import ActionForm from '@/components/forms/ActionForm/ActionForm';
+import ActionFormContextProvider from '@/components/forms/ActionForm/ActionFormContext';
+import DiagramForm from '@/components/forms/DiagramForm/DiagramForm';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
+import StateForm from '@/components/forms/StateForm/StateForm';
+import { useActionContext } from '@/contexts/ActionContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { useEventContext } from '@/contexts/EventContext';
+import { useStateContext } from '@/contexts/StateContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { updateAppData } from '@/hooks/useAppData';
+import { updateModelAndReferences } from '@/utils/UpdateModel';
 import { currentDiagram } from './EmraldDiagram';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import StateForm from '../../forms/StateForm/StateForm';
-import EventForm from '../../forms/EventForm/EventForm';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import type { Event, State, Action } from '../../../types/EMRALD_Model';
-import { updateModelAndReferences } from '../../../utils/UpdateModel';
-import { updateAppData } from '../../../hooks/useAppData';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import type { ModelItem } from '../../../types/ModelUtils';
 
 const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge

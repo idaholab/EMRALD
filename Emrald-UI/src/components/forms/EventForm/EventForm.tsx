@@ -1,21 +1,17 @@
-import React from 'react';
-import { useEffect } from 'react';
-
+import type { Event, State } from '../../../types/EMRALD_Model';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MainDetailsForm from '../MainDetailsForm';
-
-import type { Event, State } from '../../../types/EMRALD_Model';
-
+import { useEffect } from 'react';
+import { MainDetailsForm } from '@/components/forms/MainDetailsForm';
 import { useEventFormContext } from './EventFormContext';
-import { Checkbox, FormControlLabel } from '@mui/material';
 
 interface EventFormProps {
   eventData?: Event;
   state?: State;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
+export const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
   const {
     hasError,
     name,
@@ -34,6 +30,7 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
     setEvType,
     setMoveFromCurrent,
   } = useEventFormContext();
+
   useEffect(() => {
     InitializeForm(eventData, state);
   }, []);
@@ -89,5 +86,3 @@ const EventForm: React.FC<EventFormProps> = ({ eventData, state }) => {
     </Box>
   );
 };
-
-export default EventForm;

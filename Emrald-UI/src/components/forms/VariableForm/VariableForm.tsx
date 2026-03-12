@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import type { Variable, VarScope } from '../../../types/EMRALD_Model';
-import MainDetailsForm from '../MainDetailsForm';
+import { MainDetailsForm } from '../MainDetailsForm';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';

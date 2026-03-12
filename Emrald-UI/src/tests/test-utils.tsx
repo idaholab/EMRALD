@@ -1,17 +1,17 @@
+import type { EMRALD_Model, ExtSim, LogicNode, State, Variable } from '../types/EMRALD_Model';
 import { findByRole, fireEvent, render, type RenderOptions, screen } from '@testing-library/react';
-import 'jest-extended';
-import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
-import React, { act } from 'react';
-import type { EMRALD_Model, Variable, State, LogicNode, ExtSim } from '../types/EMRALD_Model';
-import { appData, updateAppData } from '../hooks/useAppData';
-import Sidebar from '../components/layout/Sidebar/Sidebar';
 import userEvent from '@testing-library/user-event';
-import EventContextProvider from '../contexts/EventContext';
-import EventFormContextProvider from '../components/forms/EventForm/EventFormContext';
-import ActionContextProvider from '../contexts/ActionContext';
+import React, { act } from 'react';
+import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
-import VariableContextProvider from '../contexts/VariableContext';
 import VariableFormContextProvider from '../components/forms/VariableForm/VariableFormContext';
+import Sidebar from '../components/layout/Sidebar/Sidebar';
+import ActionContextProvider from '../contexts/ActionContext';
+import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
+import EventContextProvider from '../contexts/EventContext';
+import VariableContextProvider from '../contexts/VariableContext';
+import { appData, updateAppData } from '../hooks/useAppData';
+import 'jest-extended';
 
 const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
   render(

@@ -1,31 +1,27 @@
+import type { Action, Diagram, Event, State } from '../../../types/EMRALD_Model';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  useNodesState,
-  useEdgesState,
+  type Connection,
   type Edge,
   type Node,
-  type Connection,
   reconnectEdge,
+  useEdgesState,
+  useNodesState,
 } from 'reactflow';
-import EmraldDiagram, { currentDiagram } from './EmraldDiagram';
 import { v4 as uuidv4 } from 'uuid';
-// Edges
-import getEventActionEdges from './Edges/EventActionEdge';
-import getImmediateActionEdges from './Edges/ImmediateActionEdge';
-// Types
-import type { State, Action, Event, Diagram } from '../../../types/EMRALD_Model';
-// Contexts
-import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
-import { useStateContext } from '../../../contexts/StateContext';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import { useActionContext } from '../../../contexts/ActionContext';
+import { emptyDiagram, useDiagramContext } from '../../../contexts/DiagramContext';
 import { useEventContext } from '../../../contexts/EventContext';
+import { useStateContext } from '../../../contexts/StateContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-// Forms
-import StateForm from '../../forms/StateForm/StateForm';
-import EventForm from '../../forms/EventForm/EventForm';
 import ActionForm from '../../forms/ActionForm/ActionForm';
 import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
+import StateForm from '../../forms/StateForm/StateForm';
+import getEventActionEdges from './Edges/EventActionEdge';
+import getImmediateActionEdges from './Edges/ImmediateActionEdge';
+import EmraldDiagram, { currentDiagram } from './EmraldDiagram';
 
 const useEmraldDiagram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
