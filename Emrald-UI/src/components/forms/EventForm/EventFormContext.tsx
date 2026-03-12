@@ -19,10 +19,10 @@ import {
   Distribution,
   ExtSim,
   FailureRate,
-  StateChange,
   Timer,
   VarCondition,
 } from './FormFieldsByType';
+import { StateChange } from './FormFieldsByType/StateChange';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { appData } from '../../../hooks/useAppData';
@@ -230,8 +230,8 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
       }
       eventData.extEventType && setExtEventType(eventData.extEventType);
       eventData.variable && setVariable(eventData.variable);
-      if (typeof eventData.evalEvOnStateEntry !== 'boolean' && eventData.ifInState === true) {
-        setEvalEvOnStateEntry(true);
+      if (eventData.evalEvOnStateEntry === undefined) {
+        setEvalEvOnStateEntry(ifInState);
       } else {
         setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
       }
@@ -487,7 +487,7 @@ const EventFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => 
         ifInState: typeof ifInState === 'undefined' ? false : ifInState,
         allItems: typeof allItems === 'undefined' ? true : allItems,
         triggerStates,
-        evalEvOnStateEntry: evalEvOnStateEntry
+        evalEvOnStateEntry: typeof evalEvOnStateEntry === 'undefined' ? ifInState : undefined,
       };
     } else if (evType === 'etTimer') {
       event.value = {

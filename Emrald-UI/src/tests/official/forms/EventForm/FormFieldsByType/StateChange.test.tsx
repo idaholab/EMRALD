@@ -1,8 +1,8 @@
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
-import { drag, ensureState, getEvent, renderEventForm, save } from '../../../../test-utils';
 import EventForm from '../../../../../components/forms/EventForm/EventForm';
+import { drag, ensureState, getEvent, renderEventForm, save } from '../../../../test-utils';
 import expected from './StateChange.expected.json';
 
 // Exit parent state when event is trigger should be checked
@@ -23,7 +23,7 @@ describe('StateChange Events', () => {
         }}
       />,
     );
-    
+
     await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
@@ -107,8 +107,8 @@ describe('StateChange Events', () => {
     await user.click(await screen.findByText('States'));
     drag(await screen.findByText('Test State'), await screen.findByText('Drop State Items Here'));
 
-    // Select "On Enter States"
-    await user.click(await screen.findByLabelText('On Enter State/s'));
+    // Select "On Exit States"
+    await user.click(await screen.findByLabelText('On Exit State/s'));
 
     await save();
     expect(getEvent(name)).toEqual(expected[name]);
@@ -133,11 +133,11 @@ describe('StateChange Events', () => {
     await user.click(await screen.findByText('States'));
     drag(await screen.findByText('Test State'), await screen.findByText('Drop State Items Here'));
 
-    // Select "On Enter States"
-    await user.click(await screen.findByLabelText('On Enter State/s'));
-
-    // Change back to "On Exit States"
+    // Select "On Exit States"
     await user.click(await screen.findByLabelText('On Exit State/s'));
+
+    // Change back to "On Enter States"
+    await user.click(await screen.findByLabelText('On Enter State/s'));
 
     await save();
     expect(getEvent(name)).toEqual(expected[name]);
