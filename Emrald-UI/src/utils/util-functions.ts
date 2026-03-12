@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import { duration } from 'moment';
 
 /**
  * Converts a string in scientific notation to a numeric value rounded to 10 decimal places.
@@ -30,7 +30,7 @@ export const scientificToNumeric = (value: string | undefined): number | undefin
  */
 export const convertToISOString = (value: number): string => {
   try {
-    const dur = dayjs.duration(value);
+    const dur = duration(value);
 
     const totalDays = Math.floor(dur.asDays());
     const remainingTime = dur.subtract(totalDays, 'days');

@@ -1,6 +1,6 @@
+import { timer } from 'd3';
 import { useEffect, useState } from 'react';
 import { type Node, useReactFlow } from 'reactflow';
-import { timer } from 'd3-timer';
 
 export interface UseAnimatedNodeOptions {
   animationDuration?: number;
