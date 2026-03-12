@@ -1,3 +1,4 @@
+import type { DistributionType, TimeVariableUnit } from '@/types/EMRALD_Model';
 import {
   Box,
   Checkbox,
@@ -9,19 +10,17 @@ import {
   TableContainer,
   TextField,
 } from '@mui/material';
-import { useEffect } from 'react';
-import { SelectComponent } from '../../../common';
+import React, { useEffect } from 'react';
+import { SelectComponent } from '@/components/common';
+import {
+  StyledTableCell,
+  StyledTableRow,
+} from '@/components/forms/ActionForm/ActionToStateTable';
+import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
-import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
-import { appData } from '../../../../hooks/useAppData';
-import type {
-  EventDistributionParameter,
-  DistributionType,
-  TimeVariableUnit,
-} from '../../../../types/EMRALD_Model';
-import VariableChangesPiece from './VariableChangesPiece';
+import { VariableChangesPiece } from './VariableChangesPiece';
 
-const Distribution = () => {
+export const Distribution: React.FC = () => {
   const distConfig: Record<DistributionType, string[]> = {
     dtNormal: ['Mean', 'Standard Deviation'],
     dtExponential: ['Rate'],
@@ -36,7 +35,8 @@ const Distribution = () => {
 
   const getRowsForDistType = (type: DistributionType) => [
     ...distConfig[type],
-    ...['Minimum', 'Maximum'],
+    'Minimum',
+    'Maximum',
   ];
 
   const {
@@ -67,43 +67,51 @@ const Distribution = () => {
     setDistType(newDistType);
     setInvalidValues(() => {
       const newInvalidValues = new Set<string>();
-      getRowsForDistType(newDistType).forEach((row) => {
+      for (const row of getRowsForDistType(newDistType)) {
         if (
-          !Object.prototype.hasOwnProperty.call(allRows, row) ||
-          typeof allRows[row]?.value !== 'number'
+          !Object.prototype.hasOwnProperty.call(allRows, row)
+          || typeof allRows[row]?.value !== 'number'
         ) {
           newInvalidValues.add(row);
         }
-      });
+      }
       return newInvalidValues;
     });
   };
 
   useEffect(() => {
-    setAllRows((prevAllRows) => {
+    setAllRows(prevAllRows => {
       const updatedAllRows = { ...prevAllRows };
-      parameters &&
-        parameters.forEach((param: EventDistributionParameter) => {
-          if (param.name) {
-            updatedAllRows[param.name] = {
-              ...prevAllRows[param.name],
-              value: param.value,
-              timeRate: param.timeRate,
-              useVariable: param.useVariable,
-              variable: param.variable,
-            };
-          }
-        });
+      for (const param of parameters ?? []) {
+        if (param.name) {
+          updatedAllRows[param.name] = {
+            ...prevAllRows[param.name],
+            value: param.value,
+            timeRate: param.timeRate,
+            useVariable: param.useVariable,
+            variable: param.variable,
+          };
+        }
+      }
       return updatedAllRows;
     });
   }, [parameters, setAllRows]);
 
   useEffect(() => {
-    setParameters(parameters?.filter((param) => param.name && rowsToDisplay.includes(param.name)));
-  }, [distType, JSON.stringify(parameters), JSON.stringify(rowsToDisplay), setParameters]);
+    setParameters(
+      parameters?.filter(
+        param => param.name && rowsToDisplay.includes(param.name),
+      ),
+    );
+  }, [
+    distType,
+    JSON.stringify(parameters),
+    JSON.stringify(rowsToDisplay),
+    setParameters,
+  ]);
 
   const getSuffix = (row: string) => {
-    const suffixes: Partial<Record<DistributionType, Record<string, string>>> = {
+    const suffixes: { [k in DistributionType]?: Record<string, string> } = {
       dtExponential: {
         Rate: '(Lambda)',
       },
@@ -120,10 +128,7 @@ const Distribution = () => {
         Scale: '(beta)',
       },
     };
-    if (distType && suffixes[distType]?.[row]) {
-      return suffixes[distType][row];
-    }
-    return;
+    return distType ? suffixes[distType]?.[row] : undefined;
   };
 
   useEffect(() => {
@@ -140,15 +145,17 @@ const Distribution = () => {
           <Checkbox
             checked={persistent}
             value={persistent}
-            onChange={(e) => setPersistent(e.target.checked)}
-          ></Checkbox>
+            onChange={e => {
+              setPersistent(e.target.checked);
+            }}
+          />
         }
-      ></FormControlLabel>
+      />
       <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
         <SelectComponent
           value={distType ?? 'dtNormal'}
           setValue={handleDistTypeChange}
-          label={'Distribution Type'}
+          label="Distribution Type"
           sx={{ mt: 0 }}
         >
           <MenuItem value="dtNormal">Normal Distribution</MenuItem>
@@ -177,7 +184,7 @@ const Distribution = () => {
       <TableContainer component={Paper}>
         <Table>
           <TableBody>
-            {rowsToDisplay.map((row) => (
+            {rowsToDisplay.map(row => (
               <StyledTableRow key={row}>
                 <StyledTableCell>
                   {row} {getSuffix(row)}
@@ -187,7 +194,7 @@ const Distribution = () => {
                     <SelectComponent
                       label="Variable"
                       value={allRows[row].variable ?? ''}
-                      setValue={(value) => {
+                      setValue={value => {
                         setParameterVariable(value, row);
                         handleVariableChange(row);
                       }}
@@ -201,10 +208,10 @@ const Distribution = () => {
                   ) : (
                     <TextField
                       value={allRows[row]?.value ?? ''}
-                      onChange={(e) => {
+                      onChange={e => {
                         handleChange(row, e.target.value);
                       }}
-                      onBlur={(e) => {
+                      onBlur={e => {
                         handleBlur(row, e.target.value);
                       }}
                       size="small"
@@ -219,8 +226,11 @@ const Distribution = () => {
                   {!row.includes('Shape') && (
                     <SelectComponent
                       label="Time Rate"
-                      value={allRows[row]?.timeRate ?? ('default' as TimeVariableUnit)}
-                      setValue={(value) => {
+                      value={
+                        allRows[row]?.timeRate
+                        ?? ('default' as TimeVariableUnit)
+                      }
+                      setValue={value => {
                         handleRateChange(row, value);
                       }}
                       sx={{ mt: 0 }}
@@ -241,7 +251,7 @@ const Distribution = () => {
                     control={
                       <Checkbox
                         checked={allRows[row]?.useVariable ?? false}
-                        onChange={(e) => {
+                        onChange={e => {
                           handleUseVariableChange(e.target.checked, row);
                         }}
                       />
@@ -257,5 +267,3 @@ const Distribution = () => {
     </>
   );
 };
-
-export default Distribution;

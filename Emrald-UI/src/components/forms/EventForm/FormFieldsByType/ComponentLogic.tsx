@@ -1,10 +1,10 @@
 import { FormControlLabel, MenuItem, Radio, RadioGroup } from '@mui/material';
-import { useEventFormContext } from '../EventFormContext';
-import { SelectComponent } from '../../../common';
-import { appData } from '../../../../hooks/useAppData';
 import { useEffect } from 'react';
+import { SelectComponent } from '@/components/common';
+import { appData } from '@/hooks/useAppData';
+import { useEventFormContext } from '../EventFormContext';
 
-const ComponentLogic = () => {
+export const ComponentLogic: React.FC = () => {
   const {
     onSuccess,
     setOnSuccess,
@@ -16,14 +16,18 @@ const ComponentLogic = () => {
   } = useEventFormContext();
 
   useEffect(() => {
-    if (onSuccess === undefined) setOnSuccess(false);
-    if (triggerOnFalse === undefined) setTriggerOnFalse(false);
+    if (onSuccess === undefined) {
+      setOnSuccess(false);
+    }
+    if (triggerOnFalse === undefined) {
+      setTriggerOnFalse(false);
+    }
   }, []);
   return (
     <div>
       <RadioGroup
         value={onSuccess ?? false}
-        onChange={(e) => {
+        onChange={e => {
           setOnSuccess(e.target.value === 'true' ? true : false);
         }}
         sx={{ display: 'flex', flexDirection: 'row' }}
@@ -43,7 +47,7 @@ const ComponentLogic = () => {
       </RadioGroup>
       <RadioGroup
         value={triggerOnFalse ?? false}
-        onChange={(e) => {
+        onChange={e => {
           setTriggerOnFalse(e.target.value === 'true' ? true : false);
         }}
         sx={{ display: 'flex', flexDirection: 'row' }}
@@ -63,25 +67,25 @@ const ComponentLogic = () => {
       </RadioGroup>
       <SelectComponent
         value={logicTop ?? ''}
-        label={'LogicTop'}
-        setValue={(value) => {
+        label="LogicTop"
+        setValue={value => {
           setLogicTop(value);
           if (value.length > 0) {
-            setInvalidValues((prevInvalidValues) => {
+            setInvalidValues(prevInvalidValues => {
               prevInvalidValues.delete('LogicTop');
               return prevInvalidValues;
             });
           }
         }}
       >
-        {appData.value.LogicNodeList.filter((node) => node.isRoot).map((node, index) => (
-          <MenuItem key={index} value={node.name}>
-            {node.name}
-          </MenuItem>
-        ))}
+        {appData.value.LogicNodeList.filter(node => node.isRoot).map(
+          (node, index) => (
+            <MenuItem key={index} value={node.name}>
+              {node.name}
+            </MenuItem>
+          ),
+        )}
       </SelectComponent>
     </div>
   );
 };
-
-export default ComponentLogic;

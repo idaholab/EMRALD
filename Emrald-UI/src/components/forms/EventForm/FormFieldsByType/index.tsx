@@ -1,8 +1,6 @@
-import ComponentLogic from './ComponentLogic';
-import Distribution from './Distribution';
-import ExtSim from './ExtSim';
-import FailureRate from './FailureRate';
-import Timer from './Timer';
-import VarCondition from './VarCondition';
-
-export { ComponentLogic, Distribution, ExtSim, FailureRate, Timer, VarCondition };
+export { ComponentLogic } from './ComponentLogic';
+export { Distribution } from './Distribution';
+export { ExtSim } from './ExtSim';
+export { FailureRate } from './FailureRate';
+export { Timer } from './Timer';
+export { VarCondition } from './VarCondition';

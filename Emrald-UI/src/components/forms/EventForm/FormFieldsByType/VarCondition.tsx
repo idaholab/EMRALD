@@ -1,9 +1,10 @@
-import CodeEditorWithVariables from '../../../common/CodeEditorWithVariables';
+import CodeEditorWithVariables from '@/components/common/CodeEditorWithVariables';
+import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
-import { appData } from '../../../../hooks/useAppData';
 
-const VarCondition = () => {
-  const { codeVariables, scriptCode, addToUsedVariables, setScriptCode } = useEventFormContext();
+export const VarCondition: React.FC = () => {
+  const { codeVariables, scriptCode, addToUsedVariables, setScriptCode }
+    = useEventFormContext();
 
   return (
     <>
@@ -18,5 +19,3 @@ const VarCondition = () => {
     </>
   );
 };
-
-export default VarCondition;

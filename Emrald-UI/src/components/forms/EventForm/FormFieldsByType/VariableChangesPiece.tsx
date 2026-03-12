@@ -1,8 +1,8 @@
 import { Box, MenuItem, Typography } from '@mui/material';
-import { SelectComponent } from '../../../common';
+import { SelectComponent } from '@/components/common';
 import { useEventFormContext } from '../EventFormContext';
 
-const VariableChangesPiece = () => {
+export const VariableChangesPiece: React.FC = () => {
   const { onVarChange, setOnVarChange } = useEventFormContext();
   return (
     <Box
@@ -28,11 +28,9 @@ const VariableChangesPiece = () => {
       <Typography>
         {onVarChange === 'ocIgnore' && ', keep the sampled event time.'}
         {onVarChange === 'ocResample' && ', a new event time.'}
-        {onVarChange === 'ocAdjust' &&
-          ', use the new variable values to adjust the event time without resampling, if possible.'}
+        {onVarChange === 'ocAdjust'
+          && ', use the new variable values to adjust the event time without resampling, if possible.'}
       </Typography>
     </Box>
   );
 };
-
-export default VariableChangesPiece;

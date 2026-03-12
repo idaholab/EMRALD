@@ -7,13 +7,16 @@ import {
   TableContainer,
   TextField,
 } from '@mui/material';
+import { DurationComponent, SelectComponent } from '@/components/common';
+import {
+  StyledTableCell,
+  StyledTableRow,
+} from '@/components/forms/ActionForm/ActionToStateTable';
+import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
-import { DurationComponent, SelectComponent } from '../../../common';
-import { appData } from '../../../../hooks/useAppData';
-import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
-import VariableChangesPiece from './VariableChangesPiece';
+import { VariableChangesPiece } from './VariableChangesPiece';
 
-const FailureRate = () => {
+export const FailureRate: React.FC = () => {
   const {
     useVariable,
     lambda,
@@ -43,32 +46,27 @@ const FailureRate = () => {
     setLambda(value);
   };
 
-  const validInputRegex = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$/;
-
   const handleLambdaValueBlur = (value: string) => {
-    if (value && validInputRegex.test(value)) {
-      setInvalidValues((prev) => {
+    if (value && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$/.test(value)) {
+      setInvalidValues(prev => {
         const newInvalidValue = new Set(prev);
         newInvalidValue.delete('Lambda');
         return newInvalidValue;
       });
       // Check if the value is in scientific notation
-      const isScientificNotation = /[Ee]/.test(value);
       let numericValue;
-      if (isScientificNotation) {
-        numericValue = parseFloat(value);
-        const exponentPart = value.split(/[Ee]/)[1];
-        const exponent = Math.abs(Number(exponentPart));
-        if (exponent >= 4) {
+      if (/[Ee]/.test(value)) {
+        numericValue = Number.parseFloat(value);
+        if (Math.abs(Number(value.split(/[Ee]/)[1])) >= 4) {
           // If it has 4 or more decimal places, keep it in scientific notation
           numericValue = value;
         }
       } else {
-        numericValue = parseFloat(value);
+        numericValue = Number.parseFloat(value);
       }
       setLambda(numericValue);
     } else {
-      setInvalidValues((prev) => {
+      setInvalidValues(prev => {
         const newInvalidValue = new Set(prev);
         newInvalidValue.add('Lambda');
         return newInvalidValue;
@@ -84,17 +82,19 @@ const FailureRate = () => {
           <Checkbox
             checked={persistent}
             value={persistent}
-            onChange={(e) => setPersistent(e.target.checked)}
-          ></Checkbox>
+            onChange={e => {
+              setPersistent(e.target.checked);
+            }}
+          />
         }
-      ></FormControlLabel>
+      />
       <FormControlLabel
         label="Use Variable Lambda/Frequency?"
         value={useVariable}
         control={
           <Checkbox
             checked={useVariable ? true : false}
-            onChange={(e) => {
+            onChange={e => {
               handleUseVariableChange(e.target.checked);
             }}
           />
@@ -106,28 +106,13 @@ const FailureRate = () => {
             <StyledTableRow>
               <StyledTableCell>Lambda/Freq: </StyledTableCell>
               <StyledTableCell>
-                {!useVariable ? (
-                  <TextField
-                    label="Lambda"
-                    value={lambda}
-                    type="text"
-                    onChange={(e) => {
-                      handleLambdaValueChange(e.target.value);
-                    }}
-                    onBlur={() => {
-                      handleLambdaValueBlur(String(lambda));
-                    }}
-                    size="small"
-                    error={invalidValues.has('Lambda')}
-                    helperText={invalidValues.has('Lambda') ? 'Invalid value' : ''}
-                  />
-                ) : (
+                {useVariable ? (
                   <SelectComponent
                     label="Lambda"
                     value={lambda as string}
-                    setValue={(value) => {
+                    setValue={value => {
                       setLambda(value);
-                      setInvalidValues((prev) => {
+                      setInvalidValues(prev => {
                         const newInvalidValue = new Set(prev);
                         newInvalidValue.delete('Lambda');
                         return newInvalidValue;
@@ -141,6 +126,23 @@ const FailureRate = () => {
                       </MenuItem>
                     ))}
                   </SelectComponent>
+                ) : (
+                  <TextField
+                    label="Lambda"
+                    value={lambda}
+                    type="text"
+                    onChange={e => {
+                      handleLambdaValueChange(e.target.value);
+                    }}
+                    onBlur={() => {
+                      handleLambdaValueBlur(String(lambda));
+                    }}
+                    size="small"
+                    error={invalidValues.has('Lambda')}
+                    helperText={
+                      invalidValues.has('Lambda') ? 'Invalid value' : ''
+                    }
+                  />
                 )}
               </StyledTableCell>
             </StyledTableRow>
@@ -162,13 +164,13 @@ const FailureRate = () => {
           <Checkbox
             checked={persistent}
             value={persistent}
-            onChange={(e) => setPersistent(e.target.checked)}
-          ></Checkbox>
+            onChange={e => {
+              setPersistent(e.target.checked);
+            }}
+          />
         }
-      ></FormControlLabel>
+      />
       {useVariable && <VariableChangesPiece />}
     </>
   );
 };
-
-export default FailureRate;

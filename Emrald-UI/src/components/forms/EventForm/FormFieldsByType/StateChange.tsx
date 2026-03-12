@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import type { State } from '../../../../types/EMRALD_Model';
+import type { State } from '@/types/EMRALD_Model';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
@@ -17,7 +17,7 @@ import { useDrop } from 'react-dnd';
 import {
   StyledTableCell,
   StyledTableRow,
-} from '../../ActionForm/ActionToStateTable';
+} from '@/components/forms/ActionForm/ActionToStateTable';
 import { useEventFormContext } from '../EventFormContext';
 
 export const StateChange: React.FC = () => {
