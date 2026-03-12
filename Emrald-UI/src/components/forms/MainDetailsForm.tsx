@@ -1,9 +1,3 @@
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
-import TextField from '@mui/material/TextField';
-import React, { type Dispatch, type SetStateAction } from 'react';
 import type {
   ActionType,
   DiagramType,
@@ -14,6 +8,12 @@ import type {
   VariableType,
 } from '../../types/EMRALD_Model';
 import { Box, Button } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import React, { type Dispatch, type SetStateAction } from 'react';
 import { useWindowContext } from '../../contexts/WindowContext';
 
 type ValueTypes<T extends MainItemType> = T extends 'Diagram'
@@ -54,7 +54,7 @@ interface MainDetailsFormProps<T extends MainItemType> {
   invalidValues?: Set<string>;
 }
 
-const MainDetailsForm = <T extends MainItemType>({
+export function MainDetailsForm<T extends MainItemType>({
   children,
   name,
   type,
@@ -74,26 +74,31 @@ const MainDetailsForm = <T extends MainItemType>({
   handleNameChange,
   handleTypeChange,
   reset,
-  invalidValues,
-}: MainDetailsFormProps<T>) => {
+}: MainDetailsFormProps<T>) {
   const { handleClose } = useWindowContext();
   return (
     <>
-      <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%' }}>
+      <FormControl
+        variant="outlined"
+        size="small"
+        sx={{ minWidth: 120, width: '100%' }}
+      >
         <InputLabel id="type-select-label">{typeLabel ?? 'Type'}</InputLabel>
         <Select
           labelId="type-select-label"
           id="type-select"
           value={type}
           disabled={typeDisabled}
-          onChange={(event: SelectChangeEvent<ValueTypes<T>>) => {
+          onChange={event => {
             setType(event.target.value as ValueTypes<T>);
-            handleTypeChange && handleTypeChange(event.target.value as ValueTypes<T>);
+            if (handleTypeChange) {
+              handleTypeChange(event.target.value as ValueTypes<T>);
+            }
             reset && reset();
           }}
           label={typeLabel ?? 'Type'}
         >
-          {typeOptions.map((option) => (
+          {typeOptions.map(option => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>
@@ -108,7 +113,7 @@ const MainDetailsForm = <T extends MainItemType>({
         disabled={nameDisabled}
         sx={{ mb: 0 }}
         value={name}
-        onChange={(e) => {
+        onChange={e => {
           handleNameChange(e.target.value);
         }}
         fullWidth
@@ -124,7 +129,7 @@ const MainDetailsForm = <T extends MainItemType>({
         multiline
         margin="normal"
         value={desc}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange={e => {
           setDesc(e.target.value);
         }}
       />
@@ -138,9 +143,6 @@ const MainDetailsForm = <T extends MainItemType>({
             handleSave();
           }}
           disabled={error ?? !reqPropsFilled}
-          data-error={error}
-          data-req-props-filled={reqPropsFilled}
-          data-invalid-vals={invalidValues?.entries().toArray().join(',')}
         >
           Save
         </Button>
@@ -156,6 +158,4 @@ const MainDetailsForm = <T extends MainItemType>({
       </Box>
     </>
   );
-};
-
-export default MainDetailsForm;
+}

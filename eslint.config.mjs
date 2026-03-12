@@ -37,6 +37,7 @@ export default defineConfig(
       'unicorn/prefer-event-target': 'off',
       'no-control-regex': 'off',
       complexity: 'off',
+      '@typescript-eslint/no-dynamic-delete': 'off',
     },
   }),
   {
