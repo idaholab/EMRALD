@@ -6,7 +6,7 @@ import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
 import useContextMenu from '../../useContextMenu';
 import type { State } from '../../../../../types/EMRALD_Model';
-import DialogComponent from '../../../../common/DialogComponent/DialogComponent';
+import { DialogComponent } from '../../../../common/DialogComponent/DialogComponent';
 
 interface ImmediateActionsProps {
   state: State;

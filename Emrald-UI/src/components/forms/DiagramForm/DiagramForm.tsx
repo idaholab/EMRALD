@@ -19,7 +19,7 @@ import {
   Tabs,
   TextField,
 } from '@mui/material';
-import GroupListItems from '../../common/GroupListItems';
+import { GroupListItems } from '../../common/GroupListItems';
 import type { EMRALD_Model, Diagram, DiagramType } from '../../../types/EMRALD_Model';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { FileUploadComponent, TabPanel } from '../../common';

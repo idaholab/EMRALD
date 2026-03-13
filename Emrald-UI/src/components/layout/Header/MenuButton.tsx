@@ -10,7 +10,7 @@ import { useTemplateContext } from '../../../contexts/TemplateContext';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import DialogComponent from '../../common/DialogComponent/DialogComponent';
+import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
 import Typography from '@mui/material/Typography';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';

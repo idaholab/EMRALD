@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/system';
 import Logo from '../../../assets/EMRALD-logo.png';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
-import DialogComponent from '../../common/DialogComponent/DialogComponent';
+import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { projectOptions, downloadOptions } from './menuOptions';

@@ -9,7 +9,7 @@ import { FaLink } from 'react-icons/fa';
 import useEmraldDiagram from '../../useEmraldDiagram';
 import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
 import useContextMenu from '../../useContextMenu';
-import DialogComponent from '../../../../common/DialogComponent/DialogComponent';
+import { DialogComponent } from '../../../../common/DialogComponent/DialogComponent';
 
 interface EventActionsProps {
   state: State;

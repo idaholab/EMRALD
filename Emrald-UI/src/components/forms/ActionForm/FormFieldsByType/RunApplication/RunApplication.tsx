@@ -12,12 +12,12 @@ import {
 } from '@mui/material';
 import { type ReturnProcessType, useActionFormContext } from '../../ActionFormContext';
 import { useVariableContext } from '../../../../../contexts/VariableContext';
-import CodeVariables from '../../../../common/CodeVariables';
+import { CodeVariables } from '../../../../common/CodeVariables';
 import { type ReactElement, useEffect, useState } from 'react';
 import { CustomForms } from './CustomForms/index';
 import { startCase } from 'lodash';
 import React from 'react';
-import SelectComponent from '../../../../common/SelectComponent';
+import { SelectComponent } from '../../../../common/SelectComponent';
 import { TextFieldComponent } from '../../../../common';
 import type { CustomFormType } from '../../../../../types/EMRALD_Model';
 

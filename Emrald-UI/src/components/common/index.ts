@@ -1,21 +1,8 @@
-import CodeEditorWithVariables from './CodeEditorWithVariables';
-import CodeVariables from './CodeVariables';
-import SelectComponent from './SelectComponent';
-import TextFieldComponent from './TextFieldComponent';
-import DurationComponent from './DurationComponent';
-import DialogComponent from './DialogComponent/DialogComponent';
-import ListComponent from './ListComponent/ListComponent';
-import FileUploadComponent from './FileUploadComponent';
-import TabPanel from './TabPanel';
-
-export {
-  CodeEditorWithVariables,
-  CodeVariables,
-  SelectComponent,
-  TextFieldComponent,
-  DurationComponent,
-  DialogComponent,
-  ListComponent,
-  FileUploadComponent,
-  TabPanel,
-};
+export { CodeEditorWithVariables } from './CodeEditorWithVariables';
+export { CodeVariables } from './CodeVariables';
+export { DialogComponent } from './DialogComponent/DialogComponent';
+export { DurationComponent } from './DurationComponent';
+export { FileUploadComponent } from './FileUploadComponent';
+export { SelectComponent } from './SelectComponent';
+export { TabPanel } from './TabPanel';
+export { TextFieldComponent } from './TextFieldComponent';

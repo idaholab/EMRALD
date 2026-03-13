@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
-import Button from '@mui/material/Button';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { styled } from '@mui/material/styles';
-import { Box, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import { Box, IconButton, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import { styled, type Theme } from '@mui/material/styles';
+import { type ChangeEvent, useRef, useState } from 'react';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -26,7 +26,7 @@ interface FileUploadComponentProps {
   accept?: string;
 }
 
-const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
+export const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   label,
   disabled,
   fileName,
@@ -34,10 +34,10 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   setFile,
   clearFile,
 }) => {
-  const [uploadedContent, setUploadedContent] = React.useState<File | null>();
+  const [uploadedContent, setUploadedContent] = useState<File | null>();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
     setFile(file);
     setUploadedContent(file);
   };
@@ -54,7 +54,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   };
 
   return (
-    <Box display={'flex'} alignItems={'center'} mt={2}>
+    <Box display="flex" alignItems="center" mt={2}>
       <Button
         sx={{ maxWidth: 180 }}
         component="label"
@@ -83,7 +83,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
           aria-label="close"
           onClick={handleClear}
           sx={{
-            color: (theme) => theme.palette.grey[500],
+            color: (theme: Theme) => theme.palette.grey[500],
             ml: 6,
           }}
         >
@@ -93,5 +93,3 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
     </Box>
   );
 };
-
-export default FileUploadComponent;

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
+import { type ChangeEventHandler, useEffect, useRef, useState } from 'react';
 
 interface DurationComponentProps {
   milliseconds: number;
@@ -10,11 +10,16 @@ interface DurationComponentProps {
 interface DurationInputProps {
   label: string;
   value: number;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onChange: ChangeEventHandler<HTMLInputElement>;
   padNum?: number;
 }
 
-const DurationInput: React.FC<DurationInputProps> = ({ label, value, onChange, padNum }) => {
+const DurationInput: React.FC<DurationInputProps> = ({
+  label,
+  value,
+  onChange,
+  padNum,
+}) => {
   const [editing, setEditing] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
@@ -51,7 +56,7 @@ const DurationInput: React.FC<DurationInputProps> = ({ label, value, onChange, p
   );
 };
 
-const DurationComponent: React.FC<DurationComponentProps> = ({
+export const DurationComponent: React.FC<DurationComponentProps> = ({
   milliseconds,
   handleDurationChange,
   label,
@@ -66,7 +71,12 @@ const DurationComponent: React.FC<DurationComponentProps> = ({
   const h = 60 * m;
   const d = 24 * h;
 
-  function updateMs(days: number, hours: number, minutes: number, seconds: number) {
+  function updateMs(
+    days: number,
+    hours: number,
+    minutes: number,
+    seconds: number,
+  ) {
     handleDurationChange(days * d + hours * h + minutes * m + seconds * s);
   }
 
@@ -101,7 +111,7 @@ const DurationComponent: React.FC<DurationComponentProps> = ({
           transformOrigin: 'top left',
           transform: 'translate(0px, -22px)',
           background: 'white',
-          position: 'relative'
+          position: 'relative',
         }}
       >
         {label ?? 'Duration'}
@@ -110,35 +120,33 @@ const DurationComponent: React.FC<DurationComponentProps> = ({
         <DurationInput
           label="Days"
           value={days}
-          onChange={(e) => {
+          onChange={e => {
             updateMs(Number(e.target.value), hours, minutes, seconds);
           }}
           padNum={4}
-        ></DurationInput>
+        />
         <DurationInput
           label="Hours"
           value={hours}
-          onChange={(e) => {
+          onChange={e => {
             updateMs(days, Number(e.target.value), minutes, seconds);
           }}
-        ></DurationInput>
+        />
         <DurationInput
           label="Minutes"
           value={minutes}
-          onChange={(e) => {
+          onChange={e => {
             updateMs(days, hours, Number(e.target.value), seconds);
           }}
-        ></DurationInput>
+        />
         <DurationInput
           label="Seconds"
           value={seconds}
-          onChange={(e) => {
+          onChange={e => {
             updateMs(days, hours, minutes, Number(e.target.value));
           }}
-        ></DurationInput>
+        />
       </div>
     </Box>
   );
 };
-
-export default DurationComponent;

@@ -1,6 +1,5 @@
-import { Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
-import React from 'react';
-import type { Variable } from '../../types/EMRALD_Model';
+import type { Variable } from '@/types/EMRALD_Model';
+import { Box, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 
 interface CodeVariablesProps {
   variableList: Variable[];
@@ -8,45 +7,41 @@ interface CodeVariablesProps {
   addToUsedVariables: (variableName: string) => void;
   height?: string;
 }
-const CodeVariables: React.FC<CodeVariablesProps> = ({
+export const CodeVariables: React.FC<CodeVariablesProps> = ({
   variableList,
   codeVariables,
   addToUsedVariables,
   height,
-}) => {
-  return (
-    <Box>
-      <b>Variables used in code</b>
-      <Box sx={{ height: height ?? '340px', overflowY: 'auto', ml: 3 }}>
-        <FormGroup>
+}) => (
+  <Box>
+    <b>Variables used in code</b>
+    <Box sx={{ height: height ?? '340px', overflowY: 'auto', ml: 3 }}>
+      <FormGroup>
+        <FormControlLabel
+          control={<Checkbox sx={{ p: '0 9px' }} checked={true} disabled />}
+          label="CurTime"
+        />
+        <FormControlLabel
+          control={<Checkbox sx={{ p: '0 9px' }} checked={true} disabled />}
+          label="RunIdx"
+        />
+        {variableList.map(variable => (
           <FormControlLabel
-            control={<Checkbox sx={{ p: '0 9px' }} checked={true} disabled />}
-            label={'CurTime'}
+            key={variable.id}
+            control={
+              <Checkbox
+                sx={{ p: '0 9px' }}
+                checked={codeVariables.includes(variable.name)}
+                onChange={() => {
+                  addToUsedVariables(variable.name);
+                }}
+                name={variable.name}
+              />
+            }
+            label={variable.name}
           />
-          <FormControlLabel
-            control={<Checkbox sx={{ p: '0 9px' }} checked={true} disabled />}
-            label={'RunIdx'}
-          />
-          {variableList.map((variable) => (
-            <FormControlLabel
-              key={variable.id}
-              control={
-                <Checkbox
-                  sx={{ p: '0 9px' }}
-                  checked={codeVariables.includes(variable.name)}
-                  onChange={() => {
-                    addToUsedVariables(variable.name);
-                  }}
-                  name={variable.name}
-                />
-              }
-              label={variable.name}
-            />
-          ))}
-        </FormGroup>
-      </Box>
+        ))}
+      </FormGroup>
     </Box>
-  );
-};
-
-export default CodeVariables;
+  </Box>
+);

@@ -1,6 +1,5 @@
 import React from 'react';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
-// Material UI Components
 import {
   Box,
   Button,
@@ -22,13 +21,10 @@ import {
   Typography,
 } from '@mui/material';
 import { DialogComponent, TextFieldComponent } from '../../common';
-// Icons
 import { FaLock } from 'react-icons/fa6';
 import { FaLockOpen } from 'react-icons/fa6';
-// Hook
 import { useTemplateForm } from './useTemplateForm';
-// Types
-import GroupListItems from '../../common/GroupListItems';
+import { GroupListItems } from '../../common/GroupListItems';
 
 interface TemplateDiagramFormProps {
   templatedData: EMRALD_Model;

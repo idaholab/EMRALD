@@ -13,7 +13,7 @@ import type { Diagram } from '../../../types/EMRALD_Model';
 import useEmraldDiagram from './useEmraldDiagram';
 import CustomConnectionLine from './Edges/ConnectionLineComponent';
 import ContextMenu from '../../layout/ContextMenu/ContextMenu';
-import DialogComponent from '../../common/DialogComponent/DialogComponent';
+import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
 import useContextMenu from './useContextMenu';
 import { signal } from '@preact/signals';
 import { emptyDiagram } from '../../../contexts/DiagramContext';

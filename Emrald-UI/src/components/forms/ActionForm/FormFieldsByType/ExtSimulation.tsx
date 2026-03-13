@@ -4,7 +4,7 @@ import { useActionFormContext } from '../ActionFormContext';
 import 'react-duration-control/dist/react-duration-control.css';
 import { useExtSimContext } from '../../../../contexts/ExtSimContext';
 import { useVariableContext } from '../../../../contexts/VariableContext';
-import DurationComponent from '../../../common/DurationComponent';
+import { DurationComponent } from '../../../common/DurationComponent';
 import { SelectComponent } from '../../../common';
 import { convertToISOString } from '../../../../utils/util-functions';
 import moment from 'moment';

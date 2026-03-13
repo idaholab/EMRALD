@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import MenuAccordion from '../Accordion/Accordion';
 import { styled } from '@mui/material/styles';
 import { Divider, Typography } from '@mui/material';
-import ButtonGroupComponent from '../../common/ButtonGroupComponent/ButtonGroupComponent';
+import { ButtonGroupComponent } from '../../common/ButtonGroupComponent/ButtonGroupComponent';
 import { useSidebarLogic } from './SidebarLogic';
 import { DialogComponent } from '../../common';
 

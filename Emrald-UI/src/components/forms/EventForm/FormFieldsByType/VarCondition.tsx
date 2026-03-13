@@ -1,6 +1,6 @@
 import type { EventFormProps } from '../EventForm';
 import { useEffect } from 'react';
-import CodeEditorWithVariables from '@/components/common/CodeEditorWithVariables';
+import { CodeEditorWithVariables } from '@/components/common/CodeEditorWithVariables';
 import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
 

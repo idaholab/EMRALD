@@ -1,8 +1,8 @@
 import { MenuItem } from '@mui/material';
 import { useActionFormContext } from '../ActionFormContext';
 import { useVariableContext } from '../../../../contexts/VariableContext';
-import CodeEditorWithVariables from '../../../common/CodeEditorWithVariables';
-import SelectComponent from '../../../common/SelectComponent';
+import { CodeEditorWithVariables } from '../../../common/CodeEditorWithVariables';
+import { SelectComponent } from '../../../common/SelectComponent';
 import { useEffect } from 'react';
 
 const ChangeVarValue = () => {
