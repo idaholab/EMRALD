@@ -205,7 +205,8 @@ namespace UnitAndIntegrationTesting
       ev.DeserializeDerived(jsonObj, true, mainModel, false);
 
       //test for correct value, known because of key used in public async Task
-      Assert.True(ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds == 2592841926.2083);
+      double time = ev.NextTime(TimeSpan.FromSeconds(0)).TotalMilliseconds;
+      Assert.True(time == 2592841926.2083);
     }
 
   }
