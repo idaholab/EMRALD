@@ -1710,7 +1710,7 @@ namespace SimulationDAL
           return minTime;
 
         TimeSpan maxTime = TimeSpan.MaxValue;
-        if (distParams.TryGetValue("Minimum", out DistribParams? max))
+        if (distParams.TryGetValue("Maximum", out DistribParams? max))
           maxTime = Globals.NumberToTimeSpan((double)max.value!, max.timeRate);
         if (sampledTime > maxTime)
           return maxTime;
