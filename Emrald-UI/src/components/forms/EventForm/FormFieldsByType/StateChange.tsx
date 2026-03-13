@@ -1,4 +1,4 @@
-import type { Ref } from 'react';
+import type { EventFormProps } from '../EventForm';
 import type { State } from '@/types/EMRALD_Model';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -13,6 +13,7 @@ import {
   TableHead,
   Tooltip,
 } from '@mui/material';
+import { type Ref, useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
 import {
   StyledTableCell,
@@ -20,17 +21,29 @@ import {
 } from '@/components/forms/ActionForm/ActionToStateTable';
 import { useEventFormContext } from '../EventFormContext';
 
-export const StateChange: React.FC = () => {
-  const {
-    allItems,
-    ifInState,
-    setAllItems,
-    setIfInState,
-    triggerStates,
-    setTriggerStates,
-    evalEvOnStateEntry,
-    setEvalEvOnStateEntry,
-  } = useEventFormContext();
+export const StateChange: React.FC<EventFormProps> = ({ eventData }) => {
+  const { setTypeProperties, sync } = useEventFormContext();
+
+  const [ifInState, setIfInState] = useState(true);
+  const [triggerStates, setTriggerStates] = useState<string[] | undefined>();
+  const [allItems, setAllItems] = useState(true);
+  const [evalEvOnStateEntry, setEvalEvOnStateEntry] = useState(true);
+
+  useEffect(() => {
+    setIfInState(eventData?.ifInState ?? true);
+    setTriggerStates(eventData?.triggerStates);
+    setAllItems(eventData?.allItems ?? true);
+    if (eventData?.evalEvOnStateEntry === undefined) {
+      setEvalEvOnStateEntry(ifInState);
+    } else {
+      setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
+    }
+    setTypeProperties(['ifInState', 'triggerStates', 'allItems', 'evalEvOnStateEntry']);
+  }, []);
+
+  useEffect(() => {
+    sync({ ifInState, triggerStates, allItems, evalEvOnStateEntry });
+  }, [ifInState, triggerStates, allItems, evalEvOnStateEntry]);
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -53,6 +66,7 @@ export const StateChange: React.FC = () => {
       setTriggerStates(newTriggerStates);
     }
   };
+
   return (
     <>
       <div

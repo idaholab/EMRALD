@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import { EventForm } from '@/components/forms/EventForm/EventForm';
-import { getEvent, renderEventForm, save } from '../../../test-utils';
+import { getEvent, renderEventForm, save } from '@/tests/test-utils';
 import expected from './EventFormContext.expected.json';
 
 describe('Event Form Context', () => {
@@ -17,7 +17,7 @@ describe('Event Form Context', () => {
           mainItem: true,
           evType: 'etStateCng',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -43,7 +43,7 @@ describe('Event Form Context', () => {
           mainItem: true,
           evType: 'etStateCng',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -71,7 +71,7 @@ describe('Event Form Context', () => {
           mainItem: true,
           evType: 'etStateCng',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -85,7 +85,7 @@ describe('Event Form Context', () => {
 
   test('creates a new event', async () => {
     const name = 'creates a new event';
-    renderEventForm(<EventForm></EventForm>);
+    renderEventForm(<EventForm />);
     const user = userEvent.setup();
 
     // Ensure this event does not exist

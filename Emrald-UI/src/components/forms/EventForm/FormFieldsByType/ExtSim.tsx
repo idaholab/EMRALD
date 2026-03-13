@@ -1,21 +1,36 @@
+import type { EventFormProps } from '../EventForm';
+import type { ExtEventMsgType } from '@/types/EMRALD_Model';
 import { Box, MenuItem, Typography } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { CodeEditorWithVariables, SelectComponent } from '@/components/common';
 import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
 
-export const ExtSim: React.FC = () => {
+export const ExtSim: React.FC<EventFormProps> = ({ eventData }) => {
   const {
     codeVariables,
-    extEventType,
     scriptCode,
-    variable,
     addToUsedVariables,
     setCodeVariables,
-    setExtEventType,
     setScriptCode,
-    setVariable,
+    setTypeProperties,
+    sync,
   } = useEventFormContext();
+
+  const [extEventType, setExtEventType] = useState<ExtEventMsgType>();
+  const [variable, setVariable] = useState<string>();
+
+  useEffect(() => {
+    setScriptCode(eventData?.code);
+    setCodeVariables(eventData?.varNames);
+    setExtEventType(eventData?.extEventType);
+    setVariable(eventData?.variable);
+    setTypeProperties(['code', 'varNames', 'extEventType', 'variable']);
+  }, []);
+
+  useEffect(() => {
+    sync({ code: scriptCode, varNames: codeVariables, extEventType, variable });
+  }, [scriptCode, codeVariables, extEventType, variable]);
 
   useEffect(() => {
     if (extEventType !== 'etCompEv') {

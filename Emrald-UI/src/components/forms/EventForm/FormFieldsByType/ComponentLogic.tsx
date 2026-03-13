@@ -1,28 +1,28 @@
+import type { EventFormProps } from '../EventForm';
 import { FormControlLabel, MenuItem, Radio, RadioGroup } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectComponent } from '@/components/common';
 import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
 
-export const ComponentLogic: React.FC = () => {
-  const {
-    onSuccess,
-    setOnSuccess,
-    triggerOnFalse,
-    setTriggerOnFalse,
-    logicTop,
-    setLogicTop,
-    setInvalidValues,
-  } = useEventFormContext();
+export const ComponentLogic: React.FC<EventFormProps> = ({ eventData }) => {
+  const { setInvalidValues, setTypeProperties, sync } = useEventFormContext();
+
+  const [onSuccess, setOnSuccess] = useState<boolean>();
+  const [triggerOnFalse, setTriggerOnFalse] = useState<boolean>();
+  const [logicTop, setLogicTop] = useState<string>();
 
   useEffect(() => {
-    if (onSuccess === undefined) {
-      setOnSuccess(false);
-    }
-    if (triggerOnFalse === undefined) {
-      setTriggerOnFalse(false);
-    }
+    setOnSuccess(eventData?.onSuccess ?? false);
+    setTriggerOnFalse(eventData?.triggerOnFalse ?? false);
+    setLogicTop(eventData?.logicTop);
+    setTypeProperties(['onSuccess', 'triggerOnFalse', 'logicTop']);
   }, []);
+
+  useEffect(() => {
+    sync({ onSuccess, triggerOnFalse, logicTop });
+  }, [onSuccess, triggerOnFalse, logicTop]);
+
   return (
     <div>
       <RadioGroup

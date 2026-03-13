@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
-import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '@/tests/test-utils';
 import expected from './ExtSim.expected.json';
 
 describe('ExtSim Events', () => {
@@ -19,7 +19,7 @@ describe('ExtSim Events', () => {
         }}
       />,
     );
-    
+
     // Select an event type
     await selectOption('External Event Type', 'Simulation End');
 
@@ -77,7 +77,7 @@ describe('ExtSim Events', () => {
 
     // Type in code
     // TODO: The Monaco editor apparently can't be tested using JSDOM, so the "code" property is currently untested
-    //await user.type(await screen.findByRole('code'), 'return "";');
+    // await user.type(await screen.findByRole('code'), 'return "";');
 
     // Check the ext sim variable as being used in the code
     await user.click(await screen.findByLabelText('Test ExtSim Variable'));
@@ -114,7 +114,7 @@ describe('ExtSim Events', () => {
 
     // Type in code
     // TODO: The Monaco editor apparently can't be tested using JSDOM, so the "code" property is currently untested
-    //await user.type(await screen.findByRole('code'), 'return "";');
+    // await user.type(await screen.findByRole('code'), 'return "";');
 
     // Check the ext sim variable as being used in the code
     await user.click(await screen.findByLabelText('Test ExtSim Variable'));

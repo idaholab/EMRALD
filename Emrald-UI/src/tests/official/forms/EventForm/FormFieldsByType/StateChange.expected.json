@@ -7,7 +7,8 @@
     "evType": "etStateCng",
     "allItems": true,
     "required": false,
-    "ifInState": true
+    "ifInState": true,
+    "evalEvOnStateEntry": true
   },
   "sets default values": {
     "name": "sets default values",
@@ -18,6 +19,7 @@
     "triggerStates": ["Test State", "Test State 2"],
     "required": false,
     "ifInState": true,
+    "evalEvOnStateEntry": true,
     "allItems": true
   },
   "sets all items": {
@@ -29,7 +31,8 @@
     "triggerStates": ["Test State"],
     "required": false,
     "allItems": false,
-    "ifInState": true
+    "ifInState": true,
+    "evalEvOnStateEntry": true
   },
   "sets if in state": {
     "name": "sets if in state",
@@ -40,6 +43,7 @@
     "triggerStates": ["Test State"],
     "required": false,
     "ifInState": false,
+    "evalEvOnStateEntry": false,
     "allItems": true
   },
   "unsets if in state": {
@@ -51,6 +55,7 @@
     "triggerStates": ["Test State"],
     "required": false,
     "ifInState": true,
+    "evalEvOnStateEntry": true,
     "allItems": true
   },
   "removes a state": {
@@ -62,6 +67,7 @@
     "triggerStates": [],
     "required": false,
     "ifInState": true,
+    "evalEvOnStateEntry": true,
     "allItems": true
   }
 }

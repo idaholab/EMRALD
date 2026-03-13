@@ -1,8 +1,13 @@
-import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm, save } from '../../../../test-utils';
-import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import {
+  ensureVariable,
+  getEvent,
+  renderEventForm,
+  save,
+} from '@/tests/test-utils';
 import expected from './VarCondition.expected.json';
 
 describe('VarCondition Events', () => {

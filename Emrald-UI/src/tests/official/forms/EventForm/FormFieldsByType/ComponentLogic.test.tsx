@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
-import { ensureLogicNode, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
-import EventForm from '../../../../../components/forms/EventForm/EventForm';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { ensureLogicNode, getEvent, renderEventForm, save, selectOption } from '@/tests/test-utils';
 import expected from './ComponentLogic.expected.json';
 
 describe('Component Logic Events', () => {

@@ -1,3 +1,5 @@
+import type { EventFormProps } from '../EventForm';
+import type { VarChangeOptions } from '@/types/EMRALD_Model';
 import {
   Checkbox,
   FormControlLabel,
@@ -7,30 +9,53 @@ import {
   TableContainer,
   TextField,
 } from '@mui/material';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 import { DurationComponent, SelectComponent } from '@/components/common';
 import {
   StyledTableCell,
   StyledTableRow,
 } from '@/components/forms/ActionForm/ActionToStateTable';
 import { appData } from '@/hooks/useAppData';
+import { convertToISOString } from '@/utils/util-functions';
 import { useEventFormContext } from '../EventFormContext';
 import { VariableChangesPiece } from './VariableChangesPiece';
 
-export const FailureRate: React.FC = () => {
-  const {
-    useVariable,
-    lambda,
-    failureRateMilliseconds,
-    invalidValues,
-    handleFailureRateDurationChange,
-    setLambda,
-    setInvalidValues,
-    setUseVariable,
-    onVarChange,
-    setOnVarChange,
-    persistent,
-    setPersistent,
-  } = useEventFormContext();
+export const FailureRate: React.FC<EventFormProps> = ({ eventData }) => {
+  const { invalidValues, setInvalidValues, setTypeProperties, sync }
+    = useEventFormContext();
+
+  const [lambda, setLambda] = useState<string | number>();
+  const [useVariable, setUseVariable] = useState<boolean>();
+  const [lambdaTimeRate, setLambdaTimeRate] = useState<string>();
+  const [failureRateMilliseconds, setFailureRateMilliseconds]
+    = useState<number>();
+  const [onVarChange, setOnVarChange] = useState<VarChangeOptions>();
+  const [persistent, setPersistent] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    setLambda(eventData?.lambda);
+    setUseVariable(eventData?.useVariable);
+    if (eventData?.lambdaTimeRate !== undefined) {
+      setLambdaTimeRate(eventData.lambdaTimeRate);
+      setFailureRateMilliseconds(
+        moment.duration(eventData.lambdaTimeRate).asMilliseconds(),
+      );
+    }
+    setOnVarChange(eventData?.onVarChange);
+    setPersistent(eventData?.persistent);
+    setTypeProperties([
+      'lambda',
+      'useVariable',
+      'lambdaTimeRate',
+      'onVarChange',
+      'persistent',
+    ]);
+  }, []);
+
+  useEffect(() => {
+    sync({ lambda, useVariable, lambdaTimeRate, onVarChange, persistent });
+  }, [lambda, useVariable, lambdaTimeRate, onVarChange, persistent]);
 
   const handleUseVariableChange = (checked: boolean) => {
     setUseVariable(checked);
@@ -47,7 +72,10 @@ export const FailureRate: React.FC = () => {
   };
 
   const handleLambdaValueBlur = (value: string) => {
-    if (value && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$/.test(value)) {
+    if (
+      value
+      && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?$/.test(value)
+    ) {
       setInvalidValues(prev => {
         const newInvalidValue = new Set(prev);
         newInvalidValue.delete('Lambda');
@@ -72,6 +100,11 @@ export const FailureRate: React.FC = () => {
         return newInvalidValue;
       });
     }
+  };
+
+  const handleFailureRateDurationChange = (value: number) => {
+    setFailureRateMilliseconds(value);
+    setLambdaTimeRate(convertToISOString(value));
   };
 
   return (
@@ -170,7 +203,12 @@ export const FailureRate: React.FC = () => {
           />
         }
       />
-      {useVariable && <VariableChangesPiece />}
+      {useVariable && (
+        <VariableChangesPiece
+          onVarChange={onVarChange}
+          setOnVarChange={setOnVarChange}
+        />
+      )}
     </>
   );
 };

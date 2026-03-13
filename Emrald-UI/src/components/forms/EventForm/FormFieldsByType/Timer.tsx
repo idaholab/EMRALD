@@ -1,30 +1,70 @@
+import type { EventFormProps } from '../EventForm';
+import type { TimeVariableUnit, VarChangeOptions } from '@/types/EMRALD_Model';
 import { Box, Checkbox, FormControlLabel, MenuItem } from '@mui/material';
-import { useEffect } from 'react';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 import { DurationComponent, SelectComponent } from '@/components/common';
 import { appData } from '@/hooks/useAppData';
+import { convertToISOString } from '@/utils/util-functions';
 import { useEventFormContext } from '../EventFormContext';
 import { VariableChangesPiece } from './VariableChangesPiece';
 
-export const Timer: React.FC = () => {
-  const {
+export const Timer: React.FC<EventFormProps> = ({ eventData }) => {
+  const { setTypeProperties, sync } = useEventFormContext();
+
+  const [fromSimStart, setFromSimStart] = useState<boolean>();
+  const [time, setTime] = useState<string>();
+  const [timerMilliseconds, setTimerMilliseconds] = useState(0);
+  const [timeVariableUnit, setTimeVariableUnit] = useState<TimeVariableUnit>();
+  const [useVariable, setUseVariable] = useState<boolean>();
+  const [onVarChange, setOnVarChange] = useState<VarChangeOptions>();
+  const [persistent, setPersistent] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    setFromSimStart(eventData?.fromSimStart);
+    setTimeVariableUnit(eventData?.timeVariableUnit);
+    if (eventData?.time !== undefined) {
+      setTime(eventData.time);
+      setTimerMilliseconds(moment.duration(eventData.time).asMilliseconds());
+    }
+    setUseVariable(eventData?.useVariable);
+    setPersistent(eventData?.persistent);
+    setTypeProperties([
+      'fromSimStart',
+      'time',
+      'timeVariableUnit',
+      'useVariable',
+      'onVarChange',
+      'persistent',
+    ]);
+  }, []);
+
+  useEffect(() => {
+    sync({
+      fromSimStart,
+      time,
+      timeVariableUnit,
+      useVariable,
+      onVarChange,
+      persistent,
+    });
+  }, [
     fromSimStart,
-    timerMilliseconds,
     time,
     timeVariableUnit,
     useVariable,
-    handleTimerDurationChange,
-    setFromSimStart,
-    setTimerMilliseconds,
-    setTime,
-    setTimeVariableUnit,
-    setUseVariable,
+    onVarChange,
     persistent,
-    setPersistent,
-  } = useEventFormContext();
+  ]);
 
   const handleSetUseVariable = (checked: boolean) => {
     setTime('');
     setUseVariable(checked);
+  };
+
+  const handleTimerDurationChange = (value: number) => {
+    setTimerMilliseconds(value);
+    setTime(convertToISOString(value));
   };
 
   useEffect(() => {
@@ -84,7 +124,7 @@ export const Timer: React.FC = () => {
         </>
       ) : (
         <DurationComponent
-          milliseconds={timerMilliseconds ?? 0}
+          milliseconds={timerMilliseconds}
           handleDurationChange={handleTimerDurationChange}
         />
       )}
@@ -102,7 +142,12 @@ export const Timer: React.FC = () => {
           }
         />
       </Box>
-      {useVariable && <VariableChangesPiece />}
+      {useVariable && (
+        <VariableChangesPiece
+          onVarChange={onVarChange}
+          setOnVarChange={setOnVarChange}
+        />
+      )}
       <FormControlLabel
         label="From Sim Start"
         value={fromSimStart}

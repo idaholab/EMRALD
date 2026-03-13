@@ -22,7 +22,8 @@
     "required": false,
     "evType": "etStateCng",
     "allItems": true,
-    "ifInState": false
+    "ifInState": true,
+    "evalEvOnStateEntry": true
   },
   "creates a new event": {
     "objType": "Event",
@@ -32,6 +33,7 @@
     "required": false,
     "evType": "etStateCng",
     "allItems": true,
-    "ifInState": false
+    "ifInState": true,
+    "evalEvOnStateEntry": true
   }
 }

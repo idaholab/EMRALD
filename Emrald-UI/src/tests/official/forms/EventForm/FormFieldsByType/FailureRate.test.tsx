@@ -1,8 +1,14 @@
-import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
-import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import {
+  ensureVariable,
+  getEvent,
+  renderEventForm,
+  save,
+  selectOption,
+} from '@/tests/test-utils';
 import expected from './FailureRate.expected.json';
 
 describe('FailureRate Events', () => {
@@ -21,7 +27,7 @@ describe('FailureRate Events', () => {
         }}
       />,
     );
-    
+
     await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });
@@ -106,7 +112,9 @@ describe('FailureRate Events', () => {
     const user = userEvent.setup();
 
     // Check box to use variable lambda/frequency
-    await user.click(await screen.findByLabelText('Use Variable Lambda/Frequency?'));
+    await user.click(
+      await screen.findByLabelText('Use Variable Lambda/Frequency?'),
+    );
 
     // Create a variable to select
     ensureVariable('Test Variable');

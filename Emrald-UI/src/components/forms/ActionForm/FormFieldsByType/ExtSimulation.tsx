@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useActionFormContext } from '../ActionFormContext';
 import 'react-duration-control/dist/react-duration-control.css';
 import { useExtSimContext } from '../../../../contexts/ExtSimContext';
-import dayjs from 'dayjs';
 import { useVariableContext } from '../../../../contexts/VariableContext';
 import DurationComponent from '../../../common/DurationComponent';
 import { SelectComponent } from '../../../common';
 import { convertToISOString } from '../../../../utils/util-functions';
+import moment from 'moment';
 
 const ExtSimulation: React.FC = () => {
   const {
@@ -40,8 +40,8 @@ const ExtSimulation: React.FC = () => {
 
   useEffect(() => {
     if (simEndTime) {
-      const simEndTimeDuration = dayjs.duration(simEndTime);
-      setMilliseconds(simEndTimeDuration.$ms ?? 0);
+      const simEndTimeDuration = moment.duration(simEndTime);
+      setMilliseconds(simEndTimeDuration.asMilliseconds());
     }
   }, [simEndTime]);
 
