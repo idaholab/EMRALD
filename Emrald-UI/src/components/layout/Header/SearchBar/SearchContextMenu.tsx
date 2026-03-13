@@ -27,8 +27,8 @@ import ExtSimForm from '../../../forms/ExtSimForm/ExtSimForm';
 import LogicNodeForm from '../../../forms/LogicNodeForm/LogicNodeForm';
 import LogicNodeFormContextProvider from '../../../forms/LogicNodeForm/LogicNodeFormContext';
 import StateForm from '../../../forms/StateForm/StateForm';
-import VariableForm from '../../../forms/VariableForm/VariableForm';
-import VariableFormContextProvider from '../../../forms/VariableForm/VariableFormContext';
+import { VariableForm } from '../../../forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '../../../forms/VariableForm/VariableFormContext';
 
 type SearchContextMenuProps = {
   targetItem: ModelItem | null;

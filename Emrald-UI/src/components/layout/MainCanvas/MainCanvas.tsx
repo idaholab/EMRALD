@@ -14,8 +14,8 @@ import DiagramForm from '../../forms/DiagramForm/DiagramForm';
 import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
-import VariableForm from '../../forms/VariableForm/VariableForm';
-import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import { VariableForm } from '../../forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
 import MinimizedWindows from '../Window/MinimizedWindows';
 import WindowComponent from '../Window/Window';
 

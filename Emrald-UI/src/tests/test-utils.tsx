@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React, { act } from 'react';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
-import VariableFormContextProvider from '../components/forms/VariableForm/VariableFormContext';
+import { VariableFormContextProvider } from '../components/forms/VariableForm/VariableFormContext';
 import Sidebar from '../components/layout/Sidebar/Sidebar';
 import ActionContextProvider from '../contexts/ActionContext';
 import EmraldContextWrapper from '../contexts/EmraldContextWrapper';

@@ -1,16 +1,17 @@
-import React from 'react';
-import { useDrop } from 'react-dnd';
+import type { Ref } from 'react';
 import type { State } from '../../types/EMRALD_Model';
 import { Box } from '@mui/material';
+import { useDrop } from 'react-dnd';
 
-import StateTable from '../forms/VariableForm/FormFieldsByType/StateTable';
+import { StateTable } from '../forms/VariableForm/FormFieldsByType/StateTable';
 import {
   type AccrualStateItem,
   useVariableFormContext,
 } from '../forms/VariableForm/VariableFormContext';
 
-const StateDropTarget: React.FC = () => {
-  const { accrualStatesData, setAccrualStatesData, sortNewStates } = useVariableFormContext();
+export const StateDropTarget: React.FC = () => {
+  const { sortNewStates, accrualStatesData, setAccrualStatesData }
+    = useVariableFormContext();
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -25,18 +26,20 @@ const StateDropTarget: React.FC = () => {
         };
         if (accrualStatesData) {
           const exists = accrualStatesData.some(
-            (state) => state.stateName === newStateItem.stateName,
+            state => state.stateName === newStateItem.stateName,
           );
           if (!exists) {
-            setAccrualStatesData(sortNewStates([...accrualStatesData, newStateItem]));
+            setAccrualStatesData(
+              sortNewStates([...accrualStatesData, newStateItem]),
+            );
           }
         } else {
           setAccrualStatesData(sortNewStates([newStateItem]));
         }
       }
     },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+    collect: monitor => ({
+      isOver: monitor.isOver(),
     }),
   });
 
@@ -44,7 +47,7 @@ const StateDropTarget: React.FC = () => {
 
   return (
     <Box
-      ref={drop}
+      ref={drop as unknown as Ref<unknown>}
       sx={{ mt: 3 }}
       style={{
         height: '100%',
@@ -70,5 +73,3 @@ const StateDropTarget: React.FC = () => {
     </Box>
   );
 };
-
-export default StateDropTarget;

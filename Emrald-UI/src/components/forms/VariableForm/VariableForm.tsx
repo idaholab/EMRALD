@@ -1,78 +1,111 @@
-import { useEffect } from 'react';
+import type { Variable, VariableType, VarScope } from '@/types/EMRALD_Model';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import type { Variable, VarScope } from '../../../types/EMRALD_Model';
-import { MainDetailsForm } from '../MainDetailsForm';
-import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import DocLinkFields from './FormFieldsByType/DocLinkFields';
-import ExtSimFields from './FormFieldsByType/ExtSimFields';
-import AccrualFields from './FormFieldsByType/AccrualFields';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
+import { StateDropTarget } from '@/components/drag-and-drop/StateDroppable';
+import { useVariableContext } from '@/contexts/VariableContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData } from '@/hooks/useAppData';
+import { cleanFormItem } from '@/utils/util-functions';
+import { MainDetailsForm } from '../MainDetailsForm';
+import { DocLinkFields } from './FormFieldsByType/DocLinkFields';
+import { ExtSimFields } from './FormFieldsByType/ExtSimFields';
+import { GlobalFields } from './FormFieldsByType/GlobalFields';
 import { useVariableFormContext } from './VariableFormContext';
 
-interface VariableFormProps {
+export interface VariableFormProps {
   variableData?: Variable;
 }
 
-const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
+export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
+    variable,
     hasError,
-    name,
-    desc,
     type,
-    varScope,
     value,
-    sim3DId,
-    extSim,
-    resetOnRuns,
-    canMonitor,
-    monitorInSim,
-    cumulativeStats,
-    docType,
-    docPath,
-    docLink,
-    pathMustExist,
-    regExpLine,
-    begPosition,
-    showRegExFields,
-    showNumChars,
-    numChars,
-    InitializeForm,
+    typeProperties,
+    setValue,
+    setHasError,
     setType,
-    setDesc,
-    setResetOnRuns,
-    setCanMonitor,
-    setMonitorInSim,
-    setCumulativeStats,
-    setDocType,
-    setDocPath,
-    setDocLink,
-    setVarScope,
-    setSim3DId,
-    setExtSim,
-    setPathMustExist,
-    handleTypeChange,
-    handleNameChange,
-    handleSave,
-    handleFloatValueChange,
-    handleBoolValueChange,
-    handleStringValueChange,
-    reset,
-    setRegExpLine,
-    setBegPosition,
-    setShowRegExFields,
-    setShowNumChars,
-    setNumChars,
   } = useVariableFormContext();
+  const { updateVariable, createVariable } = useVariableContext();
+  const { handleClose } = useWindowContext();
+
+  const [name, setName] = useState('Int_');
+  const [originalName, setOriginalName] = useState<string>();
+  const [desc, setDesc] = useState('');
+  const [varScope, setVarScope] = useState<VarScope>('gtGlobal');
 
   useEffect(() => {
-    InitializeForm(variableData);
+    setName(variableData?.name ?? '');
+    setType(variableData?.type ?? 'int');
+    setValue(String(variableData?.value));
+    if (variableData?.name) {
+      setOriginalName(variableData.name);
+    }
+    setDesc(variableData?.desc ?? '');
+    setVarScope(variableData?.varScope ?? 'gtGlobal');
   }, []);
+
+  const handleSave = (variableData?: Variable) => {
+    let _typeProperties = [...typeProperties];
+    if (varScope !== 'gtDocLink') {
+      _typeProperties = _typeProperties.concat([
+        'resetOnRuns',
+        'canMonitor',
+        'monitorInSim',
+        'cumulativeStats',
+      ]);
+    }
+    if (varScope === 'gtAccrual') {
+      _typeProperties.push('accrualStatesData');
+    }
+    const v: Variable = {
+      ...cleanFormItem(variable, _typeProperties),
+      objType: 'Variable',
+      id: variableData?.id ?? uuid(),
+      type,
+      name: name.trim(),
+      desc,
+      value,
+      varScope,
+    };
+
+    variableData ? updateVariable(v) : createVariable(v);
+    handleClose();
+  };
+
+  // Maps 'type' values to their corresponding prefixes.
+  const PREFIXES: Record<VariableType, string> = {
+    int: 'Int_',
+    string: 'Str_',
+    double: 'Dbl_',
+    bool: 'Bool_',
+  };
+
+  const handleTypeChange = (newType: VariableType) => {
+    for (const prefix of Object.values(PREFIXES)) {
+      if (name.indexOf(prefix) === 0) {
+        setName(`${PREFIXES[newType]}${name.split('_')[1] ?? name}`);
+      }
+    }
+  };
+
+  const handleNameChange = (updatedName: string) => {
+    const trimmedName = updatedName.trim();
+    setHasError(
+      appData.value.VariableList.filter(
+        variable => variable.name !== originalName,
+      ).some(variable => variable.name === trimmedName)
+      || /[^a-zA-Z0-9-_]/.test(trimmedName),
+    );
+    setName(updatedName);
+  };
 
   return (
     <Box mx={3} pb={3}>
@@ -81,7 +114,7 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={'Variable'}
+          itemType="Variable"
           type={type}
           setType={setType}
           handleTypeChange={handleTypeChange}
@@ -97,19 +130,22 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           handleSave={() => {
             handleSave(variableData);
           }}
-          reset={reset}
           handleNameChange={handleNameChange}
           nameError={hasError}
           error={hasError}
           errorMessage="A variable with this name already exists, or the name contains an invalid character."
           reqPropsFilled={name && value !== '' ? true : false}
         >
-          <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
+          <FormControl
+            variant="outlined"
+            size="small"
+            sx={{ minWidth: 120, width: '100%', my: 1 }}
+          >
             <InputLabel id="scope-label">Scope</InputLabel>
             <Select
               aria-labelledby="scope-label"
               value={varScope}
-              onChange={(event) => {
+              onChange={event => {
                 setVarScope(event.target.value as VarScope);
                 if (event.target.value === 'gtAccrual') {
                   setType('double');
@@ -125,158 +161,22 @@ const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
             </Select>
           </FormControl>
 
-          {(varScope === 'gtGlobal' || varScope === 'gt3DSim') && (
+          {varScope === 'gtGlobal' ? (
+            <GlobalFields variableData={variableData} />
+          ) : varScope === 'gt3DSim' ? (
+            <ExtSimFields variableData={variableData} />
+          ) : varScope === 'gtDocLink' ? (
+            <DocLinkFields variableData={variableData} />
+          ) : (
             <>
-              {type == 'int' || type == 'double' ? (
-                <TextField
-                  label="Value"
-                  margin="normal"
-                  variant="outlined"
-                  type="number"
-                  size="small"
-                  value={value}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    handleFloatValueChange(e);
-                  }}
-                  fullWidth
-                />
-              ) : type == 'bool' ? (
-                <FormControl
-                  variant="outlined"
-                  size="small"
-                  sx={{ minWidth: 120, width: '100%', my: 1 }}
-                >
-                  <InputLabel>Start Value</InputLabel>
-                  <Select
-                    labelId="value"
-                    id="value"
-                    value={value as string}
-                    onChange={(event) => {
-                      handleBoolValueChange(event);
-                    }}
-                    label="Start Value"
-                    fullWidth
-                  >
-                    <MenuItem value="true">True</MenuItem>
-                    <MenuItem value="false">False</MenuItem>
-                  </Select>
-                </FormControl>
-              ) : (
-                <TextField
-                  label="Value"
-                  margin="normal"
-                  variant="outlined"
-                  type="string"
-                  size="small"
-                  value={value}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    handleStringValueChange(e);
-                  }}
-                  fullWidth
-                />
-              )}
-              <FormControlLabel
-                label="Reset to initial value for every simulation run"
-                control={
-                  <Checkbox
-                    checked={resetOnRuns}
-                    onChange={(e) => {
-                      setResetOnRuns(e.target.checked);
-                    }}
-                  />
-                }
-              />
+              <GlobalFields variableData={variableData} />
               <br />
-              <FormControlLabel
-                label="Allow Monitor in Simulation"
-                value={canMonitor}
-                control={
-                  <Checkbox
-                    checked={canMonitor}
-                    onChange={(e) => {
-                      setCanMonitor(e.target.checked);
-                    }}
-                  />
-                }
-              />
-              {canMonitor ? (
-                <>
-                  <br />
-                  <FormControlLabel
-                    label="Monitor By Default"
-                    value={monitorInSim}
-                    control={
-                      <Checkbox
-                        checked={monitorInSim}
-                        onChange={(e) => {
-                          setMonitorInSim(e.target.checked);
-                        }}
-                      />
-                    }
-                  />
-                  <br />
-                  <FormControlLabel
-                    label="Monitor Cumulative Stats"
-                    value={cumulativeStats}
-                    control={
-                      <Checkbox
-                        checked={cumulativeStats}
-                        onChange={(e) => {
-                          setCumulativeStats(e.target.checked);
-                        }}
-                      />
-                    }
-                  />
-                </>
-              ) : (
-                <></>
-              )}
-              {varScope === 'gt3DSim' && (
-                <ExtSimFields
-                  sim3DId={sim3DId ?? ''}
-                  setSim3DId={setSim3DId}
-                  extSim={extSim ?? ''}
-                  setExtSim={setExtSim}
-                />
-              )}
+              State Accrual Variables
+              <StateDropTarget />
             </>
           )}
-          {varScope === 'gtDocLink' && (
-            <DocLinkFields
-              docType={docType ?? ''}
-              setDocType={setDocType}
-              docPath={docPath ?? ''}
-              setDocPath={setDocPath}
-              docLink={docLink ?? ''}
-              setDocLink={setDocLink}
-              pathMustExist={pathMustExist}
-              setPathMustExist={setPathMustExist}
-              regExpLine={regExpLine ?? 0}
-              begPosition={begPosition ?? 0}
-              setRegExpLine={setRegExpLine}
-              setBegPosition={setBegPosition}
-              setShowRegExFields={setShowRegExFields}
-              showRegExFields={showRegExFields ?? false}
-              numChars={numChars ?? 0}
-              setNumChars={setNumChars}
-              showNumChars={showNumChars ?? false}
-              setShowNumChars={setShowNumChars}
-              value={value}
-              type={type}
-              setValue={
-                type === 'int' || type === 'double'
-                  ? handleFloatValueChange
-                  : type == 'bool'
-                    ? handleBoolValueChange
-                    : handleStringValueChange
-              }
-            />
-          )}
-          {varScope === 'gtAccrual' && <AccrualFields />}
         </MainDetailsForm>
       </form>
     </Box>
   );
 };
-
-export default VariableForm;

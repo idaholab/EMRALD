@@ -1,3 +1,6 @@
+import type { AccrualVarTableType } from '@/types/EMRALD_Model';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Button,
@@ -18,15 +21,16 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
-import { useVariableFormContext } from '../VariableFormContext';
-import type { AccrualVarTableType } from '../../../../types/EMRALD_Model';
 import { type ChangeEvent, useEffect, useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
+import {
+  StyledTableCell,
+  StyledTableRow,
+} from '@/components/forms/ActionForm/ActionToStateTable';
+import { useVariableFormContext } from '../VariableFormContext';
 
-const StateTable = () => {
-  const { accrualStatesData, setAccrualStatesData, setValue } = useVariableFormContext();
+export const StateTable: React.FC = () => {
+  const { setValue, accrualStatesData, setAccrualStatesData, sync }
+    = useVariableFormContext();
   const [accrualMults, setAccrualMults] = useState<number[]>([]);
   const [multRates, setMultRates] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>([]);
@@ -35,17 +39,10 @@ const StateTable = () => {
 
   useEffect(() => {
     if (accrualStatesData && accrualStatesData.length > 0) {
-      const defaultRates = accrualStatesData.map((state) => state.accrualMult);
-      setAccrualMults(defaultRates);
-
-      const defaultMultRates = accrualStatesData.map((state) => state.multRate || '');
-      setMultRates(defaultMultRates);
-
-      const defaultTypes = accrualStatesData.map((state) => state.type);
-      setTypes(defaultTypes);
-
-      const defaultAccrualTables = accrualStatesData.map((state) => state.accrualTable);
-      setAccrualTables(defaultAccrualTables);
+      setAccrualMults(accrualStatesData.map(state => state.accrualMult));
+      setMultRates(accrualStatesData.map(state => state.multRate || ''));
+      setTypes(accrualStatesData.map(state => state.type));
+      setAccrualTables(accrualStatesData.map(state => state.accrualTable));
     }
   }, [
     accrualStatesData,
@@ -57,13 +54,18 @@ const StateTable = () => {
   useEffect(() => {
     const newAccrualTables = [...accrualTables];
     // Check if there are more accrual states than arrays in accrualTables
-    if (accrualStatesData && accrualStatesData.length > newAccrualTables.length) {
+    if (
+      accrualStatesData
+      && accrualStatesData.length > newAccrualTables.length
+    ) {
       // Add empty arrays for each new accrual state
       for (let i = newAccrualTables.length; i < accrualStatesData.length; i++) {
         newAccrualTables.push([]);
       }
       setAccrualTables(newAccrualTables);
     }
+    console.log('Syncing accrual states');
+    sync({ accrualStatesData });
   }, [accrualStatesData, JSON.stringify(accrualTables)]);
 
   useEffect(() => {
@@ -74,23 +76,28 @@ const StateTable = () => {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number,
   ) => {
-    const parsedValue = parseFloat(e.target.value); // Convert string to number
-    if (!isNaN(parsedValue)) {
-      if (accrualStatesData) accrualStatesData[index].accrualMult = parsedValue;
+    const parsedValue = Number.parseFloat(e.target.value); // Convert string to number
+    if (!Number.isNaN(parsedValue)) {
+      if (accrualStatesData && accrualStatesData[index]) {
+        accrualStatesData[index].accrualMult = parsedValue;
+      }
       const newAccrualMults = [...accrualMults];
       newAccrualMults[index] = parsedValue;
       setAccrualMults(newAccrualMults);
     }
   };
   const handleMultRateChange = (event: SelectChangeEvent, index: number) => {
-    if (accrualStatesData) accrualStatesData[index].multRate = event.target.value;
+    if (accrualStatesData && accrualStatesData[index]) {
+      accrualStatesData[index].multRate = event.target.value;
+    }
     const newMultRates = [...multRates];
     newMultRates[index] = event.target.value;
     setMultRates(newMultRates);
   };
   const handleTypeChange = (event: SelectChangeEvent, index: number) => {
-    if (accrualStatesData)
+    if (accrualStatesData && accrualStatesData[index]) {
       accrualStatesData[index].type = event.target.value as AccrualVarTableType;
+    }
     const newTypes = [...types];
     newTypes[index] = event.target.value as AccrualVarTableType;
     setTypes(newTypes);
@@ -102,19 +109,23 @@ const StateTable = () => {
     idx: number,
     arg2: number,
   ): void {
-    const parsedValue = parseFloat(event.target.value); // Convert string to number
-    if (!isNaN(parsedValue)) {
+    const parsedValue = Number.parseFloat(event.target.value); // Convert string to number
+    if (!Number.isNaN(parsedValue)) {
       const newAccrualTables = [...accrualTables];
-      newAccrualTables[index][idx][arg2] = parsedValue;
+      if (newAccrualTables[index] && newAccrualTables[index][idx]) {
+        newAccrualTables[index][idx][arg2] = parsedValue;
+      }
       setAccrualTables(newAccrualTables);
-      if (accrualStatesData)
-        accrualStatesData[index].accrualTable[idx] = newAccrualTables[index][idx];
+      if (accrualStatesData && accrualStatesData[index]) {
+        accrualStatesData[index].accrualTable[idx]
+          = newAccrualTables[index]?.[idx] ?? [];
+      }
     }
   }
 
   const addRow = (index: number) => {
     const newTables = [...accrualTables];
-    newTables[index].push([0, 0]);
+    newTables[index]?.push([0, 0]);
     setAccrualTables(newTables);
   };
   const deleteAccrualState = (index: number) => {
@@ -127,7 +138,7 @@ const StateTable = () => {
 
   function deleteRow(index: number, idx: number): void {
     const newTables = [...accrualTables];
-    newTables[index].splice(idx, 1);
+    newTables[index]?.splice(idx, 1);
     setAccrualTables(newTables);
   }
 
@@ -139,7 +150,7 @@ const StateTable = () => {
     const insertIndex = idx + 1;
 
     // Insert the new row into the newTables array
-    newTables[index].splice(insertIndex, 0, newRow);
+    newTables[index]?.splice(insertIndex, 0, newRow);
 
     // Update the state with the new tables
     setAccrualTables(newTables);
@@ -163,7 +174,9 @@ const StateTable = () => {
             my: 1,
           }}
         >
-          <InputLabel id="rate-label">{min ? 'Rate' : 'Multiplication Rate'}</InputLabel>
+          <InputLabel id="rate-label">
+            {min ? 'Rate' : 'Multiplication Rate'}
+          </InputLabel>
           <Select
             aria-labelledby="rate-label"
             defaultValue={multRates[index]}
@@ -207,14 +220,16 @@ const StateTable = () => {
                     aria-label="status-value"
                     name="status-value"
                     value={types[index]}
-                    onChange={(event) => {
+                    onChange={event => {
                       handleTypeChange(event, index);
                     }}
                     row
                   >
                     <FormControlLabel
                       value="ctMultiplier"
-                      control={<Radio checked={types[index] === 'ctMultiplier'} />}
+                      control={
+                        <Radio checked={types[index] === 'ctMultiplier'} />
+                      }
                       label="Static"
                     />
                     <FormControlLabel
@@ -235,7 +250,7 @@ const StateTable = () => {
                     margin="normal"
                     type="number"
                     value={accrualMults[index]}
-                    onChange={(event) => {
+                    onChange={event => {
                       handleStaticAccrualMultChange(event, index);
                     }}
                   />
@@ -264,14 +279,20 @@ const StateTable = () => {
                       <TableHead>
                         <StyledTableRow>
                           <StyledTableCell>
-                            <Box display={'flex'} alignItems={'center'}>
-                              <Typography sx={{ mx: 1 }}>Simulation Time</Typography>{' '}
+                            <Box display="flex" alignItems="center">
+                              <Typography sx={{ mx: 1 }}>
+                                Simulation Time
+                              </Typography>
+                              &nbsp;
                               {getMultRateOptions(index, true)}
                             </Box>
                           </StyledTableCell>
                           <StyledTableCell>
-                            <Box display={'flex'} alignItems={'center'}>
-                              <Typography sx={{ mx: 1 }}>Accrual Rate</Typography>{' '}
+                            <Box display="flex" alignItems="center">
+                              <Typography sx={{ mx: 1 }}>
+                                Accrual Rate
+                              </Typography>
+                              &nbsp;
                               {getMultRateOptions(index, true)}
                             </Box>
                           </StyledTableCell>
@@ -281,58 +302,70 @@ const StateTable = () => {
                         </StyledTableRow>
                       </TableHead>
                       <TableBody>
-                        {accrualTables[index] &&
-                          !tableMinimized[index] &&
-                          accrualTables[index].map((item: number[], idx: number) => (
-                            <StyledTableRow key={idx}>
-                              <StyledTableCell>
-                                <TextField
-                                  label="Simulation Time"
-                                  variant="outlined"
-                                  size="small"
-                                  margin="normal"
-                                  type="number"
-                                  value={item[0]}
-                                  onChange={(event): void => {
-                                    handleAccrualTableChange(event, index, idx, 0);
-                                  }}
-                                  sx={{ width: '90%' }}
-                                />
-                              </StyledTableCell>
-                              <StyledTableCell sx={{ display: 'flex' }}>
-                                <TextField
-                                  label="Accrual Rate"
-                                  variant="outlined"
-                                  size="small"
-                                  margin="normal"
-                                  type="number"
-                                  value={item[1]}
-                                  onChange={(event): void => {
-                                    handleAccrualTableChange(event, index, idx, 1);
-                                  }}
-                                  sx={{ width: '85%' }}
-                                />
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                <Tooltip title="Add Row Below">
-                                  <AddIcon
-                                    sx={{ cursor: 'pointer', ml: 1 }}
-                                    onClick={() => {
-                                      addRowBelow(index, idx);
+                        {accrualTables[index]
+                          && !tableMinimized[index]
+                          && accrualTables[index].map(
+                            (item: number[], idx: number) => (
+                              <StyledTableRow key={idx}>
+                                <StyledTableCell>
+                                  <TextField
+                                    label="Simulation Time"
+                                    variant="outlined"
+                                    size="small"
+                                    margin="normal"
+                                    type="number"
+                                    value={item[0]}
+                                    onChange={(event): void => {
+                                      handleAccrualTableChange(
+                                        event,
+                                        index,
+                                        idx,
+                                        0,
+                                      );
                                     }}
+                                    sx={{ width: '90%' }}
                                   />
-                                </Tooltip>
-                                <Tooltip title="Delete Row">
-                                  <DeleteIcon
-                                    sx={{ cursor: 'pointer', ml: 3 }}
-                                    onClick={() => {
-                                      deleteRow(index, idx);
+                                </StyledTableCell>
+                                <StyledTableCell sx={{ display: 'flex' }}>
+                                  <TextField
+                                    label="Accrual Rate"
+                                    variant="outlined"
+                                    size="small"
+                                    margin="normal"
+                                    type="number"
+                                    value={item[1]}
+                                    onChange={(event): void => {
+                                      handleAccrualTableChange(
+                                        event,
+                                        index,
+                                        idx,
+                                        1,
+                                      );
                                     }}
+                                    sx={{ width: '85%' }}
                                   />
-                                </Tooltip>
-                              </StyledTableCell>
-                            </StyledTableRow>
-                          ))}
+                                </StyledTableCell>
+                                <StyledTableCell>
+                                  <Tooltip title="Add Row Below">
+                                    <AddIcon
+                                      sx={{ cursor: 'pointer', ml: 1 }}
+                                      onClick={() => {
+                                        addRowBelow(index, idx);
+                                      }}
+                                    />
+                                  </Tooltip>
+                                  <Tooltip title="Delete Row">
+                                    <DeleteIcon
+                                      sx={{ cursor: 'pointer', ml: 3 }}
+                                      onClick={() => {
+                                        deleteRow(index, idx);
+                                      }}
+                                    />
+                                  </Tooltip>
+                                </StyledTableCell>
+                              </StyledTableRow>
+                            ),
+                          )}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -356,5 +389,3 @@ const StateTable = () => {
     </TableContainer>
   );
 };
-
-export default StateTable;

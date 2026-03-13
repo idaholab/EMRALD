@@ -17,8 +17,8 @@ import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
 import ImportForm from '../../forms/ImportForm/ImportForm';
 import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
-import VariableForm from '../../forms/VariableForm/VariableForm';
-import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import { VariableForm } from '../../forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
 import AccordionMenuItems from './AccordionMenuItems';
 import { Accordion, AccordionDetails, AccordionSummary } from './StyledComponents/StyledComponents';
 

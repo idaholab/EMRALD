@@ -1,27 +1,40 @@
+import type { VariableFormProps } from '../VariableForm';
 import { MenuItem, TextField, Typography } from '@mui/material';
-import { useExtSimContext } from '../../../../contexts/ExtSimContext';
-import { SelectComponent } from '../../../common';
+import { useEffect, useState } from 'react';
+import { SelectComponent } from '@/components/common';
+import { useExtSimContext } from '@/contexts/ExtSimContext';
+import { useVariableFormContext } from '../VariableFormContext';
+import { GlobalFields } from './GlobalFields';
 
-interface ExtSimFieldsProps {
-  extSim: string;
-  sim3DId: string;
-  setExtSim: (value: string) => void;
-  setSim3DId: (value: string) => void;
-}
-
-const ExtSimFields: React.FC<ExtSimFieldsProps> = ({ sim3DId, setSim3DId, extSim, setExtSim }) => {
+export const ExtSimFields: React.FC<VariableFormProps> = ({ variableData }) => {
+  const { sync, setTypeProperties } = useVariableFormContext();
   const { extSims } = useExtSimContext();
+
+  const [extSim, setExtSim] = useState<string>();
+  const [sim3DId, setSim3DId] = useState<string>();
+
+  useEffect(() => {
+    setExtSim(variableData?.extSim);
+    setSim3DId(variableData?.sim3DId);
+    setTypeProperties(['extSim', 'sim3DId']);
+  }, []);
+
+  useEffect(() => {
+    sync({ extSim, sim3DId });
+  }, [extSim, sim3DId]);
+
   return (
     <>
+      <GlobalFields />
       <SelectComponent
         fullWidth
         label="External Sim"
-        setValue={(value) => {
+        setValue={value => {
           setExtSim(value);
         }}
         value={extSim}
       >
-        {extSims.map((e) => (
+        {extSims.map(e => (
           <MenuItem key={e.id} value={e.id}>
             {e.name}
           </MenuItem>
@@ -33,7 +46,7 @@ const ExtSimFields: React.FC<ExtSimFieldsProps> = ({ sim3DId, setSim3DId, extSim
         variant="outlined"
         size="small"
         value={sim3DId}
-        onChange={(e) => {
+        onChange={e => {
           setSim3DId(e.target.value);
         }}
         fullWidth
@@ -45,5 +58,3 @@ const ExtSimFields: React.FC<ExtSimFieldsProps> = ({ sim3DId, setSim3DId, extSim
     </>
   );
 };
-
-export default ExtSimFields;

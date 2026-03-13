@@ -1,65 +1,103 @@
-import { MenuItem, TextField, Typography, Link, FormControlLabel, Checkbox } from '@mui/material';
+import type { VariableFormProps } from '../VariableForm';
+import type { DocVarType } from '@/types/EMRALD_Model';
+import {
+  Checkbox,
+  FormControlLabel,
+  Link,
+  MenuItem,
+  TextField,
+  Typography,
+} from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
-import React, { type Dispatch, type SetStateAction } from 'react';
-import type { DocVarType, VariableType } from '../../../../types/EMRALD_Model';
+import Select from '@mui/material/Select';
+import React, { useEffect, useState } from 'react';
+import { useVariableFormContext } from '../VariableFormContext';
 
-interface DocLinkFieldsProps {
-  docType: string;
-  setDocType: Dispatch<SetStateAction<string | undefined>>;
-  docPath: string;
-  setDocPath: (docPath: string) => void;
-  docLink: string;
-  setDocLink: (docLink: string) => void;
-  pathMustExist: boolean | undefined;
-  setPathMustExist: (value: boolean) => void;
-  value: number | string | boolean;
-  setValue: (e: React.ChangeEvent | SelectChangeEvent) => void;
-  type: VariableType;
-  regExpLine: number;
-  setRegExpLine: Dispatch<SetStateAction<number | undefined>>;
-  begPosition: number;
-  setBegPosition: Dispatch<SetStateAction<number | undefined>>;
-  setShowRegExFields: Dispatch<SetStateAction<boolean | undefined>>;
-  showRegExFields: boolean | undefined;
-  numChars: number;
-  setNumChars: Dispatch<SetStateAction<number | undefined>>;
-  showNumChars: boolean | undefined;
-  setShowNumChars: Dispatch<SetStateAction<boolean | undefined>>;
-}
-
-const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
-  docType,
-  setDocType,
-  docPath,
-  setDocPath,
-  docLink,
-  setDocLink,
-  pathMustExist,
-  setPathMustExist,
-  value,
-  setValue,
-  type,
-  regExpLine,
-  setRegExpLine,
-  begPosition,
-  setBegPosition,
-  showRegExFields,
-  setShowRegExFields,
-  numChars,
-  setNumChars,
-  showNumChars,
-  setShowNumChars,
+export const DocLinkFields: React.FC<VariableFormProps> = ({
+  variableData,
 }) => {
+  const {
+    value,
+    setValue,
+    type,
+    setAccrualStatesData,
+    setTypeProperties,
+    sync,
+  } = useVariableFormContext();
+
+  const [docType, setDocType] = useState<DocVarType>('dtXML');
+  const [docPath, setDocPath] = useState<string>();
+  const [docLink, setDocLink] = useState<string>();
+  const [pathMustExist, setPathMustExist] = useState(true);
+  const [regExpLine, setRegExpLine] = useState<number>();
+  const [begPosition, setBegPosition] = useState<number>();
+  const [showRegExFields, setShowRegExFields] = useState<boolean>();
+  const [showNumChars, setShowNumChars] = useState<boolean>();
+  const [numChars, setNumChars] = useState<number>();
+
+  useEffect(() => {
+    setDocType(variableData?.docType ?? 'dtXML');
+    setDocPath(variableData?.docPath);
+    setDocLink(variableData?.docLink);
+    setPathMustExist(variableData?.pathMustExist ?? true);
+    if (variableData?.regExpLine !== undefined) {
+      setShowRegExFields(true);
+      setRegExpLine(variableData.regExpLine);
+    }
+    if (variableData?.begPosition !== undefined) {
+      setShowRegExFields(true);
+      setBegPosition(variableData.begPosition);
+    }
+    if (variableData?.numChars !== undefined) {
+      setShowNumChars(true);
+      setNumChars(variableData.numChars);
+    }
+    setAccrualStatesData(variableData?.accrualStatesData);
+    setTypeProperties([
+      'docType',
+      'docPath',
+      'docLink',
+      'pathMustExist',
+      'numChars',
+      'regExpLine',
+      'begPosition',
+      'accrualStatesData',
+    ]);
+  }, []);
+
+  useEffect(() => {
+    sync({
+      docLink,
+      docPath,
+      docType,
+      pathMustExist,
+      numChars,
+      regExpLine,
+      begPosition,
+    });
+  }, [
+    docLink,
+    docPath,
+    docLink,
+    pathMustExist,
+    numChars,
+    regExpLine,
+    begPosition,
+  ]);
+
   return (
     <>
-      <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
+      <FormControl
+        variant="outlined"
+        size="small"
+        sx={{ minWidth: 120, width: '100%', my: 1 }}
+      >
         <InputLabel id="doc-type-label">Doc Type</InputLabel>
         <Select
           aria-labelledby="doc-type-label"
           value={docType}
-          onChange={(event: SelectChangeEvent) => {
+          onChange={event => {
             setDocType(event.target.value as DocVarType);
           }}
           label="Doc Type"
@@ -75,15 +113,19 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         variant="outlined"
         size="small"
         value={docPath}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange={e => {
           setDocPath(e.target.value);
         }}
         fullWidth
         sx={{ mb: 0 }}
       />
-      <Typography variant={'caption'}>
+      <Typography variant="caption">
         {`Use ${
-          docType === 'dtXML' ? 'XPath' : docType === 'dtJSON' ? 'JSONPath' : 'Regular Expression'
+          docType === 'dtXML'
+            ? 'XPath'
+            : docType === 'dtJSON'
+              ? 'JSONPath'
+              : 'Regular Expression'
         } Syntax for the Var Link. `}
         <Link
           target="_blank"
@@ -102,7 +144,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         variant="outlined"
         size="small"
         value={docLink}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange={e => {
           setDocLink(e.target.value);
         }}
         fullWidth
@@ -113,7 +155,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
         control={
           <Checkbox
             checked={pathMustExist ? true : false}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={e => {
               setPathMustExist(e.target.checked);
             }}
           />
@@ -121,12 +163,13 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
       />
       {docType === 'dtTextRegEx' && (
         <>
+          <br />
           <FormControlLabel
             label="Line #"
             control={
               <Checkbox
                 checked={showRegExFields}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange={e => {
                   if (!e.target.checked) {
                     setRegExpLine(undefined);
                     setBegPosition(undefined);
@@ -145,7 +188,7 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                 control={
                   <Checkbox
                     checked={showNumChars}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange={e => {
                       !e.target.checked && setNumChars(undefined);
                       setShowNumChars(e.target.checked);
                     }}
@@ -159,8 +202,8 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                 type="number"
                 size="small"
                 value={regExpLine}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setRegExpLine(parseInt(e.target.value));
+                onChange={e => {
+                  setRegExpLine(Number.parseInt(e.target.value));
                 }}
                 fullWidth
                 sx={{ mb: 0 }}
@@ -172,8 +215,8 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                 type="number"
                 size="small"
                 value={begPosition}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setBegPosition(parseInt(e.target.value));
+                onChange={e => {
+                  setBegPosition(Number.parseInt(e.target.value));
                 }}
                 fullWidth
                 sx={{ mb: 0 }}
@@ -186,8 +229,8 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
                   type="number"
                   size="small"
                   value={numChars}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setNumChars(parseInt(e.target.value));
+                  onChange={e => {
+                    setNumChars(Number.parseInt(e.target.value));
                   }}
                   fullWidth
                   sx={{ mb: 0 }}
@@ -205,21 +248,25 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           type="number"
           size="small"
           value={value}
-          onChange={(e) => {
-            setValue(e);
+          onChange={e => {
+            setValue(e.target.value);
           }}
           fullWidth
           sx={{ mb: 0 }}
         />
       ) : type === 'bool' ? (
-        <FormControl variant="outlined" size="small" sx={{ minWidth: 120, width: '100%', my: 1 }}>
+        <FormControl
+          variant="outlined"
+          size="small"
+          sx={{ minWidth: 120, width: '100%', my: 1 }}
+        >
           <InputLabel>Default</InputLabel>
           <Select
             labelId="value"
             id="value"
             value={value as string}
-            onChange={(e) => {
-              setValue(e);
+            onChange={e => {
+              setValue(e.target.value);
             }}
             label="Default"
             fullWidth
@@ -236,8 +283,8 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
           type="text"
           size="small"
           value={value}
-          onChange={(e) => {
-            setValue(e);
+          onChange={e => {
+            setValue(e.target.value);
           }}
           sx={{ mb: 0 }}
           fullWidth
@@ -246,5 +293,3 @@ const DocLinkFields: React.FC<DocLinkFieldsProps> = ({
     </>
   );
 };
-
-export default DocLinkFields;

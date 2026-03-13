@@ -31,8 +31,8 @@ import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFor
 import SearchResultForm from '../../forms/SearchResultForm/SearchResultForm';
 import StateForm from '../../forms/StateForm/StateForm';
 import TemplateForm from '../../forms/TemplateForm/TemplateForm';
-import VariableForm from '../../forms/VariableForm/VariableForm';
-import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
+import { VariableForm } from '../../forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
 
 // Define your Option and OptionsMapping types
 export interface Option {

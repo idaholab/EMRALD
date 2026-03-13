@@ -59,3 +59,16 @@ export function convertToISOString(value: number) {
     return ''; // Return undefined to indicate that there was an error
   }
 }
+
+/**
+ * For use in form context definitions. Cleans up unneeded and unused properties from a model item.
+ */
+export function cleanFormItem<T>(item: T, requiredProperties: (keyof T)[]) {
+  const i = { ...item };
+  for (const key in item) {
+    if (!requiredProperties.includes(key) || item[key] === undefined) {
+      delete i[key];
+    }
+  }
+  return i;
+}

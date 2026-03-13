@@ -8,6 +8,7 @@ import { MainDetailsForm } from '@/components/forms/MainDetailsForm';
 import { useEventContext } from '@/contexts/EventContext';
 import { useWindowContext } from '@/contexts/WindowContext';
 import { appData } from '@/hooks/useAppData';
+import { cleanFormItem } from '@/utils/util-functions';
 import { useEventFormContext } from './EventFormContext';
 import {
   ComponentLogic,
@@ -80,14 +81,8 @@ export const EventForm: React.FC<EventFormProps & { state?: State }> = ({
   };
 
   const handleSave = (eventData?: Event, state?: State) => {
-    for (const k in event) {
-      const key = k as keyof Event;
-      if (!typeProperties.includes(key)) {
-        delete event[key];
-      }
-    }
     const e: Event = {
-      ...event,
+      ...cleanFormItem(event, typeProperties),
       objType: 'Event',
       required: false,
       id: eventData?.id ?? uuid(),
