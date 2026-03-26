@@ -10,6 +10,7 @@ export const appData = signal(CreateEmptyEMRALDModel());
 
 // Try to parse & upgrade the stored model
 if (storedData === null) {
+  console.log(JSON.stringify(appData.value));
   // Load & upgrades the default model
   const upgraded = upgradeModel(JSON.stringify(emraldData));
   if (upgraded) {
@@ -19,6 +20,7 @@ if (storedData === null) {
     // TODO: This needs an actual notification in the UI
     console.error('Could not upgrade default model!');
   }
+  console.log(appData.value);
 } else {
   const upgraded = upgradeModel(storedData);
   if (upgraded === null) {

@@ -5,6 +5,7 @@ import { EMRALD_SchemaVersion } from '../../types/ModelUtils';
 import { Upgrade } from './upgradeGiveID';
 
 export function upgradeModel(emraldData: string, toVersion?: number) {
+  console.log(emraldData);
   const upgradeModel = new Upgrade(emraldData);
   upgradeModel.upgradeGiveID(toVersion ?? EMRALD_SchemaVersion, uuidv4); // upgrade to version 3.0 true;
   if (

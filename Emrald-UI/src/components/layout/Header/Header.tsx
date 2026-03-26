@@ -150,7 +150,6 @@ export const Header: React.FC = () => {
             }}
           >
             {name ?? 'Click Here to Name Project'}
-            {`name: ${name === undefined ? 'undefined' : name.length === 0 ? 'empty' : name}...`}
             &nbsp;
             {version && version > 1 ? `v${version.toString()}` : ''}
           </Typography>
