@@ -10,7 +10,8 @@ import type {
   State,
   Variable,
 } from '../../../types/EMRALD_Model';
-import { useEffect, useState } from 'react';
+import type { ModelItem } from '@/types/ModelUtils';
+import { type MouseEvent, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -270,7 +271,7 @@ export function useTemplateForm(templatedData: EMRALD_Model) {
   };
 
   const handleContextMenu = (
-    event: React.MouseEvent<HTMLDivElement>,
+    event: MouseEvent<HTMLDivElement>,
     group: Group,
   ) => {
     event.preventDefault();
@@ -285,13 +286,17 @@ export function useTemplateForm(templatedData: EMRALD_Model) {
   /** Manage items in templated items array **/
   const handleNewNameChange = (index: number, newName: string) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].newName = newName;
+    if (updatedItems[index]) {
+      updatedItems[index].newName = newName;
+    }
     setTemplatedItems(updatedItems);
   };
 
   const handleLockChange = (index: number, locked: boolean) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].locked = locked;
+    if (updatedItems[index]) {
+      updatedItems[index].locked = locked;
+    }
     setTemplatedItems(updatedItems);
   };
 
@@ -327,21 +332,27 @@ export function useTemplateForm(templatedData: EMRALD_Model) {
 
   const handleActionChange = (index: number, action: string) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].action = action;
+    if (updatedItems[index]) {
+      updatedItems[index].action = action;
+    }
     setTemplatedItems(updatedItems);
   };
 
   const handleExcludeChange = (index: number, exclude: boolean) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].exclude = exclude;
+    if (updatedItems[index]) {
+      updatedItems[index].exclude = exclude;
+    }
     setTemplatedItems(updatedItems);
   };
 
   const handleRequiredChange = (index: number, required: boolean) => {
     const updatedItems = [...templatedItems];
-    updatedItems[index].required = required;
-    if ('required' in updatedItems[index].emraldItem) {
-      updatedItems[index].emraldItem.required = required;
+    if (updatedItems[index]) {
+      updatedItems[index].required = required;
+      if ('required' in updatedItems[index].emraldItem) {
+        updatedItems[index].emraldItem.required = required;
+      }
     }
     setTemplatedItems(updatedItems);
   };
@@ -426,7 +437,7 @@ export function useTemplateForm(templatedData: EMRALD_Model) {
         }
         updateSpecifiedModel(itemCopy, item.type, templatedData, false);
         const updatedItems = convertModelToArray(templatedData);
-        item.emraldItem = updatedItems[i]?.emraldItem;
+        item.emraldItem = updatedItems[i]?.emraldItem as ModelItem;
         item.emraldItem.id = uuidv4();
       }
     }

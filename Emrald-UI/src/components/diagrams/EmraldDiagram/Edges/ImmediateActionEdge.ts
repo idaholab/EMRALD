@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from 'react';
 import type { Action } from '../../../../types/EMRALD_Model';
 import { type Edge, MarkerType, type Node } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,7 +8,7 @@ export function getImmediateActionEdges(
   stateId: string,
   nodes: Node<{ label: string }>[],
   immediateActions: string[],
-  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
+  setEdges: Dispatch<SetStateAction<Edge[]>>,
   getActionByActionName: (actionName: string) => Action | undefined,
   getNewStatesByActionName: (
     actionName: string,

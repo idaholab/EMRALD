@@ -1,6 +1,5 @@
 import type { State } from '../../../../../types/EMRALD_Model';
 import { Box, Typography } from '@mui/material';
-import React from 'react';
 import { BiExit } from 'react-icons/bi';
 import { FaLink } from 'react-icons/fa';
 import { Handle, Position } from 'reactflow';

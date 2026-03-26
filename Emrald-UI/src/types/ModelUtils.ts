@@ -14,8 +14,8 @@ export const EMRALD_SchemaVersion = 3.2;
 export function CreateEmptyEMRALDModel(): EMRALD_Model {
   return {
     objType: 'EMRALD_Model',
-    name: '',
-    desc: '',
+    name: undefined,
+    desc: undefined,
     version: 1,
     versionHistory: [],
     emraldVersion: EMRALD_SchemaVersion,

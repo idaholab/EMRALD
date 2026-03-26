@@ -7,7 +7,7 @@ import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { startCase } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
@@ -45,7 +45,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
     = useAssembledData();
   const { templatesList, mergeTemplateToList, clearTemplateList }
     = useTemplateContext();
-  const { updateFileName } = useModelDetailsContext();
+  const { setFileName } = useModelDetailsContext();
   const { addWindow } = useWindowContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subAnchorEl, setSubAnchorEl] = useState<null | HTMLElement>(null);
@@ -60,7 +60,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
 
   const subMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+  const handleMouseEnter = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
@@ -71,7 +71,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
   };
 
   const handleSubMenuMouseEnter = (
-    event: React.MouseEvent<HTMLElement>,
+    event: MouseEvent<HTMLElement>,
     option: MenuOption,
   ) => {
     if (option === 'Templates') {
@@ -113,7 +113,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
         break;
       }
       case 'Open': {
-        projectOptions.Open(populateNewData, updateFileName, handleModelError);
+        projectOptions.Open(populateNewData, setFileName, handleModelError);
         break;
       }
       case 'Merge': {

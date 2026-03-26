@@ -8,19 +8,19 @@ import type { AccordionMenuItemType } from './types/AccordionMenuItems';
 import { Menu, MenuItem } from '@mui/material';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { type MouseEvent, type SyntheticEvent, useState } from 'react';
 import { useAlertContext } from '../../../contexts/AlertContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { upgradeModel } from '../../../utils/Upgrades/upgrade';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
+import { ActionForm } from '../../forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '../../forms/DiagramForm/DiagramForm';
 import { EventForm } from '../../forms/EventForm/EventForm';
 import { EventFormContextProvider } from '../../forms/EventForm/EventFormContext';
-import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import ImportForm from '../../forms/ImportForm/ImportForm';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { ExtSimForm } from '../../forms/ExtSimForm/ExtSimForm';
+import { ImportForm } from '../../forms/ImportForm/ImportForm';
+import { LogicNodeForm } from '../../forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../../forms/LogicNodeForm/LogicNodeFormContext';
 import { VariableForm } from '../../forms/VariableForm/VariableForm';
 import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
 import { AccordionMenuItems } from './AccordionMenuItems';
@@ -88,13 +88,13 @@ export const MenuAccordion: React.FC<MenuAccordionProps> = ({
   };
 
   const handleChange
-    = (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+    = (panel: string) => (_event: SyntheticEvent, isExpanded: boolean) => {
       setExpandedPanel(isExpanded ? panel : '');
       setAccordionGroupOpen(isExpanded);
     };
 
   const handleAccordionContextMenu = async (
-    event: React.MouseEvent<HTMLDivElement>,
+    event: MouseEvent<HTMLDivElement>,
     panel: string,
   ) => {
     if (
@@ -119,7 +119,7 @@ export const MenuAccordion: React.FC<MenuAccordionProps> = ({
     }
   };
 
-  const handleMenuItemClick = (e: React.MouseEvent<HTMLElement>) => {
+  const handleMenuItemClick = (e: MouseEvent<HTMLElement>) => {
     switch (accordionPanel) {
       case 'Diagrams': {
         if (e.currentTarget.textContent === 'Paste') {

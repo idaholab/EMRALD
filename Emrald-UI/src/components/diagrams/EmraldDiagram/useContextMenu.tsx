@@ -2,13 +2,13 @@ import type { Edge, Node } from 'reactflow';
 import type { Option } from '@/components/layout/ContextMenu/ContextMenu';
 import type { Action, Event, State } from '@/types/EMRALD_Model';
 import type { ModelItem } from '@/types/ModelUtils';
-import { useState } from 'react';
-import ActionForm from '@/components/forms/ActionForm/ActionForm';
-import ActionFormContextProvider from '@/components/forms/ActionForm/ActionFormContext';
-import DiagramForm from '@/components/forms/DiagramForm/DiagramForm';
+import { type MouseEvent, useState } from 'react';
+import { ActionForm } from '@/components/forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '@/components/forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '@/components/forms/DiagramForm/DiagramForm';
 import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
-import StateForm from '@/components/forms/StateForm/StateForm';
+import { StateForm } from '@/components/forms/StateForm/StateForm';
 import { useActionContext } from '@/contexts/ActionContext';
 import { useDiagramContext } from '@/contexts/DiagramContext';
 import { useEventContext } from '@/contexts/EventContext';
@@ -47,7 +47,7 @@ export function useContextMenu(
    **/
 
   // * Context menu for diagram
-  const onPaneContextMenu = (event: React.MouseEvent) => {
+  const onPaneContextMenu = (event: MouseEvent) => {
     event.preventDefault(); // Prevent native context menu from showing
     setMenu({
       mouseX: event.clientX,
@@ -77,7 +77,7 @@ export function useContextMenu(
 
   // * Context menu for state item
   const onNodeContextMenu = (
-    event: React.MouseEvent,
+    event: MouseEvent,
     node: Node<{ state: State }>,
   ) => {
     const state = node.data.state;
@@ -107,7 +107,7 @@ export function useContextMenu(
 
   // * Context menu for edge
   const onEdgeContextMenu = (
-    event: React.MouseEvent,
+    event: MouseEvent,
     edge: Edge,
     edges: Edge[],
   ) => {
@@ -129,7 +129,7 @@ export function useContextMenu(
 
   // * Context menu for immediate actions and event actions header
   const onActionsHeaderContextMenu = async (
-    e: React.MouseEvent,
+    e: MouseEvent,
     type: 'event' | 'immediate',
     state: State,
   ) => {
@@ -240,7 +240,7 @@ export function useContextMenu(
 
   // * Context menu for event items
   const onEventContextMenu = async (
-    e: React.MouseEvent,
+    e: MouseEvent,
     state: State,
     event?: Event,
   ) => {
@@ -368,7 +368,7 @@ export function useContextMenu(
 
   // * Context menu for action items
   const onActionContextMenu = (
-    event: React.MouseEvent,
+    event: MouseEvent,
     state: State,
     action: Action,
     type: 'immediate' | 'event',

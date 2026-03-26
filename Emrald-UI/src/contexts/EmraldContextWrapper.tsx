@@ -7,10 +7,10 @@ import { DiagramContextProvider } from './DiagramContext';
 import { EventContextProvider } from './EventContext';
 import { ExtSimContextProvider } from './ExtSimContext';
 import { LogicNodeContextProvider } from './LogicNodeContext';
-import ModelDetailsContextProvider from './ModelDetailsContext';
-import StateContextProvider from './StateContext';
-import TemplateContextProvider from './TemplateContext';
-import VariableContextProvider from './VariableContext';
+import { ModelDetailsContextProvider } from './ModelDetailsContext';
+import { StateContextProvider } from './StateContext';
+import { TemplateContextProvider } from './TemplateContext';
+import { VariableContextProvider } from './VariableContext';
 import { WindowProvider } from './WindowContext';
 
 export const EmraldContextWrapper: React.FC<PropsWithChildren> = ({

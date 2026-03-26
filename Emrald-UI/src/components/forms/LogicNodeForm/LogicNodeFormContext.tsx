@@ -10,11 +10,12 @@ import type { ComponentStateValue } from './StateValuesTable';
 import { useSignal } from '@preact/signals-react';
 import {
   createContext,
+  type Dispatch,
   type PropsWithChildren,
+  type SetStateAction,
   useContext,
   useEffect,
-  useState,
-} from 'react';
+  useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import {
@@ -40,13 +41,13 @@ interface LogicNodeFormContextType {
   }[];
   hasError: boolean;
   reqPropsFilled: boolean;
-  setDesc: React.Dispatch<React.SetStateAction<string>>;
-  setGateTypeValue: React.Dispatch<React.SetStateAction<GateType>>;
-  setIsRoot: React.Dispatch<React.SetStateAction<boolean>>;
-  setLeafNodeType: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setCompDiagram: React.Dispatch<React.SetStateAction<string>>;
-  setNewCompChild: React.Dispatch<
-    React.SetStateAction<
+  setDesc: Dispatch<SetStateAction<string>>;
+  setGateTypeValue: Dispatch<SetStateAction<GateType>>;
+  setIsRoot: Dispatch<SetStateAction<boolean>>;
+  setLeafNodeType: Dispatch<SetStateAction<string | undefined>>;
+  setCompDiagram: Dispatch<SetStateAction<string>>;
+  setNewCompChild: Dispatch<
+    SetStateAction<
       | {
         diagramName: string;
         stateValues?: { stateName: string; stateValue: StateEvalValue }[];
@@ -54,10 +55,8 @@ interface LogicNodeFormContextType {
       | undefined
     >
   >;
-  setDefaultValues: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentNodeStateValues: React.Dispatch<
-    React.SetStateAction<ComponentStateValue[]>
-  >;
+  setDefaultValues: Dispatch<SetStateAction<boolean>>;
+  setCurrentNodeStateValues: Dispatch<SetStateAction<ComponentStateValue[]>>;
   handleSave: () => void;
   handleClose: () => void;
   handleNameChange: (newName: string) => void;

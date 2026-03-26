@@ -12,7 +12,7 @@ import type { ModelItem } from '../../../types/ModelUtils';
 import { Box } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useState } from 'react';
+import { type MouseEvent, useState } from 'react';
 import { type Option, useOptionsMapping } from './OptionMapping';
 
 interface ItemWithContextMenuProps {
@@ -33,7 +33,7 @@ export const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
   const optionsMapping = useOptionsMapping();
   const options = optionsMapping[optionType];
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleContextMenu = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     setAnchorEl(event.currentTarget);
     setContextMenuOpen(true); // Set the context menu to open

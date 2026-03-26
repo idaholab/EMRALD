@@ -20,8 +20,8 @@ import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { LogicNodeForm } from '../../forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../../forms/LogicNodeForm/LogicNodeFormContext';
 import { EmraldDiagram } from '../EmraldDiagram/EmraldDiagram';
 
 export type NodeType = 'root' | 'gate' | 'comp';

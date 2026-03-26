@@ -13,7 +13,7 @@ import {
   screen,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react';
+import { act, type ReactNode } from 'react';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import { ActionFormContextProvider } from '../components/forms/ActionForm/ActionFormContext';
 import { VariableFormContextProvider } from '../components/forms/VariableForm/VariableFormContext';
@@ -25,7 +25,7 @@ import { VariableContextProvider } from '../contexts/VariableContext';
 import { appData, updateAppData } from '../hooks/useAppData';
 import 'jest-extended';
 
-function customRender(ui: React.ReactNode, options?: RenderOptions) {
+function customRender(ui: ReactNode, options?: RenderOptions) {
   render(
     <EmraldContextWrapper>
       <Sidebar />
@@ -42,7 +42,7 @@ export { customRender as render };
 /**
  * Shortcut function to render the EventForm component with all the required context provider wrappers.
  */
-export function renderEventForm(ui: React.ReactNode, options?: RenderOptions) {
+export function renderEventForm(ui: ReactNode, options?: RenderOptions) {
   customRender(
     <EventContextProvider>
       <EventFormContextProvider>{ui}</EventFormContextProvider>
@@ -54,7 +54,7 @@ export function renderEventForm(ui: React.ReactNode, options?: RenderOptions) {
 /**
  * Shortcut function to render the ActionForm component with all the required context provider wrappers.
  */
-export function renderActionForm(ui: React.ReactNode, options?: RenderOptions) {
+export function renderActionForm(ui: ReactNode, options?: RenderOptions) {
   customRender(
     <ActionContextProvider>
       <ActionFormContextProvider>{ui}</ActionFormContextProvider>
@@ -66,10 +66,7 @@ export function renderActionForm(ui: React.ReactNode, options?: RenderOptions) {
 /**
  * Shortcut function to render the VariableForm component with all the required context provider wrappers.
  */
-export function renderVariableForm(
-  ui: React.ReactNode,
-  options?: RenderOptions,
-) {
+export function renderVariableForm(ui: ReactNode, options?: RenderOptions) {
   customRender(
     <VariableContextProvider>
       <VariableFormContextProvider>{ui}</VariableFormContextProvider>

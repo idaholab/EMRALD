@@ -11,7 +11,9 @@ import { useSignal } from '@preact/signals-react';
 import {
   type ChangeEvent,
   createContext,
+  type Dispatch,
   type PropsWithChildren,
+  type SetStateAction,
   useContext,
   useEffect,
   useState,
@@ -67,40 +69,28 @@ interface ActionFormContextType {
   returnProcess?: ReturnProcessType;
   reqPropsFilled: boolean;
   errorItemIds: Set<string>;
-  setReqPropsFilled: React.Dispatch<React.SetStateAction<boolean>>;
-  setName: React.Dispatch<React.SetStateAction<string>>;
-  setDesc: React.Dispatch<React.SetStateAction<string>>;
-  setActType: React.Dispatch<React.SetStateAction<ActionType>>;
-  setMutuallyExclusive: React.Dispatch<
-    React.SetStateAction<boolean | undefined>
-  >;
-  setVariableName: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setScriptCode: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setSim3DMessage: React.Dispatch<
-    React.SetStateAction<sim3DMessageType | undefined>
-  >;
-  setExtSim: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setSim3DId: React.Dispatch<React.SetStateAction<string>>;
-  setSim3DConfigData: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setSim3DModelRef: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setSimEndTime: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setOpenSimVarParams: React.Dispatch<
-    React.SetStateAction<boolean | undefined>
-  >;
+  setReqPropsFilled: Dispatch<SetStateAction<boolean>>;
+  setName: Dispatch<SetStateAction<string>>;
+  setDesc: Dispatch<SetStateAction<string>>;
+  setActType: Dispatch<SetStateAction<ActionType>>;
+  setMutuallyExclusive: Dispatch<SetStateAction<boolean | undefined>>;
+  setVariableName: Dispatch<SetStateAction<string | undefined>>;
+  setScriptCode: Dispatch<SetStateAction<string | undefined>>;
+  setSim3DMessage: Dispatch<SetStateAction<sim3DMessageType | undefined>>;
+  setExtSim: Dispatch<SetStateAction<string | undefined>>;
+  setSim3DId: Dispatch<SetStateAction<string>>;
+  setSim3DConfigData: Dispatch<SetStateAction<string | undefined>>;
+  setSim3DModelRef: Dispatch<SetStateAction<string | undefined>>;
+  setSimEndTime: Dispatch<SetStateAction<string | undefined>>;
+  setOpenSimVarParams: Dispatch<SetStateAction<boolean | undefined>>;
   addToUsedVariables: (variableName: string) => void;
-  setCodeVariables: React.Dispatch<React.SetStateAction<string[]>>;
-  setNewStateItems: React.Dispatch<
-    React.SetStateAction<NewStateItem[] | undefined>
-  >;
-  setMakeInputFileCode: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  setExePath: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setProcessOutputFileCode: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >;
-  setFormData: React.Dispatch<React.SetStateAction<MAAPFormData | undefined>>;
-  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
+  setCodeVariables: Dispatch<SetStateAction<string[]>>;
+  setNewStateItems: Dispatch<SetStateAction<NewStateItem[] | undefined>>;
+  setMakeInputFileCode: Dispatch<SetStateAction<string | undefined>>;
+  setExePath: Dispatch<SetStateAction<string | undefined>>;
+  setProcessOutputFileCode: Dispatch<SetStateAction<string | undefined>>;
+  setFormData: Dispatch<SetStateAction<MAAPFormData | undefined>>;
+  setHasError: Dispatch<SetStateAction<boolean>>;
   checkForDuplicateNames: () => boolean;
   handleNameChange: (newName: string) => void;
   handleSave: (event?: Event, state?: State) => void;
@@ -111,22 +101,20 @@ interface ActionFormContextType {
   ) => void;
   handleProbBlur: (item: NewStateItem) => void;
   handleRemainingChange: (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => void;
   handleProbTypeChange: (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => void;
   handleMutuallyExclusiveChange: (value: boolean) => void;
   handleDeleteToStateItem: (itemToDeleteId: string) => void;
   sortNewStates: (newStateItems?: NewStateItem[]) => NewStateItem[] | undefined;
-  initializeForm: (actionData: Action | undefined) => void;
+  initializeForm: (actionData?: Action) => void;
   reset: () => void;
-  setRaType: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setReturnProcess: React.Dispatch<
-    React.SetStateAction<ReturnProcessType | undefined>
-  >;
+  setRaType: Dispatch<SetStateAction<string | undefined>>;
+  setReturnProcess: Dispatch<SetStateAction<ReturnProcessType | undefined>>;
 }
 
 const ActionFormContext = createContext<ActionFormContextType | undefined>(
@@ -435,7 +423,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   };
 
   const handleProbChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     updatedItem: NewStateItem,
   ) => {
     setHasError(false);
@@ -494,7 +482,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   };
 
   const handleRemainingChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => {
     const updatedItems = newStateItems?.map(newItem =>
@@ -518,7 +506,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   };
 
   const handleProbTypeChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => {
     setNewStateItems(

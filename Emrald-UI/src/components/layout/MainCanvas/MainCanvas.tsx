@@ -14,16 +14,16 @@ import { VscSymbolEvent } from 'react-icons/vsc';
 import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { ActionForm } from '../../forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '../../forms/DiagramForm/DiagramForm';
+import { ExtSimForm } from '../../forms/ExtSimForm/ExtSimForm';
+import { LogicNodeForm } from '../../forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../../forms/LogicNodeForm/LogicNodeFormContext';
 import { VariableForm } from '../../forms/VariableForm/VariableForm';
 import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
-import MinimizedWindows from '../Window/MinimizedWindows';
-import WindowComponent from '../Window/Window';
+import { MinimizedWindows } from '../Window/MinimizedWindows';
+import { WindowComponent } from '../Window/Window';
 
 export const MainCanvas: React.FC = () => {
   const actions = [

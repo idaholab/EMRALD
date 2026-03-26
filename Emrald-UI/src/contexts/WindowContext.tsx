@@ -3,6 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {
   createContext,
   type PropsWithChildren,
+  type ReactNode,
   useContext,
   useState,
 } from 'react';
@@ -21,7 +22,7 @@ interface Window {
   initialPosition: WindowPosition;
   minimized: boolean;
   maximized: boolean;
-  content: React.ReactNode;
+  content: ReactNode;
 }
 
 interface WindowContextType {
@@ -29,7 +30,7 @@ interface WindowContextType {
   activeWindowId: string | null;
   addWindow: (
     title: string,
-    content: React.ReactNode,
+    content: ReactNode,
     position?: WindowPosition,
     windowId?: string | null,
     closePrevWindowId?: string,
@@ -92,7 +93,7 @@ export const WindowProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
   const addWindow = (
     title: string,
-    content: React.ReactNode,
+    content: ReactNode,
     position?: WindowPosition,
     windowId?: string | null,
     closePrevWindowId?: string,

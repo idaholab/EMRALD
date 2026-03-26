@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import { v4 as uuidv4 } from 'uuid';
 import { useActionFormContext } from '../forms/ActionForm/ActionFormContext';
-import ActionToStateTable from '../forms/ActionForm/ActionToStateTable';
+import { ActionToStateTable } from '../forms/ActionForm/ActionToStateTable';
 
 export const ActionDropTarget: React.FC = () => {
   const { newStateItems, setNewStateItems, sortNewStates }

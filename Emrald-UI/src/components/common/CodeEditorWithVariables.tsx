@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Variable } from '@/types/EMRALD_Model';
 import { Editor } from '@monaco-editor/react';
 import { Box, Typography } from '@mui/material';
@@ -9,7 +10,7 @@ interface CodeEditorWithVariablesProps {
   variableList: Variable[];
   codeVariables: string[];
   addToUsedVariables: (variableName: string) => void;
-  heading?: React.ReactNode | string;
+  heading?: ReactNode | string;
 }
 
 export const CodeEditorWithVariables: React.FC<

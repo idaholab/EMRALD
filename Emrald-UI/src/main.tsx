@@ -3,8 +3,4 @@ import { App } from './App.tsx';
 import './index.css';
 import './scss/global.scss';
 
-ReactDOM.createRoot(document.querySelector('#root')!).render(
-  // <React.StrictMode>
-  <App />,
-  // </React.StrictMode>,
-);
+ReactDOM.createRoot(document.querySelector('#root')!).render(<App />);

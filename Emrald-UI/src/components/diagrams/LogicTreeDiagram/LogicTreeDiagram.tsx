@@ -15,9 +15,9 @@ import ReactFlow, {
   Panel,
   useReactFlow,
 } from 'reactflow';
-import DraggableItem from '../../drag-and-drop/DraggableItem';
-import ContextMenu from '../../layout/ContextMenu/ContextMenu';
-import DownloadButton from '../DownloadButton';
+import { DraggableItem } from '../../drag-and-drop/DraggableItem';
+import { ContextMenu } from '../../layout/ContextMenu/ContextMenu';
+import { DownloadButton } from '../DownloadButton';
 import { TreeNodeComponent } from './TreeNodeComponent/TreeNodeComponent';
 import { useExpandCollapse } from './useExpandCollapse';
 import { useLogicNodeTreeDiagram } from './useLogicTreeDiagram';

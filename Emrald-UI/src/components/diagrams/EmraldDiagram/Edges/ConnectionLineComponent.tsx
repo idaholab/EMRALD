@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { ConnectionLineComponentProps } from 'reactflow';
 
 export const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
@@ -9,7 +10,7 @@ export const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
   connectionStatus,
 }) => {
   // Define default style for the connection line
-  const defaultStyle: React.CSSProperties = {
+  const defaultStyle: CSSProperties = {
     stroke: connectionStatus === 'valid' ? 'green' : 'red',
     strokeWidth: 2,
     ...connectionLineStyle,

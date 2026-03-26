@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { WindowPosition } from '../../../contexts/WindowContext';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
@@ -180,7 +181,7 @@ export const projectOptions = {
   'Load Results': (
     addWindow: (
       title: string,
-      content: React.ReactNode,
+      content: ReactNode,
       position?: WindowPosition,
       windowId?: string | null,
       closePrevWindowId?: string,

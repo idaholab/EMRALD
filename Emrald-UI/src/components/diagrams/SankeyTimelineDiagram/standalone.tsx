@@ -13,9 +13,6 @@ declare global {
   }
 }
 
-const root = document.querySelector('#root');
-if (root) {
-  ReactDOM.createRoot(root).render(
-    <SankeyTimelineDiagram data={window.data} />,
-  );
-}
+ReactDOM.createRoot(document.querySelector('#root')!).render(
+  <SankeyTimelineDiagram data={window.data} />,
+);

@@ -40,34 +40,27 @@ export const Header: React.FC = () => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
-  const {
-    name,
-    desc,
-    fileName,
-    version,
-    updateVersion,
-    updateName,
-    updateDescription,
-  } = useModelDetailsContext();
+  const { name, desc, fileName, version, setVersion, setName, setDesc }
+    = useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
-  const [updatedName, setUpdatedName] = useState('');
-  const [updatedDesc, setUpdatedDesc] = useState('');
-  const [updatedVersion, setUpdatedVersion] = useState('');
+  const [updatedName, setUpdatedName] = useState<string>();
+  const [updatedDesc, setUpdatedDesc] = useState<string>();
+  const [updatedVersion, setUpdatedVersion] = useState<string>();
   const [versionDialog, setVersionDialog] = useState(false);
-  const [changeDesc, setChangeDesc] = useState('');
+  const [changeDesc, setChangeDesc] = useState<string>();
   const [modelErrorDialog, setModelErrorDialog] = useState(false);
   const [modelErrorMessage, setModelErrorMessage] = useState('');
 
   useEffect(() => {
-    setUpdatedName(name ?? '');
-    setUpdatedDesc(desc ?? '');
-    setUpdatedVersion(String(version) || '1');
+    setUpdatedName(name);
+    setUpdatedDesc(desc);
+    setUpdatedVersion(String(version));
   }, [name, desc, version]);
 
   const handleSave = () => {
-    updateName(updatedName);
-    updateDescription(updatedDesc);
-    updateVersion(Number(updatedVersion));
+    setName(updatedName);
+    setDesc(updatedDesc);
+    setVersion(Number(updatedVersion));
     updateAppData({
       ...appData.value,
       name: updatedName,
@@ -79,14 +72,12 @@ export const Header: React.FC = () => {
 
   const handleClose = () => {
     setOpenDialog(false);
-    setUpdatedName('');
-    setUpdatedDesc('');
+    setUpdatedName(undefined);
+    setUpdatedDesc(undefined);
   };
 
   const handleChange = (value: string) => {
-    const re = /^[0-9]+(\.[0-9]*)?$/;
-
-    if (value === '' || re.test(value)) {
+    if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
       setUpdatedVersion(value);
     }
   };
@@ -159,6 +150,7 @@ export const Header: React.FC = () => {
             }}
           >
             {name ?? 'Click Here to Name Project'}
+            {`name: ${name === undefined ? 'undefined' : name.length === 0 ? 'empty' : name}...`}
             &nbsp;
             {version && version > 1 ? `v${version.toString()}` : ''}
           </Typography>

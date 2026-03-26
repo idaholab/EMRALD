@@ -1,12 +1,12 @@
+import type { PropsWithChildren } from 'react';
 import Box from '@mui/material/Box';
 
 interface TabPanelProps {
-  children?: React.ReactNode;
   index: number;
   value: number;
 }
 
-export const TabPanel: React.FC<TabPanelProps> = ({
+export const TabPanel: React.FC<PropsWithChildren<TabPanelProps>> = ({
   children,
   value,
   index,

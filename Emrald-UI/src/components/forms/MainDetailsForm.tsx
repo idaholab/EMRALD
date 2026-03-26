@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, PropsWithChildren, SetStateAction } from 'react';
 import type {
   ActionType,
   DiagramType,
@@ -31,7 +31,6 @@ type ValueTypes<T extends MainItemType> = T extends 'Diagram'
             : never;
 
 interface MainDetailsFormProps<T extends MainItemType> {
-  children: React.ReactNode;
   itemType: T;
   typeLabel?: string;
   type: ValueTypes<T>;
@@ -74,7 +73,7 @@ export function MainDetailsForm<T extends MainItemType>({
   handleNameChange,
   handleTypeChange,
   reset,
-}: MainDetailsFormProps<T>) {
+}: PropsWithChildren<MainDetailsFormProps<T>>) {
   const { handleClose } = useWindowContext();
   return (
     <>

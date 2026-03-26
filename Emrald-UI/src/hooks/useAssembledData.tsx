@@ -1,6 +1,6 @@
 import type { EMRALD_Model } from '../types/EMRALD_Model';
 import type { ModelItem } from '../types/ModelUtils';
-import ImportForm from '../components/forms/ImportForm/ImportForm';
+import { ImportForm } from '../components/forms/ImportForm/ImportForm';
 import {
   CompareModels,
   type ModelDifference,
@@ -26,9 +26,9 @@ export function useAssembledData() {
     emraldVersion,
     version,
     clearFileName,
-    updateName,
-    updateDescription,
-    updateVersion,
+    setName,
+    setDesc,
+    setVersion,
   } = useModelDetailsContext();
   const { diagrams, clearDiagramList, newDiagramList } = useDiagramContext();
   const { logicNodes, clearLogicNodeList, newLogicNodeList }
@@ -45,9 +45,9 @@ export function useAssembledData() {
   // ... get data from other contexts
 
   const newProject = () => {
-    updateName('');
-    updateDescription('');
-    updateVersion(1);
+    setName('');
+    setDesc('');
+    setVersion(1);
     clearDiagramList();
     clearLogicNodeList();
     clearActionList();
@@ -74,9 +74,9 @@ export function useAssembledData() {
     try {
       if (openedModel) {
         closeAllWindows(); // close all active windows when opening a new project
-        updateName(openedModel.name);
-        updateDescription(openedModel.desc);
-        updateVersion(openedModel.version);
+        setName(openedModel.name);
+        setDesc(openedModel.desc);
+        setVersion(openedModel.version);
         newTemplateList(openedModel.templates ?? []);
         updateAppData(openedModel);
       } else {
@@ -264,7 +264,7 @@ export function useAssembledData() {
 
   const assembleData = () => {
     if (version) {
-      updateVersion(Number.parseFloat((version + 0.1).toFixed(1)));
+      setVersion(Number.parseFloat((version + 0.1).toFixed(1)));
     }
 
     return {

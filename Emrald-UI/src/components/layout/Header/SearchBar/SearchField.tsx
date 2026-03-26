@@ -19,7 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { useState } from 'react';
+import { type KeyboardEvent, useState } from 'react';
 import { useAlertContext } from '../../../../contexts/AlertContext';
 import { useWindowContext } from '../../../../contexts/WindowContext';
 import { appData } from '../../../../hooks/useAppData';
@@ -28,7 +28,7 @@ import {
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
-import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
+import { SearchResultForm } from '../../../forms/SearchResultForm/SearchResultForm';
 import { ItemTypeMenuResults } from './ItemTypeMenuResults';
 
 export const SearchField: React.FC = () => {
@@ -83,7 +83,7 @@ export const SearchField: React.FC = () => {
     return items;
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
       onSubmit();
     }

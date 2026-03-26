@@ -1,6 +1,8 @@
 import {
   createContext,
+  type Dispatch,
   type PropsWithChildren,
+  type SetStateAction,
   useContext,
   useState,
 } from 'react';
@@ -13,11 +15,11 @@ interface ModelDetailsContextType {
   emraldVersion: number;
   version?: number;
   fileName?: string;
-  updateFileName: (fileName: string) => void;
-  updateName: (name?: string) => void;
-  updateDescription: (desc?: string) => void;
-  updateEmraldVersion: (version: number) => void;
-  updateVersion: (version?: number) => void;
+  setFileName: Dispatch<SetStateAction<string | undefined>>;
+  setName: Dispatch<SetStateAction<string | undefined>>;
+  setDesc: Dispatch<SetStateAction<string | undefined>>;
+  setEmraldVersion: Dispatch<SetStateAction<number>>;
+  setVersion: Dispatch<SetStateAction<number>>;
   clearFileName: () => void;
 }
 
@@ -47,26 +49,6 @@ export const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
   const [version, setVersion] = useState(appData.value.version);
   const [fileName, setFileName] = useState<string>();
 
-  const updateName = (updatedName: string) => {
-    setName(updatedName);
-  };
-
-  const updateDescription = (updatedDesc: string) => {
-    setDesc(updatedDesc);
-  };
-
-  const updateEmraldVersion = (updatedVersion: number) => {
-    setEmraldVersion(updatedVersion);
-  };
-
-  const updateVersion = (updatedVersion: number) => {
-    setVersion(updatedVersion);
-  };
-
-  const updateFileName = (updatedName: string) => {
-    setFileName(updatedName);
-  };
-
   const clearFileName = () => {
     setFileName('');
   };
@@ -80,11 +62,11 @@ export const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
         emraldVersion,
         version,
         fileName,
-        updateFileName,
-        updateName,
-        updateDescription,
-        updateEmraldVersion,
-        updateVersion,
+        setFileName,
+        setName,
+        setDesc,
+        setEmraldVersion,
+        setVersion,
         clearFileName,
       }}
     >

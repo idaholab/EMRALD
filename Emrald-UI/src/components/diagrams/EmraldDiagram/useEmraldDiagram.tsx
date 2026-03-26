@@ -1,5 +1,5 @@
 import type { Action, Event, State } from '../../../types/EMRALD_Model';
-import { useCallback, useEffect, useState } from 'react';
+import { type MouseEvent, useCallback, useEffect, useState } from 'react';
 import {
   type Connection,
   type Edge,
@@ -19,9 +19,9 @@ import {
 import { useEventContext } from '../../../contexts/EventContext';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import StateForm from '../../forms/StateForm/StateForm';
+import { ActionForm } from '../../forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
+import { StateForm } from '../../forms/StateForm/StateForm';
 import { getEventActionEdges } from './Edges/EventActionEdge';
 import { getImmediateActionEdges } from './Edges/ImmediateActionEdge';
 import { currentDiagram, EmraldDiagram } from './EmraldDiagram';
@@ -74,7 +74,7 @@ export function useEmraldDiagram() {
     }
   };
 
-  const onEdgeClick = (_event: React.MouseEvent, edge: Edge) => {
+  const onEdgeClick = (_event: MouseEvent, edge: Edge) => {
     // Highlight selected edge so its easier to see its connection and label
     setEdges(eds =>
       eds.map(e =>
@@ -105,7 +105,7 @@ export function useEmraldDiagram() {
 
   // Double Clicks
   const onNodeDoubleClick = (
-    _event: React.MouseEvent,
+    _event: MouseEvent,
     node: Node<{ state?: State }>,
   ) => {
     if (node.data.state) {
@@ -117,7 +117,7 @@ export function useEmraldDiagram() {
   };
 
   const onEventDoubleClick = (
-    e: React.MouseEvent,
+    e: MouseEvent,
     event: Event | undefined,
     state: State,
   ) => {
@@ -134,7 +134,7 @@ export function useEmraldDiagram() {
     );
   };
 
-  const onActionDoubleClick = (e: React.MouseEvent, action?: Action) => {
+  const onActionDoubleClick = (e: MouseEvent, action?: Action) => {
     e.preventDefault();
     e.stopPropagation();
     if (!action) {
@@ -245,10 +245,7 @@ export function useEmraldDiagram() {
   );
 
   // Update the state node position
-  const onNodeDragStop = (
-    _event: React.MouseEvent,
-    node: Node<{ state: State }>,
-  ) => {
+  const onNodeDragStop = (_event: MouseEvent, node: Node<{ state: State }>) => {
     updateStatePosition(node.data.state, node.position);
   };
 

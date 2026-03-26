@@ -1,6 +1,7 @@
 /* eslint-disable unicorn/no-this-assignment */
 /* eslint-disable @typescript-eslint/no-invalid-this */
 /* eslint-disable @typescript-eslint/no-this-alias */
+import type { RefObject } from 'react';
 import type { SankeyTimeline } from './SankeyTimeline';
 import type { TimelineLink } from './TimelineLink';
 import type { TimelineNode } from './TimelineNode';
@@ -90,7 +91,7 @@ export class Renderer extends EventEmitter<{
    */
   public constructor(
     private timeline: SankeyTimeline,
-    svgRef: React.RefObject<SVGSVGElement>,
+    svgRef: RefObject<SVGSVGElement>,
   ) {
     super();
     this.range = [

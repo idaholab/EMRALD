@@ -13,7 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { useEffect, useState } from 'react';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useStateContext } from '../../../contexts/StateContext';
 
@@ -23,9 +23,7 @@ export interface ComponentStateValue {
 }
 interface StateValuesTableProps {
   componentNode?: CompChildItems;
-  setCurrentNodeStateValues?: React.Dispatch<
-    React.SetStateAction<ComponentStateValue[]>
-  >;
+  setCurrentNodeStateValues?: Dispatch<SetStateAction<ComponentStateValue[]>>;
 }
 
 export const StateValuesTable: React.FC<StateValuesTableProps> = ({

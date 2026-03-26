@@ -22,15 +22,15 @@ import {
 } from '../../../utils/ModelReferences';
 import { EmraldDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import { LogicNodeTreeDiagram } from '../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
-import SearchResultForm from '../../forms/SearchResultForm/SearchResultForm';
-import StateForm from '../../forms/StateForm/StateForm';
-import TemplateForm from '../../forms/TemplateForm/TemplateForm';
+import { ActionForm } from '../../forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '../../forms/DiagramForm/DiagramForm';
+import { ExtSimForm } from '../../forms/ExtSimForm/ExtSimForm';
+import { LogicNodeForm } from '../../forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { SearchResultForm } from '../../forms/SearchResultForm/SearchResultForm';
+import { StateForm } from '../../forms/StateForm/StateForm';
+import { TemplateForm } from '../../forms/TemplateForm/TemplateForm';
 import { VariableForm } from '../../forms/VariableForm/VariableForm';
 import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
 
