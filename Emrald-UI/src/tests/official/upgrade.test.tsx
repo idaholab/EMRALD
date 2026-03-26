@@ -1,31 +1,30 @@
-/* eslint-disable @typescript-eslint/prefer-for-of */
+import type { EMRALD_Model } from '../../types/EMRALD_Model';
+import type { EMRALD_Model as ModelV2_4 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
 import { describe, expect, test } from 'vitest';
 import { upgradeModel } from '../../utils/Upgrades/upgrade';
-import type { EMRALD_Model as ModelV2_4 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
-import type { EMRALD_Model as ModelV3_0 } from '../../utils/Upgrades/v3_0/AllModelInterfacesV3_0';
 import expected from './upgrade.expected.json';
 
-function removeIds(model: ModelV3_0) {
+function removeIds(model: EMRALD_Model) {
   for (let i = 0; i < model.ActionList.length; i += 1) {
-    delete model.ActionList[i].id;
+    delete model.ActionList[i]?.id;
   }
   for (let i = 0; i < model.EventList.length; i += 1) {
-    delete model.EventList[i].id;
+    delete model.EventList[i]?.id;
   }
   for (let i = 0; i < model.StateList.length; i += 1) {
-    delete model.StateList[i].id;
+    delete model.StateList[i]?.id;
   }
   for (let i = 0; i < model.VariableList.length; i += 1) {
-    delete model.VariableList[i].id;
+    delete model.VariableList[i]?.id;
   }
   for (let i = 0; i < model.DiagramList.length; i += 1) {
-    delete model.DiagramList[i].id;
+    delete model.DiagramList[i]?.id;
   }
   for (let i = 0; i < model.ExtSimList.length; i += 1) {
-    delete model.ExtSimList[i].id;
+    delete model.ExtSimList[i]?.id;
   }
   for (let i = 0; i < model.LogicNodeList.length; i += 1) {
-    delete model.LogicNodeList[i].id;
+    delete model.LogicNodeList[i]?.id;
   }
   return model;
 }
@@ -280,7 +279,7 @@ describe('Model Upgrade', () => {
             gateType: 'gtAnd',
             gateChildren: [],
             compChildren: [],
-            isRoot: true
+            isRoot: true,
           },
         },
       ],

@@ -1,29 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import type {
+  CompChildItems,
+  StateEvalValue,
+} from '../../../types/EMRALD_Model';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Paper from '@mui/material/Paper';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import Paper from '@mui/material/Paper';
+import { useEffect, useState } from 'react';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useStateContext } from '../../../contexts/StateContext';
-import type { CompChildItems, StateEvalValue } from '../../../types/EMRALD_Model';
 
 export interface ComponentStateValue {
   stateName: string;
   stateValue: StateEvalValue;
 }
 interface StateValuesTableProps {
-  componentNode: CompChildItems | undefined;
-  setCurrentNodeStateValues?: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>;
+  componentNode?: CompChildItems;
+  setCurrentNodeStateValues?: React.Dispatch<
+    React.SetStateAction<ComponentStateValue[]>
+  >;
 }
 
-const StateValuesTable: React.FC<StateValuesTableProps> = ({
+export const StateValuesTable: React.FC<StateValuesTableProps> = ({
   componentNode,
   setCurrentNodeStateValues,
 }) => {
@@ -32,10 +37,16 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({
   const { getStateByStateName } = useStateContext();
 
   useEffect(() => {
-    const diagramStates = getDiagramByDiagramName(componentNode?.diagramName ?? '')?.states;
-    if (diagramStates && componentNode?.stateValues && componentNode.stateValues.length === 0) {
+    const diagramStates = getDiagramByDiagramName(
+      componentNode?.diagramName ?? '',
+    )?.states;
+    if (
+      diagramStates
+      && componentNode?.stateValues
+      && componentNode.stateValues.length === 0
+    ) {
       setStateValues(
-        diagramStates.map((stateName) => {
+        diagramStates.map(stateName => {
           const state = getStateByStateName(stateName);
           return {
             stateName: state?.name ?? '',
@@ -54,12 +65,11 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({
   ) => {
     const { stateName } = updatedStateValue;
     const value = event.target.value as StateEvalValue;
-    const updatedValues = stateValues.map((stateValue) => {
-      if (stateValue.stateName === stateName) {
-        return { ...stateValue, stateValue: value };
-      }
-      return stateValue;
-    });
+    const updatedValues = stateValues.map(stateValue =>
+      stateValue.stateName === stateName
+        ? { ...stateValue, stateValue: value }
+        : stateValue,
+    );
 
     if (setCurrentNodeStateValues) {
       setCurrentNodeStateValues(updatedValues);
@@ -73,7 +83,9 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({
         <TableHead>
           <TableRow>
             <TableCell sx={{ fontWeight: 'bold', p: 2 }}>State Name</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Logic Evaluation Value</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>
+              Logic Evaluation Value
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -89,13 +101,25 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({
                     aria-labelledby="eval-values"
                     name="eval-buttons-group"
                     value={stateValue.stateValue}
-                    onChange={(e) => {
+                    onChange={e => {
                       handleChange(e, stateValue);
                     }}
                   >
-                    <FormControlLabel value="False" control={<Radio />} label="False" />
-                    <FormControlLabel value="True" control={<Radio />} label="True" />
-                    <FormControlLabel value="Ignore" control={<Radio />} label="Ignore" />
+                    <FormControlLabel
+                      value="False"
+                      control={<Radio />}
+                      label="False"
+                    />
+                    <FormControlLabel
+                      value="True"
+                      control={<Radio />}
+                      label="True"
+                    />
+                    <FormControlLabel
+                      value="Ignore"
+                      control={<Radio />}
+                      label="Ignore"
+                    />
                   </RadioGroup>
                 </FormControl>
               </TableCell>
@@ -106,5 +130,3 @@ const StateValuesTable: React.FC<StateValuesTableProps> = ({
     </TableContainer>
   );
 };
-
-export default StateValuesTable;

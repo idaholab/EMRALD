@@ -1,48 +1,54 @@
-import { useEffect, useState } from 'react';
+import { Alert, Table } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import { styled, useTheme } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { styled } from '@mui/system';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useEffect, useState } from 'react';
 import Logo from '../../../assets/EMRALD-logo.png';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
-import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import { projectOptions, downloadOptions } from './menuOptions';
-import MenuButton from './MenuButton';
-import SearchField from './SearchBar/SearchField';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 import { appData, updateAppData } from '../../../hooks/useAppData';
-import { Alert, Table } from '@mui/material';
+import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
+import { MenuButton } from './MenuButton';
+import { downloadOptions, projectOptions } from './menuOptions';
+import { SearchField } from './SearchBar/SearchField';
 
-const url: string = window.location.href;
+const url = window.location.href;
 let emraldDocsUrl = 'https://emrald-docs.inl.gov/'; // Default URL
 
-const urlEnvMappings: Record<string, string> = {
+const urlEnvMappings = {
   dev: 'https://emrald-docs.dev.inl.gov/',
   acc: 'https://emrald-docs.acc.inl.gov/',
   scan: 'https://emrald-docs.scan.inl.gov/',
 };
 
 // Loop through the mappings and set the URL if a match is found
-Object.keys(urlEnvMappings).forEach((key: string) => {
+for (const key in urlEnvMappings) {
   if (url.includes(key)) {
-    emraldDocsUrl = urlEnvMappings[key];
+    emraldDocsUrl = urlEnvMappings[key as keyof typeof urlEnvMappings];
   }
-});
+}
 
 const EmraldLogo = styled('img')(({ theme }) => ({
   marginRight: theme.spacing(2),
   height: '65px',
 }));
 
-export default function Header() {
+export const Header: React.FC = () => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
 
-  const { name, desc, fileName, version, updateVersion, updateName, updateDescription } =
-    useModelDetailsContext();
+  const {
+    name,
+    desc,
+    fileName,
+    version,
+    updateVersion,
+    updateName,
+    updateDescription,
+  } = useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
   const [updatedName, setUpdatedName] = useState('');
   const [updatedDesc, setUpdatedDesc] = useState('');
@@ -53,8 +59,8 @@ export default function Header() {
   const [modelErrorMessage, setModelErrorMessage] = useState('');
 
   useEffect(() => {
-    setUpdatedName(name);
-    setUpdatedDesc(desc);
+    setUpdatedName(name ?? '');
+    setUpdatedDesc(desc ?? '');
     setUpdatedVersion(String(version) || '1');
   }, [name, desc, version]);
 
@@ -96,7 +102,11 @@ export default function Header() {
       }}
     >
       <Toolbar>
-        <EmraldLogo src={Logo} alt="Logo" sx={{ height: isMediumScreen ? '45px' : '65px' }} />
+        <EmraldLogo
+          src={Logo}
+          alt="Logo"
+          sx={{ height: isMediumScreen ? '45px' : '65px' }}
+        />
         <Typography
           variant="h4"
           noWrap
@@ -115,13 +125,17 @@ export default function Header() {
             openVersionDialog={() => {
               setVersionDialog(true);
             }}
-            handleModelError={(message) => {
+            handleModelError={message => {
               setModelErrorDialog(true);
               setModelErrorMessage(message);
             }}
           />
           <MenuButton id={2} title="Download" options={downloadOptions} />
-          <MenuButton id={3} title="Help" handleClick={() => window.open(emraldDocsUrl)} />
+          <MenuButton
+            id={3}
+            title="Help"
+            handleClick={() => window.open(emraldDocsUrl)}
+          />
           <MenuButton
             id={4}
             title="About"
@@ -136,16 +150,20 @@ export default function Header() {
             noWrap
             color="primary"
             fontWeight="bold"
-            sx={{ cursor: 'pointer', fontSize: isMediumScreen ? '1em' : '1.2em' }}
+            sx={{
+              cursor: 'pointer',
+              fontSize: isMediumScreen ? '1em' : '1.2em',
+            }}
             onClick={() => {
               setOpenDialog(true);
             }}
           >
-            {name ? name : 'Click Here to Name Project'}{' '}
+            {name ?? 'Click Here to Name Project'}
+            &nbsp;
             {version && version > 1 ? `v${version.toString()}` : ''}
           </Typography>
           <Typography sx={{ fontSize: isMediumScreen ? '0.625em' : '0.75em' }}>
-            {fileName ? fileName : ''}
+            {fileName ?? ''}
           </Typography>
         </Box>
       </Toolbar>
@@ -167,7 +185,7 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedName}
-          onChange={(e) => {
+          onChange={e => {
             setUpdatedName(e.target.value);
           }}
         />
@@ -180,7 +198,7 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedDesc}
-          onChange={(e) => {
+          onChange={e => {
             setUpdatedDesc(e.target.value);
           }}
         />
@@ -193,11 +211,11 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedVersion}
-          onChange={(e) => {
+          onChange={e => {
             handleChange(e.target.value);
           }}
           error={!version}
-          helperText={version !== undefined ? '' : 'must have a version number'}
+          helperText={version === undefined ? 'must have a version number' : ''}
         />
         Version History
         <Table>
@@ -210,7 +228,7 @@ export default function Header() {
           <tbody>
             {/* This somehow tries to render before the model is upgraded, causing versionHistory to not exist */}
             {/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */}
-            {appData.value.versionHistory?.map((h) => (
+            {appData.value.versionHistory?.map(h => (
               <tr style={{ textAlign: 'center' }}>
                 <td>{h.version}</td>
                 <td>{h.description}</td>
@@ -231,15 +249,17 @@ export default function Header() {
           const newVersion = Number(updatedVersion);
           // TODO: The existence of this array should be garuanteed by the upgrade script
           const versionHistory = appData.value.versionHistory;
-          const existing = versionHistory.findIndex((v) => v.version === newVersion);
-          if (existing >= 0) {
-            // Update the existing entry if the version number was not increased
-            versionHistory[existing].description = changeDesc;
-          } else {
+          const existing = versionHistory.findIndex(
+            v => v.version === newVersion,
+          );
+          if (existing === -1) {
             versionHistory.push({
               description: changeDesc,
               version: newVersion,
             });
+          } else if (versionHistory[existing]) {
+            // Update the existing entry if the version number was not increased
+            versionHistory[existing].description = changeDesc;
           }
           updateAppData({
             ...appData.value,
@@ -259,11 +279,11 @@ export default function Header() {
           variant="outlined"
           size="small"
           value={updatedVersion}
-          onChange={(e) => {
+          onChange={e => {
             handleChange(e.target.value);
           }}
           error={!version}
-          helperText={version !== undefined ? '' : 'must have a version number'}
+          helperText={version === undefined ? 'must have a version number' : ''}
         />
         <TextField
           multiline
@@ -274,7 +294,7 @@ export default function Header() {
           fullWidth
           variant="outlined"
           value={changeDesc}
-          onChange={(e) => {
+          onChange={e => {
             setChangeDesc(e.target.value);
           }}
         />
@@ -286,9 +306,10 @@ export default function Header() {
           setModelErrorDialog(false);
         }}
       >
-        An error occurred opening the selected file. Please check the error message below.
+        An error occurred opening the selected file. Please check the error
+        message below.
         <Alert severity="error">{modelErrorMessage}</Alert>
       </DialogComponent>
     </AppBar>
   );
-}
+};

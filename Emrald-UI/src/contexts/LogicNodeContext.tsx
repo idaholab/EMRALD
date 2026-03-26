@@ -1,18 +1,26 @@
-import { createContext, useContext, useState } from 'react';
-import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { appData, updateAppData } from '../hooks/useAppData';
-import type { EMRALD_Model, LogicNode } from '../types/EMRALD_Model';
-import { updateModelAndReferences } from '../utils/UpdateModel';
-import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
+import type { LogicNode } from '../types/EMRALD_Model';
+import {
+  effect,
+  type ReadonlySignal,
+  useComputed,
+} from '@preact/signals-react';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useState,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { appData, updateAppData } from '../hooks/useAppData';
+import { updateModelAndReferences } from '../utils/UpdateModel';
 
 interface LogicNodeContextType {
   logicNodeList: ReadonlySignal<LogicNode[]>;
   logicNodes: LogicNode[];
   createLogicNode: (logicNode: LogicNode) => void;
   updateLogicNode: (logicNode: LogicNode) => void;
-  deleteLogicNode: (logicNodeId: string | undefined) => void;
-  getLogicNodeByName: (logicNodeName: string | undefined) => LogicNode | undefined;
+  deleteLogicNode: (logicNodeId?: string) => void;
+  getLogicNodeByName: (logicNodeName?: string) => LogicNode | undefined;
   newLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   mergeLogicNodeList: (newLogicNodeList: LogicNode[]) => void;
   clearLogicNodeList: () => void;
@@ -29,69 +37,86 @@ export const emptyLogicNode: LogicNode = {
   objType: 'LogicNode',
 };
 
-const LogicNodeContext = createContext<LogicNodeContextType | undefined>(undefined);
+const LogicNodeContext = createContext<LogicNodeContextType | undefined>(
+  undefined,
+);
 
 export function useLogicNodeContext() {
   const context = useContext(LogicNodeContext);
   if (!context) {
-    throw new Error('useLogicNodeContext must be used within a LogicNodeContextProvider');
+    throw new Error(
+      'useLogicNodeContext must be used within a LogicNodeContextProvider',
+    );
   }
   return context;
 }
 
-const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [logicNodes, setLogicNodes] = useState<LogicNode[]>(
-    JSON.parse(
-      JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name))),
-    ) as LogicNode[],
+export const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
+  const [logicNodes, setLogicNodes] = useState(
+    structuredClone(
+      appData.value.LogicNodeList.toSorted((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+    ),
   );
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
 
   effect(() => {
     if (
-      JSON.stringify(logicNodes) !==
-      JSON.stringify(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)))
+      JSON.stringify(logicNodes)
+      !== JSON.stringify(
+        appData.value.LogicNodeList.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      )
     ) {
-      setLogicNodes(appData.value.LogicNodeList.sort((a, b) => a.name.localeCompare(b.name)));
+      setLogicNodes(
+        appData.value.LogicNodeList.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      );
       return;
     }
     return;
   });
 
   const createLogicNode = (newLogicNode: LogicNode) => {
-    const updatedModel = updateModelAndReferences(newLogicNode, 'LogicNode');
-    updateAppData(updatedModel);
+    updateAppData(updateModelAndReferences(newLogicNode, 'LogicNode'));
   };
 
   const updateLogicNode = (updatedLogicNode: LogicNode) => {
-    const updatedModel = updateModelAndReferences(updatedLogicNode, 'LogicNode');
-    updateAppData(updatedModel);
+    updateAppData(updateModelAndReferences(updatedLogicNode, 'LogicNode'));
   };
 
-  const deleteLogicNode = (logicNodeId: string | undefined) => {
-    const nodeToDelete = logicNodeList.value.find((node) => node.id === logicNodeId);
-    const updatedLogicNodes = logicNodeList.value.filter((item) => item.id !== logicNodeId);
+  const deleteLogicNode = (logicNodeId?: string) => {
+    const nodeToDelete = logicNodeList.value.find(
+      node => node.id === logicNodeId,
+    );
+    const updatedLogicNodes = logicNodeList.value.filter(
+      item => item.id !== logicNodeId,
+    );
     if (nodeToDelete) {
-      updatedLogicNodes.forEach((node) => {
+      for (const node of updatedLogicNodes) {
         if (node.gateChildren.includes(nodeToDelete.name)) {
-          node.gateChildren = node.gateChildren.filter((name) => name !== nodeToDelete.name);
+          node.gateChildren = node.gateChildren.filter(
+            name => name !== nodeToDelete.name,
+          );
         }
-      });
+      }
 
-      //there is nothing referencing nodes except other nodes and the this takes care of that, so no need to call DeleteItemAndRefs
+      // there is nothing referencing nodes except other nodes and the this takes care of that, so no need to call DeleteItemAndRefs
     }
     updateAppData(
-      JSON.parse(
-        JSON.stringify({ ...appData.value, LogicNodeList: updatedLogicNodes }),
-      ) as EMRALD_Model,
+      structuredClone({ ...appData.value, LogicNodeList: updatedLogicNodes }),
     );
 
     setLogicNodes(logicNodeList.value);
   };
 
-  const getLogicNodeByName = (logicNodeName: string | undefined) => {
-    return logicNodeList.value.find((node) => node.name === logicNodeName);
-  };
+  const getLogicNodeByName = (logicNodeName?: string) =>
+    logicNodeList.value.find(node => node.name === logicNodeName);
 
   // Open New, Merge, and Clear Diagram List
   const newLogicNodeList = (newLogicNodeList: LogicNode[]) => {
@@ -124,5 +149,3 @@ const LogicNodeContextProvider: React.FC<EmraldContextWrapperProps> = ({ childre
     </LogicNodeContext.Provider>
   );
 };
-
-export default LogicNodeContextProvider;

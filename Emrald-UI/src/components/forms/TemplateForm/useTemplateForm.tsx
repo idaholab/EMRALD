@@ -1,19 +1,19 @@
-import { useState, useEffect } from 'react';
 import type {
-  EMRALD_Model,
   Action,
-  Event,
-  State,
   Diagram,
-  LogicNode,
-  Variable,
+  EMRALD_Model,
+  Event,
   ExtSim,
   Group,
+  LogicNode,
   MainItemType,
+  State,
+  Variable,
 } from '../../../types/EMRALD_Model';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useWindowContext } from '../../../contexts/WindowContext';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 import { updateSpecifiedModel } from '../../../utils/UpdateModel';
 
 interface TemplatedItem {
@@ -28,25 +28,29 @@ interface TemplatedItem {
   emraldItem: Action | Diagram | LogicNode | ExtSim | Event | State | Variable;
 }
 
-export const useTemplateForm = (templatedData: EMRALD_Model) => {
-  const { groups, temporaryTemplates, createTemplate, findGroupHierarchyByGroupName } =
-    useTemplateContext();
-  const [findValue, setFindValue] = useState<string>('');
-  const [replaceValue, setReplaceValue] = useState<string>('');
+export function useTemplateForm(templatedData: EMRALD_Model) {
+  const {
+    groups,
+    temporaryTemplates,
+    createTemplate,
+    findGroupHierarchyByGroupName,
+  } = useTemplateContext();
+  const [findValue, setFindValue] = useState('');
+  const [replaceValue, setReplaceValue] = useState('');
   const [templatedItems, setTemplatedItems] = useState<TemplatedItem[]>([]);
-  const [templateName, setTemplateName] = useState<string>('');
-  const [templateDesc, setTemplateDesc] = useState<string>('');
-  const [selectedGroup, setSelectedGroup] = useState<string>('');
+  const [templateName, setTemplateName] = useState('');
+  const [templateDesc, setTemplateDesc] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [showGroupDialog, setShowGroupDialog] = useState<boolean>(false);
-  const [groupType, setGroupType] = useState<string>('');
-  const [newGroupName, setNewGroupName] = useState<string>('');
+  const [showGroupDialog, setShowGroupDialog] = useState(false);
+  const [groupType, setGroupType] = useState('');
+  const [newGroupName, setNewGroupName] = useState('');
   const [currentGroup, setCurrentGroup] = useState<Group>();
-  const [duplicateNameError, setDuplicateNameError] = useState<boolean>(false);
-  const [groupList, setGroupList] = useState<Group[]>(groups);
+  const [duplicateNameError, setDuplicateNameError] = useState(false);
+  const [groupList, setGroupList] = useState(groups);
   const { handleClose } = useWindowContext();
   const [expanded, setExpanded] = useState(['Group 1']);
-  const [diagramStates, setDiagramStates] = useState<string[]>(
+  const [diagramStates, setDiagramStates] = useState(
     templatedData.DiagramList[0]?.states,
   );
 
@@ -55,7 +59,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   }, [templatedData]);
 
   /** Build out the templated items array **/
-  const convertModelToArray = (model: EMRALD_Model): TemplatedItem[] => {
+  const convertModelToArray = (model: EMRALD_Model) => {
     const items: TemplatedItem[] = [];
     for (const diagram of model.DiagramList) {
       items.push({
@@ -149,22 +153,33 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         emraldItem: variable,
       });
     }
-    return items.sort((a, b) => {
-      if (a.type === 'Diagram') return -1;
-      if (a.type === 'State' && b.type !== 'Diagram') return -1;
-      if (a.type === 'Event' && b.type !== 'Diagram' && b.type !== 'State') return -1;
-      if (a.type === 'Action' && b.type !== 'Diagram' && b.type !== 'State' && b.type !== 'Event')
+    return items.toSorted((a, b) => {
+      if (a.type === 'Diagram') {
         return -1;
+      }
+      if (a.type === 'State' && b.type !== 'Diagram') {
+        return -1;
+      }
+      if (a.type === 'Event' && b.type !== 'Diagram' && b.type !== 'State') {
+        return -1;
+      }
+      if (
+        a.type === 'Action'
+        && b.type !== 'Diagram'
+        && b.type !== 'State'
+        && b.type !== 'Event'
+      ) {
+        return -1;
+      }
       return 1;
     });
   };
 
-  const checkIfDiagramDirectState = (stateName: string) => {
-    return diagramStates.includes(stateName);
-  };
+  const checkIfDiagramDirectState = (stateName: string) =>
+    diagramStates?.includes(stateName);
 
   const addNewGroup = () => {
-    setGroupList((prevGroups) => {
+    setGroupList(prevGroups => {
       const newGroup: Group = {
         name: newGroupName,
         subgroup: [],
@@ -175,8 +190,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
       } else {
         prevGroups.push(newGroup);
       }
-      const updatedGroups = [...prevGroups];
-      localStorage.setItem('templateGroups', JSON.stringify(updatedGroups));
+      localStorage.setItem('templateGroups', JSON.stringify([...prevGroups]));
       return [...prevGroups];
     });
     setCurrentGroup(undefined);
@@ -185,9 +199,9 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   };
 
   const deleteGroup = () => {
-    setGroupList((prevGroups) => {
+    setGroupList(prevGroups => {
       const updatedGroups = prevGroups
-        .map((group) => deleteItem(group, currentGroup?.name ?? ''))
+        .map(group => deleteItem(group, currentGroup?.name ?? ''))
         .filter((group): group is Group => group !== null);
       localStorage.setItem('templateGroups', JSON.stringify(updatedGroups));
       return updatedGroups;
@@ -200,28 +214,28 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     if (item.name === name) {
       return null; // Return null to indicate this item should be deleted
     } else if (item.subgroup) {
-      const newChildren = item.subgroup
-        .map((child) => deleteItem(child, name))
-        .filter((child): child is Group => child !== null); // Type guard to filter out null values
       return {
         ...item,
-        subgroup: newChildren,
+        subgroup: item.subgroup
+          .map(child => deleteItem(child, name))
+          .filter((child): child is Group => child !== null), // Type guard to filter out null values,
       };
-    } else {
-      return item;
     }
+    return item;
   };
 
   // Function to check for duplicate name
   const checkDuplicateName = (name: string) => {
     const trimmedName = name.trim();
-    if (trimmedName && groupList.some((group) => group.name.trim() === trimmedName)) {
+    if (
+      trimmedName
+      && groupList.some(group => group.name.trim() === trimmedName)
+    ) {
       setDuplicateNameError(true);
       return true;
-    } else {
-      setDuplicateNameError(false);
-      return false;
     }
+    setDuplicateNameError(false);
+    return false;
   };
 
   const handleNewGroupNameChange = (name: string) => {
@@ -248,17 +262,17 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   };
 
   const toggleExpand = (id: string) => {
-    setExpanded((prevExpanded) => {
-      const isExpanded = prevExpanded.includes(id);
-      if (isExpanded) {
-        return prevExpanded.filter((item) => item !== id);
-      } else {
-        return [...prevExpanded, id];
-      }
-    });
+    setExpanded(prevExpanded =>
+      prevExpanded.includes(id)
+        ? prevExpanded.filter(item => item !== id)
+        : [...prevExpanded, id],
+    );
   };
 
-  const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>, group: Group) => {
+  const handleContextMenu = (
+    event: React.MouseEvent<HTMLDivElement>,
+    group: Group,
+  ) => {
     event.preventDefault();
     setCurrentGroup(group);
     setAnchorEl(event.currentTarget);
@@ -282,26 +296,33 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   };
 
   const lockAll = () => {
-    const updatedItems = templatedItems.map((item) => ({ ...item, locked: true }));
-    setTemplatedItems(updatedItems);
+    setTemplatedItems(
+      templatedItems.map(item => ({
+        ...item,
+        locked: true,
+      })),
+    );
   };
 
   const unlockAll = () => {
-    const updatedItems = templatedItems.map((item) => ({ ...item, locked: false }));
-    setTemplatedItems(updatedItems);
+    setTemplatedItems(
+      templatedItems.map(item => ({
+        ...item,
+        locked: false,
+      })),
+    );
   };
 
   const updateAllUnlocked = (action: string) => {
-    const updatedItems = templatedItems.map((item) => {
-      if (!item.locked) {
-        if (item.type === 'State' && templatedData.DiagramList.length > 0) {
-          return { ...item, action: 'rename' };
-        }
-        return { ...item, action: action };
-      }
-      return item;
-    });
-    setTemplatedItems(updatedItems);
+    setTemplatedItems(
+      templatedItems.map(item =>
+        item.locked
+          ? item
+          : item.type === 'State' && templatedData.DiagramList.length > 0
+            ? { ...item, action: 'rename' }
+            : { ...item, action },
+      ),
+    );
   };
 
   const handleActionChange = (index: number, action: string) => {
@@ -326,13 +347,16 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
   };
 
   const handleApply = () => {
-    setTemplatedItems((prevItems) => {
-      const updatedItems = prevItems.map((item) => {
+    setTemplatedItems(prevItems => {
+      const updatedItems = prevItems.map(item => {
         if (item.newName.includes(findValue) && !item.locked) {
-          const newName = item.newName.replace(new RegExp(findValue, 'g'), replaceValue);
+          const newName = item.newName.replace(
+            new RegExp(findValue, 'g'),
+            replaceValue,
+          );
           return {
             ...item,
-            newName: newName,
+            newName,
           };
         }
         return item;
@@ -343,34 +367,46 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
 
   const removeExcludedItems = () => {
     templatedData.DiagramList = templatedData.DiagramList.filter(
-      (d) =>
-        !templatedItems.find((ti) => ti.type === 'Diagram' && ti.exclude && d.name === ti.newName),
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'Diagram' && ti.exclude && d.name === ti.newName,
+        ),
     );
     templatedData.LogicNodeList = templatedData.LogicNodeList.filter(
-      (d) =>
-        !templatedItems.find(
-          (ti) => ti.type === 'LogicNode' && ti.exclude && d.name === ti.newName,
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'LogicNode' && ti.exclude && d.name === ti.newName,
         ),
     );
     templatedData.ActionList = templatedData.ActionList.filter(
-      (d) =>
-        !templatedItems.find((ti) => ti.type === 'Action' && ti.exclude && d.name === ti.newName),
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'Action' && ti.exclude && d.name === ti.newName,
+        ),
     );
     templatedData.ExtSimList = templatedData.ExtSimList.filter(
-      (d) =>
-        !templatedItems.find((ti) => ti.type === 'ExtSim' && ti.exclude && d.name === ti.newName),
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'ExtSim' && ti.exclude && d.name === ti.newName,
+        ),
     );
     templatedData.EventList = templatedData.EventList.filter(
-      (d) =>
-        !templatedItems.find((ti) => ti.type === 'Event' && ti.exclude && d.name === ti.newName),
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'Event' && ti.exclude && d.name === ti.newName,
+        ),
     );
     templatedData.StateList = templatedData.StateList.filter(
-      (d) =>
-        !templatedItems.find((ti) => ti.type === 'State' && ti.exclude && d.name === ti.newName),
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'State' && ti.exclude && d.name === ti.newName,
+        ),
     );
     templatedData.VariableList = templatedData.VariableList.filter(
-      (d) =>
-        !templatedItems.find((ti) => ti.type === 'Variable' && ti.exclude && d.name === ti.newName),
+      d =>
+        !templatedItems.some(
+          ti => ti.type === 'Variable' && ti.exclude && d.name === ti.newName,
+        ),
     );
   };
 
@@ -382,8 +418,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     removeExcludedItems(); // Remove excluded items before building the template
 
     // Go through all of the renamed items and update the pasted model
-    for (let i = 0; i < templatedItems.length; i++) {
-      const item = templatedItems[i];
+    for (const [i, item] of templatedItems.entries()) {
       if (!item.exclude) {
         const itemCopy = structuredClone(item.emraldItem);
         if (item.action === 'rename') {
@@ -391,7 +426,7 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
         }
         updateSpecifiedModel(itemCopy, item.type, templatedData, false);
         const updatedItems = convertModelToArray(templatedData);
-        item.emraldItem = updatedItems[i].emraldItem;
+        item.emraldItem = updatedItems[i]?.emraldItem;
         item.emraldItem.id = uuidv4();
       }
     }
@@ -450,4 +485,4 @@ export const useTemplateForm = (templatedData: EMRALD_Model) => {
     handleNewGroupNameChange,
     checkDuplicateName,
   };
-};
+}

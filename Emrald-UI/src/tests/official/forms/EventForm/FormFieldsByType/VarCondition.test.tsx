@@ -22,7 +22,7 @@ describe('VarCondition Events', () => {
           mainItem: true,
           evType: 'etVarCond',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 

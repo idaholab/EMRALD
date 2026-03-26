@@ -1,3 +1,16 @@
+import type {
+  Action,
+  Diagram,
+  EMRALD_Model,
+  Event,
+  ExtSim,
+  LogicNode,
+  MainItemType,
+  State,
+  Variable,
+} from '../../../../types/EMRALD_Model';
+import type { ModelItem } from '../../../../types/ModelUtils';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Button,
   IconButton,
@@ -6,37 +19,23 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { type ReactNode, useState } from 'react';
+import { useState } from 'react';
+import { useAlertContext } from '../../../../contexts/AlertContext';
+import { useWindowContext } from '../../../../contexts/WindowContext';
 import { appData } from '../../../../hooks/useAppData';
-import SearchIcon from '@mui/icons-material/Search';
 import {
   allMainItemTypes,
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '../../../../utils/ModelReferences';
-import ItemTypeMenuResults from './ItemTypeMenuResults';
-import type {
-  EMRALD_Model,
-  Diagram,
-  State,
-  Action,
-  Event,
-  ExtSim,
-  CompChildItems,
-  LogicNode,
-  Variable,
-  MainItemType,
-} from '../../../../types/EMRALD_Model';
-import { useWindowContext } from '../../../../contexts/WindowContext';
 import SearchResultForm from '../../../forms/SearchResultForm/SearchResultForm';
-import { useAlertContext } from '../../../../contexts/AlertContext';
-import type { ModelItem } from '../../../../types/ModelUtils';
+import { ItemTypeMenuResults } from './ItemTypeMenuResults';
 
-const SearchField = () => {
+export const SearchField: React.FC = () => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
-  const [value, setValue] = useState<string>('');
-  
+  const [value, setValue] = useState('');
+
   const { addWindow } = useWindowContext();
 
   const onSubmit = () => {
@@ -60,25 +59,27 @@ const SearchField = () => {
 
   const getItemList = <T extends ModelItem>(list: T[]) => {
     const items: T[] = [];
-    list.forEach((item) => {
+    for (const item of list) {
       let desc = '';
       if (item.objType !== 'ExtSim') {
         desc = item.desc?.toLowerCase() ?? '';
       }
       if (
-        item.name.toLowerCase().includes(value.toLowerCase()) ||
-        desc.includes(value.toLowerCase())
+        item.name.toLowerCase().includes(value.toLowerCase())
+        || desc.includes(value.toLowerCase())
       ) {
         items.push(structuredClone(item));
       }
       if (item.objType === 'LogicNode') {
-        item.compChildren.forEach((compItem: CompChildItems) => {
-          if (compItem.diagramName.toLowerCase().includes(value.toLowerCase())) {
+        for (const compItem of item.compChildren) {
+          if (
+            compItem.diagramName.toLowerCase().includes(value.toLowerCase())
+          ) {
             items.push(structuredClone(item));
           }
-        });
+        }
       }
-    });
+    }
     return items;
   };
 
@@ -91,7 +92,7 @@ const SearchField = () => {
   const getModel = (
     item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
     buttonDirection: string,
-  ): ReactNode => {
+  ) => {
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
     const [nestedModel, setNestedModel] = useState<EMRALD_Model>();
     const { showAlert } = useAlertContext();
@@ -105,17 +106,20 @@ const SearchField = () => {
       }
       let tempModel: EMRALD_Model;
       try {
-        if (buttonDirection === 'Used By') {
-          tempModel = GetModelItemsReferencing(item.name, item.objType as MainItemType, 1);
-        } else {
-          tempModel = GetModelItemsReferencedBy(
-            item.name,
-            item.objType as MainItemType,
-            1,
-            allMainItemTypes,
-            false,
-          );
-        }
+        tempModel
+          = buttonDirection === 'Used By'
+            ? GetModelItemsReferencing(
+                item.name,
+                item.objType as MainItemType,
+                1,
+              )
+            : GetModelItemsReferencedBy(
+                item.name,
+                item.objType as MainItemType,
+                1,
+                allMainItemTypes,
+                false,
+              );
         tempModel = filterItemFromModel(tempModel, item);
         setNestedModel(tempModel);
         setExpandedItem(item.id ?? null);
@@ -127,45 +131,63 @@ const SearchField = () => {
     const filterItemFromModel = (
       model: EMRALD_Model,
       item: Diagram | State | Action | Event | ExtSim | LogicNode | Variable,
-    ): EMRALD_Model => {
+    ) => {
       switch (item.objType) {
-        case 'Diagram':
+        case 'Diagram': {
           return {
             ...model,
-            DiagramList: model.DiagramList.filter((diagram) => diagram.id !== item.id),
+            DiagramList: model.DiagramList.filter(
+              diagram => diagram.id !== item.id,
+            ),
           };
-        case 'State':
+        }
+        case 'State': {
           return {
             ...model,
-            StateList: model.StateList.filter((state) => state.id !== item.id),
+            StateList: model.StateList.filter(state => state.id !== item.id),
           };
-        case 'Action':
+        }
+        case 'Action': {
           return {
             ...model,
-            ActionList: model.ActionList.filter((action) => action.id !== item.id),
+            ActionList: model.ActionList.filter(
+              action => action.id !== item.id,
+            ),
           };
-        case 'Event':
+        }
+        case 'Event': {
           return {
             ...model,
-            EventList: model.EventList.filter((event) => event.id !== item.id),
+            EventList: model.EventList.filter(event => event.id !== item.id),
           };
-        case 'ExtSim':
+        }
+        case 'ExtSim': {
           return {
             ...model,
-            ExtSimList: model.ExtSimList.filter((extSim) => extSim.id !== item.id),
+            ExtSimList: model.ExtSimList.filter(
+              extSim => extSim.id !== item.id,
+            ),
           };
-        case 'LogicNode':
+        }
+        case 'LogicNode': {
           return {
             ...model,
-            LogicNodeList: model.LogicNodeList.filter((logicNode) => logicNode.id !== item.id),
+            LogicNodeList: model.LogicNodeList.filter(
+              logicNode => logicNode.id !== item.id,
+            ),
           };
-        case 'Variable':
+        }
+        case 'Variable': {
           return {
             ...model,
-            VariableList: model.VariableList.filter((variable) => variable.id !== item.id),
+            VariableList: model.VariableList.filter(
+              variable => variable.id !== item.id,
+            ),
           };
-        default:
+        }
+        default: {
           return model;
+        }
       }
     };
 
@@ -177,7 +199,9 @@ const SearchField = () => {
           }}
           variant="contained"
         >
-          {expandedItem === item.id ? `Collapse ${buttonDirection}` : `Expand ${buttonDirection}`}
+          {expandedItem === item.id
+            ? `Collapse ${buttonDirection}`
+            : `Expand ${buttonDirection}`}
         </Button>
         {expandedItem === item.id && nestedModel && (
           <ItemTypeMenuResults model={nestedModel} getModel={getModel} />
@@ -196,7 +220,7 @@ const SearchField = () => {
       variant="outlined"
       label="Search"
       value={value}
-      onChange={(e) => {
+      onChange={e => {
         setValue(e.target.value);
       }}
       size="small"
@@ -220,5 +244,3 @@ const SearchField = () => {
     />
   );
 };
-
-export default SearchField;

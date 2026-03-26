@@ -1,3 +1,11 @@
+import type { EMRALD_Model } from '../types/EMRALD_Model';
+import type { ModelItem } from '../types/ModelUtils';
+import ImportForm from '../components/forms/ImportForm/ImportForm';
+import {
+  CompareModels,
+  type ModelDifference,
+  type ModelValue,
+} from '../components/layout/CompareModels';
 import { useActionContext } from '../contexts/ActionContext';
 import { useDiagramContext } from '../contexts/DiagramContext';
 import { useEventContext } from '../contexts/EventContext';
@@ -8,14 +16,9 @@ import { useStateContext } from '../contexts/StateContext';
 import { useTemplateContext } from '../contexts/TemplateContext';
 import { useVariableContext } from '../contexts/VariableContext';
 import { useWindowContext } from '../contexts/WindowContext';
-import type { EMRALD_Model } from '../types/EMRALD_Model';
-import { updateAppData, appData } from './useAppData';
-import ImportForm from '../components/forms/ImportForm/ImportForm';
-import { CompareModels, type ModelDifference } from '../components/layout/CompareModels';
-import type { ModelItem } from '../types/ModelUtils';
+import { appData, updateAppData } from './useAppData';
 
 export function useAssembledData() {
-  // const { updateAppData } = useAppData();
   const {
     id,
     name,
@@ -28,13 +31,16 @@ export function useAssembledData() {
     updateVersion,
   } = useModelDetailsContext();
   const { diagrams, clearDiagramList, newDiagramList } = useDiagramContext();
-  const { logicNodes, clearLogicNodeList, newLogicNodeList } = useLogicNodeContext();
+  const { logicNodes, clearLogicNodeList, newLogicNodeList }
+    = useLogicNodeContext();
   const { actions, clearActionList, newActionList } = useActionContext();
   const { events, clearEventList, newEventList } = useEventContext();
   const { states, clearStateList, newStateList } = useStateContext();
-  const { variables, clearVariableList, newVariableList } = useVariableContext();
+  const { variables, clearVariableList, newVariableList }
+    = useVariableContext();
   const { newExtSimList, clearExtSimList } = useExtSimContext();
-  const { newTemplateList, clearTemplateList, mergeTemplateToList } = useTemplateContext();
+  const { newTemplateList, clearTemplateList, mergeTemplateToList }
+    = useTemplateContext();
   const { addWindow, closeAllWindows } = useWindowContext();
   // ... get data from other contexts
 
@@ -85,14 +91,14 @@ export function useAssembledData() {
   const mergeNewData = (newModel: EMRALD_Model) => {
     // Merge templates if there are any in the new model.
     if (newModel.templates && newModel.templates.length > 0) {
-      newModel.templates.forEach((template) => {
+      for (const template of newModel.templates) {
         mergeTemplateToList(template);
-      });
+      }
     }
 
     // Open import window to make sure conflicts are resolved before merging.
     addWindow(
-      `Merge Model: ${newModel.name}`,
+      `Merge Model: ${newModel.name ?? ''}`,
       <ImportForm importedData={newModel} fromTemplate={true} />,
       {
         x: 75,
@@ -106,71 +112,106 @@ export function useAssembledData() {
 
   const compareData = (newModel: EMRALD_Model) => {
     const differences: ModelDifference[] = [];
-    const excludedKeys = ['id'];
-    const formatKeyName = (key: string) => key[0].toUpperCase() + key.substring(1);
+    const excludedKeys = new Set(['id']);
+    const formatKeyName = (key: string) =>
+      (key[0]?.toUpperCase() ?? '') + key.slice(1);
     /**
      * Recursively checks each property of the objects for equality.
-     * Makes the major assumption that the type associated with a given key is the same for both objects.
      * @param base - The base object to compare against.
      * @param compare - The object to compare to.
      */
-    const checkObjDiff = (base: Record<string, any>, compare: Record<string, any>, path: string) => {
-      const baseKeys = Object.keys(base);
-      Object.keys(compare).forEach((key) => {
-        if (Object.prototype.hasOwnProperty.call(base, key)) {
-          if (Array.isArray(compare[key]) && Array.isArray(base[key])) {
-            if (typeof compare[key][0] === 'object') {
-              for (let i = 0; i < compare[key].length; i += 1) {
-                checkObjDiff(base[key][i], compare[key][i], `${path} ${formatKeyName(key)}[${i.toString()}]`);
-              }
-            } else if (compare[key].sort().join('') !== base[key].sort().join('')) {
-              differences.push({
-                key: `${path} ${formatKeyName(key)}`,
-                oldValue: base[key].join(', '),
-                newValue: compare[key].join(', '),
-              });
-            }
-          } else if (typeof compare[key] === 'object') {
-            checkObjDiff(base[key], compare[key], `${path} ${formatKeyName(key)}`);
-          } else if (compare[key] !== base[key]) {
-            differences.push({
-              key: `${path} ${formatKeyName(key)}`,
-              oldValue: base[key],
-              newValue: compare[key],
-            });
-          }
-          baseKeys.splice(baseKeys.indexOf(key), 1);
-        } else if (!excludedKeys.includes(key)) {
+    const checkObjDiff = (
+      base: ModelValue | undefined,
+      compare: ModelValue | undefined,
+      path: string,
+    ) => {
+      if (base === undefined || compare === undefined) {
+        if (!(base === undefined && compare === undefined)) {
           differences.push({
-            key: `${path} ${formatKeyName(key)}`,
-            oldValue: 'Does not exist',
-            newValue: compare[key],
+            key: path,
+            oldValue: base === undefined ? 'Does not exist' : 'Exists',
+            newValue: compare === undefined ? 'Does not exist' : 'Exists',
           });
         }
-      });
+        return;
+      }
+      if (typeof base !== typeof compare) {
+        differences.push({
+          key: path,
+          oldValue: `Type: ${typeof base}`,
+          newValue: `Type: ${typeof compare}`,
+        });
+        return;
+      }
+      if (Array.isArray(base) && Array.isArray(compare)) {
+        for (const [i, element] of base.entries()) {
+          checkObjDiff(element, compare[i], `${path}[${i.toString()}]`);
+        }
+        // The array.isarray checks on this if are redundant, but TypeScript gets confused without them
+      } else if (
+        typeof base === 'object'
+        && typeof compare === 'object'
+        && !Array.isArray(base)
+        && !Array.isArray(compare)
+      ) {
+        for (const key in compare) {
+          if (base[key] && compare[key]) {
+            checkObjDiff(
+              base[key],
+              compare[key],
+              `${path} ${formatKeyName(key)}`,
+            );
+          } else if (!excludedKeys.has(key)) {
+            differences.push({
+              key: `${path} ${formatKeyName(key)}`,
+              oldValue: base[key] === undefined ? 'Does not exist' : 'Exists',
+              newValue:
+                compare[key] === undefined ? 'Does not exist' : 'Exists',
+            });
+          }
+        }
+        // Again, the redundant checks are just to help TypeScript understand
+      } else if (
+        typeof base !== 'object'
+        && typeof compare !== 'object'
+        && !Array.isArray(base)
+        && !Array.isArray(compare)
+        && base !== compare
+      ) {
+        differences.push({
+          key: path,
+          oldValue: base,
+          newValue: compare,
+        });
+      }
     };
     const processItemList = (base: ModelItem[], compare: ModelItem[]) => {
-      const baseNames = base.map((item) => item.name);
-      compare.forEach((item) => {
-        const baseItem = base.find((i) => i.name === item.name);
+      const baseNames = base.map(item => item.name);
+      for (const item of compare) {
+        const baseItem = base.find(i => i.name === item.name);
         if (baseItem) {
-          checkObjDiff(baseItem, item, item.name);
+          // Force ModelItems to be represented as a Record<string, ...>
+          checkObjDiff(
+            baseItem as unknown as ModelValue,
+            item as unknown as ModelValue,
+            item.name,
+          );
           baseNames.splice(baseNames.indexOf(item.name), 1);
         } else {
           differences.push({
             key: item.objType,
             newValue: item.name,
-            oldValue: 'Does not exist'
+            oldValue: 'Does not exist',
           });
         }
-      });
-      baseNames.forEach((name) => {
+      }
+      for (const name of baseNames) {
         differences.push({
-          key: base[0].objType,
+          key: base[0]?.objType ?? '',
           newValue: 'Does not exist',
           oldValue: name,
         });
-      });
+      }
     };
     if (newModel.emraldVersion !== appData.value.emraldVersion) {
       differences.push({
@@ -209,7 +250,7 @@ export function useAssembledData() {
     processItemList(appData.value.ExtSimList, newModel.ExtSimList);
     // Ignoring versionHistory and templates differences for now
     addWindow(
-      `Compare Model: ${newModel.name}`,
+      `Compare Model: ${newModel.name ?? ''}`,
       <CompareModels differences={differences} />,
       {
         x: 75,
@@ -223,7 +264,7 @@ export function useAssembledData() {
 
   const assembleData = () => {
     if (version) {
-      updateVersion(parseFloat((version + 0.1).toFixed(1)));
+      updateVersion(Number.parseFloat((version + 0.1).toFixed(1)));
     }
 
     return {

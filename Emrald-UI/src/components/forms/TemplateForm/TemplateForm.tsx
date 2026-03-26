@@ -1,4 +1,3 @@
-import React from 'react';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import {
   Box,
@@ -20,17 +19,18 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { FaLock, FaLockOpen } from 'react-icons/fa6';
 import { DialogComponent, TextFieldComponent } from '../../common';
-import { FaLock } from 'react-icons/fa6';
-import { FaLockOpen } from 'react-icons/fa6';
-import { useTemplateForm } from './useTemplateForm';
 import { GroupListItems } from '../../common/GroupListItems';
+import { useTemplateForm } from './useTemplateForm';
 
 interface TemplateDiagramFormProps {
   templatedData: EMRALD_Model;
 }
 
-const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => {
+export const TemplateForm: React.FC<TemplateDiagramFormProps> = ({
+  templatedData,
+}) => {
   const {
     findValue,
     replaceValue,
@@ -76,17 +76,30 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
   return (
     <Box mx={3} pb={3}>
       <Box mt={2}>
-        <Typography variant="h5" fontWeight={'bold'}>
+        <Typography variant="h5" fontWeight="bold">
           Create a Template
         </Typography>
 
-        <TextFieldComponent label="Name" value={templateName} setValue={setTemplateName} />
-        <TextFieldComponent label="Description" value={templateDesc} setValue={setTemplateDesc} />
-        <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} mt={3}>
+        <TextFieldComponent
+          label="Name"
+          value={templateName}
+          setValue={setTemplateName}
+        />
+        <TextFieldComponent
+          label="Description"
+          value={templateDesc}
+          setValue={setTemplateDesc}
+        />
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mt={3}
+        >
           <Typography variant="subtitle1">
             {groupList.length > 0 ? (
               <span>
-                Assign this template to group:{' '}
+                Assign this template to group:&nbsp;
                 <span style={{ fontWeight: 'bold' }}>{selectedGroup}</span>
               </span>
             ) : (
@@ -112,8 +125,13 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         </Box>
       </Box>
       <Divider sx={{ mt: 3 }} />
-      <Box display={'flex'} alignItems={'center'}>
-        <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
+      <Box display="flex" alignItems="center">
+        <TextFieldComponent
+          label="Find"
+          value={findValue}
+          setValue={setFindValue}
+          sx={{ mr: 4 }}
+        />
         <TextFieldComponent
           label="Replace With"
           value={replaceValue}
@@ -127,7 +145,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         </Box>
       </Box>
 
-      <Box display={'flex'} alignItems={'center'}>
+      <Box display="flex" alignItems="center">
         <Box mt={2} mr={3}>
           <Button startIcon={<FaLock />} variant="contained" onClick={lockAll}>
             Lock All
@@ -145,7 +163,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         </Box>
       </Box>
 
-      <Box display={'flex'} alignItems={'center'}>
+      <Box display="flex" alignItems="center">
         <Box mt={2} mr={2}>
           <Button
             color="secondary"
@@ -170,7 +188,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
         </Box>
       </Box>
 
-      <Box mt={3} maxHeight={'400px'} overflow={'auto'}>
+      <Box mt={3} maxHeight="400px" overflow="auto">
         <Table sx={{ minWidth: 650 }} size="small" stickyHeader>
           <TableHead>
             <TableRow>
@@ -254,7 +272,7 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                       row
                       name="row-radio-buttons-group"
                       value={row.action}
-                      onChange={(e) => {
+                      onChange={e => {
                         handleActionChange(index, e.target.value);
                       }}
                     >
@@ -263,9 +281,10 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                         control={
                           <Radio
                             disabled={
-                              row.locked ||
-                              row.exclude ||
-                              (row.type === 'State' && templatedData.DiagramList.length > 0)
+                              row.locked
+                              || row.exclude
+                              || (row.type === 'State'
+                                && templatedData.DiagramList.length > 0)
                             }
                           />
                         }
@@ -282,28 +301,31 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                 <TableCell align="left">
                   <TextField
                     value={row.action === 'rename' ? row.newName : ''}
-                    disabled={row.locked || row.action !== 'rename' || row.exclude}
-                    onChange={(e) => {
+                    disabled={
+                      row.locked || row.action !== 'rename' || row.exclude
+                    }
+                    onChange={e => {
                       handleNewNameChange(index, e.target.value);
                     }}
                     size="small"
                   />
                 </TableCell>
                 <TableCell align="center">
-                  {row.type !== 'Diagram' ? (
+                  {row.type === 'Diagram' ? (
+                    <></>
+                  ) : (
                     <Checkbox
                       checked={row.exclude}
                       disabled={
-                        row.required ||
-                        (row.displayType === 'State' && checkIfDiagramDirectState(row.oldName)) ||
-                        row.displayType === 'Diagram'
+                        row.required
+                        || (row.displayType === 'State'
+                          && checkIfDiagramDirectState(row.oldName))
+                        || row.displayType === 'Diagram'
                       }
-                      onChange={(e) => {
+                      onChange={e => {
                         handleExcludeChange(index, e.target.checked);
                       }}
                     />
-                  ) : (
-                    <></>
                   )}
                 </TableCell>
                 <TableCell align="center">
@@ -326,9 +348,13 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
                     }}
                   >
                     <Checkbox
-                      disabled={row.exclude || row.type === 'State' || row.type === 'Diagram'}
+                      disabled={
+                        row.exclude
+                        || row.type === 'State'
+                        || row.type === 'Diagram'
+                      }
                       checked={row.required}
-                      onChange={(e) => {
+                      onChange={e => {
                         handleRequiredChange(index, e.target.checked);
                       }}
                     />
@@ -339,8 +365,13 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
           </TableBody>
         </Table>
       </Box>
-      <Box mt={3} textAlign={'right'}>
-        <Button variant="contained" sx={{ mr: 2 }} disabled={!templateName} onClick={handleSave}>
+      <Box mt={3} textAlign="right">
+        <Button
+          variant="contained"
+          sx={{ mr: 2 }}
+          disabled={!templateName}
+          onClick={handleSave}
+        >
           Save Changes
         </Button>
         <Button
@@ -353,7 +384,11 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
           Cancel
         </Button>
       </Box>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
         <MenuItem
           onClick={() => {
             handleShowGroupDialog('sub');
@@ -384,7 +419,9 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
           submitText={groupType === 'delete' ? 'Delete' : 'Save'}
           disabled={duplicateNameError}
           onSubmit={() => {
-            groupType === 'sub' || groupType === 'main' ? addNewGroup() : deleteGroup();
+            groupType === 'sub' || groupType === 'main'
+              ? addNewGroup()
+              : deleteGroup();
           }}
           onClose={() => {
             setShowGroupDialog(false);
@@ -397,17 +434,22 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
               label="New Group Name"
               size="small"
               value={newGroupName}
-              onChange={(e) => {
+              onChange={e => {
                 handleNewGroupNameChange(e.target.value);
               }}
               sx={{ width: 500, mt: 2 }}
               error={duplicateNameError}
-              helperText={duplicateNameError ? 'A group with this name already exists' : ''}
+              helperText={
+                duplicateNameError
+                  ? 'A group with this name already exists'
+                  : ''
+              }
             />
           ) : (
             <Typography>
-              Are you sure you want to delete the group <b>{currentGroup?.name}</b>? All items under
-              this group will be deleted also.
+              Are you sure you want to delete the group&nbsp;
+              <b>{currentGroup?.name}</b>
+              ? All items under this group will be deleted also.
             </Typography>
           )}
         </DialogComponent>
@@ -415,5 +457,3 @@ const TemplateForm: React.FC<TemplateDiagramFormProps> = ({ templatedData }) => 
     </Box>
   );
 };
-
-export default TemplateForm;

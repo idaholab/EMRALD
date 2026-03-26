@@ -607,11 +607,9 @@ function peg$parse(input: string, options?: ParserOptions) {
     if (element.comments) {
       if (Array.isArray(element.comments)) {
         comments[0] = comments[0].concat(
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           element.comments[0]?.filter(c => c != null) ?? [],
         );
         comments[1] = comments[1].concat(
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           element.comments[1]?.filter(c => c != null) ?? [],
         );
       } else {

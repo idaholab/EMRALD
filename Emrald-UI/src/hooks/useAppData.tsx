@@ -1,24 +1,15 @@
-import emraldData from '../emraldData.json';
-import { upgradeModel } from '../utils/Upgrades/upgrade';
-import { signal } from '@preact/signals-react';
 import type { EMRALD_Model } from '../types/EMRALD_Model';
+import { signal } from '@preact/signals-react';
+import emraldData from '../emraldData.json';
 import { CreateEmptyEMRALDModel } from '../types/ModelUtils';
+import { upgradeModel } from '../utils/Upgrades/upgrade';
 
 const storedData = sessionStorage.getItem('appData');
 
-export const appData = signal<EMRALD_Model>(CreateEmptyEMRALDModel());
+export const appData = signal(CreateEmptyEMRALDModel());
 
 // Try to parse & upgrade the stored model
-if (storedData !== null) {
-  const upgraded = upgradeModel(storedData);
-  if (upgraded === null) {
-    // The user has a model in their local storage, but it failed to upgrade
-    // TODO: This needs an actual notification in the UI
-    console.error('Could not upgrade local model');
-  } else {
-    appData.value = upgraded;
-  }
-} else {
+if (storedData === null) {
   // Load & upgrades the default model
   const upgraded = upgradeModel(JSON.stringify(emraldData));
   if (upgraded) {
@@ -28,11 +19,22 @@ if (storedData !== null) {
     // TODO: This needs an actual notification in the UI
     console.error('Could not upgrade default model!');
   }
-} 
+} else {
+  const upgraded = upgradeModel(storedData);
+  if (upgraded === null) {
+    // The user has a model in their local storage, but it failed to upgrade
+    // TODO: This needs an actual notification in the UI
+    console.error('Could not upgrade local model');
+  } else {
+    appData.value = upgraded;
+  }
+}
 
-export const updateAppData = (newData: EMRALD_Model, undoData?: EMRALD_Model) => {
+export function updateAppData(newData: EMRALD_Model, undoData?: EMRALD_Model) {
   let updatedData;
-  const dataHistory = JSON.parse(sessionStorage.getItem('dataHistory') ?? '[]') as EMRALD_Model[];
+  const dataHistory = JSON.parse(
+    sessionStorage.getItem('dataHistory') ?? '[]',
+  ) as EMRALD_Model[];
 
   if (undoData) {
     updatedData = undoData;
@@ -50,9 +52,9 @@ export const updateAppData = (newData: EMRALD_Model, undoData?: EMRALD_Model) =>
 
   appData.value = updatedData;
   sessionStorage.setItem('appData', JSON.stringify(updatedData));
-};
+}
 
-export const clearCacheData = () => {
+export function clearCacheData() {
   sessionStorage.clear();
   localStorage.clear();
-};
+}

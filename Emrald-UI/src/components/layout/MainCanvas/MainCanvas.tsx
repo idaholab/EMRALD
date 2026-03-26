@@ -1,4 +1,10 @@
-import { Box, SpeedDial, SpeedDialAction, SpeedDialIcon, SvgIcon } from '@mui/material';
+import {
+  Box,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  SvgIcon,
+} from '@mui/material';
 import { useState } from 'react';
 import { GiFamilyTree } from 'react-icons/gi';
 import { GrPerformance } from 'react-icons/gr';
@@ -19,7 +25,7 @@ import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFo
 import MinimizedWindows from '../Window/MinimizedWindows';
 import WindowComponent from '../Window/Window';
 
-const MainCanvas: React.FC = () => {
+export const MainCanvas: React.FC = () => {
   const actions = [
     {
       icon: (
@@ -133,7 +139,7 @@ const MainCanvas: React.FC = () => {
       >
         <MinimizedWindows />
 
-        {/* Figure this out later */}
+        {/* TODO Figure this out later */}
         {/* {storedHistory && storedHistory.length > 1 ? (
           <Fab color="secondary" aria-label="add" onClick={() => undoChange()}>
             <UndoIcon />
@@ -148,7 +154,7 @@ const MainCanvas: React.FC = () => {
           open={open}
           direction="down"
         >
-          {actions.map((action) => (
+          {actions.map(action => (
             <SpeedDialAction
               key={action.name}
               icon={action.icon}
@@ -166,5 +172,3 @@ const MainCanvas: React.FC = () => {
     </Box>
   );
 };
-
-export default MainCanvas;

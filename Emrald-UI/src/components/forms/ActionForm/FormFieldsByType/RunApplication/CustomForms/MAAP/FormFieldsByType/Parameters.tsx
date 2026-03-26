@@ -1,20 +1,20 @@
 import {
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TextField,
   Autocomplete,
   InputAdornment,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { FaLink } from 'react-icons/fa6';
 import { appData } from '../../../../../../../../hooks/useAppData';
 import { useActionFormContext } from '../../../../../ActionFormContext';
 import { MAAPToString } from '../Parser/maap-to-string';
-import { FaLink } from 'react-icons/fa6';
 
-const Parameters = () => {
+export const Parameters: React.FC = () => {
   const { formData, setFormData } = useActionFormContext();
 
   const variables = appData.value.VariableList.map(({ name }) => name);
@@ -26,13 +26,15 @@ const Parameters = () => {
     const v: boolean[] = [];
     const s: string[] = [];
     const l: string[] = [];
-    formData?.parameters?.forEach((parameter, i) => {
-      v[i] = parameter.value.useVariable === true;
-      l[i] = new MAAPToString().expressionToString(parameter.value);
-      if (v[i] && parameter.value.type === 'identifier') {
-        s[i] = parameter.value.value;
+    if (formData?.parameters) {
+      for (const [i, parameter] of formData.parameters.entries()) {
+        v[i] = parameter.value.useVariable === true;
+        l[i] = new MAAPToString().expressionToString(parameter.value);
+        if (v[i] && parameter.value.type === 'identifier') {
+          s[i] = parameter.value.value;
+        }
       }
-    });
+    }
     setUseVariable(v);
   }, [formData?.parameters]);
 
@@ -58,7 +60,10 @@ const Parameters = () => {
       </TableHead>
       <TableBody>
         {formData?.parameters?.map((row, idx) => (
-          <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+          <TableRow
+            key={idx}
+            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+          >
             <TableCell component="th" scope="row">
               {row.target.type === 'call_expression'
                 ? new MAAPToString().callExpressionToString(row.target)
@@ -79,12 +84,12 @@ const Parameters = () => {
                     value: newValue ?? '',
                     useVariable: true,
                   };
-                  setUseVariable((old) => {
+                  setUseVariable(old => {
                     old[idx] = true;
                     return old;
                   });
                 }}
-                renderInput={(params) => (
+                renderInput={params => (
                   <TextField
                     {...params}
                     slotProps={{
@@ -97,21 +102,25 @@ const Parameters = () => {
                         ) : undefined,
                       },
                     }}
-                    sx={{ input: { color: useVariable[idx] ? '#008362' : 'inherit' } }}
-                    onChange={(e) => {
+                    sx={{
+                      input: {
+                        color: useVariable[idx] ? '#008362' : 'inherit',
+                      },
+                    }}
+                    onChange={e => {
                       row.value = {
                         type: 'identifier',
                         value: e.target.value,
                         useVariable: false,
                       };
-                      setUseVariable((old) => {
+                      setUseVariable(old => {
                         old[idx] = false;
                         return old;
                       });
                     }}
                   />
                 )}
-                getOptionLabel={(option) => option.toString()}
+                getOptionLabel={option => option}
               />
             </TableCell>
           </TableRow>
@@ -120,5 +129,3 @@ const Parameters = () => {
     </Table>
   );
 };
-
-export default Parameters;

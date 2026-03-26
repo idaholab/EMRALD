@@ -6,6 +6,8 @@ export const ExpressionBlock: React.FC<{
   units?: string;
 }> = ({ value, units }) => (
   <>
-    <Expression value={value} />){units ? <>&nbsp;{units}</> : ''}
+    <Expression value={value} />
+    )
+    {units ? <>&nbsp;{units}</> : ''}
   </>
 );

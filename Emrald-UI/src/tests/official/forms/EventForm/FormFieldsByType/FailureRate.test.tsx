@@ -168,8 +168,8 @@ describe('FailureRate Events', () => {
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
     // The Save button should not be clickable
-    await expect(
-      async () => await user.click(await screen.findByText('Save')),
-    ).rejects.toThrowError();
+    await expect(async () => {
+      await user.click(await screen.findByText('Save'));
+    }).rejects.toThrowError();
   });
 });

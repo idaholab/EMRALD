@@ -1,4 +1,8 @@
-import type { Diagram, EMRALD_Model, MainItemType } from '../../../types/EMRALD_Model';
+import type {
+  Diagram,
+  EMRALD_Model,
+  MainItemType,
+} from '../../../types/EMRALD_Model';
 import type { ModelItem } from '../../../types/ModelUtils';
 import type { AccordionMenuItemType } from './types/AccordionMenuItems';
 import { Menu, MenuItem } from '@mui/material';
@@ -19,8 +23,12 @@ import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
 import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
 import { VariableForm } from '../../forms/VariableForm/VariableForm';
 import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
-import AccordionMenuItems from './AccordionMenuItems';
-import { Accordion, AccordionDetails, AccordionSummary } from './StyledComponents/StyledComponents';
+import { AccordionMenuItems } from './AccordionMenuItems';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from './StyledComponents/StyledComponents';
 
 interface MenuAccordionProps {
   panels: AccordionMenuItemType[];
@@ -32,7 +40,7 @@ interface MenuAccordionProps {
   handleDelete?: (itemToDelete: ModelItem, itemType: MainItemType) => void;
 }
 
-const MenuAccordion: React.FC<MenuAccordionProps> = ({
+export const MenuAccordion: React.FC<MenuAccordionProps> = ({
   panels,
   setAccordionGroupOpen,
   bothAccordionsOpen,
@@ -48,7 +56,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
   const [pastedModel, setPastedModel] = useState<EMRALD_Model | null>(null);
   const [accordionPanel, setAccordionPanel] = useState<string>('');
 
-  const isEmraldModel = (clipboardData: string): boolean => {
+  const isEmraldModel = (clipboardData: string) => {
     if (typeof clipboardData !== 'string') {
       return false;
     }
@@ -57,40 +65,47 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
       const parsedModel = JSON.parse(clipboardData) as EMRALD_Model | null;
       const upgradedModel = upgradeModel(clipboardData);
       if (
-        (parsedModel && Object.prototype.hasOwnProperty.call(parsedModel, 'emraldVersion')) ||
-        (parsedModel && !upgradedModel)
+        (parsedModel
+          && Object.prototype.hasOwnProperty.call(parsedModel, 'emraldVersion'))
+        || (parsedModel && !upgradedModel)
       ) {
         setPastedModel(parsedModel);
       } else if (!parsedModel && upgradedModel) {
         setPastedModel(upgradedModel);
       }
       return (
-        Object.prototype.hasOwnProperty.call(parsedModel, 'emraldVersion') ||
-        ((upgradedModel && Object.prototype.hasOwnProperty.call(upgradedModel, 'emraldVersion')) ??
-          false)
+        Object.prototype.hasOwnProperty.call(parsedModel, 'emraldVersion')
+        || ((upgradedModel
+          && Object.prototype.hasOwnProperty.call(
+            upgradedModel,
+            'emraldVersion',
+          ))
+          ?? false)
       );
     } catch {
       return false;
     }
   };
 
-  const handleChange = (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpandedPanel(isExpanded ? panel : '');
-    setAccordionGroupOpen(isExpanded);
-  };
+  const handleChange
+    = (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpandedPanel(isExpanded ? panel : '');
+      setAccordionGroupOpen(isExpanded);
+    };
 
   const handleAccordionContextMenu = async (
     event: React.MouseEvent<HTMLDivElement>,
     panel: string,
   ) => {
     if (
-      componentGroup !== 'global' &&
-      panel !== 'Diagrams' &&
-      panel !== 'Logic Tree' &&
-      panel !== 'External Sims' &&
-      panel !== 'Variables'
-    )
+      componentGroup !== 'global'
+      && panel !== 'Diagrams'
+      && panel !== 'Logic Tree'
+      && panel !== 'External Sims'
+      && panel !== 'Variables'
+    ) {
       return;
+    }
     event.preventDefault();
     setAccordionPanel(panel);
     setAnchorEl(event.currentTarget);
@@ -98,59 +113,88 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
       event.preventDefault();
       setAnchorEl(event.currentTarget);
       const pastedData = await navigator.clipboard.readText();
-      isEmraldModel(pastedData) ? setNotValidModel(false) : setNotValidModel(true);
+      isEmraldModel(pastedData)
+        ? setNotValidModel(false)
+        : setNotValidModel(true);
     }
   };
 
   const handleMenuItemClick = (e: React.MouseEvent<HTMLElement>) => {
-    if (accordionPanel === 'Diagrams') {
-      if (e.currentTarget.textContent === 'Paste') {
-        try {
-          if (pastedModel) {
-            addWindow('Import Diagram', <ImportForm importedData={pastedModel} />, {
-              x: 75,
-              y: 25,
-              width: 1300,
-              height: 750,
-            });
+    switch (accordionPanel) {
+      case 'Diagrams': {
+        if (e.currentTarget.textContent === 'Paste') {
+          try {
+            if (pastedModel) {
+              addWindow(
+                'Import Diagram',
+                <ImportForm importedData={pastedModel} />,
+                {
+                  x: 75,
+                  y: 25,
+                  width: 1300,
+                  height: 750,
+                },
+              );
+            }
+          } catch (readError) {
+            console.error('Error reading from clipboard:', readError);
+            showAlert(
+              'Failed to read from clipboard. Please try again.',
+              'error',
+            );
           }
-        } catch (readError) {
-          console.error('Error reading from clipboard:', readError);
-          showAlert('Failed to read from clipboard. Please try again.', 'error');
+        } else {
+          addWindow('New Diagram', <DiagramForm />);
         }
-      } else {
-        addWindow('New Diagram', <DiagramForm />);
+
+        break;
       }
-    } else if (accordionPanel === 'Logic Tree') {
-      addWindow(
-        'New Logic Tree',
-        <LogicNodeFormContextProvider>
-          <LogicNodeForm setAsRoot fromSidebar={true} />
-        </LogicNodeFormContextProvider>,
-      );
-    } else if (accordionPanel === 'External Sims') {
-      addWindow('New External Sim', <ExtSimForm />);
-    } else if (accordionPanel === 'Actions') {
-      addWindow(
-        'New Action',
-        <ActionFormContextProvider>
-          <ActionForm />
-        </ActionFormContextProvider>,
-      );
-    } else if (accordionPanel === 'Events') {
-      addWindow(
-        'New Event',
-        <EventFormContextProvider>
-          <EventForm />
-        </EventFormContextProvider>,
-      );
-    } else if (accordionPanel === 'Variables') {
-      addWindow(
-        'New Variable',
-        <VariableFormContextProvider>
-          <VariableForm />
-        </VariableFormContextProvider>,
-      );
+      case 'Logic Tree': {
+        addWindow(
+          'New Logic Tree',
+          <LogicNodeFormContextProvider>
+            <LogicNodeForm setAsRoot fromSidebar={true} />
+          </LogicNodeFormContextProvider>,
+        );
+
+        break;
+      }
+      case 'External Sims': {
+        addWindow('New External Sim', <ExtSimForm />);
+
+        break;
+      }
+      case 'Actions': {
+        addWindow(
+          'New Action',
+          <ActionFormContextProvider>
+            <ActionForm />
+          </ActionFormContextProvider>,
+        );
+
+        break;
+      }
+      case 'Events': {
+        addWindow(
+          'New Event',
+          <EventFormContextProvider>
+            <EventForm />
+          </EventFormContextProvider>,
+        );
+
+        break;
+      }
+      case 'Variables': {
+        addWindow(
+          'New Variable',
+          <VariableFormContextProvider>
+            <VariableForm />
+          </VariableFormContextProvider>,
+        );
+
+        break;
+      }
+      // No default
     }
 
     handleClose();
@@ -172,7 +216,8 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
             <AccordionSummary
               aria-controls={`panel-${p.toString()}-content`}
               id={panel.type}
-              onContextMenu={(e) => void handleAccordionContextMenu(e, panel.type)}
+              onContextMenu={e =>
+                void handleAccordionContextMenu(e, panel.type)}
             >
               <Typography>{panel.type}</Typography>
             </AccordionSummary>
@@ -189,7 +234,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
       </List>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem
-          onClick={(e) => {
+          onClick={e => {
             handleMenuItemClick(e);
           }}
           disabled={accordionPanel === 'Diagrams' && notValidModel}
@@ -203,7 +248,7 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
         </MenuItem>
         {accordionPanel === 'Diagrams' && (
           <MenuItem
-            onClick={(e) => {
+            onClick={e => {
               handleMenuItemClick(e);
             }}
           >
@@ -214,5 +259,3 @@ const MenuAccordion: React.FC<MenuAccordionProps> = ({
     </>
   );
 };
-
-export default MenuAccordion;

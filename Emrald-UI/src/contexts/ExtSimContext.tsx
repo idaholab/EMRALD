@@ -1,16 +1,27 @@
-import React, { createContext, useContext, useState } from 'react';
-import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
-import { appData, updateAppData } from '../hooks/useAppData';
-import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
 import type { ExtSim } from '../types/EMRALD_Model';
-import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
+import {
+  effect,
+  type ReadonlySignal,
+  useComputed,
+} from '@preact/signals-react';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useState,
+} from 'react';
+import { appData, updateAppData } from '../hooks/useAppData';
+import {
+  DeleteItemAndRefs,
+  updateModelAndReferences,
+} from '../utils/UpdateModel';
 
 interface ExtSimContextType {
   extSims: ExtSim[];
   extSimList: ReadonlySignal<ExtSim[]>;
   createExtSim: (newExtSim: ExtSim) => void;
   updateExtSim: (ExtSim: ExtSim) => void;
-  deleteExtSim: (ExtSimId: string | undefined) => void;
+  deleteExtSim: (ExtSimId?: string) => void;
   newExtSimList: (newExtSimList: ExtSim[]) => void;
   clearExtSimList: () => void;
 }
@@ -27,55 +38,58 @@ const ExtSimContext = createContext<ExtSimContextType | undefined>(undefined);
 export function useExtSimContext() {
   const context = useContext(ExtSimContext);
   if (!context) {
-    throw new Error('useExtSimContext must be used within an ExtSimContextProvider');
+    throw new Error(
+      'useExtSimContext must be used within an ExtSimContextProvider',
+    );
   }
   return context;
 }
 
-const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [extSims, setExtSims] = useState<ExtSim[]>(
-    JSON.parse(
-      JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name))),
-    ) as ExtSim[],
+export const ExtSimContextProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
+  const [extSims, setExtSims] = useState(
+    structuredClone(
+      appData.value.ExtSimList.toSorted((a, b) => a.name.localeCompare(b.name)),
+    ),
   );
   const extSimList = useComputed(() => appData.value.ExtSimList);
 
   effect(() => {
     if (
-      JSON.stringify(extSims) !==
-      JSON.stringify(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)))
+      JSON.stringify(extSims)
+      !== JSON.stringify(
+        appData.value.ExtSimList.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      )
     ) {
-      setExtSims(appData.value.ExtSimList.sort((a, b) => a.name.localeCompare(b.name)));
+      setExtSims(
+        appData.value.ExtSimList.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      );
     }
     return;
   });
 
   const createExtSim = (newExtSim: ExtSim) => {
-    const updatedModel = updateModelAndReferences(
-      newExtSim,
-      'ExtSim',
-    );
-    updateAppData(updatedModel);
+    updateAppData(updateModelAndReferences(newExtSim, 'ExtSim'));
   };
 
   const updateExtSim = (updatedExtSim: ExtSim) => {
-    const updatedModel = updateModelAndReferences(
-      updatedExtSim,
-      'ExtSim',
-    );
-    updateAppData(updatedModel);
+    updateAppData(updateModelAndReferences(updatedExtSim, 'ExtSim'));
   };
 
-  const deleteExtSim = (extSimId: string | undefined) => {
+  const deleteExtSim = (extSimId?: string) => {
     if (!extSimId) {
       return;
     }
-    const extSimToDelete = extSims.find((extSim) => extSim.id === extSimId);
+    const extSimToDelete = extSims.find(extSim => extSim.id === extSimId);
     if (extSimToDelete) {
-      const updatedModel = DeleteItemAndRefs(extSimToDelete);
-      updateAppData(updatedModel);
+      updateAppData(DeleteItemAndRefs(extSimToDelete));
     }
-    //todo else error, no event to delete
+    // todo else error, no event to delete
   };
 
   // Open New, Merge, and Clear Event List
@@ -103,5 +117,3 @@ const ExtSimContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }
     </ExtSimContext.Provider>
   );
 };
-
-export default ExtSimContextProvider;

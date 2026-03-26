@@ -11,7 +11,7 @@ import {
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useVariableFormContext } from '../VariableFormContext';
 
 export const DocLinkFields: React.FC<VariableFormProps> = ({

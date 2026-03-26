@@ -18,9 +18,14 @@ import { updateAppData } from '@/hooks/useAppData';
 import { updateModelAndReferences } from '@/utils/UpdateModel';
 import { currentDiagram } from './EmraldDiagram';
 
-const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) => void) => {
+export function useContextMenu(
+  getStateNodes?: () => void,
+  setEdges?: (edges: Edge[]) => void,
+) {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
-  const [menu, setMenu] = useState<{ mouseX: number; mouseY: number } | null>(null);
+  const [menu, setMenu] = useState<{ mouseX: number; mouseY: number } | null>(
+    null,
+  );
   const [menuOptions, setMenuOptions] = useState<Option[]>();
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Event | State | Action>();
@@ -30,7 +35,8 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   const { updateState, deleteState, getStateByStateId } = useStateContext();
   const { updateDiagram } = useDiagramContext();
   const { deleteEvent } = useEventContext();
-  const { updateAction, deleteAction, getActionByActionId } = useActionContext();
+  const { updateAction, deleteAction, getActionByActionId }
+    = useActionContext();
 
   const closeContextMenu = () => {
     setMenu(null);
@@ -70,7 +76,10 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   };
 
   // * Context menu for state item
-  const onNodeContextMenu = (event: React.MouseEvent, node: Node<{ state: State }>) => {
+  const onNodeContextMenu = (
+    event: React.MouseEvent,
+    node: Node<{ state: State }>,
+  ) => {
     const state = node.data.state;
     event.preventDefault(); // Prevent native context menu from showing
     setMenu({
@@ -97,7 +106,11 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   };
 
   // * Context menu for edge
-  const onEdgeContextMenu = (event: React.MouseEvent, edge: Edge, edges: Edge[]) => {
+  const onEdgeContextMenu = (
+    event: React.MouseEvent,
+    edge: Edge,
+    edges: Edge[],
+  ) => {
     event.preventDefault(); // Prevent native context menu from showing
     setMenu({
       mouseX: event.clientX,
@@ -130,7 +143,9 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     let validAction = false;
     let validEvent = false;
     try {
-      const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+      const pastedData = JSON.parse(
+        await navigator.clipboard.readText(),
+      ) as ModelItem;
       validAction = pastedData.objType === 'Action';
       validEvent = pastedData.objType === 'Event';
     } catch {
@@ -154,16 +169,18 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'Paste Event',
         action: async () => {
-          const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+          const pastedData = JSON.parse(
+            await navigator.clipboard.readText(),
+          ) as ModelItem;
           if (pastedData.objType === 'Event') {
-            if (!state.events.includes(pastedData.name)) {
+            if (state.events.includes(pastedData.name)) {
+              console.warn('Event already exists');
+            } else {
               state.events.push(pastedData.name);
               state.eventActions.push({ moveFromCurrent: false, actions: [] });
               updateState(state);
               const updatedModel = updateModelAndReferences(state, 'State');
               updateAppData(updatedModel);
-            } else {
-              console.warn('Event already exists');
             }
           }
           closeContextMenu();
@@ -186,16 +203,17 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'Paste Action',
         action: async () => {
-          const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+          const pastedData = JSON.parse(
+            await navigator.clipboard.readText(),
+          ) as ModelItem;
           if (pastedData.objType === 'Action') {
             const actionName = pastedData.name;
-            if (!state.immediateActions.includes(actionName)) {
+            if (state.immediateActions.includes(actionName)) {
+              console.warn('Action already exists');
+            } else {
               state.immediateActions.push(actionName);
               updateState(state);
-              const updatedModel = updateModelAndReferences(state, 'State');
-              updateAppData(updatedModel);
-            } else {
-              console.warn('Action already exists');
+              updateAppData(updateModelAndReferences(state, 'State'));
             }
           }
           closeContextMenu();
@@ -206,21 +224,26 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
 
     let menuOptions = [...defaultOptions];
 
-    if (type === 'event') {
-      menuOptions = menuOptions.filter(
-        (option) => option.label !== 'New Action' && option.label !== 'Paste Action',
-      );
-    } else {
-      menuOptions = menuOptions.filter(
-        (option) => option.label !== 'New Event' && option.label !== 'Paste Event',
-      );
-    }
+    menuOptions
+      = type === 'event'
+        ? menuOptions.filter(
+            option =>
+              option.label !== 'New Action' && option.label !== 'Paste Action',
+          )
+        : menuOptions.filter(
+            option =>
+              option.label !== 'New Event' && option.label !== 'Paste Event',
+          );
 
     setMenuOptions(menuOptions);
   };
 
   // * Context menu for event items
-  const onEventContextMenu = async (e: React.MouseEvent, state: State, event?: Event) => {
+  const onEventContextMenu = async (
+    e: React.MouseEvent,
+    state: State,
+    event?: Event,
+  ) => {
     if (!event) {
       return;
     }
@@ -233,7 +256,9 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
 
     let validAction = false;
     try {
-      const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+      const pastedData = JSON.parse(
+        await navigator.clipboard.readText(),
+      ) as ModelItem;
       validAction = pastedData.objType === 'Action';
     } catch {
       console.log('Not valid JSON');
@@ -290,16 +315,17 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
       {
         label: 'Paste Action',
         action: async () => {
-          const pastedData = JSON.parse(await navigator.clipboard.readText()) as ModelItem;
+          const pastedData = JSON.parse(
+            await navigator.clipboard.readText(),
+          ) as ModelItem;
           if (pastedData.objType === 'Action') {
             const eventIndex = state.events.indexOf(event.name);
             const eventActions = state.eventActions[eventIndex]?.actions;
 
-            if (!eventActions.includes(pastedData.name)) {
-              eventActions.push(pastedData.name);
+            if (!eventActions?.includes(pastedData.name)) {
+              eventActions?.push(pastedData.name);
               updateState(state);
-              const updatedModel = updateModelAndReferences(state, 'State');
-              updateAppData(updatedModel);
+              updateAppData(updateModelAndReferences(state, 'State'));
             }
           }
           closeContextMenu();
@@ -327,14 +353,14 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
 
     if (state.events.length === 1) {
       menuOptions = menuOptions.filter(
-        (option) => option.label !== 'Move Up' && option.label !== 'Move Down',
+        option => option.label !== 'Move Up' && option.label !== 'Move Down',
       );
     } else if (state.events[0] === event.name) {
       // Remove 'Move Up' action if the item is in the first spot
-      menuOptions = menuOptions.filter((option) => option.label !== 'Move Up');
-    } else if (state.events[state.events.length - 1] === event.name) {
+      menuOptions = menuOptions.filter(option => option.label !== 'Move Up');
+    } else if (state.events.at(-1) === event.name) {
       // Remove 'Move Down' action if the item is in the last spot
-      menuOptions = menuOptions.filter((option) => option.label !== 'Move Down');
+      menuOptions = menuOptions.filter(option => option.label !== 'Move Down');
     }
 
     setMenuOptions(menuOptions);
@@ -412,32 +438,42 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
 
     // Show the 'Move Up' and 'Move Down' options if the item is the first or last item or neither if its a single item
     if (type === 'event') {
-      state.eventActions.forEach((eventAction) => {
-        if (eventAction.actions.includes(action.name) && eventAction.actions.length === 1) {
+      for (const eventAction of state.eventActions) {
+        if (
+          eventAction.actions.includes(action.name)
+          && eventAction.actions.length === 1
+        ) {
           menuOptions = menuOptions.filter(
-            (option) => option.label !== 'Move Up' && option.label !== 'Move Down',
+            option =>
+              option.label !== 'Move Up' && option.label !== 'Move Down',
           );
         } else if (eventAction.actions[0] === action.name) {
           // Remove 'Move Up' action if the item is in the first spot
-          menuOptions = menuOptions.filter((option) => option.label !== 'Move Up');
-        } else if (eventAction.actions[eventAction.actions.length - 1] === action.name) {
+          menuOptions = menuOptions.filter(
+            option => option.label !== 'Move Up',
+          );
+        } else if (eventAction.actions.at(-1) === action.name) {
           // Remove 'Move Down' action if the item is in the last spot
-          menuOptions = menuOptions.filter((option) => option.label !== 'Move Down');
+          menuOptions = menuOptions.filter(
+            option => option.label !== 'Move Down',
+          );
         }
-      });
+      }
     }
 
     if (type === 'immediate') {
       if (state.immediateActions.length === 1) {
         menuOptions = menuOptions.filter(
-          (option) => option.label !== 'Move Up' && option.label !== 'Move Down',
+          option => option.label !== 'Move Up' && option.label !== 'Move Down',
         );
       } else if (state.immediateActions[0] === action.name) {
         // Remove 'Move Up' action if the item is in the first spot
-        menuOptions = menuOptions.filter((option) => option.label !== 'Move Up');
-      } else if (state.immediateActions[state.immediateActions.length - 1] === action.name) {
+        menuOptions = menuOptions.filter(option => option.label !== 'Move Up');
+      } else if (state.immediateActions.at(-1) === action.name) {
         // Remove 'Move Down' action if the item is in the last spot
-        menuOptions = menuOptions.filter((option) => option.label !== 'Move Down');
+        menuOptions = menuOptions.filter(
+          option => option.label !== 'Move Down',
+        );
       }
     }
 
@@ -447,7 +483,11 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   /**
    **** Move Event and Action functions ****
    **/
-  const moveEvent = (state: State, eventName: string, direction: 'up' | 'down') => {
+  const moveEvent = (
+    state: State,
+    eventName: string,
+    direction: 'up' | 'down',
+  ) => {
     if (!eventName) {
       return;
     }
@@ -457,20 +497,36 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
         // Moves event and matching eventAction item up
         const temp = state.events[index];
         const tempEventAction = state.eventActions[index];
-        state.events[index] = state.events[index - 1];
-        state.eventActions[index] = state.eventActions[index - 1];
-        state.events[index - 1] = temp;
-        state.eventActions[index - 1] = tempEventAction;
+        const j = index - 1;
+        if (
+          state.events[j]
+          && state.eventActions[j]
+          && temp
+          && tempEventAction
+        ) {
+          state.events[index] = state.events[j];
+          state.eventActions[index] = state.eventActions[j];
+          state.events[j] = temp;
+          state.eventActions[j] = tempEventAction;
+        }
       }
     } else {
       if (index < state.events.length - 1) {
         // Moves event and matching eventAction item down
         const temp = state.events[index];
         const tempEventAction = state.eventActions[index];
-        state.events[index] = state.events[index + 1];
-        state.eventActions[index] = state.eventActions[index + 1];
-        state.events[index + 1] = temp;
-        state.eventActions[index + 1] = tempEventAction;
+        const j = index + 1;
+        if (
+          state.events[j]
+          && state.eventActions[j]
+          && temp
+          && tempEventAction
+        ) {
+          state.events[index] = state.events[j];
+          state.eventActions[index] = state.eventActions[j];
+          state.events[j] = temp;
+          state.eventActions[j] = tempEventAction;
+        }
       }
     }
     updateState(state);
@@ -483,44 +539,54 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     type: 'immediate' | 'event',
   ) => {
     if (type === 'event') {
-      const eventActionToUpdate = state.eventActions.find((eventAction) =>
+      const eventActionToUpdate = state.eventActions.find(eventAction =>
         eventAction.actions.includes(actionName),
       );
-      if (!eventActionToUpdate) return;
+      if (!eventActionToUpdate) {
+        return;
+      }
       const index = eventActionToUpdate.actions.indexOf(actionName);
       if (direction === 'up') {
         if (index > 0) {
           // Moves action if within eventActions up
           const temp = eventActionToUpdate.actions[index];
-          eventActionToUpdate.actions[index] = eventActionToUpdate.actions[index - 1];
-          eventActionToUpdate.actions[index - 1] = temp;
+          const j = index - 1;
+          if (temp && eventActionToUpdate.actions[j]) {
+            eventActionToUpdate.actions[index] = eventActionToUpdate.actions[j];
+            eventActionToUpdate.actions[j] = temp;
+          }
         }
       } else {
         if (index < eventActionToUpdate.actions.length - 1) {
           // Moves action if within eventActions down
           const temp = eventActionToUpdate.actions[index];
-          eventActionToUpdate.actions[index] = eventActionToUpdate.actions[index + 1];
-          eventActionToUpdate.actions[index + 1] = temp;
+          const j = index + 1;
+          if (temp && eventActionToUpdate.actions[j]) {
+            eventActionToUpdate.actions[index] = eventActionToUpdate.actions[j];
+            eventActionToUpdate.actions[j] = temp;
+          }
         }
       }
     }
 
     if (type === 'immediate') {
       const index = state.immediateActions.indexOf(actionName);
-      if (direction === 'up') {
-        if (index > 0) {
-          // Moves action if within immediateActions up
-          const temp = state.immediateActions[index];
-          state.immediateActions[index] = state.immediateActions[index - 1];
-          state.immediateActions[index - 1] = temp;
+      if (direction === 'up' && index > 0) {
+        // Moves action if within immediateActions up
+        const temp = state.immediateActions[index];
+        const j = index - 1;
+        if (temp && state.immediateActions[j]) {
+          state.immediateActions[index] = state.immediateActions[j];
+          state.immediateActions[j] = temp;
         }
       }
-      if (direction === 'down') {
-        if (index < state.immediateActions.length - 1) {
-          // Moves action if within immediateActions down
-          const temp = state.immediateActions[index];
-          state.immediateActions[index] = state.immediateActions[index + 1];
-          state.immediateActions[index + 1] = temp;
+      if (direction === 'down' && index < state.immediateActions.length - 1) {
+        // Moves action if within immediateActions down
+        const temp = state.immediateActions[index];
+        const j = index + 1;
+        if (temp && state.immediateActions[j]) {
+          state.immediateActions[index] = state.immediateActions[j];
+          state.immediateActions[j] = temp;
         }
       }
     }
@@ -537,7 +603,7 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     }
     if (state) {
       const index = state.events.indexOf(eventToRemove.name);
-      state.events = state.events.filter((event) => event !== eventToRemove.name);
+      state.events = state.events.filter(event => event !== eventToRemove.name);
       state.eventActions.splice(index, 1);
       updateState(state);
     }
@@ -554,17 +620,17 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     }
     if (actionType && state) {
       if (actionType === 'event') {
-        state.eventActions.forEach((eventAction) => {
+        for (const eventAction of state.eventActions) {
           if (eventAction.actions.includes(actionToRemove.name)) {
             eventAction.actions = eventAction.actions.filter(
-              (action) => action !== actionToRemove.name,
+              action => action !== actionToRemove.name,
             );
           }
-        });
+        }
       }
       if (actionType === 'immediate') {
         state.immediateActions = state.immediateActions.filter(
-          (action) => action !== actionToRemove.name,
+          action => action !== actionToRemove.name,
         );
       }
       updateState(state);
@@ -579,35 +645,41 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
 
     if (itemToDelete.id && itemToDelete.objType === 'State' && getStateNodes) {
       currentDiagram.value.states = currentDiagram.value.states.filter(
-        (state) => state !== itemToDelete.name,
+        state => state !== itemToDelete.name,
       );
       updateDiagram(currentDiagram.value);
       deleteState(itemToDelete.id);
       getStateNodes();
-    } else if (itemToDelete.id && stateToModify && itemToDelete.objType === 'Event') {
+    } else if (
+      itemToDelete.id
+      && stateToModify
+      && itemToDelete.objType === 'Event'
+    ) {
       const index = stateToModify.events.indexOf(itemToDelete.name);
-      stateToModify.events = stateToModify.events.filter((event) => event !== itemToDelete.name);
+      stateToModify.events = stateToModify.events.filter(
+        event => event !== itemToDelete.name,
+      );
       stateToModify.eventActions.splice(index, 1);
       updateState(stateToModify);
       deleteEvent(itemToDelete.id);
     } else if (
-      itemToDelete.id &&
-      stateToModify &&
-      actionTypeToModify &&
-      itemToDelete.objType === 'Action'
+      itemToDelete.id
+      && stateToModify
+      && actionTypeToModify
+      && itemToDelete.objType === 'Action'
     ) {
       if (actionTypeToModify === 'event') {
-        stateToModify.eventActions.forEach((eventAction) => {
+        for (const eventAction of stateToModify.eventActions) {
           if (eventAction.actions.includes(itemToDelete.name)) {
             eventAction.actions = eventAction.actions.filter(
-              (action) => action !== itemToDelete.name,
+              action => action !== itemToDelete.name,
             );
           }
-        });
+        }
       }
       if (actionTypeToModify === 'immediate') {
         stateToModify.immediateActions = stateToModify.immediateActions.filter(
-          (action) => action !== itemToDelete.name,
+          action => action !== itemToDelete.name,
         );
       }
       updateState(stateToModify);
@@ -620,21 +692,28 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
   const deleteEdge = (edge?: Edge, edges?: Edge[]) => {
     if (edge && edges && setEdges) {
       const actionId = edge.sourceHandle?.split('*')[1];
-      const actionToUpdate = actionId ? getActionByActionId(actionId) : undefined;
+      const actionToUpdate = actionId
+        ? getActionByActionId(actionId)
+        : undefined;
       const targetState = getStateByStateId(edge.target);
 
       if (!actionToUpdate?.newStates) {
         return;
       }
       actionToUpdate.newStates = actionToUpdate.newStates.filter(
-        (state) => state.toState !== targetState?.name,
+        state => state.toState !== targetState?.name,
       );
       // If only one newState remains make it so it is set to -1
-      if (actionToUpdate.newStates.length === 1) {
+      if (
+        actionToUpdate.newStates.length === 1
+        && actionToUpdate.newStates[0]
+      ) {
         actionToUpdate.newStates[0].prob = -1;
       }
       updateAction(actionToUpdate);
-      const newEdges = edges.filter((edgeToRemove) => edgeToRemove.id !== edge.id);
+      const newEdges = edges.filter(
+        edgeToRemove => edgeToRemove.id !== edge.id,
+      );
       setEdges(newEdges);
     }
   };
@@ -681,6 +760,4 @@ const useContextMenu = (getStateNodes?: () => void, setEdges?: (edges: Edge[]) =
     onActionContextMenu,
     closeContextMenu,
   };
-};
-
-export default useContextMenu;
+}

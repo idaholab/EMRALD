@@ -1,4 +1,7 @@
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
+import { ActionForm } from '../../../../../components/forms/ActionForm/ActionForm';
 import {
   drag,
   ensureState,
@@ -8,9 +11,6 @@ import {
   save,
   selectOption,
 } from '../../../../test-utils';
-import ActionForm from '../../../../../components/forms/ActionForm/ActionForm';
-import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
 import expected from './Transition.expected.json';
 
 describe('Transition Actions', () => {
@@ -25,7 +25,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -35,14 +35,20 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
     drag(
       await screen.findByText('Test State 2'),
       await screen.findByText('Fixed Value or Variable'),
     );
 
     // Enter probability for state 1
-    await user.type((await screen.findAllByLabelText('Probability'))[0], '0.4');
+    await user.type(
+      (await screen.findAllByLabelText('Probability'))[0] as Element,
+      '0.4',
+    );
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);
@@ -59,7 +65,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -68,10 +74,16 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
 
     // Enter probability for state 1
-    await user.type((await screen.findAllByLabelText('Probability'))[0], '2e-5');
+    await user.type(
+      (await screen.findAllByLabelText('Probability'))[0] as Element,
+      '2e-5',
+    );
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);
@@ -88,7 +100,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -97,17 +109,29 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
 
     // Try to click save with an empty probability
-    await user.clear((await screen.findAllByLabelText('Probability'))[0]);
+    await user.clear(
+      (await screen.findAllByLabelText('Probability'))[0] as Element,
+    );
     await save(); // TODO: not sure why it needs to save before checking if the save button is disabled...
-    await expect(async () => await user.click(await screen.findByText("Save"))).rejects.toThrowError();
+    await expect(async () => {
+      await user.click(await screen.findByText('Save'));
+    }).rejects.toThrowError();
 
     // Enter a probability greater than 1 for state 1
-    await user.type((await screen.findAllByLabelText('Probability'))[0], '2');
+    await user.type(
+      (await screen.findAllByLabelText('Probability'))[0] as Element,
+      '2',
+    );
     await save();
-    await expect(async () => await user.click(await screen.findByText("Save"))).rejects.toThrowError();
+    await expect(async () => {
+      await user.click(await screen.findByText('Save'));
+    }).rejects.toThrowError();
   });
 
   test('uses remaining probability', async () => {
@@ -121,7 +145,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -131,7 +155,10 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
     drag(
       await screen.findByText('Test State 2'),
       await screen.findByText('Fixed Value or Variable'),
@@ -145,10 +172,15 @@ describe('Transition Actions', () => {
     );
 
     // Enter probability for state 1
-    await user.type((await screen.findAllByLabelText('Probability'))[0], '0.4');
+    await user.type(
+      (await screen.findAllByLabelText('Probability'))[0] as Element,
+      '0.4',
+    );
 
     // Check remaining for state 2
-    await user.click((await screen.findAllByLabelText('Remaining'))[1]);
+    await user.click(
+      (await screen.findAllByLabelText('Remaining'))[1] as Element,
+    );
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);
@@ -165,7 +197,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -174,13 +206,16 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
 
     // Add a variable to the model
     ensureVariable('Test Variable');
 
     // Select variable probability
-    await user.click(await screen.findByLabelText("Variable"));
+    await user.click(await screen.findByLabelText('Variable'));
 
     // Select the variable
     await selectOption('Select Variable', 'Test Variable');
@@ -200,7 +235,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -210,7 +245,10 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
     drag(
       await screen.findByText('Test State 2'),
       await screen.findByText('Fixed Value or Variable'),
@@ -224,10 +262,15 @@ describe('Transition Actions', () => {
     );
 
     // Enter probability for state 1
-    await user.type((await screen.findAllByLabelText('Probability'))[0], '0.4');
+    await user.type(
+      (await screen.findAllByLabelText('Probability'))[0] as Element,
+      '0.4',
+    );
 
     // Check remaining for state 2
-    await user.click((await screen.findAllByLabelText('Remaining'))[1]);
+    await user.click(
+      (await screen.findAllByLabelText('Remaining'))[1] as Element,
+    );
 
     // Un-check mutually exclusive
     await user.click(
@@ -251,7 +294,7 @@ describe('Transition Actions', () => {
           actType: 'atTransition',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -261,14 +304,19 @@ describe('Transition Actions', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State 1'), await screen.findByText('Drop State Items Here'));
+    drag(
+      await screen.findByText('Test State 1'),
+      await screen.findByText('Drop State Items Here'),
+    );
     drag(
       await screen.findByText('Test State 2'),
       await screen.findByText('Fixed Value or Variable'),
     );
 
     // Remove state 1
-    await user.click((await screen.findAllByLabelText("Delete Row"))[0]);
+    await user.click(
+      (await screen.findAllByLabelText('Delete Row'))[0] as Element,
+    );
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);

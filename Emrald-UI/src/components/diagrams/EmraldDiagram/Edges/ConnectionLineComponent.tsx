@@ -1,6 +1,6 @@
 import type { ConnectionLineComponentProps } from 'reactflow';
 
-const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
+export const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
   fromX,
   fromY,
   toX,
@@ -22,5 +22,3 @@ const CustomConnectionLine: React.FC<ConnectionLineComponentProps> = ({
     </svg>
   );
 };
-
-export default CustomConnectionLine;

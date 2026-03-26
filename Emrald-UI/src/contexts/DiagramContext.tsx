@@ -1,17 +1,28 @@
-import React, { createContext, useContext, useState } from 'react';
-import { effect, type ReadonlySignal, useComputed } from '@preact/signals-react';
-import type { EMRALD_Model, Diagram } from '../types/EMRALD_Model';
-import { DeleteItemAndRefs, updateModelAndReferences } from '../utils/UpdateModel';
-import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import type { Diagram } from '../types/EMRALD_Model';
+import {
+  effect,
+  type ReadonlySignal,
+  useComputed,
+} from '@preact/signals-react';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useState,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, updateAppData } from '../hooks/useAppData';
+import {
+  DeleteItemAndRefs,
+  updateModelAndReferences,
+} from '../utils/UpdateModel';
 
 interface DiagramContextType {
   diagramList: ReadonlySignal<Diagram[]>;
   diagrams: Diagram[];
   createDiagram: (newDiagram: Diagram) => void;
   updateDiagram: (updatedDiagram: Diagram) => void;
-  deleteDiagram: (diagramId: string | undefined) => void;
+  deleteDiagram: (diagramId?: string) => void;
   getDiagramByDiagramName: (diagramName: string) => Diagram | undefined;
   getDiagramById: (diagramId: string) => Diagram | undefined;
   newDiagramList: (newDiagramList: Diagram[]) => void;
@@ -35,23 +46,35 @@ const DiagramContext = createContext<DiagramContextType | undefined>(undefined);
 export function useDiagramContext() {
   const context = useContext(DiagramContext);
   if (!context) {
-    throw new Error('useDiagramContext must be used within a DiagramContextProvider');
+    throw new Error(
+      'useDiagramContext must be used within a DiagramContextProvider',
+    );
   }
   return context;
 }
 
-const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  const [diagrams, setDiagrams] = useState<Diagram[]>(
-    appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)),
+export const DiagramContextProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
+  const [diagrams, setDiagrams] = useState(
+    appData.value.DiagramList.toSorted((a, b) => a.name.localeCompare(b.name)),
   );
   const diagramList = useComputed(() => appData.value.DiagramList);
 
   effect(() => {
     if (
-      JSON.stringify(diagrams) !==
-      JSON.stringify(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)))
+      JSON.stringify(diagrams)
+      !== JSON.stringify(
+        appData.value.DiagramList.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      )
     ) {
-      setDiagrams(appData.value.DiagramList.sort((a, b) => a.name.localeCompare(b.name)));
+      setDiagrams(
+        appData.value.DiagramList.toSorted((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      );
       return;
     }
     return;
@@ -59,40 +82,29 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
 
   // Create, Delete, Update individual diagrams
   const createDiagram = (newDiagram: Diagram) => {
-    const updatedModel = updateModelAndReferences(
-      newDiagram,
-      'Diagram',
-    );
-    updateAppData(updatedModel);
+    updateAppData(updateModelAndReferences(newDiagram, 'Diagram'));
   };
 
   const updateDiagram = (updatedDiagram: Diagram) => {
-    const updatedModel = updateModelAndReferences(
-      updatedDiagram,
-      'Diagram',
-    );
-    updateAppData(updatedModel);
+    updateAppData(updateModelAndReferences(updatedDiagram, 'Diagram'));
   };
 
-  const deleteDiagram = (diagramId: string | undefined) => {
+  const deleteDiagram = (diagramId?: string) => {
     if (!diagramId) {
       return;
     }
     const diagramToDelete = getDiagramById(diagramId);
     if (diagramToDelete) {
-      const updatedModel = DeleteItemAndRefs(diagramToDelete);
-      updateAppData(updatedModel);
+      updateAppData(DeleteItemAndRefs(diagramToDelete));
     }
-    //todo else error, not diagram to delete
+    // todo else error, not diagram to delete
   };
 
-  const getDiagramByDiagramName = (diagramName: string) => {
-    return diagramList.value.find((diagram) => diagram.name === diagramName);
-  };
+  const getDiagramByDiagramName = (diagramName: string) =>
+    diagramList.value.find(diagram => diagram.name === diagramName);
 
-  const getDiagramById = (diagramId: string) => {
-    return diagramList.value.find((diagram) => diagram.id === diagramId);
-  };
+  const getDiagramById = (diagramId: string) =>
+    diagramList.value.find(diagram => diagram.id === diagramId);
 
   // Open New, Merge, and Clear Diagram List
   const newDiagramList = (newDiagramList: Diagram[]) => {
@@ -104,7 +116,7 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
   };
 
   const clearDiagramList = () => {
-    updateAppData(JSON.parse(JSON.stringify({ ...appData.value, DiagramList: [] })) as EMRALD_Model);
+    updateAppData(structuredClone({ ...appData.value, DiagramList: [] }));
   };
 
   return (
@@ -126,5 +138,3 @@ const DiagramContextProvider: React.FC<EmraldContextWrapperProps> = ({ children 
     </DiagramContext.Provider>
   );
 };
-
-export default DiagramContextProvider;

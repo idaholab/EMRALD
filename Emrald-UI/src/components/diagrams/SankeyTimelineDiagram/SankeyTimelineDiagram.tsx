@@ -1,10 +1,5 @@
-import React, { type RefObject, useEffect, useRef, useState } from 'react';
-import Draggable from 'react-draggable';
-import { select } from 'd3-selection';
-import colors from './colors';
-import type TimelineNode from './TimelineNode';
-import type TimelineLink from './TimelineLink';
-import SankeyTimeline from './SankeyTimeline';
+import type { TimelineLink } from './TimelineLink';
+import type { TimelineNode } from './TimelineNode';
 import {
   Button,
   Checkbox,
@@ -23,7 +18,12 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import Renderer from './Renderer';
+import { select } from 'd3-selection';
+import { type RefObject, useEffect, useRef, useState } from 'react';
+import Draggable from 'react-draggable';
+import { colors } from './colors';
+import { Renderer } from './Renderer';
+import { SankeyTimeline } from './SankeyTimeline';
 import './style.css';
 
 export interface Node {
@@ -134,11 +134,11 @@ function render(
 ) {
   // An array of enabled key states
   const keyStates: string[] = [];
-  Object.entries(keyStatesRecord).forEach(([name, enabled]) => {
+  for (const [name, enabled] of Object.entries(keyStatesRecord)) {
     if (enabled) {
       keyStates.push(name);
     }
-  });
+  }
 
   /**
    * Preprocesses path results for the selected key states.
@@ -153,47 +153,51 @@ function render(
   ): [Record<string, Node>, Record<string, Record<string, Link>>] {
     const nodes: Record<string, Node> = {};
     const links: Record<string, Record<string, Link>> = {};
-    input.keyStates
+    for (const keyState of input.keyStates
       // Consider only the key states that have been enabled by the user
-      .filter((keyState) => selectedKeyStates.includes(keyState.name))
-      .forEach((keyState) => {
-        // This section looks at every path leading to an enabled key state and creates nodes and links to represent those paths
-        keyState.paths.forEach((path) => {
-          if (!Object.prototype.hasOwnProperty.call(nodes, path.name)) {
-            nodes[path.name] = {
-              ...path,
-              combined: {
-                c: [path.count],
-                n: [path.count / path.contributionRate],
-                x: [timestampToSeconds(path.timeMean)],
-                s: [timestampToSeconds(path.timeStdDeviation)],
-              },
-            };
-          } else {
-            nodes[path.name].count += path.count;
-            nodes[path.name].combined.c.push(path.count);
-            nodes[path.name].combined.n.push(path.count / path.contributionRate);
-            nodes[path.name].combined.x.push(timestampToSeconds(path.timeMean));
-            nodes[path.name].combined.s.push(timestampToSeconds(path.timeStdDeviation));
+      .filter(keyState => selectedKeyStates.includes(keyState.name))) {
+      // This section looks at every path leading to an enabled key state and creates nodes and links to represent those paths
+      for (const path of keyState.paths) {
+        const pname = path.name;
+        if (nodes[pname]) {
+          nodes[pname].count += path.count;
+          nodes[pname].combined.c.push(path.count);
+          nodes[pname].combined.n.push(path.count / path.contributionRate);
+          nodes[pname].combined.x.push(timestampToSeconds(path.timeMean));
+          nodes[pname].combined.s.push(
+            timestampToSeconds(path.timeStdDeviation),
+          );
+        } else {
+          nodes[path.name] = {
+            ...path,
+            combined: {
+              c: [path.count],
+              n: [path.count / path.contributionRate],
+              x: [timestampToSeconds(path.timeMean)],
+              s: [timestampToSeconds(path.timeStdDeviation)],
+            },
+          };
+        }
+        for (const link of path.exits) {
+          const pname = path.name;
+          if (!links[pname]) {
+            links[pname] = {};
           }
-          path.exits.forEach((link) => {
-            if (!Object.prototype.hasOwnProperty.call(links, path.name)) {
-              links[path.name] = {};
-            }
-            if (!Object.prototype.hasOwnProperty.call(links[path.name], link.otherState)) {
-              links[path.name][link.otherState] = {
-                actDesc: link.actDesc,
-                count: link.cnt,
-                desc: link.desc,
-                evDesc: link.evDesc,
-                name: link.name,
-              };
-            } else {
-              links[path.name][link.otherState].count += link.cnt;
-            }
-          });
-        });
-      });
+          const { otherState } = link;
+          if (links[pname][otherState]) {
+            links[pname][otherState].count += link.cnt;
+          } else {
+            links[pname][otherState] = {
+              actDesc: link.actDesc,
+              count: link.cnt,
+              desc: link.desc,
+              evDesc: link.evDesc,
+              name: link.name,
+            };
+          }
+        }
+      }
+    }
     return [nodes, links];
   }
 
@@ -202,17 +206,21 @@ function render(
    * @param oldNodes - The old node dictionary.
    * @param newNodes - The new node dictionary.
    */
-  function mergeNodeLayouts(oldNodes: Record<string, Node>, newNodes: Record<string, Node>) {
-    const allNodes = Object.entries(nodeCache).concat(Object.entries(oldNodes));
+  function mergeNodeLayouts(
+    oldNodes: Record<string, Node>,
+    newNodes: Record<string, Node>,
+  ) {
     nodeCache = {};
-    allNodes.forEach(([name, node]) => {
-      if (Object.prototype.hasOwnProperty.call(newNodes, name)) {
+    for (const [name, node] of Object.entries(nodeCache).concat(
+      Object.entries(oldNodes),
+    )) {
+      if (newNodes[name]) {
         newNodes[name].layout = node.layout;
         newNodes[name].color = node.color;
       } else {
         nodeCache[name] = node;
       }
-    });
+    }
     return newNodes;
   }
 
@@ -241,8 +249,8 @@ function render(
    * @returns The number of seconds.
    */
   function timestampToSeconds(timestamp: string) {
-    const t = timestamp.split(':').map((x) => Number(x));
-    return t[2] + t[1] * 60 + t[0] * 3600;
+    const t = timestamp.split(':').map(Number);
+    return (t[2] ?? 0) + (t[1] ?? 0) * 60 + (t[0] ?? 0) * 3600;
   }
 
   /**
@@ -264,10 +272,10 @@ function render(
   function combinedMean(node: Node) {
     let weighedSum = 0;
     let nTotal = 0;
-    node.combined.n.forEach((n, i) => {
-      weighedSum += n * node.combined.x[i];
+    for (const [i, n] of node.combined.n.entries()) {
+      weighedSum += n * (node.combined.x[i] ?? 0);
       nTotal += n;
-    });
+    }
     return weighedSum / nTotal;
   }
 
@@ -281,14 +289,13 @@ function render(
     let weighedSum = 0;
     let nTotal = 0;
     const count = node.combined.n.length;
-    node.combined.n.forEach((n, i) => {
-      weighedSum += (n - 1) * node.combined.s[i] ** 2;
+    for (const [i, n] of node.combined.n.entries()) {
+      weighedSum += (n - 1) * (node.combined.s[i] ?? 0) ** 2;
       nTotal += n;
-    });
-    if (nTotal - count === 0) {
-      return timestampToSeconds(node.timeStdDeviation);
     }
-    return Math.sqrt(weighedSum / (nTotal - count));
+    return nTotal - count === 0
+      ? timestampToSeconds(node.timeStdDeviation)
+      : Math.sqrt(weighedSum / (nTotal - count));
   }
 
   /**
@@ -300,10 +307,10 @@ function render(
   function combined5th95th(node: Node) {
     let cTotal = 0;
     let nTotal = 0;
-    node.combined.n.forEach((n, i) => {
-      cTotal += node.combined.c[i];
+    for (const [i, n] of node.combined.n.entries()) {
+      cTotal += node.combined.c[i] ?? 0;
       nTotal += n;
-    });
+    }
     const p = cTotal / nTotal;
     const cRate5th = p - 1.96 * Math.sqrt((p * (1 - p)) / nTotal);
     const cRate95th = p + 1.96 * Math.sqrt((p * (1 - p)) / nTotal);
@@ -312,9 +319,9 @@ function render(
 
   // Set the title that displays when nodes and links are hovered over
   renderer.options.nodeTitle = (d: TimelineNode) =>
-    `Name: ${d.label}\nCount: ${d.data.count.toString()}\nRate 5th: ${combined5th95th(
-      d.data,
-    )[0].toString()}\nRate 95th: ${combined5th95th(d.data)[1].toString()}\nContribution Rate: ${d.data.contributionRate.toString()}\nMin Time: ${d.data.timeMin?.toString() ?? ''}\nMax Time: ${d.data.timeMax?.toString() ?? ''}\nMean Time: ${secondsToTimestamp(
+    `Name: ${d.label}\nCount: ${d.data.count.toString()}\nRate 5th: ${
+      combined5th95th(d.data)[0]?.toString() ?? ''
+    }\nRate 95th: ${combined5th95th(d.data)[1]?.toString() ?? ''}\nContribution Rate: ${d.data.contributionRate.toString()}\nMin Time: ${d.data.timeMin?.toString() ?? ''}\nMax Time: ${d.data.timeMax?.toString() ?? ''}\nMean Time: ${secondsToTimestamp(
       combinedMean(d.data),
     )}\nStandard Deviation: ${secondsToTimestamp(combinedStd(d.data))}\nRow: ${d.layout.row.toString()},Col: ${d.layout.column.toString()}`;
   renderer.options.linkTitle = (d: TimelineLink) =>
@@ -335,33 +342,38 @@ function render(
     }
     */
     timeline.clear();
-    Object.keys(nodes).forEach((n) => {
-      const node = nodes[n];
-      let start = combinedMean(node) - 2500;
-      if (start < 0) {
-        start = 0;
+    for (const n in nodes) {
+      if (nodes[n]) {
+        const node = nodes[n];
+        let start = combinedMean(node) - 2500;
+        if (start < 0) {
+          start = 0;
+        }
+        const timelineNode = timeline.createNode(
+          node.name,
+          {
+            endTime: combinedMean(node) + 2500,
+            meanTime: combinedMean(node),
+            startTime: start,
+            stdDeviation: combinedStd(node),
+          },
+          node.color,
+        );
+        timelineNode.data = node;
+        if (node.layout) {
+          timelineNode.persist = node.layout;
+        }
+        nodes[n].timelineNode = timelineNode;
+        nodeIdMap[timelineNode.id] = n;
       }
-      const timelineNode = timeline.createNode(
-        node.name,
-        {
-          endTime: combinedMean(node) + 2500,
-          meanTime: combinedMean(node),
-          startTime: start,
-          stdDeviation: combinedStd(node),
-        },
-        node.color,
-      );
-      timelineNode.data = node;
-      if (node.layout) {
-        timelineNode.persist = node.layout;
-      }
-      nodes[n].timelineNode = timelineNode;
-      nodeIdMap[timelineNode.id] = n;
-    });
-    Object.keys(nodes).forEach((n) => {
+    }
+    for (const n in nodes) {
       if (Object.prototype.hasOwnProperty.call(links, n)) {
-        Object.entries(links[n]).forEach(([otherState, data]) => {
-          if (nodes[n].timelineNode !== undefined && nodes[otherState].timelineNode !== undefined) {
+        for (const [otherState, data] of Object.entries(links[n] ?? {})) {
+          if (
+            nodes[n]?.timelineNode !== undefined
+            && nodes[otherState]?.timelineNode !== undefined
+          ) {
             const timelineLink = timeline.createLink(
               nodes[n].timelineNode,
               nodes[otherState].timelineNode,
@@ -369,9 +381,9 @@ function render(
             );
             timelineLink.data = data;
           }
-        });
+        }
       }
-    });
+    }
   }
 
   createPaths();
@@ -379,14 +391,16 @@ function render(
   // Listen for nodes being dragged and ensure their positions are saved
   renderer.on('positionChanged', (node, x, y) => {
     const name = nodeIdMap[node];
-    if (nodes[name].layout) {
-      if (options.layout === 'default') {
-        nodes[name].layout.default = { x, y };
-      } else {
-        nodes[name].layout.timeline = { y };
+    if (name) {
+      if (nodes[name]?.layout) {
+        if (options.layout === 'default') {
+          nodes[name].layout.default = { x, y };
+        } else {
+          nodes[name].layout.timeline = { y };
+        }
+      } else if (nodes[name]) {
+        nodes[name].layout = { default: { x, y }, timeline: { y } };
       }
-    } else {
-      nodes[name].layout = { default: { x, y }, timeline: { y } };
     }
   });
 
@@ -397,10 +411,13 @@ function render(
 /**
  * Enables dragging on the node properties menu.
  */
-const PaperComponent: React.FC<PaperProps> = (props) => {
+const PaperComponent: React.FC<PaperProps> = props => {
   const nodeRef = useRef<HTMLDivElement>(null);
   return (
-    <Draggable nodeRef={nodeRef as unknown as RefObject<HTMLDivElement>} handle="#node-menu-title">
+    <Draggable
+      nodeRef={nodeRef as unknown as RefObject<HTMLDivElement>}
+      handle="#node-menu-title"
+    >
       <Paper {...props} ref={nodeRef}></Paper>
     </Draggable>
   );
@@ -410,7 +427,9 @@ const PaperComponent: React.FC<PaperProps> = (props) => {
  * A component to display the Sankey Timeline diagram and its controls.
  * @param param0.data - The contents of the path results file.
  */
-export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) => {
+export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({
+  data,
+}) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerElement = useRef<HTMLDivElement>(null);
 
@@ -420,11 +439,11 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
   }
 
   // Creates a record of key states for control via checkboxes
-  const allKeyStates = data.keyStates.map((state) => state.name);
+  const allKeyStates = data.keyStates.map(state => state.name);
   const ksRecord: Record<string, boolean> = {};
-  allKeyStates.forEach((state) => {
+  for (const state of allKeyStates) {
     ksRecord[state] = true;
-  });
+  }
 
   const [state, setState] = useState<{
     otherStates: boolean;
@@ -449,8 +468,12 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
     fontSize: data.options ? data.options.fontSize : 20,
     borderWidth: 6,
     labelFontSize: 1,
-    maxNodeHeight: data.options ? data.options.maxNodeHeight : window.innerHeight / 7,
-    maxLinkWidth: data.options ? data.options.maxLinkWidth : window.innerHeight / 7 / 2,
+    maxNodeHeight: data.options
+      ? data.options.maxNodeHeight
+      : window.innerHeight / 7,
+    maxLinkWidth: data.options
+      ? data.options.maxLinkWidth
+      : window.innerHeight / 7 / 2,
     keyStates: ksRecord,
     colorOptions: colors.concat(customColors),
     nodeDialog: false,
@@ -512,7 +535,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               }}
             />
           }
-        ></FormControlLabel>
+        />
         <FormControlLabel
           label="Show Other State Paths"
           control={
@@ -526,7 +549,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               }}
             />
           }
-        ></FormControlLabel>
+        />
         {layout === 'timeline' ? (
           <FormControlLabel
             label="Show Distributions"
@@ -541,7 +564,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
                 }}
               />
             }
-          ></FormControlLabel>
+          />
         ) : (
           <div></div>
         )}
@@ -579,22 +602,28 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
           const pathResults = data;
 
           // For each key state, make sure user-set properties are set in the JSON and delete circular references
-          pathResults.keyStates.forEach((path, k) => {
-            path.paths.forEach((state, s) => {
-              const n =
-                timeline.getNodesByLabel(state.name)[0] ?? nodeCache[state.name].timelineNode;
-              pathResults.keyStates[k].paths[s].layout = n.persist;
-              pathResults.keyStates[k].paths[s].color = n.color;
-              delete pathResults.keyStates[k].paths[s].timelineNode;
-            });
-          });
+          for (const [k, path] of pathResults.keyStates.entries()) {
+            for (const [s, state] of path.paths.entries()) {
+              const n
+                = timeline.getNodesByLabel(state.name)[0]
+                  ?? nodeCache[state.name]?.timelineNode;
+              if (
+                n
+                && pathResults.keyStates[k]
+                && pathResults.keyStates[k].paths[s]
+              ) {
+                pathResults.keyStates[k].paths[s].layout = n.persist;
+                pathResults.keyStates[k].paths[s].color = n.color;
+                delete pathResults.keyStates[k].paths[s].timelineNode;
+              }
+            }
+          }
 
           // Save user preferences to the JSON
           if (renderer !== null) {
             pathResults.options = {
               customColors,
               fontSize: renderer.options.fontSize,
-              // lastEditedNode: lastEditedNode,
               maxNodeHeight: renderer.options.maxNodeHeight,
               maxLinkWidth: renderer.options.maxLinkWidth,
             };
@@ -623,7 +652,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
       </Button>
       <svg ref={svgRef}></svg>
       <FormGroup row>
-        {allKeyStates.map((name) => {
+        {allKeyStates.map(name => {
           return (
             <FormControlLabel
               key={name}
@@ -670,14 +699,14 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               label="Edit properties of"
               value={targetNode}
               autoWidth
-              onChange={(e) => {
+              onChange={e => {
                 setState({
                   ...state,
                   targetNode: e.target.value as number,
                 });
               }}
             >
-              {Object.values(nodes).map((node) => {
+              {Object.values(nodes).map(node => {
                 return (
                   <MenuItem key={node.name} value={node.timelineNode?.id}>
                     {node.name}
@@ -691,7 +720,7 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               <br />
               Set color:
               <div id="color-options">
-                {colorOptions.map((color) => {
+                {colorOptions.map(color => {
                   return (
                     <div
                       key={color}
@@ -700,9 +729,12 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
                       title={color}
                       onClick={() => {
                         renderer?.setNodeColor(targetNode, color);
-                        nodes[nodeIdMap[targetNode]].color = color;
+                        const nodeId = nodeIdMap[targetNode];
+                        if (nodeId && nodes[nodeId]) {
+                          nodes[nodeId].color = color;
+                        }
                       }}
-                    ></div>
+                    />
                   );
                 })}
               </div>
@@ -710,22 +742,25 @@ export const SankeyTimelineDiagram: React.FC<SankeyTimelineProps> = ({ data }) =
               <div
                 className="color-option"
                 style={{ backgroundColor: customColorInput, width: 50 }}
-              ></div>
+              />
               <Grid container>
                 <TextField
                   label="Custom color"
                   value={customColorInput}
-                  onChange={(e) => {
+                  onChange={e => {
                     setState({
                       ...state,
                       customColorInput: e.target.value,
                     });
                   }}
-                ></TextField>
+                />
                 <Button
                   onClick={() => {
                     renderer?.setNodeColor(targetNode, customColorInput);
-                    nodes[nodeIdMap[targetNode]].color = customColorInput;
+                    const nodeId = nodeIdMap[targetNode];
+                    if (nodeId && nodes[nodeId]) {
+                      nodes[nodeId].color = customColorInput;
+                    }
                   }}
                 >
                   Set Color

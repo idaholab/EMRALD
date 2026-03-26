@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { Box } from '@mui/material';
 import type {
-  Diagram,
-  LogicNode,
   Action,
+  Diagram,
   Event,
+  ExtSim,
+  LogicNode,
+  MainItemType,
   State,
   Variable,
-  ExtSim,
-  MainItemType,
 } from '../../../types/EMRALD_Model';
-import { type Option, useOptionsMapping } from './OptionMapping';
 import type { ModelItem } from '../../../types/ModelUtils';
+import { Box } from '@mui/material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useState } from 'react';
+import { type Option, useOptionsMapping } from './OptionMapping';
 
 interface ItemWithContextMenuProps {
   itemData: Diagram | LogicNode | Action | Event | State | Variable;
@@ -22,7 +22,7 @@ interface ItemWithContextMenuProps {
   handleDelete?: (itemToDelete: ModelItem, itemType: MainItemType) => void;
 }
 
-const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
+export const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
   itemData,
   optionType,
   onDiagramChange,
@@ -49,7 +49,7 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
   ) => {
     if (!isContextMenuOpen) {
       // Double click functionality here
-      await options[0].action(itemData);
+      await options?.[0]?.action(itemData);
       if (itemData.objType === 'Diagram') {
         onDiagramChange(itemData);
       }
@@ -61,8 +61,9 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
     itemData: Diagram | LogicNode | Action | Event | State | Variable | ExtSim,
   ) => {
     // Implement functionality based on the selected option
-    if (option.label === 'Delete') await option.action(itemData, handleDelete);
-    else await option.action(itemData);
+    await (option.label === 'Delete'
+      ? option.action(itemData, handleDelete)
+      : option.action(itemData));
     handleClose();
   };
 
@@ -77,7 +78,7 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
       <Box>{itemData.name}</Box>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {options.map((option, index) => (
+        {options?.map((option, index) => (
           <MenuItem
             key={index}
             onClick={() => {
@@ -91,5 +92,3 @@ const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
     </Box>
   );
 };
-
-export default ItemWithContextMenu;

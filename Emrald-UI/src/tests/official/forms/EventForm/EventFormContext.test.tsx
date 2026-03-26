@@ -26,7 +26,9 @@ describe('Event Form Context', () => {
 
     // Switch event type to distribution
     await user.click(await screen.findByLabelText('Type'));
-    await user.click(await screen.findByRole('option', { name: 'Distribution' }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Distribution' }),
+    );
 
     // Confirm that the distribution form is displayed
     expect(screen.queryByLabelText('Distribution Type')).not.toBeNull();
@@ -49,15 +51,17 @@ describe('Event Form Context', () => {
 
     // Switch event type to failure rate
     await user.click(await screen.findByLabelText('Type'));
-    await user.click(await screen.findByRole('option', { name: 'Failure Rate' }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Failure Rate' }),
+    );
 
     // Confirm that the failure rate form is displayed
     expect(screen.queryByLabelText('Lambda')).not.toBeNull();
 
     // Invalid values should be set such that the save button is not clickable without a lambda value
-    await expect(
-      async () => { await user.click(await screen.findByText('Save')); },
-    ).rejects.toThrowError();
+    await expect(async () => {
+      await user.click(await screen.findByText('Save'));
+    }).rejects.toThrowError();
   });
 
   test('changes event name', async () => {

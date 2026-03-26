@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
 import type { Edge } from 'reactflow';
-import Dagre from '@dagrejs/dagre';
 import type { LNode } from './useLogicTreeDiagram';
+import Dagre from '@dagrejs/dagre';
+import { useMemo } from 'react';
 
 export interface UseExpandCollapseOptions {
   layoutNodes?: boolean;
@@ -9,11 +9,11 @@ export interface UseExpandCollapseOptions {
   treeHeight?: number;
 }
 
-function filterCollapsedChildren(dagre: Dagre.graphlib.Graph, node: LNode) {
-  // 🚨 The current types for some of dagre's methods are incorrect. In future
-  // versions of dagre this should be fixed, but for now we need to cast the return
-  // value to keep TypeScript happy.
-  const children = dagre.successors(node.id) as unknown as string[] | undefined;
+function filterCollapsedChildren(
+  dagre: Dagre.graphlib.Graph<LNode>,
+  node: LNode,
+) {
+  const children = dagre.successors(node.id);
 
   // Update this node's props so it knows if it has children and can be expanded
   // or not.
@@ -25,24 +25,30 @@ function filterCollapsedChildren(dagre: Dagre.graphlib.Graph, node: LNode) {
     while (children?.length) {
       const child = children.pop();
       if (child) {
-        children.push(...(dagre.successors(child) as unknown as string[]));
-        dagre.removeNode(child);
+        children.push(...(dagre.successors(child.id) ?? []));
+        dagre.removeNode(child.id);
       }
     }
   }
 }
 
-function useExpandCollapse(
+export function useExpandCollapse(
   nodes: LNode[],
   edges: Edge[],
-  { layoutNodes = true, treeWidth = 220, treeHeight = 100 }: UseExpandCollapseOptions = {},
+  {
+    layoutNodes = true,
+    treeWidth = 220,
+    treeHeight = 100,
+  }: UseExpandCollapseOptions = {},
 ) {
   return useMemo(() => {
-    if (!layoutNodes) return { nodes, edges };
+    if (!layoutNodes) {
+      return { nodes, edges };
+    }
 
     // 1. Create a new instance of `Dagre.graphlib.Graph` and set some default
     // properties.
-    const dagre = new Dagre.graphlib.Graph()
+    const dagre = new Dagre.graphlib.Graph<LNode>()
       .setDefaultEdgeLabel(() => ({}))
       .setGraph({ rankdir: 'TB' });
 
@@ -79,24 +85,27 @@ function useExpandCollapse(
       // element from the array, we can return an empty array in this iteration.
       // Otherwise, we can map the element like normal and wrap it in a singleton
       // array.
-      nodes: nodes.flatMap((node) => {
+      nodes: nodes.flatMap(node => {
         // This node might have been filtered out by `filterCollapsedChildren` if
         // any of its ancestors were collpased.
-        if (!dagre.hasNode(node.id)) return [];
+        if (!dagre.hasNode(node.id)) {
+          return [];
+        }
 
         const { x, y } = dagre.node(node.id);
 
-        const type = 'custom';
-        const position = { x, y };
         // 🚨 `filterCollapsedChildren` *mutates* the data object of a node. React
         // will not know the data has changed unless we create a new object here.
-        const data = { ...node.data };
-
-        return [{ ...node, position, type, data }];
+        return [
+          {
+            ...node,
+            position: { x, y },
+            type: 'custom',
+            data: { ...node.data },
+          },
+        ];
       }),
       edges,
     };
   }, [nodes, edges, layoutNodes, treeWidth, treeHeight]);
 }
-
-export default useExpandCollapse;

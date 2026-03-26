@@ -1,11 +1,11 @@
-import { describe, expect, test } from 'vitest';
-import { getLogicNode, render, save } from '../../../test-utils';
-import LogicNodeForm from '../../../../components/forms/LogicNodeForm/LogicNodeForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { LogicNodeForm } from '../../../../components/forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../../../../components/forms/LogicNodeForm/LogicNodeFormContext';
+import { LogicNodeContextProvider } from '../../../../contexts/LogicNodeContext';
+import { getLogicNode, render, save } from '../../../test-utils';
 import expected from './LogicNodeForm.expected.json';
-import LogicNodeContextProvider from '../../../../contexts/LogicNodeContext';
-import LogicNodeFormContextProvider from '../../../../components/forms/LogicNodeForm/LogicNodeFormContext';
 
 describe('Logic Node Form', () => {
   test('creates a logic node', async () => {
@@ -13,7 +13,7 @@ describe('Logic Node Form', () => {
     render(
       <LogicNodeContextProvider>
         <LogicNodeFormContextProvider>
-          <LogicNodeForm></LogicNodeForm>
+          <LogicNodeForm />
         </LogicNodeFormContextProvider>
       </LogicNodeContextProvider>,
     );
@@ -28,7 +28,9 @@ describe('Logic Node Form', () => {
     await user.type(await screen.findByLabelText('Description'), 'Desc');
 
     // Check top node
-    await user.click(await screen.findByLabelText('Make available as Top or Subtree'));
+    await user.click(
+      await screen.findByLabelText('Make available as Top or Subtree'),
+    );
 
     await save();
     expect(getLogicNode(name)).toEqual(expected[name]);

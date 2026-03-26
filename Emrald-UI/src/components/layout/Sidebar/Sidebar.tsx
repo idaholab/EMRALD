@@ -1,12 +1,12 @@
-import Drawer from '@mui/material/Drawer';
-import Toolbar from '@mui/material/Toolbar';
-import Box from '@mui/material/Box';
-import MenuAccordion from '../Accordion/Accordion';
-import { styled } from '@mui/material/styles';
 import { Divider, Typography } from '@mui/material';
-import { ButtonGroupComponent } from '../../common/ButtonGroupComponent/ButtonGroupComponent';
-import { useSidebarLogic } from './SidebarLogic';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import { styled } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
 import { DialogComponent } from '../../common';
+import { ButtonGroupComponent } from '../../common/ButtonGroupComponent/ButtonGroupComponent';
+import { MenuAccordion } from '../Accordion/Accordion';
+import { useSidebarLogic } from './SidebarLogic';
 
 const ResizeHandle = styled('div')({
   width: '6px',
@@ -18,7 +18,7 @@ const ResizeHandle = styled('div')({
   zIndex: 100,
 });
 
-const Sidebar = () => {
+export const Sidebar: React.FC = () => {
   const {
     setIsDiagramAccordionOpen,
     setIsComponentAccordionOpen,
@@ -106,5 +106,3 @@ const Sidebar = () => {
     </Drawer>
   );
 };
-
-export default Sidebar;

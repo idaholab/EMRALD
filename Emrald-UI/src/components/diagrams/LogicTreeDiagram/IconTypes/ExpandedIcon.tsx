@@ -5,15 +5,12 @@ interface ExpandedIconProps {
   expanded: boolean;
   className?: string;
 }
-const ExpandedIcon: React.FC<ExpandedIconProps> = ({ expanded, className }) => {
-  switch (expanded) {
-    case true:
-      return <FiMinus className={className} />;
-    case false:
-      return <FaPlus className={className} />;
-    default:
-      return <></>;
-  }
-};
-
-export default ExpandedIcon;
+export const ExpandedIcon: React.FC<ExpandedIconProps> = ({
+  expanded,
+  className,
+}) =>
+  expanded ? (
+    <FiMinus className={className} />
+  ) : (
+    <FaPlus className={className} />
+  );

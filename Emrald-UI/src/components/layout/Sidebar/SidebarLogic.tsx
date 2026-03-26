@@ -1,18 +1,23 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
+import type {
+  Diagram,
+  LogicNode,
+  MainItemType,
+  State,
+} from '../../../types/EMRALD_Model';
+import type { ModelItem } from '../../../types/ModelUtils';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useActionContext } from '../../../contexts/ActionContext';
+import { useAlertContext } from '../../../contexts/AlertContext';
+import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { useEventContext } from '../../../contexts/EventContext';
+import { useExtSimContext } from '../../../contexts/ExtSimContext';
+import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
 import { useStateContext } from '../../../contexts/StateContext';
 import { useVariableContext } from '../../../contexts/VariableContext';
-import { useExtSimContext } from '../../../contexts/ExtSimContext';
-import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
-import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
-import type { Diagram, State, LogicNode, MainItemType } from '../../../types/EMRALD_Model';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import useLogicNodeTreeDiagram from '../../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
-import { useAlertContext } from '../../../contexts/AlertContext';
-import type { ModelItem } from '../../../types/ModelUtils';
+import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
+import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
+import { useLogicNodeTreeDiagram } from '../../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
 
 export function useSidebarLogic() {
   const { diagrams, getDiagramByDiagramName } = useDiagramContext();
@@ -24,9 +29,10 @@ export function useSidebarLogic() {
   const { extSims } = useExtSimContext();
 
   const [isDiagramAccordionOpen, setIsDiagramAccordionOpen] = useState(false);
-  const [isComponentAccordionOpen, setIsComponentAccordionOpen] = useState(false);
+  const [isComponentAccordionOpen, setIsComponentAccordionOpen]
+    = useState(false);
   const [componentGroup, setComponentGroup] = useState('all');
-  const [currDiagram, setCurrDiagram] = useState<Diagram>(currentDiagram.value);
+  const [currDiagram, setCurrDiagram] = useState(currentDiagram.value);
   const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<ModelItem | undefined>();
   const [itemToDeleteType, setItemToDeleteType] = useState<MainItemType>();
@@ -70,7 +76,11 @@ export function useSidebarLogic() {
       return states;
     } else if (componentGroup === 'local') {
       try {
-        const copyModel = GetModelItemsReferencedBy(currDiagram.name, 'Diagram', 1);
+        const copyModel = GetModelItemsReferencedBy(
+          currDiagram.name,
+          'Diagram',
+          1,
+        );
         return copyModel.StateList;
       } catch (error) {
         console.error('Error Message:', error);
@@ -81,47 +91,61 @@ export function useSidebarLogic() {
     }
   }, [componentGroup, states, currDiagram]);
 
-  const variableItems = useMemo(() => {
-    if (componentGroup === 'all') {
-      return variables;
-    } else {
-      return variables;
-    }
-  }, [componentGroup, variables]);
-
   const actionItems = useMemo(() => {
-    if (componentGroup === 'all') {
-      return actions;
-    } else if (componentGroup === 'global') {
-      return actions.filter((item) => item.mainItem);
-    } else if (componentGroup === 'local') {
-      try {
-        const copyModel = GetModelItemsReferencedBy(currDiagram.name, 'Diagram', 2);
-        return copyModel.ActionList;
-      } catch (error) {
-        console.error('Error Message:', error);
-        showAlert('Unable to get referenced ActionList items', 'error');
+    switch (componentGroup) {
+      case 'all': {
+        return actions;
       }
-    } else {
-      return [];
+      case 'global': {
+        return actions.filter(item => item.mainItem);
+      }
+      case 'local': {
+        try {
+          const copyModel = GetModelItemsReferencedBy(
+            currDiagram.name,
+            'Diagram',
+            2,
+          );
+          return copyModel.ActionList;
+        } catch (error) {
+          console.error('Error Message:', error);
+          showAlert('Unable to get referenced ActionList items', 'error');
+        }
+
+        break;
+      }
+      default: {
+        return [];
+      }
     }
   }, [componentGroup, actions, currDiagram]);
 
   const eventItems = useMemo(() => {
-    if (componentGroup === 'all') {
-      return events;
-    } else if (componentGroup === 'global') {
-      return events.filter((item) => item.mainItem);
-    } else if (componentGroup === 'local') {
-      try {
-        const copyModel = GetModelItemsReferencedBy(currDiagram.name, 'Diagram', 2);
-        return copyModel.EventList;
-      } catch (error) {
-        console.error('Error Message:', error);
-        showAlert('Unable to get referenced EventList items', 'error');
+    switch (componentGroup) {
+      case 'all': {
+        return events;
       }
-    } else {
-      return [];
+      case 'global': {
+        return events.filter(item => item.mainItem);
+      }
+      case 'local': {
+        try {
+          const copyModel = GetModelItemsReferencedBy(
+            currDiagram.name,
+            'Diagram',
+            2,
+          );
+          return copyModel.EventList;
+        } catch (error) {
+          console.error('Error Message:', error);
+          showAlert('Unable to get referenced EventList items', 'error');
+        }
+
+        break;
+      }
+      default: {
+        return [];
+      }
     }
   }, [componentGroup, events, currDiagram]);
 
@@ -130,7 +154,7 @@ export function useSidebarLogic() {
       return [
         { type: 'Actions', data: actionItems },
         { type: 'Events', data: eventItems },
-        { type: 'Variables', data: variableItems },
+        { type: 'Variables', data: variables },
       ];
     } else if (componentGroup === 'local') {
       return [
@@ -143,7 +167,7 @@ export function useSidebarLogic() {
       { type: 'Actions', data: actionItems },
       { type: 'Events', data: eventItems },
       { type: 'States', data: stateItems },
-      { type: 'Variables', data: variableItems },
+      { type: 'Variables', data: variables },
     ];
   }, [componentGroup, actionItems, eventItems, variables, stateItems]);
 
@@ -159,12 +183,24 @@ export function useSidebarLogic() {
 
   const handleMouseDown = () => {
     document.addEventListener('mouseup', handleMouseUp as EventListener, true);
-    document.addEventListener('mousemove', handleMouseMove as EventListener, true);
+    document.addEventListener(
+      'mousemove',
+      handleMouseMove as EventListener,
+      true,
+    );
   };
 
   const handleMouseUp = () => {
-    document.removeEventListener('mouseup', handleMouseUp as EventListener, true);
-    document.removeEventListener('mousemove', handleMouseMove as EventListener, true);
+    document.removeEventListener(
+      'mouseup',
+      handleMouseUp as EventListener,
+      true,
+    );
+    document.removeEventListener(
+      'mousemove',
+      handleMouseMove as EventListener,
+      true,
+    );
   };
 
   const handleMouseMove = useCallback(
@@ -176,13 +212,17 @@ export function useSidebarLogic() {
     },
     [minDrawerWidth, maxDrawerWidth],
   );
+
   const closeDeleteConfirmation = () => {
     // * Closes the confirmation dialog and resets the state items
     setDeleteConfirmation(false);
     setItemToDelete(undefined);
   };
+
   const deleteItem = () => {
-    if (!itemToDelete) return;
+    if (!itemToDelete) {
+      return;
+    }
     if (itemToDeleteType === 'Diagram') {
       deleteDiagram(itemToDelete.id);
       closeDeleteConfirmation();
@@ -202,10 +242,14 @@ export function useSidebarLogic() {
       deleteEvent(itemToDelete.id);
     }
     if (itemToDeleteType === 'State') {
-      //not sure why the next 4 lines are needed, but if not then the diagram containin ght state has a ghost state left in it when you open it
-      const diagram = getDiagramByDiagramName((itemToDelete as State).diagramName);
+      // not sure why the next 4 lines are needed, but if not then the diagram containin ght state has a ghost state left in it when you open it
+      const diagram = getDiagramByDiagramName(
+        (itemToDelete as State).diagramName,
+      );
       if (diagram) {
-        const updatedStates = diagram.states.filter((stateName) => stateName !== itemToDelete.name);
+        const updatedStates = diagram.states.filter(
+          stateName => stateName !== itemToDelete.name,
+        );
         diagram.states = updatedStates;
         updateDiagram(diagram);
       }

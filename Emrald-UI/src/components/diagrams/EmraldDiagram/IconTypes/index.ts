@@ -1,5 +1,3 @@
-import ActionTypeIcon from './ActionTypeIcon';
-import EventTypeIcon from './EventTypeIcon';
-import NodeTypeIcon from './NodeTypeIcon';
-
-export { ActionTypeIcon, EventTypeIcon, NodeTypeIcon };
+export { ActionTypeIcon } from './ActionTypeIcon';
+export { EventTypeIcon } from './EventTypeIcon';
+export { NodeTypeIcon } from './NodeTypeIcon';

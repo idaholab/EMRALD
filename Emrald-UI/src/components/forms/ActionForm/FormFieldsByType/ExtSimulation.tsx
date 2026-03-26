@@ -1,15 +1,21 @@
-import { Box, Checkbox, FormControlLabel, MenuItem, TextField } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useActionFormContext } from '../ActionFormContext';
-import 'react-duration-control/dist/react-duration-control.css';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  MenuItem,
+  TextField,
+} from '@mui/material';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
 import { useExtSimContext } from '../../../../contexts/ExtSimContext';
 import { useVariableContext } from '../../../../contexts/VariableContext';
-import { DurationComponent } from '../../../common/DurationComponent';
-import { SelectComponent } from '../../../common';
 import { convertToISOString } from '../../../../utils/util-functions';
-import moment from 'moment';
+import { SelectComponent } from '../../../common';
+import { DurationComponent } from '../../../common/DurationComponent';
+import { useActionFormContext } from '../ActionFormContext';
+import 'react-duration-control/dist/react-duration-control.css';
 
-const ExtSimulation: React.FC = () => {
+export const ExtSimulation: React.FC = () => {
   const {
     sim3DMessage,
     extSim,
@@ -27,7 +33,7 @@ const ExtSimulation: React.FC = () => {
   const { extSimList } = useExtSimContext();
   const { variableList } = useVariableContext();
   const extSimVariables = variableList.value.filter(
-    (variable) => variable.varScope === 'gt3DSim' && variable.type === 'string',
+    variable => variable.varScope === 'gt3DSim' && variable.type === 'string',
   );
   // const simEndTimeDuration = dayjs.duration(simEndTime);
   const [milliseconds, setMilliseconds] = useState(0);
@@ -51,8 +57,12 @@ const ExtSimulation: React.FC = () => {
   };
 
   return (
-    <Box display={'flex'} flexDirection={'column'}>
-      <SelectComponent value={sim3DMessage} label="Sim Action" setValue={setSim3DMessage}>
+    <Box display="flex" flexDirection="column">
+      <SelectComponent
+        value={sim3DMessage}
+        label="Sim Action"
+        setValue={setSim3DMessage}
+      >
         {simTypeOptions.map((item, index) => (
           <MenuItem value={item.value} key={index}>
             {item.label}
@@ -60,7 +70,7 @@ const ExtSimulation: React.FC = () => {
         ))}
       </SelectComponent>
       <SelectComponent value={extSim} label="External Sim" setValue={setExtSim}>
-        {extSimList.value.map((item) => (
+        {extSimList.value.map(item => (
           <MenuItem value={item.name} key={item.id}>
             {item.name}
           </MenuItem>
@@ -68,7 +78,7 @@ const ExtSimulation: React.FC = () => {
       </SelectComponent>
 
       {sim3DMessage === 'atOpenSim' ? (
-        <Box mt={2} display={'flex'} flexDirection={'column'}>
+        <Box mt={2} display="flex" flexDirection="column">
           <DurationComponent
             milliseconds={milliseconds}
             handleDurationChange={handleDurationChange}
@@ -79,7 +89,7 @@ const ExtSimulation: React.FC = () => {
               <Checkbox
                 sx={{ p: '0 9px' }}
                 checked={openSimVarParams}
-                onChange={(e) => {
+                onChange={e => {
                   setOpenSimVarParams(e.target.checked);
                 }}
               />
@@ -122,10 +132,10 @@ const ExtSimulation: React.FC = () => {
                 value={sim3DModelRef}
                 size="small"
                 fullWidth
-                onChange={(e) => {
+                onChange={e => {
                   setSim3DModelRef(e.target.value);
                 }}
-              ></TextField>
+              />
               <br />
               <br />
               <TextField
@@ -133,10 +143,10 @@ const ExtSimulation: React.FC = () => {
                 value={sim3DConfigData}
                 size="small"
                 fullWidth
-                onChange={(e) => {
+                onChange={e => {
                   setSim3DConfigData(e.target.value);
                 }}
-              ></TextField>
+              />
             </div>
           )}
         </Box>
@@ -146,5 +156,3 @@ const ExtSimulation: React.FC = () => {
     </Box>
   );
 };
-
-export default ExtSimulation;

@@ -1,6 +1,11 @@
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useState,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface WindowPosition {
@@ -42,30 +47,27 @@ interface WindowContextType {
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
 
 // Custom hook to access the window context
-export const useWindowContext = (): WindowContextType => {
+export function useWindowContext() {
   const context = useContext(WindowContext);
   if (!context) {
     throw new Error('useWindowContext must be used within a WindowProvider');
   }
   return context;
-};
-
-// Props interface for the WindowProvider component
-interface WindowProviderProps {
-  children: ReactNode;
 }
 
 // Provider component to manage windows
-export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
+export const WindowProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
   const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'lg'));
   const [windows, setWindows] = useState<Window[]>([]);
-  const [nextWindowId, setNextWindowId] = useState<number>(1);
+  const [nextWindowId, setNextWindowId] = useState(1);
   const [activeWindowId, setActiveWindowId] = useState<string | null>(null);
 
   // Bring a window to the front
   const bringToFront = (selectedWindow: Window) => {
-    const windowIndex = windows.findIndex((window) => window.id === selectedWindow.id);
+    const windowIndex = windows.findIndex(
+      window => window.id === selectedWindow.id,
+    );
     if (windowIndex !== -1) {
       const updatedWindows = [...windows];
       updatedWindows.splice(windowIndex, 1);
@@ -78,7 +80,9 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   const handleClose = (id?: string) => {
     const windowIdToClose = id ?? activeWindowId; // Use activeWindowId if id is not provided
     if (windowIdToClose) {
-      const filteredWindows = windows.filter((window) => window.id !== windowIdToClose);
+      const filteredWindows = windows.filter(
+        window => window.id !== windowIdToClose,
+      );
       setWindows(filteredWindows);
       if (activeWindowId === windowIdToClose) {
         setActiveWindowId(null); // Reset activeWindowId if the closed window was active
@@ -94,7 +98,7 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     closePrevWindowId?: string,
   ): void => {
     const existingWindow = windows.find(
-      (window) => window.title === title || window.id === windowId,
+      window => window.title === title || window.id === windowId,
     );
 
     if (existingWindow) {
@@ -124,7 +128,9 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
     const updatedWindows = [...windows, newWindow];
     // Close the previous window if closePrevWindowId is provided
     if (closePrevWindowId) {
-      setWindows(updatedWindows.filter((window) => window.id !== closePrevWindowId));
+      setWindows(
+        updatedWindows.filter(window => window.id !== closePrevWindowId),
+      );
     } else {
       setWindows(updatedWindows);
     }
@@ -133,11 +139,13 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   };
 
   const getWindowTitleById = (id: string | null): string | undefined => {
-    return windows.find((window) => window.id === id)?.title;
+    return windows.find(window => window.id === id)?.title;
   };
 
   const updateTitle = (currentTitle: string, newTitle: string) => {
-    const windowToUpdate = windows.find((window) => window.title === currentTitle);
+    const windowToUpdate = windows.find(
+      window => window.title === currentTitle,
+    );
     if (windowToUpdate) {
       addWindow(
         newTitle,
@@ -149,16 +157,17 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   };
 
   const toggleMaximize = (windowToToggle: Window) => {
-    const updatedWindows = windows.map((window) =>
-      window.id === windowToToggle.id
-        ? { ...window, maximized: !window.maximized, minimized: false }
-        : window,
+    setWindows(
+      windows.map(window =>
+        window.id === windowToToggle.id
+          ? { ...window, maximized: !window.maximized, minimized: false }
+          : window,
+      ),
     );
-    setWindows(updatedWindows);
   };
 
   const toggleMinimize = (windowToToggle: Window) => {
-    const updatedWindows = windows.map((window) =>
+    const updatedWindows = windows.map(window =>
       window.id === windowToToggle.id
         ? { ...window, minimized: !window.minimized, maximized: false }
         : window,
@@ -192,5 +201,9 @@ export const WindowProvider: React.FC<WindowProviderProps> = ({ children }) => {
   };
 
   // Provide the context to the children
-  return <WindowContext.Provider value={contextValue}>{children}</WindowContext.Provider>;
+  return (
+    <WindowContext.Provider value={contextValue}>
+      {children}
+    </WindowContext.Provider>
+  );
 };

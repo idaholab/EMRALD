@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from 'react';
 import type {
   ActionType,
   DiagramType,
@@ -13,7 +14,6 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import React, { type Dispatch, type SetStateAction } from 'react';
 import { useWindowContext } from '../../contexts/WindowContext';
 
 type ValueTypes<T extends MainItemType> = T extends 'Diagram'

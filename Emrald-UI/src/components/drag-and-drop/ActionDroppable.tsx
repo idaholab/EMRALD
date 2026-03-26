@@ -1,14 +1,15 @@
 import type { Ref } from 'react';
-import { useDrop } from 'react-dnd';
 import type { State } from '../../types/EMRALD_Model';
-import { Box } from '@mui/material';
-import ActionToStateTable from '../forms/ActionForm/ActionToStateTable';
 import type { NewStateItem } from '../forms/ActionForm/ActionForm';
+import { Box } from '@mui/material';
+import { useDrop } from 'react-dnd';
 import { v4 as uuidv4 } from 'uuid';
 import { useActionFormContext } from '../forms/ActionForm/ActionFormContext';
+import ActionToStateTable from '../forms/ActionForm/ActionToStateTable';
 
-const ActionDropTarget: React.FC = () => {
-  const { newStateItems, setNewStateItems, sortNewStates } = useActionFormContext();
+export const ActionDropTarget: React.FC = () => {
+  const { newStateItems, setNewStateItems, sortNewStates }
+    = useActionFormContext();
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -29,7 +30,7 @@ const ActionDropTarget: React.FC = () => {
         }
       }
     },
-    collect: (monitor) => ({
+    collect: monitor => ({
       isOver: monitor.isOver(),
     }),
   });
@@ -64,5 +65,3 @@ const ActionDropTarget: React.FC = () => {
     </Box>
   );
 };
-
-export default ActionDropTarget;

@@ -1,18 +1,20 @@
-import { Handle, Position } from 'reactflow';
-import { List, ListItem, Typography, Box } from '@mui/material';
-import { TbArrowBarToRight } from 'react-icons/tb';
-import { FaLink } from 'react-icons/fa';
-import useEmraldDiagram from '../../useEmraldDiagram';
-import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
-import useContextMenu from '../../useContextMenu';
 import type { State } from '../../../../../types/EMRALD_Model';
+import { Box, List, ListItem, Typography } from '@mui/material';
+import { FaLink } from 'react-icons/fa';
+import { TbArrowBarToRight } from 'react-icons/tb';
+import { Handle, Position } from 'reactflow';
 import { DialogComponent } from '../../../../common/DialogComponent/DialogComponent';
+import { ContextMenu } from '../../../../layout/ContextMenu/ContextMenu';
+import { useContextMenu } from '../../useContextMenu';
+import { useEmraldDiagram } from '../../useEmraldDiagram';
 
 interface ImmediateActionsProps {
   state: State;
 }
 
-const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
+export const ImmediateActions: React.FC<ImmediateActionsProps> = ({
+  state,
+}) => {
   const { immediateActions } = state;
   const {
     openDiagramFromNewState,
@@ -39,10 +41,10 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
 
         return (
           <ListItem
-            onDoubleClick={(e) => {
+            onDoubleClick={e => {
               onActionDoubleClick(e, actionValue);
             }}
-            onContextMenu={(e) => {
+            onContextMenu={e => {
               if (actionValue) {
                 onActionContextMenu(e, state, actionValue, 'immediate');
               }
@@ -66,7 +68,8 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
             ) : (
               <></>
             )}
-            <TbArrowBarToRight />{' '}
+            <TbArrowBarToRight />
+            &nbsp;
             <Box
               sx={{
                 width: '100%',
@@ -76,7 +79,9 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
               }}
             >
               <Typography sx={{ fontSize: 10, ml: '5px' }}>{action}</Typography>
-              {!isStateInCurrentDiagram(actionValue) ? (
+              {isStateInCurrentDiagram(actionValue) ? (
+                <></>
+              ) : (
                 <FaLink
                   onClick={() => {
                     if (actionValue) {
@@ -85,8 +90,6 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
                   }}
                   style={{ cursor: 'pointer', width: '20px' }}
                 />
-              ) : (
-                <></>
               )}
             </Box>
           </ListItem>
@@ -113,13 +116,11 @@ const ImmediateActions: React.FC<ImmediateActionsProps> = ({ state }) => {
           }}
         >
           <Typography>
-            Are you sure you want to delete {itemToDelete?.name}? It will be removed from all other
-            places it is used.
+            Are you sure you want to delete {itemToDelete?.name}? It will be
+            removed from all other places it is used.
           </Typography>
         </DialogComponent>
       )}
     </List>
   );
 };
-
-export default ImmediateActions;

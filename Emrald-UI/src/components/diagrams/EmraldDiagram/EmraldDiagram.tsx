@@ -1,33 +1,33 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type { Diagram } from '../../../types/EMRALD_Model';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { signal } from '@preact/signals';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PiDotsNine } from 'react-icons/pi';
+import { TbMap } from 'react-icons/tb';
 import ReactFlow, {
-  MiniMap,
-  Controls,
   Background,
   BackgroundVariant,
   ControlButton,
+  Controls,
+  MiniMap,
 } from 'reactflow';
-import 'reactflow/dist/style.css';
-import { Box, CircularProgress, Typography } from '@mui/material';
-import StateNode from '../EmraldDiagram/StateNodeComponent';
-import type { Diagram } from '../../../types/EMRALD_Model';
-import useEmraldDiagram from './useEmraldDiagram';
-import CustomConnectionLine from './Edges/ConnectionLineComponent';
-import ContextMenu from '../../layout/ContextMenu/ContextMenu';
-import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
-import useContextMenu from './useContextMenu';
-import { signal } from '@preact/signals';
 import { emptyDiagram } from '../../../contexts/DiagramContext';
-import { TbMap } from 'react-icons/tb';
-import { PiDotsNine } from 'react-icons/pi';
-import DownloadButton from '../DownloadButton';
+import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
+import { ContextMenu } from '../../layout/ContextMenu/ContextMenu';
+import { DownloadButton } from '../DownloadButton';
+import { StateNode } from '../EmraldDiagram/StateNodeComponent';
+import { CustomConnectionLine } from './Edges/ConnectionLineComponent';
+import { useContextMenu } from './useContextMenu';
+import { useEmraldDiagram } from './useEmraldDiagram';
+import 'reactflow/dist/style.css';
 
 interface EmraldDiagramProps {
   diagram: Diagram;
 }
 
-export const currentDiagram = signal<Diagram>(emptyDiagram);
+export const currentDiagram = signal(emptyDiagram);
 
-const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
+export const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   const [showMap, setShowMap] = useState(true);
   const [showBackgroundDots, setShowBackgroundDots] = useState(true);
   currentDiagram.value = diagram;
@@ -84,7 +84,11 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
           <h4>Loading Diagram</h4>
         </Box>
       ) : (
-        <div className="emrald-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
+        <div
+          className="emrald-diagram"
+          ref={ref}
+          style={{ width: '100%', height: '100%' }}
+        >
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -145,14 +149,16 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
               open={true}
               title="Delete Confirmation"
               submitText="delete"
-              onSubmit={() => { deleteItem(); }}
+              onSubmit={() => {
+                deleteItem();
+              }}
               onClose={() => {
                 closeDeleteConfirmation();
               }}
             >
               <Typography>
-                Are you sure you want to delete {itemToDelete?.name}? It will be removed from all
-                other places it is used.
+                Are you sure you want to delete {itemToDelete?.name}? It will be
+                removed from all other places it is used.
               </Typography>
             </DialogComponent>
           )}
@@ -161,5 +167,3 @@ const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     </Box>
   );
 };
-
-export default EmraldDiagram;

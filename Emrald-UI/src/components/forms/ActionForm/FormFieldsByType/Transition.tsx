@@ -1,14 +1,16 @@
-import { Box, Typography, FormControlLabel, Checkbox } from '@mui/material';
-import ActionDropTarget from '../../../drag-and-drop/ActionDroppable';
+import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material';
+import { ActionDropTarget } from '../../../drag-and-drop/ActionDroppable';
 import { useActionFormContext } from '../ActionFormContext';
 
-const Transition = () => {
+export const Transition: React.FC = () => {
   const { mutuallyExclusive, handleMutuallyExclusiveChange } = useActionFormContext();
   return (
     <Box>
       <Box sx={{ mt: 3 }}>
         <Typography>
-          <b>Instructions:</b> To add a new destination state, drag and drop a State from the
+          <b>Instructions:</b>
+          &nbsp;
+          To add a new destination state, drag and drop a State from the
           sidebar into the To State box and the fill in the probability.
         </Typography>
       </Box>
@@ -29,5 +31,3 @@ const Transition = () => {
     </Box>
   );
 };
-
-export default Transition;

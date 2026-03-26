@@ -1,4 +1,7 @@
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
+import { ActionForm } from '../../../../../components/forms/ActionForm/ActionForm';
 import {
   ensureExtSim,
   ensureVariable,
@@ -7,10 +10,7 @@ import {
   save,
   selectOption,
 } from '../../../../test-utils';
-import ActionForm from '../../../../../components/forms/ActionForm/ActionForm';
 import expected from './ExtSimulation.expected.json';
-import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
 
 describe('Ext. Sim Message Actions', () => {
   test('sets external sim', async () => {
@@ -24,7 +24,7 @@ describe('Ext. Sim Message Actions', () => {
           mainItem: true,
           actType: 'at3DSimMsg',
         }}
-      ></ActionForm>,
+      />,
     );
 
     // Set sim action to "cancel sim"
@@ -51,7 +51,7 @@ describe('Ext. Sim Message Actions', () => {
           mainItem: true,
           actType: 'at3DSimMsg',
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -75,10 +75,16 @@ describe('Ext. Sim Message Actions', () => {
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
     // Enter a model reference
-    await user.type(await screen.findByLabelText('Model Reference (Optional)'), 'ModelRef');
+    await user.type(
+      await screen.findByLabelText('Model Reference (Optional)'),
+      'ModelRef',
+    );
 
     // Enter config data
-    await user.type(await screen.findByLabelText('Config Data (Optional)'), 'ConfigData');
+    await user.type(
+      await screen.findByLabelText('Config Data (Optional)'),
+      'ConfigData',
+    );
 
     await save();
     expect(getAction(name)).toEqual(expected[name]);
@@ -95,7 +101,7 @@ describe('Ext. Sim Message Actions', () => {
           mainItem: true,
           actType: 'at3DSimMsg',
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -119,11 +125,13 @@ describe('Ext. Sim Message Actions', () => {
     await user.type(await screen.findByLabelText('Seconds'), '4');
 
     // Check box to use variables
-    await user.click(await screen.findByLabelText('Use variable for items below'));
+    await user.click(
+      await screen.findByLabelText('Use variable for items below'),
+    );
 
     // Add a variable to the model
     ensureVariable('Test ExtSim Variable', {
-      varScope: 'gt3DSim'
+      varScope: 'gt3DSim',
     });
 
     // Select the variable

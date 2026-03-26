@@ -1,24 +1,28 @@
-import React, { useMemo } from 'react';
-import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+import CloseIcon from '@mui/icons-material/Close';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import CropSquareIcon from '@mui/icons-material/CropSquare';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
+import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
+import { type Theme, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import { useMemo } from 'react';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import DraggableContainer from './DraggableContainer';
-import { Typography } from '@mui/material';
+import { DraggableContainer } from './DraggableContainer';
 
-const WindowComponent: React.FC = () => {
-  const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize } = useWindowContext();
+export const WindowComponent: React.FC = () => {
+  const { windows, bringToFront, handleClose, toggleMaximize, toggleMinimize }
+    = useWindowContext();
 
-  const openWindows = useMemo(() => windows.filter((window) => !window.minimized), [windows]);
+  const openWindows = useMemo(
+    () => windows.filter(window => !window.minimized),
+    [windows],
+  );
 
   return (
     <>
-      {openWindows.map((window) => (
+      {openWindows.map(window => (
         <DraggableContainer
           key={window.id}
           id={window.id}
@@ -34,7 +38,7 @@ const WindowComponent: React.FC = () => {
               height: '100%',
               position: 'relative',
               boxShadow: '0 3px 6px rgba(0, 0, 0, 0.16)',
-              zIndex: window.id === windows[windows.length - 1].id ? 2 : 1,
+              zIndex: window.id === windows.at(-1)?.id ? 2 : 1,
               paddingBottom: '0px', // Ensure no padding at the bottom
             }}
           >
@@ -61,17 +65,26 @@ const WindowComponent: React.FC = () => {
               >
                 <Typography>{window.title}</Typography>
               </Box>
-              <Box sx={{ position: 'relative', top: '-2px', display: 'flex', flexWrap: 'nowrap' }}>
+              <Box
+                sx={{
+                  position: 'relative',
+                  top: '-2px',
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                }}
+              >
                 <IconButton
                   aria-label="minimize"
                   onClick={() => {
                     toggleMinimize(window);
                   }}
                   sx={{
-                    color: (theme) => theme.palette.grey[500],
+                    color: (theme: Theme) => theme.palette.grey[500],
                   }}
                 >
-                  {!window.minimized && !window.maximized ? <HorizontalRuleIcon /> : null}
+                  {!window.minimized && !window.maximized ? (
+                    <HorizontalRuleIcon />
+                  ) : null}
                 </IconButton>
                 <IconButton
                   aria-label="maximize"
@@ -79,10 +92,14 @@ const WindowComponent: React.FC = () => {
                     toggleMaximize(window);
                   }}
                   sx={{
-                    color: (theme) => theme.palette.grey[500],
+                    color: (theme: Theme) => theme.palette.grey[500],
                   }}
                 >
-                  {window.maximized ? <CloseFullscreenIcon /> : <CropSquareIcon />}
+                  {window.maximized ? (
+                    <CloseFullscreenIcon />
+                  ) : (
+                    <CropSquareIcon />
+                  )}
                 </IconButton>
                 <IconButton
                   aria-label="close"
@@ -90,7 +107,7 @@ const WindowComponent: React.FC = () => {
                     handleClose(window.id);
                   }}
                   sx={{
-                    color: (theme) => theme.palette.grey[500],
+                    color: (theme: Theme) => theme.palette.grey[500],
                   }}
                 >
                   <CloseIcon />
@@ -107,7 +124,10 @@ const WindowComponent: React.FC = () => {
                 },
               }}
             >
-              <Box sx={{ height: '96%', width: '100%' }} className={`droppable-area-${window.id}`}>
+              <Box
+                sx={{ height: '96%', width: '100%' }}
+                className={`droppable-area-${window.id}`}
+              >
                 {window.content}
               </Box>
             </CardContent>
@@ -117,5 +137,3 @@ const WindowComponent: React.FC = () => {
     </>
   );
 };
-
-export default WindowComponent;

@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import { getState, render, save } from '../../../test-utils';
-import StateForm from '../../../../components/forms/StateForm/StateForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { StateForm } from '../../../../components/forms/StateForm/StateForm';
+import { getState, render, save } from '../../../test-utils';
 import expected from './StateForm.expected.json';
 
 describe('State Form', () => {
@@ -20,7 +20,7 @@ describe('State Form', () => {
           events: [],
           eventActions: [],
         }}
-      ></StateForm>,
+      />,
     );
     const user = userEvent.setup();
 

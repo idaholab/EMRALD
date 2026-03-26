@@ -1,11 +1,11 @@
-import { Handle, Position } from 'reactflow';
-import './StateNode.scss';
-import { NodeTypeIcon } from './IconTypes';
-import StateControllerComponent from './StateDisplayControllers/StateControllerComponent';
 import type { State } from '../../../types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { PiResizeFill } from 'react-icons/pi';
+import { Handle, Position } from 'reactflow';
+import { NodeTypeIcon } from './IconTypes';
+import { StateControllerComponent } from './StateDisplayControllers/StateControllerComponent';
+import './StateNode.scss';
 interface StateNodeComponentProps {
   id: string;
   data: {
@@ -13,7 +13,7 @@ interface StateNodeComponentProps {
   };
 }
 
-const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
+export const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
   const [size, setSize] = useState<{ width: number; height: number }>();
   const { state } = data;
 
@@ -61,7 +61,8 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
         <div className="state-node__header" id={id}>
           <Box sx={{ direction: 'flex', flexDirection: 'column' }} mr={1}>
             <Box>
-              <strong>{state.name}</strong>{' '}
+              <strong>{state.name}</strong>
+              &nbsp;
             </Box>
             {state.desc && <Box sx={{ fontSize: '10px' }}>{state.desc}</Box>}
           </Box>
@@ -73,7 +74,7 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
             type="target"
             isConnectableStart={false}
             position={Position.Left}
-            id={`action-target`}
+            id="action-target"
           />
           <StateControllerComponent type="immediate" state={state} />
           <StateControllerComponent type="event" state={state} />
@@ -98,5 +99,3 @@ const StateNode: React.FC<StateNodeComponentProps> = ({ id, data }) => {
     </Box>
   );
 };
-
-export default StateNode;

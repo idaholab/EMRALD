@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import { getAction, renderActionForm, save } from '../../../test-utils';
-import ActionForm from '../../../../components/forms/ActionForm/ActionForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { ActionForm } from '../../../../components/forms/ActionForm/ActionForm';
+import { getAction, renderActionForm, save } from '../../../test-utils';
 import expected from './ActionFormContext.expected.json';
 
 describe('Action Form Context', () => {
@@ -17,7 +17,7 @@ describe('Action Form Context', () => {
           mainItem: true,
           actType: 'atTransition',
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 

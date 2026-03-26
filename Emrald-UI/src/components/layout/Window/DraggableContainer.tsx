@@ -1,7 +1,7 @@
-import Box from '@mui/material/Box';
-import React, { useRef, useState } from 'react';
-import { Rnd } from 'react-rnd';
 import type { DraggableContainerProps } from './types/draggableContainer';
+import Box from '@mui/material/Box';
+import { useRef, useState } from 'react';
+import { type Position, Rnd } from 'react-rnd';
 
 const CustomResizeHandle: React.FC = () => {
   return (
@@ -24,7 +24,7 @@ const CustomResizeHandle: React.FC = () => {
   );
 };
 
-const DraggableContainer: React.FC<DraggableContainerProps> = ({
+export const DraggableContainer: React.FC<DraggableContainerProps> = ({
   id,
   initialPosition,
   fullScreen,
@@ -44,14 +44,16 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
     const resizable = containerRef.current?.resizable;
     if (!fullScreen && resizable) {
       setSize({
-        height: resizable.state.height,
-        width: resizable.state.width,
+        height: Number(resizable.state.height),
+        width: Number(resizable.state.width),
       });
     }
   };
 
   const updatePosition = () => {
-    const draggable = containerRef.current?.draggable;
+    const draggable = containerRef.current?.draggable as
+      | { state: Position }
+      | undefined;
     if (!fullScreen && draggable) {
       setPosition({
         x: draggable.state.x,
@@ -85,5 +87,3 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({
     </Rnd>
   );
 };
-
-export default DraggableContainer;

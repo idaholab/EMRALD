@@ -1,34 +1,48 @@
-import { useEffect, useState } from 'react';
+import type {
+  DiagramType,
+  State,
+  StateEvalValue,
+  StateType,
+} from '../../../types/EMRALD_Model';
+import {
+  Box,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+} from '@mui/material';
 import Typography from '@mui/material/Typography';
-import React from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import type { State, DiagramType, StateEvalValue, StateType } from '../../../types/EMRALD_Model';
-import { v4 as uuidv4 } from 'uuid';
-import { MainDetailsForm } from '../../forms/MainDetailsForm';
-import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useSignal } from '@preact/signals-react';
-import { Box, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { emptyState, useStateContext } from '../../../contexts/StateContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
+import { MainDetailsForm } from '../../forms/MainDetailsForm';
 
 interface StateFormProps {
   stateData?: State;
 }
 
-const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
+export const StateForm: React.FC<StateFormProps> = ({
+  stateData,
+}: StateFormProps) => {
   const { handleClose } = useWindowContext();
   const { statesList, updateState, createState } = useStateContext();
   const { updateDiagram } = useDiagramContext();
-  const state = useSignal<State>(stateData ?? emptyState);
-  const [name, setName] = useState<string>(stateData?.name ?? '');
-  const [desc, setDesc] = useState<string>(stateData?.desc ?? '');
-  const [stateType, setStateType] = useState<StateType>(stateData?.stateType ?? 'stStandard');
-  const [diagramType, setDiagramType] = useState<DiagramType>('dtSingle');
-  const [defaultSingleStateValue, setDefaultSingleStateValue] = useState<StateEvalValue>(
-    stateData?.defaultSingleStateValue ?? 'Ignore',
+  const state = useSignal(stateData ?? emptyState);
+  const [name, setName] = useState(stateData?.name ?? '');
+  const [desc, setDesc] = useState(stateData?.desc ?? '');
+  const [stateType, setStateType] = useState<StateType>(
+    stateData?.stateType ?? 'stStandard',
   );
-  const [hasError, setHasError] = useState<boolean>(false);
-  const [originalName] = useState<string>(stateData?.name ?? '');
+  const [diagramType, setDiagramType] = useState<DiagramType>('dtSingle');
+  const [defaultSingleStateValue, setDefaultSingleStateValue]
+    = useState<StateEvalValue>(stateData?.defaultSingleStateValue ?? 'Ignore');
+  const [hasError, setHasError] = useState(false);
+  const [originalName] = useState(stateData?.name ?? '');
 
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
@@ -39,11 +53,12 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const duplicateName = statesList.value
-      .filter((state) => state.name !== originalName)
-      .some((node) => node.name === trimmedName);
-    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
-    setHasError(duplicateName || hasInvalidChars);
+    setHasError(
+      statesList.value
+        .filter(state => state.name !== originalName)
+        .some(node => node.name === trimmedName)
+        || /[^a-zA-Z0-9-_ ]/.test(trimmedName),
+    );
     setName(newName);
   };
 
@@ -57,8 +72,12 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
         defaultSingleStateValue,
       });
       if (name !== originalName) {
-        const newList = currentDiagram.value.states.filter((state) => state !== originalName);
-        currentDiagram.value.states = [...newList, name];
+        currentDiagram.value.states = [
+          ...currentDiagram.value.states.filter(
+            state => state !== originalName,
+          ),
+          name,
+        ];
         updateDiagram({
           ...currentDiagram.value,
         });
@@ -92,7 +111,7 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={'State'}
+          itemType="State"
           type={stateType}
           setType={setStateType}
           typeOptions={stateTypeOptions}
@@ -117,20 +136,36 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
                 borderRadius: 1,
               }}
             >
-              <FormLabel component="legend">Default Logic Tree Evaluation Value</FormLabel>
+              <FormLabel component="legend">
+                Default Logic Tree Evaluation Value
+              </FormLabel>
               <RadioGroup
                 sx={{ margin: '8px' }}
                 aria-label="status-value"
                 name="status-value"
                 value={defaultSingleStateValue}
-                onChange={(event) => {
-                  setDefaultSingleStateValue(event.target.value as StateEvalValue);
+                onChange={event => {
+                  setDefaultSingleStateValue(
+                    event.target.value as StateEvalValue,
+                  );
                 }}
                 row
               >
-                <FormControlLabel value="Ignore" control={<Radio />} label="Unknown" />
-                <FormControlLabel value="True" control={<Radio />} label="True" />
-                <FormControlLabel value="False" control={<Radio />} label="False" />
+                <FormControlLabel
+                  value="Ignore"
+                  control={<Radio />}
+                  label="Unknown"
+                />
+                <FormControlLabel
+                  value="True"
+                  control={<Radio />}
+                  label="True"
+                />
+                <FormControlLabel
+                  value="False"
+                  control={<Radio />}
+                  label="False"
+                />
               </RadioGroup>
             </FormControl>
           )}
@@ -139,5 +174,3 @@ const StateForm: React.FC<StateFormProps> = ({ stateData }: StateFormProps) => {
     </Box>
   );
 };
-
-export default StateForm;

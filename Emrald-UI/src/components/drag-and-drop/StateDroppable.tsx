@@ -2,7 +2,6 @@ import type { Ref } from 'react';
 import type { State } from '../../types/EMRALD_Model';
 import { Box } from '@mui/material';
 import { useDrop } from 'react-dnd';
-
 import { StateTable } from '../forms/VariableForm/FormFieldsByType/StateTable';
 import {
   type AccrualStateItem,

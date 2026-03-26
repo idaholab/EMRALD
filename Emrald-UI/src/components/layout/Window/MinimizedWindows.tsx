@@ -1,11 +1,11 @@
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
-import { useWindowContext } from '../../../contexts/WindowContext';
 import { useMemo } from 'react';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import { Typography } from '@mui/material';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -19,12 +19,13 @@ const Item = styled(Paper)(({ theme }) => ({
   px: 2,
 }));
 
-export default function MinimizedWindows() {
+export function MinimizedWindows() {
   const { windows, toggleMinimize } = useWindowContext();
 
-  const minimizedWindows = useMemo(() => {
-    return windows.filter((window) => window.minimized);
-  }, [windows]);
+  const minimizedWindows = useMemo(
+    () => windows.filter(window => window.minimized),
+    [windows],
+  );
 
   return (
     <Box
@@ -35,7 +36,7 @@ export default function MinimizedWindows() {
         bottom: 0,
       }}
     >
-      {minimizedWindows.length !== 0 ? (
+      {minimizedWindows.length === 0 ? null : (
         <>
           <Typography variant="h6">Minimized Windows</Typography>
           <Stack
@@ -45,20 +46,21 @@ export default function MinimizedWindows() {
             useFlexGap
             flexWrap="wrap"
           >
-            {minimizedWindows.map((window) => (
+            {minimizedWindows.map(window => (
               <Item
                 key={window.id}
                 onClick={() => {
                   toggleMinimize(window);
                 }}
               >
-                <Typography sx={{ flex: 1 }}>{window.title}</Typography>{' '}
+                <Typography sx={{ flex: 1 }}>{window.title}</Typography>
+                &nbsp;
                 <OpenInFullIcon sx={{ ml: 3 }} />
               </Item>
             ))}
           </Stack>
         </>
-      ) : null}
+      )}
     </Box>
   );
 }

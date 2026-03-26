@@ -1,6 +1,4 @@
-import Parameters from './Parameters';
-import Initiators from './Initiators';
-import InputBlocks from './InputBlocks';
-import Outputs from './Outputs';
-
-export { Parameters, Initiators, InputBlocks, Outputs };
+export { Initiators } from './Initiators';
+export { InputBlocks } from './InputBlocks';
+export { Outputs } from './Outputs';
+export { Parameters } from './Parameters';

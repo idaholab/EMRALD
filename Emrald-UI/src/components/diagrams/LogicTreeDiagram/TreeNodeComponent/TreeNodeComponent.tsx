@@ -1,14 +1,14 @@
-import { Handle, Position } from 'reactflow';
-import './TreeNode.scss';
+import type { GateType } from '../../../../types/EMRALD_Model';
+import DeleteIcon from '@mui/icons-material/Close';
 import { Box, IconButton, TextField } from '@mui/material';
 import { FaLink } from 'react-icons/fa';
-import DeleteIcon from '@mui/icons-material/Close';
 import { PiNotePencilDuotone } from 'react-icons/pi';
-import useLogicNodeTreeDiagram, { type NodeType } from '../useLogicTreeDiagram';
-import GateTypeIcon from '../IconTypes/GateTypeIcon';
-import type { GateType } from '../../../../types/EMRALD_Model';
-import LogicTreeNodeDropTarget from '../../../drag-and-drop/LogicTreeNodeDroppable';
-import ExpandedIcon from '../IconTypes/ExpandedIcon';
+import { Handle, Position } from 'reactflow';
+import { LogicTreeNodeDropTarget } from '../../../drag-and-drop/LogicTreeNodeDroppable';
+import { ExpandedIcon } from '../IconTypes/ExpandedIcon';
+import { GateTypeIcon } from '../IconTypes/GateTypeIcon';
+import { type NodeType, useLogicNodeTreeDiagram } from '../useLogicTreeDiagram';
+import './TreeNode.scss';
 
 interface TreeNodeComponentProps {
   id: string;
@@ -25,7 +25,9 @@ interface TreeNodeComponentProps {
   };
 }
 
-const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
+export const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({
+  data,
+}) => {
   const {
     label,
     type,
@@ -56,7 +58,11 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
         ${type === 'comp' ? 'tree-node__comp' : 'tree-node__gate'}
         ${type === 'comp' && !defaultStateValues ? 'non-default' : ''}`}
     >
-      <LogicTreeNodeDropTarget type={['Gate', 'Diagram', 'LogicNode']} nodeType={type} node={label}>
+      <LogicTreeNodeDropTarget
+        type={['Gate', 'Diagram', 'LogicNode']}
+        nodeType={type}
+        node={label}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -64,12 +70,14 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
             alignItems: 'center',
             p: '8px',
           }}
-          onClick={(event) => {
+          onClick={event => {
             event.stopPropagation();
           }}
         >
           {/* Left container with icon */}
-          <Box sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}
+          >
             {type === 'comp' && !defaultStateValues ? (
               <PiNotePencilDuotone className="modified-icon" />
             ) : (
@@ -80,7 +88,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           {editingTitle ? (
             <TextField
               value={editedTitle}
-              onChange={(event) => {
+              onChange={event => {
                 setEditedTitle(event.target.value);
               }}
               onBlur={() => {
@@ -88,7 +96,9 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
               }}
               fullWidth
               variant="outlined"
-              slotProps={{ htmlInput: { maxLength: 20, style: { fontSize: '12px' } } }}
+              slotProps={{
+                htmlInput: { maxLength: 20, style: { fontSize: '12px' } },
+              }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   padding: '6px',
@@ -106,7 +116,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
                 handleDoubleClick('title', label);
               }}
             >
-              {editedTitle ? editedTitle : label}
+              {editedTitle ?? label}
             </Box>
           )}
 
@@ -125,7 +135,10 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
             ) : (
               <></>
             )}
-            {type !== 'root' ? ( // Only show delete button if not root
+            {type === 'root' ? (
+              <></>
+            ) : (
+              // Only show delete button if not root
               <IconButton
                 aria-label="close"
                 onClick={() => {
@@ -135,14 +148,12 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
               >
                 <DeleteIcon sx={{ height: 16, width: 16 }} />
               </IconButton>
-            ) : (
-              <></>
             )}
           </Box>
         </Box>
 
         <Box
-          onClick={(event) => {
+          onClick={event => {
             event.stopPropagation();
           }}
           sx={{
@@ -158,7 +169,7 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           {editingDescription ? (
             <TextField
               value={editedDescription}
-              onChange={(event) => {
+              onChange={event => {
                 setEditedDescription(event.target.value);
               }}
               onBlur={() => {
@@ -182,13 +193,19 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
                 handleDoubleClick('description', description);
               }}
             >
-              {editedDescription ? editedDescription : description}
+              {editedDescription ?? description}
             </Box>
           )}
         </Box>
 
-        {type !== 'root' ? <Handle type="target" position={Position.Top} /> : <></>}
-        {type !== 'comp' ? (
+        {type === 'root' ? (
+          <></>
+        ) : (
+          <Handle type="target" position={Position.Top} />
+        )}
+        {type === 'comp' ? (
+          <></>
+        ) : (
           <Box
             sx={{
               position: 'relative',
@@ -199,14 +216,14 @@ const TreeNodeComponent: React.FC<TreeNodeComponentProps> = ({ data }) => {
           >
             <Handle type="source" position={Position.Bottom} />
             <GateTypeIcon type={gateType} className="logic-icon" />
-            {expandable ? <ExpandedIcon expanded={expanded} className="expanded-icon" /> : <></>}
+            {expandable ? (
+              <ExpandedIcon expanded={expanded} className="expanded-icon" />
+            ) : (
+              <></>
+            )}
           </Box>
-        ) : (
-          <></>
         )}
       </LogicTreeNodeDropTarget>
     </Box>
   );
 };
-
-export default TreeNodeComponent;

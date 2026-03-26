@@ -1,7 +1,7 @@
-import ItemTypeMenuResults from '../../layout/Header/SearchBar/ItemTypeMenuResults';
+import type { PropsWithChildren, ReactNode } from 'react';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
-import type { ReactNode } from 'react';
 import type { ModelItem } from '../../../types/ModelUtils';
+import { ItemTypeMenuResults } from '../../layout/Header/SearchBar/ItemTypeMenuResults';
 
 interface searchFormProps {
   model: EMRALD_Model;
@@ -9,16 +9,12 @@ interface searchFormProps {
   expandable?: boolean;
 }
 
-const SearchResultForm: React.FC<React.PropsWithChildren<searchFormProps>> = ({
-  model,
-  getModel,
-  expandable,
-}) => {
-  return (
-    <>
-      <ItemTypeMenuResults model={model} getModel={getModel} expandable={expandable} />
-    </>
-  );
-};
-
-export default SearchResultForm;
+export const SearchResultForm: React.FC<
+  PropsWithChildren<searchFormProps>
+> = ({ model, getModel, expandable }) => (
+  <ItemTypeMenuResults
+    model={model}
+    getModel={getModel}
+    expandable={expandable}
+  />
+);

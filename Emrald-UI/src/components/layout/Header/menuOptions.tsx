@@ -1,13 +1,13 @@
-import { appData, clearCacheData } from '../../../hooks/useAppData';
-import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
+import type { WindowPosition } from '../../../contexts/WindowContext';
+import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
+import { appData, clearCacheData } from '../../../hooks/useAppData';
+import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
+import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
 import {
   SankeyTimelineDiagram,
   type TimelineOptions,
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
-import type { EMRALD_Model } from '../../../types/EMRALD_Model';
-import type { WindowPosition } from '../../../contexts/WindowContext';
-import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
 
 export const projectOptions = {
   New(newProject: () => void) {
@@ -25,25 +25,30 @@ export const projectOptions = {
     fileInput.style.display = 'none'; // Hide the file input element
 
     // Function to handle file selection
-    const handleFileSelected = (event: Event) => {
+    const handleFileSelected = async (event: Event) => {
       const input = event.target as HTMLInputElement;
       const selectedFile = input.files?.[0]; // Get the selected file
 
-      if (!selectedFile) return; // If no file is selected, exit
+      if (!selectedFile) {
+        return; // If no file is selected, exit
+      }
       const fileName = selectedFile.name; // Get the filename
       if (setFileName) {
         setFileName(fileName);
       }
       // Create a FileReader to read the file content
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.addEventListener('load', e => {
         const content = e.target?.result as string; // Get the file content as a string
 
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model;
           if (
-            !Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion') ||
-            parsedContent.emraldVersion < EMRALD_SchemaVersion
+            !Object.prototype.hasOwnProperty.call(
+              parsedContent,
+              'emraldVersion',
+            )
+            || parsedContent.emraldVersion < EMRALD_SchemaVersion
           ) {
             const upgradedModel = upgradeModel(content);
             if (upgradedModel) {
@@ -60,15 +65,19 @@ export const projectOptions = {
             handleModelError((error as Error).message);
           }
         }
-      };
-      reader.readAsText(selectedFile); // Read the file as text
+      });
+      await selectedFile.text(); // Read the file as text
     };
 
     // Add an event listener for when a file is selected
-    fileInput.addEventListener('change', handleFileSelected, false);
+    fileInput.addEventListener(
+      'change',
+      ev => void handleFileSelected(ev),
+      false,
+    );
 
     // Append the file input to the document body
-    document.body.appendChild(fileInput);
+    document.body.append(fileInput);
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
@@ -84,20 +93,24 @@ export const projectOptions = {
     fileInput.style.display = 'none'; // Hide the file input element
 
     // Function to handle file selection
-    const handleFileSelected = (event: Event) => {
+    const handleFileSelected = async (event: Event) => {
       const input = event.target as HTMLInputElement;
       const selectedFile = input.files?.[0]; // Get the selected file
 
-      if (!selectedFile) return; // If no file is selected, exit
+      if (!selectedFile) {
+        return; // If no file is selected, exit
+      }
 
       // Create a FileReader to read the file content
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.addEventListener('load', e => {
         const content = e.target?.result as string; // Get the file content as a string
-        //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+        // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')) {
+          if (
+            Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
+          ) {
             mergeNewData(parsedContent);
           } else {
             const upgradedModel = upgradeModel(content);
@@ -112,31 +125,35 @@ export const projectOptions = {
             handleModelError((error as Error).message);
           }
         }
-      };
-      reader.readAsText(selectedFile); // Read the file as text
+      });
+      await selectedFile.text(); // Read the file as text
     };
 
     // Add an event listener for when a file is selected
-    fileInput.addEventListener('change', handleFileSelected, false);
+    fileInput.addEventListener(
+      'change',
+      ev => void handleFileSelected(ev),
+      false,
+    );
 
     // Append the file input to the document body
-    document.body.appendChild(fileInput);
+    document.body.append(fileInput);
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
   },
   Save: async () => {
-    //validate the model
+    // validate the model
     const errors: string[] = await validateModel(appData.value);
 
-    //if error TODO
+    // if error TODO
     if (errors.length > 0) {
-      //todo let the user know the errors and report a bug to developers, provide the model if possible
+      // todo let the user know the errors and report a bug to developers, provide the model if possible
     }
     // Convert JSON data to a string
     const jsonString = JSON.stringify(appData.value, null, 2);
 
-    //todo validate the appData from the latest emrald schema version in types
+    // todo validate the appData from the latest emrald schema version in types
 
     // Create a Blob (Binary Large Object) with the JSON string
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -147,7 +164,7 @@ export const projectOptions = {
     // Create an <a> element to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'}.emrald`;
+    a.download = `${appData.value.name ?? 'Untitled_EMRALD_Project'}.emrald`;
 
     // Trigger a click event on the <a> element to initiate the download
     a.click();
@@ -177,17 +194,19 @@ export const projectOptions = {
     fileInput.style.display = 'none'; // Hide the file input element
 
     // Function to handle file selection
-    const handleFileSelected = (event: Event) => {
+    const handleFileSelected = async (event: Event) => {
       const input = event.target as HTMLInputElement;
       const selectedFile = input.files?.[0]; // Get the selected file
 
-      if (!selectedFile) return; // If no file is selected, exit
+      if (!selectedFile) {
+        return; // If no file is selected, exit
+      }
 
       // Create a FileReader to read the file content
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.addEventListener('load', e => {
         const content = e.target?.result as string; // Get the file content as a string
-        //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+        // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
         try {
           const parsedContent = JSON.parse(content) as TimelineOptions;
           parsedContent.name = selectedFile.name;
@@ -211,15 +230,19 @@ export const projectOptions = {
           }
         }
         // You can now work with the JSON content here
-      };
-      reader.readAsText(selectedFile); // Read the file as text
+      });
+      await selectedFile.text(); // Read the file as text
     };
 
     // Add an event listener for when a file is selected
-    fileInput.addEventListener('change', handleFileSelected, false);
+    fileInput.addEventListener(
+      'change',
+      ev => void handleFileSelected(ev),
+      false,
+    );
 
     // Append the file input to the document body
-    document.body.appendChild(fileInput);
+    document.body.append(fileInput);
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
@@ -243,20 +266,24 @@ export const projectOptions = {
     inputLabel.setAttribute('for', 'compare-file-input');
 
     // Function to handle file selection
-    const handleFileSelected = (event: Event) => {
+    const handleFileSelected = async (event: Event) => {
       const input = event.target as HTMLInputElement;
       const selectedFile = input.files?.[0]; // Get the selected file
 
-      if (!selectedFile) return; // If no file is selected, exit
+      if (!selectedFile) {
+        return; // If no file is selected, exit
+      }
 
       // Create a FileReader to read the file content
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.addEventListener('load', e => {
         const content = e.target?.result as string; // Get the file content as a string
-        //TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+        // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')) {
+          if (
+            Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
+          ) {
             compareData(parsedContent);
           } else {
             const upgradedModel = upgradeModel(content);
@@ -271,18 +298,22 @@ export const projectOptions = {
             handleModelError((error as Error).message);
           }
         }
-        document.body.removeChild(fileInput);
-        document.body.removeChild(inputLabel);
-      };
-      reader.readAsText(selectedFile); // Read the file as text
+        fileInput.remove();
+        inputLabel.remove();
+      });
+      await selectedFile.text(); // Read the file as text
     };
 
     // Add an event listener for when a file is selected
-    fileInput.addEventListener('change', handleFileSelected, false);
+    fileInput.addEventListener(
+      'change',
+      ev => void handleFileSelected(ev),
+      false,
+    );
 
     // Append the file input to the document body
-    document.body.appendChild(fileInput);
-    document.body.appendChild(inputLabel);
+    document.body.append(fileInput);
+    document.body.append(inputLabel);
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
@@ -301,19 +332,21 @@ export const templateSubMenuOptions = {
     fileInput.style.display = 'none'; // Ensure the file input is not visible
 
     // Function to handle file selection
-    const handleFileSelected = (event: Event) => {
+    const handleFileSelected = async (event: Event) => {
       const input = event.target as HTMLInputElement;
       const selectedFile = input.files?.[0]; // Get the selected file
 
-      if (!selectedFile) return; // If no file is selected, exit
+      if (!selectedFile) {
+        return; // If no file is selected, exit
+      }
 
       // Create a FileReader to read the file content
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.addEventListener('load', e => {
         const content = e.target?.result as string; // Get the file content as a string
         try {
           const parsedContent = JSON.parse(content) as EMRALD_Model[];
-          parsedContent.forEach((model) => {
+          for (const model of parsedContent) {
             if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
               mergeTemplateToList(model);
             } else {
@@ -323,22 +356,26 @@ export const templateSubMenuOptions = {
                 mergeTemplateToList(upgradedModel);
               }
             }
-          });
+          }
         } catch (error) {
           console.error('Invalid JSON format');
           if (handleModelError) {
             handleModelError((error as Error).message);
           }
         }
-      };
-      reader.readAsText(selectedFile); // Read the file as text
+      });
+      await selectedFile.text(); // Read the file as text
     };
 
     // Add an event listener for when a file is selected
-    fileInput.addEventListener('change', handleFileSelected, false);
+    fileInput.addEventListener(
+      'change',
+      ev => void handleFileSelected(ev),
+      false,
+    );
 
     // Append the file input to the document body
-    document.body.appendChild(fileInput);
+    document.body.append(fileInput);
 
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
@@ -360,7 +397,7 @@ export const templateSubMenuOptions = {
     const a = document.createElement('a');
     a.href = url;
     a.download = `${
-      appData.value.name ? appData.value.name : 'Untitled_EMRALD_Project'
+      appData.value.name ?? 'Untitled_EMRALD_Project'
     }-templates.json`;
 
     // Trigger a click event on the <a> element to initiate the download
@@ -378,25 +415,28 @@ export const downloadOptions = {
   'Solve Engine': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.href = 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; //The file to download.
+    link.href
+      = 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; // The file to download.
     link.click();
   },
   'Client Tester': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.href = 'https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip'; //The file to download.
+    link.href
+      = 'https://github.com/idaholab/EMRALD/releases/latest/download/XMPPClientTester.zip'; // The file to download.
     link.click();
   },
   'Client Tester Source': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.href = 'https://github.com/idaholab/EMRALD/tree/main/XmppClient'; //The file to download.
+    link.href = 'https://github.com/idaholab/EMRALD/tree/main/XmppClient'; // The file to download.
     link.click();
   },
   'Desktop Model Editor': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.href = 'https://github.com/idaholab/EMRALD/releases/latest/download/emrald_modeler.exe';
+    link.href
+      = 'https://github.com/idaholab/EMRALD/releases/latest/download/emrald_modeler.exe';
     link.click();
   },
   'Source Code': () => {

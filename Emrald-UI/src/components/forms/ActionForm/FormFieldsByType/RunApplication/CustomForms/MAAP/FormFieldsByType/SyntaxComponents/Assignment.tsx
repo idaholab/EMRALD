@@ -1,11 +1,17 @@
 import type { MAAPAssignment } from '../../../../../../../../../types/EMRALD_Model';
-import { Autocomplete, Box, InputAdornment, TextField, Typography } from '@mui/material';
-import { MAAPToString } from '../../Parser/maap-to-string';
+import {
+  Autocomplete,
+  Box,
+  InputAdornment,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
-import { appData } from '../../../../../../../../../hooks/useAppData';
 import { FaLink } from 'react-icons/fa6';
-import { MultiExpression } from './MultiExpression';
+import { appData } from '../../../../../../../../../hooks/useAppData';
+import { MAAPToString } from '../../Parser/maap-to-string';
 import { IsExpression } from './IsExpression';
+import { MultiExpression } from './MultiExpression';
 
 export const Assignment: React.FC<{
   value: MAAPAssignment;
@@ -24,9 +30,15 @@ export const Assignment: React.FC<{
         =&nbsp;
       </Typography>
       {value.value.type === 'multi_expression' ? (
-        <MultiExpression op={value.value.op} value={value.value.value}></MultiExpression>
+        <MultiExpression
+          op={value.value.op}
+          value={value.value.value}
+        />
       ) : value.value.type === 'is_expression' ? (
-        <IsExpression target={value.value.target} value={value.value.value}></IsExpression>
+        <IsExpression
+          target={value.value.target}
+          value={value.value.value}
+        />
       ) : (
         <Autocomplete
           freeSolo
@@ -58,8 +70,12 @@ export const Assignment: React.FC<{
                   ) : undefined,
                 },
               }}
-              sx={{ input: { color: value.value.useVariable ? '#008362' : 'inherit' } }}
-              onChange={(e) => {
+              sx={{
+                input: {
+                  color: value.value.useVariable ? '#008362' : 'inherit',
+                },
+              }}
+              onChange={e => {
                 // Other possible types should be handled by the conditional rendering
                 value.value = {
                   type: 'identifier',

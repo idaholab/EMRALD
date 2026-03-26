@@ -1,22 +1,25 @@
-import * as React from 'react';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Collapse from '@mui/material/Collapse';
+import type {
+  Diagram,
+  LogicNode,
+  MainItemType,
+} from '../../../types/EMRALD_Model';
+import type { ModelItem } from '../../../types/ModelUtils';
+import type { AccordionMenuItemType } from './types/AccordionMenuItems';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import DraggableItem from '../../drag-and-drop/DraggableItem';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
 import Box from '@mui/material/Box';
-import type { AccordionMenuItemType } from './types/AccordionMenuItems';
-import ItemWithContextMenu from './ItemWithContextMenu';
-// import DiagramForm from '../../features/DiagramForm/DiagramForm';
+import Collapse from '@mui/material/Collapse';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import type { Diagram, LogicNode, MainItemType } from '../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../types/ModelUtils';
+import { Fragment, useState } from 'react';
+import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { DraggableItem } from '../../drag-and-drop/DraggableItem';
+import { ItemWithContextMenu } from './ItemWithContextMenu';
 
 export interface AccordionMenuListProps {
   item: AccordionMenuItemType;
@@ -25,18 +28,20 @@ export interface AccordionMenuListProps {
   handleDelete?: (itemToDelete: ModelItem, itemType: MainItemType) => void;
 }
 
-const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
+export const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
   item,
   bothAccordionsOpen,
   onDiagramChange,
   handleDelete,
 }) => {
   const { diagrams } = useDiagramContext();
-  const [openIndex, setOpenIndex] = React.useState<number | null>(null); // Keeps track of the index of the open item
-  const diagramLabels = Array.from(new Set(diagrams.map((diagram) => diagram.diagramLabel))).sort();
+  const [openIndex, setOpenIndex] = useState<number | null>(null); // Keeps track of the index of the open item
+  const diagramLabels = Array.from(
+    new Set(diagrams.map(diagram => diagram.diagramLabel)),
+  ).toSorted();
 
   const handleClick = (index: number) => {
-    setOpenIndex((prevIndex) => (prevIndex === index ? null : index));
+    setOpenIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
   return (
@@ -53,7 +58,7 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
           <Box>
             {diagramLabels.length > 0 ? (
               diagramLabels.map((name, index) => (
-                <React.Fragment key={name}>
+                <Fragment key={name}>
                   <ListItemButton
                     onClick={() => {
                       handleClick(index);
@@ -61,26 +66,42 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                     sx={{ py: '3px' }}
                   >
                     <ListItemIcon sx={{ minWidth: '30px' }}>
-                      {openIndex === index ? <FolderOpenIcon /> : <FolderIcon />}
+                      {openIndex === index ? (
+                        <FolderOpenIcon />
+                      ) : (
+                        <FolderIcon />
+                      )}
                     </ListItemIcon>
                     <ListItemText primary={name} />
                     {openIndex === index ? <ExpandLess /> : <ExpandMore />}
                   </ListItemButton>
-                  <Collapse in={openIndex === index} timeout="auto" unmountOnExit>
+                  <Collapse
+                    in={openIndex === index}
+                    timeout="auto"
+                    unmountOnExit
+                  >
                     <List
                       component="div"
                       disablePadding
                       sx={{
                         maxHeight:
-                          bothAccordionsOpen || window.innerHeight < 765 ? '160px' : '340px',
+                          bothAccordionsOpen || window.innerHeight < 765
+                            ? '160px'
+                            : '340px',
                         overflow: 'auto',
                       }}
                     >
-                      {diagrams.map((diagram) => (
-                        <React.Fragment key={diagram.id}>
+                      {diagrams.map(diagram => (
+                        <Fragment key={diagram.id}>
                           {diagram.diagramLabel === name && (
-                            <DraggableItem key={diagram.id} itemData={diagram} itemType={'Diagram'}>
-                              <ListItemButton sx={{ p: '0 0 0 3rem', width: '100%' }}>
+                            <DraggableItem
+                              key={diagram.id}
+                              itemData={diagram}
+                              itemType="Diagram"
+                            >
+                              <ListItemButton
+                                sx={{ p: '0 0 0 3rem', width: '100%' }}
+                              >
                                 <ItemWithContextMenu
                                   itemData={diagram}
                                   optionType={item.type}
@@ -90,11 +111,11 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                               </ListItemButton>
                             </DraggableItem>
                           )}
-                        </React.Fragment>
+                        </Fragment>
                       ))}
                     </List>
                   </Collapse>
-                </React.Fragment>
+                </Fragment>
               ))
             ) : (
               <Typography sx={{ pl: 3 }}>No Diagrams</Typography>
@@ -107,17 +128,24 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
           sx={{
             width: '100%',
             bgcolor: 'background.paper',
-            maxHeight: `${window.innerHeight - (bothAccordionsOpen ? 665 : 374)}px`,
+            maxHeight: `${(window.innerHeight - (bothAccordionsOpen ? 665 : 374)).toString()}px`,
             overflowY: 'auto',
-            overflowX: 'hidden'
+            overflowX: 'hidden',
           }}
         >
           {item.type === 'Logic Tree' && item.data && item.data.length > 0 ? (
             item.data.map((option: LogicNode, index) => (
-              <React.Fragment key={option.id ?? index}>
+              <Fragment key={option.id ?? index}>
                 {option.isRoot ? ( // Only show logic tree items that are root
-                  <ListItemButton key={option.id ?? index} sx={{ p: '0 0 0 2rem' }}>
-                    <DraggableItem key={option.id} itemData={option} itemType={'LogicNode'}>
+                  <ListItemButton
+                    key={option.id ?? index}
+                    sx={{ p: '0 0 0 2rem' }}
+                  >
+                    <DraggableItem
+                      key={option.id}
+                      itemData={option}
+                      itemType="LogicNode"
+                    >
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
@@ -129,14 +157,21 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
                 ) : (
                   <></>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))
           ) : (
             <>
               {item.data && item.data.length > 0 ? (
                 item.data.map((option: Diagram, index) => (
-                  <ListItemButton key={option.id ?? index} sx={{ p: '0 0 0 2rem' }}>
-                    <DraggableItem key={option.id} itemData={option} itemType={'Diagram'}>
+                  <ListItemButton
+                    key={option.id ?? index}
+                    sx={{ p: '0 0 0 2rem' }}
+                  >
+                    <DraggableItem
+                      key={option.id}
+                      itemData={option}
+                      itemType="Diagram"
+                    >
                       <ItemWithContextMenu
                         itemData={option}
                         optionType={item.type}
@@ -156,5 +191,3 @@ const AccordionMenuItems: React.FC<AccordionMenuListProps> = ({
     </>
   );
 };
-
-export default AccordionMenuItems;

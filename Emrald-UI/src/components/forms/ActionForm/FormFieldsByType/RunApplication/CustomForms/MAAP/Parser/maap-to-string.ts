@@ -280,7 +280,7 @@ export class MAAPToString {
    * @param multiExpression - The expression to convert.
    */
   public multiExpressionToString(multiExpression: MAAPMultiPartExpression) {
-    return `${this.expressionToString(multiExpression.value[0])} ${multiExpression.op} ${this.expressionToString(multiExpression.value[1])}`;
+    return `${multiExpression.value[0] ? this.expressionToString(multiExpression.value[0]) : ''} ${multiExpression.op} ${multiExpression.value[1] ? this.expressionToString(multiExpression.value[1]) : ''}`;
   }
 
   /**

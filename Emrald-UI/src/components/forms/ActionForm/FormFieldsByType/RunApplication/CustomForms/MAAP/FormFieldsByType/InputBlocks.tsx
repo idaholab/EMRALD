@@ -1,11 +1,13 @@
+import type { MAAPConditionalBlockStatement } from '../../../../../../../../types/EMRALD_Model';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';
-import type { MAAPConditionalBlockStatement } from '../../../../../../../../types/EMRALD_Model';
 import { ConditionalBlock } from './SyntaxComponents/ConditionalBlock';
 
-const InputBlocks = () => {
-  const [inputBlocks, setInputBlocks] = useState<MAAPConditionalBlockStatement[]>([]);
+export const InputBlocks: React.FC = () => {
+  const [inputBlocks, setInputBlocks] = useState<
+    MAAPConditionalBlockStatement[]
+  >([]);
   const { formData, setFormData } = useCustomForm();
 
   useEffect(() => {
@@ -21,19 +23,15 @@ const InputBlocks = () => {
 
   return (
     <>
-      {inputBlocks.map((block) => {
-        return (
-          <Box>
-            <ConditionalBlock
-              blockType={block.blockType}
-              test={block.test}
-              value={block.value}
-            />
-          </Box>
-        );
-      })}
+      {inputBlocks.map(block => (
+        <Box>
+          <ConditionalBlock
+            blockType={block.blockType}
+            test={block.test}
+            value={block.value}
+          />
+        </Box>
+      ))}
     </>
   );
 };
-
-export default InputBlocks;

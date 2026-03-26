@@ -1,27 +1,29 @@
+import type { CustomFormType } from '../../../../../types/EMRALD_Model';
 import { Editor } from '@monaco-editor/react';
 import {
   Box,
-  Typography,
-  FormControlLabel,
   FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
   Radio,
   RadioGroup,
-  MenuItem,
   Select,
-  InputLabel,
+  Typography,
 } from '@mui/material';
-import { type ReturnProcessType, useActionFormContext } from '../../ActionFormContext';
-import { useVariableContext } from '../../../../../contexts/VariableContext';
-import { CodeVariables } from '../../../../common/CodeVariables';
-import { type ReactElement, useEffect, useState } from 'react';
-import { CustomForms } from './CustomForms/index';
 import { startCase } from 'lodash';
-import React from 'react';
-import { SelectComponent } from '../../../../common/SelectComponent';
+import { createElement, type ReactElement, useEffect, useState } from 'react';
+import { useVariableContext } from '../../../../../contexts/VariableContext';
 import { TextFieldComponent } from '../../../../common';
-import type { CustomFormType } from '../../../../../types/EMRALD_Model';
+import { CodeVariables } from '../../../../common/CodeVariables';
+import { SelectComponent } from '../../../../common/SelectComponent';
+import {
+  type ReturnProcessType,
+  useActionFormContext,
+} from '../../ActionFormContext';
+import { CustomForms } from './CustomForms/index';
 
-const RunApplication = () => {
+export const RunApplication: React.FC = () => {
   const {
     codeVariables,
     makeInputFileCode,
@@ -43,11 +45,10 @@ const RunApplication = () => {
 
   const { variableList } = useVariableContext();
   const [applicationType, setApplicationType] = useState(raType ?? 'code');
-  const [customFormType, setCustomFormType] = useState<CustomFormType | undefined>(
-    formData?.caType,
-  );
+  const [customFormType, setCustomFormType] = useState(formData?.caType);
   const [options, setOptions] = useState<CustomFormType[]>(['MAAP']);
-  const [selectedComponent, setSelectedComponent] = useState<ReactElement | null>(null);
+  const [selectedComponent, setSelectedComponent]
+    = useState<ReactElement | null>(null);
   const [localPreCode, setLocalPreCode] = useState('');
   const [hasInitialCode, setHasInitialCode] = useState(false);
 
@@ -58,7 +59,7 @@ const RunApplication = () => {
   useEffect(() => {
     //  Set selected component when customFormType changes
     if (customFormType) {
-      setSelectedComponent(React.createElement(CustomForms[customFormType]));
+      setSelectedComponent(createElement(CustomForms[customFormType]));
     } else {
       setSelectedComponent(null);
     }
@@ -77,7 +78,7 @@ const RunApplication = () => {
 
   const handleSetCustomFormType = (value: CustomFormType) => {
     setCustomFormType(value);
-    setFormData((prev) => ({ ...prev, caType: value }));
+    setFormData(prev => ({ ...prev, caType: value }));
   };
 
   const handleApplicationTypeChange = (value: string) => {
@@ -91,13 +92,17 @@ const RunApplication = () => {
         <RadioGroup
           name="controlled-radio-buttons-group"
           value={applicationType}
-          onChange={(e) => {
+          onChange={e => {
             handleApplicationTypeChange(e.target.value);
           }}
           row
         >
           <FormControlLabel value="code" control={<Radio />} label="Use Code" />
-          <FormControlLabel value="custom" control={<Radio />} label="Use Custom Application" />
+          <FormControlLabel
+            value="custom"
+            control={<Radio />}
+            label="Use Custom Application"
+          />
         </RadioGroup>
       </FormControl>
       {applicationType === 'code' ? (
@@ -112,7 +117,7 @@ const RunApplication = () => {
                 defaultLanguage="csharp"
                 language="csharp"
                 value={localPreCode}
-                onChange={(value) => {
+                onChange={value => {
                   setMakeInputFileCode(value ?? '');
                 }}
                 options={{
@@ -132,20 +137,22 @@ const RunApplication = () => {
                 <Select
                   label="Return Type"
                   value={returnProcess}
-                  onChange={(event) => {
+                  onChange={event => {
                     const rtType = event.target.value as ReturnProcessType;
                     setReturnProcess(rtType); // TODO: propgate the selected type to the action JSON
                     switch (rtType) {
-                      case 'rtStateList':
+                      case 'rtStateList': {
                         setProcessOutputFileCode(
                           'List<String> retStates = new List<String>();\n//add states to exit or enter into the retStates list\n//retStates.Add("-ExitStateName");\n//retStates.Add("NewStateName");\nreturn retStates;',
                         );
                         break;
-                      case 'rtVar':
+                      }
+                      case 'rtVar': {
                         setProcessOutputFileCode(
                           '// Return value must be the same type as the selected variable.\nreturn ; // the value to be assigned to the variable',
                         );
                         break;
+                      }
                       // add template codes for other return types here
                       default:
                     }
@@ -176,7 +183,9 @@ const RunApplication = () => {
                 <div></div>
               )}
 
-              {returnProcess != 'rtNone' ? (
+              {returnProcess == 'rtNone' ? (
+                <div></div>
+              ) : (
                 <div>
                   <Typography sx={{ mt: 2, mb: 1 }} fontWeight={600}>
                     Postprocess Code (c#)
@@ -186,7 +195,7 @@ const RunApplication = () => {
                     defaultLanguage="csharp"
                     language="csharp"
                     value={processOutputFileCode}
-                    onChange={(value) => {
+                    onChange={value => {
                       setProcessOutputFileCode(value ?? '');
                     }}
                     options={{
@@ -195,8 +204,6 @@ const RunApplication = () => {
                     }}
                   />
                 </div>
-              ) : (
-                <div></div>
               )}
             </Box>
           </Box>
@@ -209,15 +216,15 @@ const RunApplication = () => {
           />
         </Box>
       ) : (
-        <Box display={'flex'} flexDirection={'column'}>
+        <Box display="flex" flexDirection="column">
           <SelectComponent
             label="Custom Application Type"
             value={customFormType ?? ''}
-            setValue={(name) => {
+            setValue={name => {
               handleSetCustomFormType(name as CustomFormType);
             }}
           >
-            {options.map((option) => (
+            {options.map(option => (
               <MenuItem value={option} key={option}>
                 {startCase(option)}
               </MenuItem>
@@ -230,5 +237,3 @@ const RunApplication = () => {
     </>
   );
 };
-
-export default RunApplication;

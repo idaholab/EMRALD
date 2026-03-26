@@ -1,35 +1,38 @@
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import React, { useState } from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { v4 as uuidv4 } from 'uuid';
-import { useSignal } from '@preact/signals-react';
 import type { ExtSim } from '../../../types/EMRALD_Model';
-import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { useSignal } from '@preact/signals-react';
+import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 
 interface ExtSimFormProps {
   ExtSimData?: ExtSim;
 }
 
-const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
+export const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
   const { handleClose } = useWindowContext();
   const { updateExtSim, createExtSim } = useExtSimContext();
-  const ExtSim = useSignal<ExtSim>(ExtSimData ?? emptyExtSim);
-  const [name, setName] = useState<string>(ExtSimData?.name ?? '');
-  const [originalName] = useState<string | undefined>(ExtSimData?.name);
-  const [resourceName, setResourceName] = useState<string>(ExtSimData?.resourceName ?? '');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const ExtSim = useSignal(ExtSimData ?? emptyExtSim);
+  const [name, setName] = useState(ExtSimData?.name ?? '');
+  const [originalName] = useState(ExtSimData?.name);
+  const [resourceName, setResourceName] = useState(
+    ExtSimData?.resourceName ?? '',
+  );
+  const [hasError, setHasError] = useState(false);
   const { extSimList } = useExtSimContext();
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const nameExists = extSimList.value
-      .filter((extSim) => extSim.name !== originalName)
-      .some((extSim) => extSim.name === trimmedName);
-    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
-    setHasError(nameExists || hasInvalidChars);
+    setHasError(
+      extSimList.value
+        .filter(extSim => extSim.name !== originalName)
+        .some(extSim => extSim.name === trimmedName)
+        || /[^a-zA-Z0-9-_ ]/.test(trimmedName),
+    );
     setName(newName);
   };
 
@@ -62,12 +65,16 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           size="small"
           slotProps={{ htmlInput: { maxLength: 20 } }}
           value={name}
-          onChange={(e) => {
+          onChange={e => {
             handleNameChange(e.target.value);
           }}
           fullWidth
           error={hasError}
-          helperText={hasError ? 'Name already exists or contains an invalid character' : ''}
+          helperText={
+            hasError
+              ? 'Name already exists or contains an invalid character'
+              : ''
+          }
         />
         <TextField
           label="Application Name"
@@ -77,7 +84,7 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
           multiline
           margin="normal"
           value={resourceName}
-          onChange={(e) => {
+          onChange={e => {
             setResourceName(e.target.value);
           }}
         />
@@ -106,5 +113,3 @@ const ExtSimForm: React.FC<ExtSimFormProps> = ({ ExtSimData }) => {
     </Box>
   );
 };
-
-export default ExtSimForm;

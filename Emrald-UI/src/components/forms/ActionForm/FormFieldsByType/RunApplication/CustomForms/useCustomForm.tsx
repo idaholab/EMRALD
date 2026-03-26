@@ -51,10 +51,10 @@ export function useCustomForm() {
   };
 
   const ReturnUsedVariables = (variableName: string) => {
-    if (!codeVariables.includes(variableName)) {
-      setCodeVariables([...codeVariables, variableName]);
+    if (codeVariables.includes(variableName)) {
+      setCodeVariables(codeVariables.filter(item => item !== variableName));
     } else {
-      setCodeVariables(codeVariables.filter((item) => item !== variableName));
+      setCodeVariables([...codeVariables, variableName]);
     }
   };
 
