@@ -165,7 +165,7 @@ export const projectOptions = {
     // Create an <a> element to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${appData.value.name ?? 'Untitled_EMRALD_Project'}.emrald`;
+    a.download = `${appData.value.name === undefined || appData.value.name.length === 0 ? 'Untitled_EMRALD_Project' : appData.value.name}.emrald`;
 
     // Trigger a click event on the <a> element to initiate the download
     a.click();
