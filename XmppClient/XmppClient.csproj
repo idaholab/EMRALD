@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UserSecretsId>1cf829bb-4144-4f00-bf28-b878578d0090</UserSecretsId>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>

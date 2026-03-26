@@ -14,7 +14,7 @@ function UpgradeV1_x(modelTxt) {
         //   a.Action.mutExcl = !!a.Action.mutExcl && a.Action.mutExcl.toUpperCase() === "TRUE";
         // });
         if (newModel.ActionList != undefined) {
-            newModel.ActionList.forEach((a) => {
+            for (const a of newModel.ActionList) {
                 const action = a.Action;
                 action.mainItem ?? (action.mainItem = false);
                 if (typeof action.mainItem === 'string') {
@@ -24,10 +24,10 @@ function UpgradeV1_x(modelTxt) {
                     action.mutExcl = action.mutExcl.toUpperCase() === 'TRUE';
                 }
                 delete action.simEndtime;
-            });
+            }
         }
         if (newModel.EventList != undefined) {
-            newModel.EventList.forEach((e) => {
+            for (const e of newModel.EventList) {
                 const event = e.Event;
                 event.mainItem ?? (event.mainItem = false);
                 if (typeof event.mainItem === 'string') {
@@ -54,20 +54,19 @@ function UpgradeV1_x(modelTxt) {
                 delete event.ndMin;
                 event.max = event.ndMax;
                 delete event.ndMax;
-            });
+            }
         }
     }
     newModel.version = 1.2;
-    const retModel = { newModel: JSON.stringify(newModel), errors: [] };
-    return retModel;
+    return { newModel: JSON.stringify(newModel), errors: [] };
 }
 
 function UpgradeV2_4(modelTxt) {
-    //first fix random issues that don't match the schema, extra parameters that didn't get removed in a version upgrade
+    // first fix random issues that don't match the schema, extra parameters that didn't get removed in a version upgrade
     const oldModel = JSON.parse(modelTxt);
     const newModel = {
         ...oldModel,
-        ActionList: oldModel.ActionList.map((a) => {
+        ActionList: oldModel.ActionList.map(a => {
             const action = a.Action;
             if (typeof action.mutExcl === 'string') {
                 action.mutExcl = action.mutExcl.toUpperCase() === 'TRUE';
@@ -75,23 +74,23 @@ function UpgradeV2_4(modelTxt) {
             delete action.required;
             return { Action: action };
         }),
-        DiagramList: oldModel.DiagramList.map((d) => {
+        DiagramList: oldModel.DiagramList.map(d => {
             const diagram = d.Diagram;
             delete diagram.required;
             delete diagram.diagramLabels;
             return { Diagram: diagram };
         }),
-        StateList: oldModel.StateList.map((s) => {
+        StateList: oldModel.StateList.map(s => {
             const state = s.State;
             delete state.required;
             return { State: state };
         }),
-        VariableList: oldModel.VariableList.map((v) => {
+        VariableList: oldModel.VariableList.map(v => {
             const variable = v.Variable;
             delete variable.required;
             return { Variable: variable };
         }),
-        EventList: oldModel.EventList.map((e) => {
+        EventList: oldModel.EventList.map(e => {
             const event = e.Event;
             delete event.missionTime;
             event.mainItem ?? (event.mainItem = false);
@@ -116,40 +115,49 @@ function UpgradeV2_4(modelTxt) {
         ExtSimList: oldModel.ExtSimList ?? [],
     };
     function mapEvent(oldEv) {
-        const allItems = oldEv.allItems != null
-            ? typeof oldEv.allItems === 'string'
+        const allItems = oldEv.allItems == null
+            ? undefined
+            : typeof oldEv.allItems === 'string'
                 ? oldEv.allItems.toUpperCase() === 'TRUE'
-                : oldEv.allItems
-            : undefined;
-        const onSuccess = oldEv.onSuccess != null
-            ? typeof oldEv.onSuccess === 'string'
+                : oldEv.allItems;
+        const onSuccess = oldEv.onSuccess == null
+            ? undefined
+            : typeof oldEv.onSuccess === 'string'
                 ? oldEv.onSuccess.toUpperCase() === 'TRUE'
-                : oldEv.onSuccess
-            : undefined;
-        const ifInState = oldEv.ifInState != null
-            ? typeof oldEv.ifInState === 'string'
+                : oldEv.onSuccess;
+        const ifInState = oldEv.ifInState == null
+            ? undefined
+            : typeof oldEv.ifInState === 'string'
                 ? oldEv.ifInState.toUpperCase() === 'TRUE'
-                : oldEv.ifInState
-            : undefined;
-        if (oldEv.evType &&
-            ['etNormalDist', 'etLogNormalDist', 'etExponentialDist', 'etWeibullDist'].includes(oldEv.evType)) {
+                : oldEv.ifInState;
+        if (oldEv.evType
+            && [
+                'etNormalDist',
+                'etLogNormalDist',
+                'etExponentialDist',
+                'etWeibullDist',
+            ].includes(oldEv.evType)) {
             const removedOldEv = oldEv;
             const { moveFromCurrent, rate, timeRate, mean, std, min, max, meanTimeRate, stdTimeRate, minTimeRate, maxTimeRate, ...rest } = removedOldEv;
             const evType = 'etDistribution';
             let distType = 'dtNormal';
             switch (oldEv.evType) {
-                case 'etNormalDist':
+                case 'etNormalDist': {
                     distType = 'dtNormal';
                     break;
-                case 'etLogNormalDist':
+                }
+                case 'etLogNormalDist': {
                     distType = 'dtLogNormal';
                     break;
-                case 'etExponentialDist':
+                }
+                case 'etExponentialDist': {
                     distType = 'dtExponential';
                     break;
-                case 'etWeibullDist':
+                }
+                case 'etWeibullDist': {
                     distType = 'dtWeibull';
                     break;
+                }
             }
             const updatedEv = {
                 ...rest,
@@ -162,7 +170,7 @@ function UpgradeV2_4(modelTxt) {
             };
             switch (oldEv.evType) {
                 case 'etNormalDist':
-                case 'etLogNormalDist':
+                case 'etLogNormalDist': {
                     updatedEv.parameters = [
                         {
                             name: 'Mean',
@@ -191,7 +199,8 @@ function UpgradeV2_4(modelTxt) {
                     ];
                     updatedEv.dfltTimeRate = 'trHours';
                     break;
-                case 'etExponentialDist':
+                }
+                case 'etExponentialDist': {
                     updatedEv.parameters = [
                         {
                             name: 'Rate',
@@ -214,7 +223,8 @@ function UpgradeV2_4(modelTxt) {
                     ];
                     updatedEv.dfltTimeRate = 'trHours';
                     break;
-                case 'etWeibullDist':
+                }
+                case 'etWeibullDist': {
                     updatedEv.parameters = [
                         {
                             name: 'Shape',
@@ -242,12 +252,10 @@ function UpgradeV2_4(modelTxt) {
                     ];
                     updatedEv.dfltTimeRate = oldEv.timeRate;
                     break;
+                }
             }
             return updatedEv;
         }
-        // else { // no need to change it so just add it back to the ev list
-        //     return oldEv as Event;
-        // }
         else {
             // no need to change it so just add it back to the ev list
             const { rate, timeRate, moveFromCurrent, mean, std, min, max, meanTimeRate, stdTimeRate, minTimeRate, maxTimeRate, ...rest } = oldEv;
@@ -263,51 +271,41 @@ function UpgradeV2_4(modelTxt) {
         }
     }
     newModel.version = 2.4;
-    const retModel = { newModel: JSON.stringify(newModel), errors: [] };
-    // //to validate the new version against the schema
-    // const schemaPath = './src/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
-    // const schemaTxt = fs.readFileSync(schemaPath, 'utf-8').trim();
-    // const schema = JSON.parse(schemaTxt);
-    // const validator = new Validator();
-    // const validationResult = validator.validate(newModel, schema);
-    // if(validationResult.valid === false){
-    //     validationResult.errors.forEach(error => {
-    //         retModel.errors.push(error.instance + " - " + error.message + " : " + JSON.stringify(error.argument))
-    //     });
-    // }
-    return retModel;
+    return {
+        newModel: JSON.stringify(newModel),
+        errors: [],
+    };
 }
 
 function UpgradeV3_0(modelTxt) {
-    //var m : EMRALD_ModelV2_4;
-    const oldModel = JSON.parse(modelTxt);
-    const newModel = UpgradeV3_0_Recursive(oldModel);
-    const retModel = { newModel: JSON.stringify(newModel), errors: [] };
-    return retModel;
+    return {
+        newModel: JSON.stringify(UpgradeV3_0_Recursive(JSON.parse(modelTxt))),
+        errors: [],
+    };
 }
 function UpgradeV3_0_Recursive(oldModel) {
-    //do upgrade steps for version change 2.4 to 3.0
-    //remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
+    // do upgrade steps for version change 2.4 to 3.0
+    // remove the extra layer between all the lists so we dont have items like - "EventList" : { "Event": {...}, "Event": {...}}
     const newModel = {
         ...oldModel,
-        id: oldModel.id !== undefined ? String(oldModel.id) : undefined,
+        id: oldModel.id === undefined ? undefined : String(oldModel.id),
         objType: 'EMRALD_Model',
         DiagramList: oldModel.DiagramList.map(({ Diagram }) => {
-            const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; //exclude diagramList, forceMerge, singleStates
+            const { diagramList, forceMerge, singleStates, id, ...rest } = Diagram; // exclude diagramList, forceMerge, singleStates
             return {
                 ...rest, // Spread the rest of the properties
-                id: id !== undefined ? String(id) : undefined,
+                id: id === undefined ? undefined : String(id),
                 objType: 'Diagram',
                 diagramType: mapDiagramType(Diagram.diagramType), // Add the mapped diagramType
                 required: false,
             };
         }),
         ExtSimList: oldModel.ExtSimList.map(({ ExtSim }) => {
-            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; //exclude
+            const { modelRef, states, configData, simMaxTime, varScope, value, resetOnRuns, type, sim3DId, id, ...rest } = ExtSim; // exclude
             return {
                 ...rest,
                 objType: 'ExtSim',
-                id: id !== undefined ? String(id) : undefined,
+                id: id === undefined ? undefined : String(id),
             };
         }),
         // StateList: oldModel.StateList ? oldModel.StateList.map(({ State }) => ({ ...State })) : [],
@@ -316,48 +314,49 @@ function UpgradeV3_0_Recursive(oldModel) {
                 .replace(/([a-zA-Z0-9]+)\s*:/g, '"$1":') // Replace property names with double quotes
                 .replace(/'/g, '"'); // Replace single quotes with double quotes
             const geometryInfo = JSON.parse(correctedString);
-            const { geometry, id, ...rest } = State; //exclude geometry
+            const { geometry, id, ...rest } = State; // exclude geometry
             return {
                 ...rest,
-                id: id !== undefined ? String(id) : undefined,
+                id: id === undefined ? undefined : String(id),
                 objType: 'State',
                 geometryInfo,
             };
         }),
         ActionList: oldModel.ActionList.map(({ Action }) => {
-            const { itemId, moveFromCurrent, id, ...rest } = Action; //exclude itemId and move from current
+            const { itemId, moveFromCurrent, id, ...rest } = Action; // exclude itemId and move from current
             const mainItem = Action.mainItem ?? false;
             return {
                 ...rest,
-                id: id !== undefined ? String(id) : undefined,
+                id: id === undefined ? undefined : String(id),
                 objType: 'Action',
                 mainItem,
             };
         }),
         EventList: oldModel.EventList.map(({ Event }) => {
             const { id, ...rest } = Event;
-            const ifInState = Event.ifInState != null
-                ? typeof Event.ifInState === 'string'
+            const ifInState = Event.ifInState == null
+                ? undefined
+                : typeof Event.ifInState === 'string'
                     ? Event.ifInState.toUpperCase() === 'TRUE'
-                    : Event.ifInState
-                : undefined;
+                    : Event.ifInState;
             return {
                 ...rest,
-                id: id !== undefined ? String(id) : undefined,
+                id: id === undefined ? undefined : String(id),
                 objType: 'Event',
                 ifInState,
             };
         }),
         LogicNodeList: oldModel.LogicNodeList.map(({ LogicNode }) => ({
             ...LogicNode,
-            id: LogicNode.id !== undefined ? String(LogicNode.id) : undefined,
+            id: LogicNode.id === undefined ? undefined : String(LogicNode.id),
             objType: 'LogicNode',
-            isRoot: LogicNode.isRoot !== undefined
-                ? LogicNode.isRoot ||
-                    (LogicNode.rootName != undefined && LogicNode.rootName === LogicNode.name)
-                : LogicNode.rootName == undefined
+            isRoot: LogicNode.isRoot === undefined
+                ? LogicNode.rootName == undefined
                     ? false
-                    : LogicNode.rootName === LogicNode.name,
+                    : LogicNode.rootName === LogicNode.name
+                : LogicNode.isRoot
+                    || (LogicNode.rootName != undefined
+                        && LogicNode.rootName === LogicNode.name),
             compChildren: mapLogicNode(LogicNode.compChildren),
         })),
         VariableList: oldModel.VariableList.map(({ Variable }) => {
@@ -365,29 +364,29 @@ function UpgradeV3_0_Recursive(oldModel) {
             const { modelRef = null, states, configData, simMaxTime, $$hashKey, id, ...rest } = Variable;
             let regExpLine = undefined;
             if (Variable.regExpLine !== undefined) {
-                if (typeof Variable.regExpLine === 'string')
-                    regExpLine = parseFloat(Variable.regExpLine);
-                else
-                    regExpLine = Variable.regExpLine;
+                regExpLine
+                    = typeof Variable.regExpLine === 'string'
+                        ? Number.parseFloat(Variable.regExpLine)
+                        : Variable.regExpLine;
             }
             let begPosition = undefined;
             if (Variable.begPosition !== undefined) {
-                if (typeof Variable.begPosition === 'string')
-                    begPosition = parseFloat(Variable.begPosition);
-                else
-                    begPosition = Variable.begPosition;
+                begPosition
+                    = typeof Variable.begPosition === 'string'
+                        ? Number.parseFloat(Variable.begPosition)
+                        : Variable.begPosition;
             }
             // Map accrualStatesData if it's defined
             const accrualStatesData = Variable.accrualStatesData === undefined
                 ? undefined
-                : Variable.accrualStatesData.map((AccrualState) => {
+                : Variable.accrualStatesData.map(AccrualState => {
                     // Destructure AccrualState, excluding $$hashKey
                     const { $$hashKey, ...rest } = AccrualState;
                     return rest;
                 });
             return {
                 ...rest, // Spread the rest of the properties
-                id: id !== undefined ? String(id) : undefined,
+                id: id === undefined ? undefined : String(id),
                 objType: 'Variable',
                 accrualStatesData, // Include mapped accrualStatesData
                 regExpLine,
@@ -397,34 +396,35 @@ function UpgradeV3_0_Recursive(oldModel) {
         group: oldModel.group ? convertGroupV2_4ToGroup(oldModel.group) : undefined,
         templates: convertTemplates(oldModel.templates),
     };
-    //function to map changed diagram type
+    // function to map changed diagram type
     function mapLogicNode(childNames) {
-        //move the child name to the diagramName and create an empty stateValues array.
-        return childNames ? childNames.map((child) => ({ diagramName: child, stateValues: [] })) : [];
+        // move the child name to the diagramName and create an empty stateValues array.
+        return childNames
+            ? childNames.map(child => ({ diagramName: child, stateValues: [] }))
+            : [];
     }
-    //function to map changed diagram type
+    // function to map changed diagram type
     function mapDiagramType(diagramType) {
         switch (diagramType) {
             case 'dtComponent':
-            case 'dtSystem':
+            case 'dtSystem': {
                 return 'dtSingle';
-            default:
+            }
+            default: {
                 return 'dtMulti';
+            }
         }
     }
     function convertTemplates(templates) {
-        if (!templates)
+        if (!templates) {
             return undefined;
-        const retModelArray = [];
-        //convert each template to the new version
-        templates.forEach((element) => {
-            retModelArray.push(UpgradeV3_0_Recursive(element));
-        });
-        return retModelArray;
+        }
+        return templates.map(element => UpgradeV3_0_Recursive(element));
     }
     function convertGroupV2_4ToGroup(groupV2_4) {
-        if (!groupV2_4)
+        if (!groupV2_4) {
             return undefined; // If input is null, return null
+        }
         const { name, subgroup } = groupV2_4;
         // Recursively convert subgroup if it exists
         const convertedSubgroups = [];
@@ -441,32 +441,28 @@ function UpgradeV3_0_Recursive(oldModel) {
             subgroup: convertedSubgroups.length > 0 ? convertedSubgroups : undefined,
         };
     }
-    //Assign the state default values
-    //type D2 = DiagramV2_4;
-    const oldDiagrams = oldModel.DiagramList.map(({ Diagram }) => ({ ...Diagram }));
-    const stateValDict = new Map(); //values for states
+    const stateValDict = new Map(); // values for states
     const singleDiagrams = new Set();
-    oldDiagrams.forEach((diagram) => {
-        //find all the state values for diagrams that are single state diagrams
+    for (const diagram of oldModel.DiagramList.map(({ Diagram }) => ({
+        ...Diagram,
+    }))) {
+        // find all the state values for diagrams that are single state diagrams
         if (diagram.singleStates !== undefined) {
-            diagram.singleStates.forEach((value) => {
+            for (const value of diagram.singleStates) {
                 stateValDict.set(value.stateName, value.okState === 'True' ? 'True' : 'False');
-            });
+            }
             singleDiagrams.add(diagram.name);
         }
-    });
-    newModel.StateList.forEach((state) => {
+    }
+    for (const state of newModel.StateList) {
         if (singleDiagrams.has(state.diagramName)) {
-            if (stateValDict.has(state.name)) {
-                state.defaultSingleStateValue = stateValDict.get(state.name);
-            }
-            else {
-                state.defaultSingleStateValue = 'Ignore';
-            }
+            state.defaultSingleStateValue = stateValDict.has(state.name)
+                ? stateValDict.get(state.name)
+                : 'Ignore';
         }
-    });
-    newModel.emraldVersion = 3.0;
-    newModel.version = 1.0; //set user version for first use of this property
+    }
+    newModel.emraldVersion = 3;
+    newModel.version = 1; // set user version for first use of this property
     return newModel;
 }
 
@@ -478,80 +474,76 @@ function UpgradeV3_1(modelTxt) {
 }
 function UpgradeV3_1_Recursive(oldModel) {
     // Note: The reassignment of the objType properties here is just to make TypeScript happy
-    function upgradeModel(oldModel) {
-        return {
-            ...oldModel,
-            DiagramList: oldModel.DiagramList.map((diagram) => {
-                const newDiagram = {
-                    ...diagram,
-                    objType: 'Diagram',
-                };
-                return newDiagram;
-            }),
-            ExtSimList: oldModel.ExtSimList.map((extsim) => {
-                const newExtSim = {
-                    ...extsim,
-                    objType: 'ExtSim',
-                };
-                return newExtSim;
-            }),
-            StateList: oldModel.StateList.map((state) => {
-                const newState = {
-                    ...state,
-                    objType: 'State',
-                };
-                return newState;
-            }),
-            ActionList: oldModel.ActionList.map((action) => {
-                const newAction = {
-                    ...action,
-                    objType: 'Action',
-                    // Forces the required caType property to exist
-                    // For this update, the only possible value is the MAAP form
-                    formData: action.formData
-                        ? {
-                            ...action.formData,
-                            sourceElements: [],
-                            initiators: [],
-                            parameters: [],
-                            inputBlocks: [],
-                            caType: 'MAAP',
-                            needsUpgrade: true,
-                        }
-                        : undefined,
-                };
-                return newAction;
-            }),
-            EventList: oldModel.EventList.map((event) => {
-                const newEvent = {
-                    ...event,
-                    objType: 'Event',
-                };
-                return newEvent;
-            }),
-            LogicNodeList: oldModel.LogicNodeList.map((ln) => {
-                const newLn = {
-                    ...ln,
-                    objType: 'LogicNode',
-                };
-                return newLn;
-            }),
-            VariableList: oldModel.VariableList.map((v) => {
-                const newVar = {
-                    ...v,
-                    objType: 'Variable',
-                };
-                return newVar;
-            }),
-            versionHistory: [],
-            emraldVersion: 3.1,
-        };
-    }
+    const upgradeModel = (oldModel) => ({
+        ...oldModel,
+        DiagramList: oldModel.DiagramList.map(diagram => {
+            const newDiagram = {
+                ...diagram,
+                objType: 'Diagram',
+            };
+            return newDiagram;
+        }),
+        ExtSimList: oldModel.ExtSimList.map(extsim => {
+            const newExtSim = {
+                ...extsim,
+                objType: 'ExtSim',
+            };
+            return newExtSim;
+        }),
+        StateList: oldModel.StateList.map(state => {
+            const newState = {
+                ...state,
+                objType: 'State',
+            };
+            return newState;
+        }),
+        ActionList: oldModel.ActionList.map(action => {
+            const newAction = {
+                ...action,
+                objType: 'Action',
+                // Forces the required caType property to exist
+                // For this update, the only possible value is the MAAP form
+                formData: action.formData
+                    ? {
+                        ...action.formData,
+                        sourceElements: [],
+                        initiators: [],
+                        parameters: [],
+                        inputBlocks: [],
+                        caType: 'MAAP',
+                        needsUpgrade: true,
+                    }
+                    : undefined,
+            };
+            return newAction;
+        }),
+        EventList: oldModel.EventList.map(event => {
+            const newEvent = {
+                ...event,
+                objType: 'Event',
+            };
+            return newEvent;
+        }),
+        LogicNodeList: oldModel.LogicNodeList.map(ln => {
+            const newLn = {
+                ...ln,
+                objType: 'LogicNode',
+            };
+            return newLn;
+        }),
+        VariableList: oldModel.VariableList.map(v => {
+            const newVar = {
+                ...v,
+                objType: 'Variable',
+            };
+            return newVar;
+        }),
+        versionHistory: [],
+        emraldVersion: 3.1,
+    });
     return {
         ...upgradeModel(oldModel),
-        templates: oldModel.templates?.map((template) => {
-            return upgradeModel(template);
-        }),
+        templates: oldModel.templates?.map(template => upgradeModel(template)),
     };
 }
 
@@ -562,26 +554,28 @@ function UpgradeV3_2(modelTxt) {
     };
 }
 function UpgradeV3_2_Recursive(oldModel) {
-    const upgradeModel = (oldModel) => {
-        return {
-            ...oldModel,
-            StateList: oldModel.StateList.map((state) => {
-                // eslint-disable-next-line prefer-const
-                let { geometryInfo } = state;
-                if (typeof state.geometryInfo === 'undefined' && typeof state.geometry === 'string') {
-                    geometryInfo = JSON.parse(state.geometry.replace(/([A-z]+):\s/g, '"$1": '));
-                }
-                return {
-                    ...state,
-                    geometryInfo,
-                };
-            }),
-            emraldVersion: 3.2,
-        };
-    };
+    const upgradeModel = (oldModel) => ({
+        ...oldModel,
+        ActionList: oldModel.ActionList.map(action => ({
+            ...action,
+            formData: action.formData, // Differences in types are just superficial, so this casts them to get typescript to stop complaining
+        })),
+        StateList: oldModel.StateList.map(state => {
+            let geometryInfo = state.geometryInfo;
+            if (state.geometryInfo === undefined
+                && typeof state.geometry === 'string') {
+                geometryInfo = JSON.parse(state.geometry.replace(/([A-z]+):\s/g, '"$1": '));
+            }
+            return {
+                ...state,
+                geometryInfo,
+            };
+        }),
+        emraldVersion: 3.2,
+    });
     return {
         ...upgradeModel(oldModel),
-        templates: oldModel.templates?.map((template) => {
+        templates: oldModel.templates?.map(template => {
             return upgradeModel(template);
         }),
     };
@@ -589,38 +583,49 @@ function UpgradeV3_2_Recursive(oldModel) {
 
 class Upgrade {
     constructor(modelTxt) {
-        this._emraldVersion = 0.0;
+        this._emraldVersion = 0;
         this._oldModelTxt = modelTxt;
         let modelObj = null;
         this._newModelTxt = '';
         this._newModel = undefined;
-        this._emraldVersion = 0.0;
+        this._emraldVersion = 0;
         this._errors = [];
         if (modelTxt != '') {
             modelObj = JSON.parse(modelTxt);
-            //using emraldVersion for now
+            // using emraldVersion for now
             try {
                 const m = modelObj;
-                this._emraldVersion = m.emraldVersion ?? m.version ?? 0.0;
+                this._emraldVersion = m.emraldVersion ?? m.version ?? 0;
             }
             catch {
                 this._errors.push('Invalid JSON format');
             }
         }
     }
+    get newModel() {
+        return this._newModel;
+    }
+    get newModelStr() {
+        return JSON.stringify(this._newModel);
+    }
+    get errorsStr() {
+        return this._errors;
+    }
     upgradeGiveID(toVersion, setIdFunction) {
         this._newModelTxt = this._oldModelTxt;
         // Define upgrade functions
+        console.log(this._newModelTxt);
         const upgrades = [
             { emraldVersion: 1.2, upgradeFunction: UpgradeV1_x },
             { emraldVersion: 2.4, upgradeFunction: UpgradeV2_4 },
-            { emraldVersion: 3.0, upgradeFunction: UpgradeV3_0 },
+            { emraldVersion: 3, upgradeFunction: UpgradeV3_0 },
             { emraldVersion: 3.1, upgradeFunction: UpgradeV3_1 },
             { emraldVersion: 3.2, upgradeFunction: UpgradeV3_2 },
         ];
         // Apply upgrades
         for (const upgrade of upgrades) {
-            if (this._emraldVersion < upgrade.emraldVersion && toVersion >= upgrade.emraldVersion) {
+            if (this._emraldVersion < upgrade.emraldVersion
+                && toVersion >= upgrade.emraldVersion) {
                 const upgraded = upgrade.upgradeFunction(this._newModelTxt);
                 this._newModelTxt = upgraded.newModel;
                 this._newModel = JSON.parse(upgraded.newModel);
@@ -645,22 +650,13 @@ class Upgrade {
                 this._newModel.StateList,
                 this._newModel.VariableList,
             ];
-            lists.forEach((list) => {
-                list.forEach((element) => {
+            for (const list of lists) {
+                for (const element of list) {
                     element.id = setIdFunction();
-                });
-            });
+                }
+            }
         }
         return true;
-    }
-    get newModel() {
-        return this._newModel;
-    }
-    get newModelStr() {
-        return JSON.stringify(this._newModel);
-    }
-    get errorsStr() {
-        return this._errors;
     }
 }
 

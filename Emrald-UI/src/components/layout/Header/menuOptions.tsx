@@ -174,10 +174,6 @@ export const projectOptions = {
     URL.revokeObjectURL(url);
   },
   Templates() {},
-  // {
-  //   label: 'Load Demo',
-  //   onClick: () => {},
-  // },
   'Load Results': (
     addWindow: (
       title: string,
