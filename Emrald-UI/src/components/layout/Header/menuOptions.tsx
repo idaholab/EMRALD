@@ -152,7 +152,9 @@ export const projectOptions = {
       // todo let the user know the errors and report a bug to developers, provide the model if possible
     }
     // Convert JSON data to a string
-    const jsonString = JSON.stringify(appData.value, null, 2);
+    const data = structuredClone(appData.value);
+    data.desc = data.desc ?? ''; // Ensure desc is a string
+    const jsonString = JSON.stringify(data, null, 2);
 
     // todo validate the appData from the latest emrald schema version in types
 
@@ -165,7 +167,7 @@ export const projectOptions = {
     // Create an <a> element to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${appData.value.name === undefined || appData.value.name.length === 0 ? 'Untitled_EMRALD_Project' : appData.value.name}.emrald`;
+    a.download = `${data.name === undefined || data.name.length === 0 ? 'Untitled_EMRALD_Project' : data.name}.emrald`;
 
     // Trigger a click event on the <a> element to initiate the download
     a.click();
@@ -412,8 +414,9 @@ export const downloadOptions = {
   'Solve Engine': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    link.href
-      = 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; // The file to download.
+    link.href = window.location.href.includes('acc')
+      ? 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'
+      : `https://github.com/idaholab/EMRALD/releases/download/v${EMRALD_SchemaVersion.toString().padEnd(5, '.0')}/EMRALD_SimEngine.zip`; // The file to download.
     link.click();
   },
   'Client Tester': () => {

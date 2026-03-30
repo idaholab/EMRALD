@@ -43,6 +43,7 @@ export const Header: React.FC = () => {
   const { name, desc, fileName, version, setVersion, setName, setDesc }
     = useModelDetailsContext();
   const [openDialog, setOpenDialog] = useState(false);
+  const [nameRequiredMsg, setNameRequiredMsg] = useState(false);
   const [updatedName, setUpdatedName] = useState<string>();
   const [updatedDesc, setUpdatedDesc] = useState<string>();
   const [updatedVersion, setUpdatedVersion] = useState<string>();
@@ -116,6 +117,10 @@ export const Header: React.FC = () => {
             openVersionDialog={() => {
               setVersionDialog(true);
             }}
+            openNameDialog={() => {
+              setOpenDialog(true);
+              setNameRequiredMsg(true);
+            }}
             handleModelError={message => {
               setModelErrorDialog(true);
               setModelErrorMessage(message);
@@ -178,7 +183,14 @@ export const Header: React.FC = () => {
           value={updatedName}
           onChange={e => {
             setUpdatedName(e.target.value);
+            if (nameRequiredMsg && e.target.value.length > 0) {
+              setNameRequiredMsg(false);
+            }
           }}
+          error={nameRequiredMsg}
+          helperText={
+            nameRequiredMsg ? 'A project name is required' : undefined
+          }
         />
         <TextField
           margin="dense"
@@ -290,6 +302,7 @@ export const Header: React.FC = () => {
           }}
         />
       </DialogComponent>
+
       <DialogComponent
         open={modelErrorDialog}
         title="Error Opening File"

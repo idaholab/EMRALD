@@ -29,6 +29,7 @@ interface MenuButtonProps {
   handleClick?: () => void;
   sx?: Record<string, number>;
   openVersionDialog?: () => void;
+  openNameDialog?: () => void;
   handleModelError?: (message: string) => void;
 }
 
@@ -39,6 +40,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
   handleClick,
   sx,
   openVersionDialog,
+  openNameDialog,
   handleModelError,
 }) => {
   const { newProject, mergeNewData, populateNewData, compareData }
@@ -252,13 +254,17 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
                 key={index}
                 onClick={() => {
                   // TODO: The "new" option doesn't reset the name / version number
-                  if (
-                    option === 'Save'
-                    && appData.value.version > 1
-                    && openVersionDialog
-                  ) {
-                    openVersionDialog();
-                  } else {
+                  let interrupted = false;
+                  if (option === 'Save') {
+                    if (appData.value.name === undefined && openNameDialog) {
+                      openNameDialog();
+                      interrupted = true;
+                    } else if (appData.value.version > 1 && openVersionDialog) {
+                      openVersionDialog();
+                      interrupted = true;
+                    }
+                  }
+                  if (!interrupted) {
                     void handleMenuItemClick(option);
                   }
                 }}
