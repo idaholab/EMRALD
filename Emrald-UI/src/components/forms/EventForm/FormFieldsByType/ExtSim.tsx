@@ -1,21 +1,36 @@
+import type { EventFormProps } from '../EventForm';
+import type { ExtEventMsgType } from '@/types/EMRALD_Model';
 import { Box, MenuItem, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { CodeEditorWithVariables, SelectComponent } from '@/components/common';
+import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
-import { CodeEditorWithVariables, SelectComponent } from '../../../common';
-import { appData } from '../../../../hooks/useAppData';
-import { useEffect } from 'react';
 
-const ExtSim = () => {
+export const ExtSim: React.FC<EventFormProps> = ({ eventData }) => {
   const {
     codeVariables,
-    extEventType,
     scriptCode,
-    variable,
     addToUsedVariables,
     setCodeVariables,
-    setExtEventType,
     setScriptCode,
-    setVariable,
+    setTypeProperties,
+    sync,
   } = useEventFormContext();
+
+  const [extEventType, setExtEventType] = useState<ExtEventMsgType>();
+  const [variable, setVariable] = useState<string>();
+
+  useEffect(() => {
+    setScriptCode(eventData?.code);
+    setCodeVariables(eventData?.varNames);
+    setExtEventType(eventData?.extEventType);
+    setVariable(eventData?.variable);
+    setTypeProperties(['code', 'varNames', 'extEventType', 'variable']);
+  }, []);
+
+  useEffect(() => {
+    sync({ code: scriptCode, varNames: codeVariables, extEventType, variable });
+  }, [scriptCode, codeVariables, extEventType, variable]);
 
   useEffect(() => {
     if (extEventType !== 'etCompEv') {
@@ -27,7 +42,14 @@ const ExtSim = () => {
 
   return (
     <div>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
         <SelectComponent
           value={extEventType ?? undefined}
           setValue={setExtEventType}
@@ -40,10 +62,14 @@ const ExtSim = () => {
         </SelectComponent>
         <Box sx={{ ml: 3, mt: 2 }}>
           {extEventType === 'etEndSim' && (
-            <Typography>Trigger event when the external simulation has ended.</Typography>
+            <Typography>
+              Trigger event when the external simulation has ended.
+            </Typography>
           )}
           {extEventType === 'etStatus' && (
-            <Typography>Triggered if received a ping event from eternal simulation.</Typography>
+            <Typography>
+              Triggered if received a ping event from eternal simulation.
+            </Typography>
           )}
         </Box>
       </Box>
@@ -58,7 +84,7 @@ const ExtSim = () => {
                 fullWidth
               >
                 {appData.value.VariableList.filter(
-                  (variable) => variable.varScope === 'gt3DSim',
+                  variable => variable.varScope === 'gt3DSim',
                 ).map((variable, idx) => (
                   <MenuItem key={idx} value={variable.name}>
                     {variable.name}
@@ -72,7 +98,9 @@ const ExtSim = () => {
               variableList={appData.value.VariableList}
               codeVariables={codeVariables ?? []}
               addToUsedVariables={addToUsedVariables}
-              heading={<span>Evaluate Code (c#) - Must return a boolean value!</span>}
+              heading={
+                <span>Evaluate Code (c#) - Must return a boolean value!</span>
+              }
             />
           </>
         )}
@@ -80,5 +108,3 @@ const ExtSim = () => {
     </div>
   );
 };
-
-export default ExtSim;

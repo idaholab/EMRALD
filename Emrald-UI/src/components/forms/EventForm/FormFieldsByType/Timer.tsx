@@ -1,34 +1,76 @@
-import { useEffect } from 'react';
-import { DurationComponent, SelectComponent } from '../../../common';
-import { useEventFormContext } from '../EventFormContext';
+import type { EventFormProps } from '../EventForm';
+import type { TimeVariableUnit, VarChangeOptions } from '@/types/EMRALD_Model';
 import { Box, Checkbox, FormControlLabel, MenuItem } from '@mui/material';
-import { appData } from '../../../../hooks/useAppData';
-import VariableChangesPiece from './VariableChangesPiece';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { DurationComponent, SelectComponent } from '@/components/common';
+import { appData } from '@/hooks/useAppData';
+import { convertToISOString } from '@/utils/util-functions';
+import { useEventFormContext } from '../EventFormContext';
+import { VariableChangesPiece } from './VariableChangesPiece';
 
-const Timer = () => {
-  const {
+export const Timer: React.FC<EventFormProps> = ({ eventData }) => {
+  const { setTypeProperties, sync } = useEventFormContext();
+
+  const [fromSimStart, setFromSimStart] = useState<boolean>();
+  const [time, setTime] = useState<string>();
+  const [timerMilliseconds, setTimerMilliseconds] = useState(0);
+  const [timeVariableUnit, setTimeVariableUnit] = useState<TimeVariableUnit>();
+  const [useVariable, setUseVariable] = useState<boolean>();
+  const [onVarChange, setOnVarChange] = useState<VarChangeOptions>();
+  const [persistent, setPersistent] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    setFromSimStart(eventData?.fromSimStart);
+    setTimeVariableUnit(eventData?.timeVariableUnit);
+    if (eventData?.time !== undefined) {
+      setTime(eventData.time);
+      setTimerMilliseconds(moment.duration(eventData.time).asMilliseconds());
+    }
+    setUseVariable(eventData?.useVariable);
+    setPersistent(eventData?.persistent);
+    setTypeProperties([
+      'fromSimStart',
+      'time',
+      'timeVariableUnit',
+      'useVariable',
+      'onVarChange',
+      'persistent',
+    ]);
+  }, []);
+
+  useEffect(() => {
+    sync({
+      fromSimStart,
+      time,
+      timeVariableUnit,
+      useVariable,
+      onVarChange,
+      persistent,
+    });
+  }, [
     fromSimStart,
-    timerMilliseconds,
     time,
     timeVariableUnit,
     useVariable,
-    handleTimerDurationChange,
-    setFromSimStart,
-    setTimerMilliseconds,
-    setTime,
-    setTimeVariableUnit,
-    setUseVariable,
+    onVarChange,
     persistent,
-    setPersistent,
-  } = useEventFormContext();
+  ]);
 
   const handleSetUseVariable = (checked: boolean) => {
     setTime('');
     setUseVariable(checked);
   };
 
+  const handleTimerDurationChange = (value: number) => {
+    setTimerMilliseconds(value);
+    setTime(convertToISOString(value));
+  };
+
   useEffect(() => {
-    if (!time) setTimerMilliseconds(0); // if time is a variable string, milliseconds will not be able to be converted to number
+    if (!time) {
+      setTimerMilliseconds(0); // if time is a variable string, milliseconds will not be able to be converted to number
+    }
   }, [useVariable]);
 
   return (
@@ -39,17 +81,19 @@ const Timer = () => {
           <Checkbox
             checked={persistent}
             value={persistent}
-            onChange={(e) => setPersistent(e.target.checked)}
-          ></Checkbox>
+            onChange={e => {
+              setPersistent(e.target.checked);
+            }}
+          />
         }
-      ></FormControlLabel>
+      />
       {useVariable ? (
         <>
           <SelectComponent
             value={
-              appData.value.VariableList.filter((item) => item.type !== 'bool').some(
-                (variable) => variable.name === time,
-              )
+              appData.value.VariableList.filter(
+                item => item.type !== 'bool',
+              ).some(variable => variable.name === time)
                 ? time
                 : ''
             }
@@ -57,13 +101,13 @@ const Timer = () => {
             label="Time Span"
             sx={{ mr: 2 }}
           >
-            {appData.value.VariableList.filter((item) => item.type !== 'bool').map(
-              (variable, index) => (
-                <MenuItem key={index} value={variable.name}>
-                  {variable.name}
-                </MenuItem>
-              ),
-            )}
+            {appData.value.VariableList.filter(
+              item => item.type !== 'bool',
+            ).map((variable, index) => (
+              <MenuItem key={index} value={variable.name}>
+                {variable.name}
+              </MenuItem>
+            ))}
           </SelectComponent>
           <SelectComponent
             value={timeVariableUnit ?? ''}
@@ -80,7 +124,7 @@ const Timer = () => {
         </>
       ) : (
         <DurationComponent
-          milliseconds={timerMilliseconds ?? 0}
+          milliseconds={timerMilliseconds}
           handleDurationChange={handleTimerDurationChange}
         />
       )}
@@ -91,21 +135,26 @@ const Timer = () => {
           control={
             <Checkbox
               checked={useVariable ? true : false}
-              onChange={(e) => {
+              onChange={e => {
                 handleSetUseVariable(e.target.checked);
               }}
             />
           }
         />
       </Box>
-      {useVariable && <VariableChangesPiece />}
+      {useVariable && (
+        <VariableChangesPiece
+          onVarChange={onVarChange}
+          setOnVarChange={setOnVarChange}
+        />
+      )}
       <FormControlLabel
         label="From Sim Start"
         value={fromSimStart}
         control={
           <Checkbox
             checked={fromSimStart ? true : false}
-            onChange={(e) => {
+            onChange={e => {
               setFromSimStart(e.target.checked);
             }}
           />
@@ -114,5 +163,3 @@ const Timer = () => {
     </div>
   );
 };
-
-export default Timer;

@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest';
-import { getDiagram, render, save } from '../../../test-utils';
-import DiagramContextProvider from '../../../../contexts/DiagramContext';
-import DiagramForm from '../../../../components/forms/DiagramForm/DiagramForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { DiagramForm } from '../../../../components/forms/DiagramForm/DiagramForm';
+import { DiagramContextProvider } from '../../../../contexts/DiagramContext';
+import { getDiagram, render, save } from '../../../test-utils';
 import expected from './DiagramForm.expected.json';
 
 describe('Diagram Form', () => {
@@ -11,7 +11,7 @@ describe('Diagram Form', () => {
     const name = 'creates a diagram';
     render(
       <DiagramContextProvider>
-        <DiagramForm></DiagramForm>
+        <DiagramForm />
       </DiagramContextProvider>,
     );
     const user = userEvent.setup();
@@ -41,14 +41,17 @@ describe('Diagram Form', () => {
             diagramLabel: 'Component',
             states: [],
           }}
-        ></DiagramForm>
+        />
       </DiagramContextProvider>,
     );
     const user = userEvent.setup();
 
     // Enter new name
     await user.clear(await screen.findByLabelText('Name'));
-    await user.type(await screen.findByLabelText('Name'), 'edited diagram name');
+    await user.type(
+      await screen.findByLabelText('Name'),
+      'edited diagram name',
+    );
 
     await save();
     expect(getDiagram('edited diagram name')).toEqual(expected[name]);

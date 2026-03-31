@@ -1,8 +1,14 @@
-import { describe, expect, test } from 'vitest';
-import { ensureVariable, getEvent, renderEventForm, save, selectOption } from '../../../../test-utils';
-import EventForm from '../../../../../components/forms/EventForm/EventForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import {
+  ensureVariable,
+  getEvent,
+  renderEventForm,
+  save,
+  selectOption,
+} from '@/tests/test-utils';
 import expected from './Timer.expected.json';
 
 // Check saving default values
@@ -22,7 +28,7 @@ describe('Timer Events', () => {
         }}
       />,
     );
-    
+
     await save();
     expect(getEvent(name)).toEqual(expected[name]);
   });

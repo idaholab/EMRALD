@@ -1,13 +1,13 @@
-import findCircuits from 'elementary-circuits-directed-graph';
-import TimelineLink from './TimelineLink';
-import TimelineNode from './TimelineNode';
 import type { NodeTimes, TimelineGraph } from './types';
+import findCircuits from 'elementary-circuits-directed-graph';
+import { TimelineLink } from './TimelineLink';
+import { TimelineNode } from './TimelineNode';
 import { getKeyTimes } from './util';
 
 /**
  * Creates a Sankey diagram along a timeline.
  */
-export default class SankeyTimeline {
+export class SankeyTimeline {
   public keyTimes: number[] = [];
 
   private links: Record<number, TimelineLink> = {};
@@ -19,17 +19,110 @@ export default class SankeyTimeline {
   private nodes: Record<number, TimelineNode> = {};
 
   /**
-   * Adds key times if they don't already exist.
+   * Gets a list of circuits (self-closing loops) in the graph.
    *
-   * @param times - The times to add.
+   * @returns The circuits in the graph.
    */
-  private addKeyTimes(...times: number[]) {
-    times.forEach((time) => {
-      if (!this.keyTimes.includes(time)) {
-        this.keyTimes.push(time);
-        this.keyTimes.sort((a, b) => a - b);
+  public get circuits() {
+    const adjList: number[][] = [];
+    for (const link of Object.values(this.links)) {
+      const source = link.source.id;
+      const target = link.target.id;
+      if (!adjList[source]) {
+        adjList[source] = [];
       }
-    });
+      if (!adjList[target]) {
+        adjList[target] = [];
+      }
+      if (!adjList[source].includes(target)) {
+        adjList[source].push(target);
+      }
+    }
+    return findCircuits(adjList);
+  }
+
+  /**
+   * Gets an object containing the nodes and links in the graph.
+   *
+   * @returns The graph object.
+   */
+  public get graph(): TimelineGraph {
+    return {
+      links: Object.values(this.links),
+      nodes: Object.values(this.nodes).toSorted(
+        (a, b) => a.links.length - b.links.length,
+      ),
+    };
+  }
+
+  /**
+   * Maximum link flow in the graph.
+   *
+   * @returns The largest flow value in the graph.
+   */
+  public get maxFlow() {
+    let maxFlow = 0;
+    for (const link of Object.values(this.links)) {
+      if (link.flow > maxFlow) {
+        maxFlow = link.flow;
+      }
+    }
+    return maxFlow;
+  }
+
+  /**
+   * Maximum node size in the graph.
+   *
+   * @returns The maximum node size in the graph.
+   */
+  public get maxSize() {
+    let maxSize = 0;
+    for (const node of Object.values(this.nodes)) {
+      if (node.size > maxSize) {
+        maxSize = node.size;
+      }
+    }
+    return maxSize;
+  }
+
+  /**
+   * Gets the maximum key time in the graph.
+   *
+   * @returns The maximum key time in the graph.
+   */
+  public get maxTime() {
+    return this.keyTimes.at(-1) ?? 0;
+  }
+
+  /**
+   * Gets the smallest key time in the graph.
+   *
+   * @returns The smallest key time in the graph.
+   */
+  public get minTime() {
+    return this.keyTimes[0] ?? 0;
+  }
+
+  /**
+   * Gets nodes with no outputs.
+   *
+   * @returns Nodes with no outputs.
+   */
+  public get sinkNodes() {
+    return Object.values(this.nodes).filter(
+      node => node.outgoingLinks.length === 0,
+    );
+  }
+
+  /**
+   * Gets nodes with no inputs.
+   *
+   * @returns Nodes with no inputs.
+   */
+  public get sourceNodes() {
+    return Object.values(this.nodes).filter(
+      node => node.incomingLinks.length === 0,
+    );
   }
 
   /**
@@ -51,30 +144,10 @@ export default class SankeyTimeline {
    * @param flow - The link flow amount.
    * @returns The created link.
    */
-  public createLink(
-    source: TimelineNode | number | string,
-    target: TimelineNode | number | string,
-    flow = 0,
-  ): TimelineLink {
-    let s: TimelineNode;
-    if (typeof source === 'number') {
-      s = this.nodes[source];
-    } else if (typeof source === 'string') {
-      [s] = this.getNodesByLabel(source);
-    } else {
-      s = source;
-    }
-    let t: TimelineNode;
-    if (typeof target === 'number') {
-      t = this.nodes[target];
-    } else if (typeof target === 'string') {
-      [t] = this.getNodesByLabel(target);
-    } else {
-      t = target;
-    }
-    const link = new TimelineLink(this, this.nextLinkId, s, t, flow);
-    s.addOutgoingLink(link);
-    t.addIncomingLink(link);
+  public createLink(source: TimelineNode, target: TimelineNode, flow = 0) {
+    const link = new TimelineLink(this, this.nextLinkId, source, target, flow);
+    source.addOutgoingLink(link);
+    target.addIncomingLink(link);
     this.links[this.nextLinkId] = link;
     this.nextLinkId += 1;
     return link;
@@ -88,7 +161,7 @@ export default class SankeyTimeline {
    * @param color - The color of the node, if specified.
    * @returns The created TimelineNode object.
    */
-  public createNode(label: string, times: NodeTimes, color?: string): TimelineNode {
+  public createNode(label: string, times: NodeTimes, color?: string) {
     const node = new TimelineNode(this, this.nextNodeId, label, times, color);
     this.nodes[this.nextNodeId] = node;
     this.addKeyTimes(...getKeyTimes(times));
@@ -97,39 +170,16 @@ export default class SankeyTimeline {
   }
 
   /**
-   * Gets a list of circuits (self-closing loops) in the graph.
-   *
-   * @returns The circuits in the graph.
-   */
-  public get circuits(): number[][] {
-    const adjList: number[][] = [];
-    Object.values(this.links).forEach((link) => {
-      const source = link.source.id;
-      const target = link.target.id;
-      if (!adjList[source]) {
-        adjList[source] = [];
-      }
-      if (!adjList[target]) {
-        adjList[target] = [];
-      }
-      if (!adjList[source].includes(target)) {
-        adjList[source].push(target);
-      }
-    });
-    return findCircuits(adjList);
-  }
-
-  /**
    * Gets the IDs of links in the given path.
    *
    * @param path - The path to find links in.
    * @returns Links between the nodes in the path.
    */
-  public getLinksInPath(path: number[]): number[] {
+  public getLinksInPath(path: number[]) {
     const links: number[] = [];
     for (let i = path.length - 1; i > 0; i -= 1) {
-      const l = this.nodes[path[i]].outgoingLinks.find(
-        (link) => link.target.id === path[i - 1],
+      const l = this.nodes[path[i] ?? 0]?.outgoingLinks.find(
+        link => link.target.id === path[i - 1],
       )?.id;
       if (l !== undefined) {
         links.push(l);
@@ -153,8 +203,8 @@ export default class SankeyTimeline {
    * @param label - The label of nodes to find.
    * @returns The nodes with the given label, if any.
    */
-  public getNodesByLabel(label: string): TimelineNode[] {
-    return Object.values(this.nodes).filter((node) => node.label === label);
+  public getNodesByLabel(label: string) {
+    return Object.values(this.nodes).filter(node => node.label === label);
   }
 
   /**
@@ -164,90 +214,24 @@ export default class SankeyTimeline {
    * @param exclude - Used for recursion.
    * @returns The possible paths to the node.
    */
-  public getPath(id: number, exclude: number[] = []): number[][] {
+  public getPath(id: number, exclude: number[] = []) {
     const target = this.nodes[id];
     const possiblePaths: number[][] = [];
-    if (target.incomingLinks.length === 0) {
+    if (target?.incomingLinks.length === 0) {
       possiblePaths.push([id]);
     } else {
-      target.incomingLinks
-        .filter((link) => !exclude.includes(link.id))
-        .forEach((link) => {
-          if (link.isCircular) {
-            exclude.push(link.id);
-          }
-          this.getPath(link.source.id, exclude).forEach((path) => {
-            possiblePaths.push([id].concat(path));
-          });
-        });
+      for (const link of target?.incomingLinks.filter(
+        link => !exclude.includes(link.id),
+      ) ?? []) {
+        if (link.isCircular) {
+          exclude.push(link.id);
+        }
+        for (const path of this.getPath(link.source.id, exclude)) {
+          possiblePaths.push([id].concat(path));
+        }
+      }
     }
     return possiblePaths;
-  }
-
-  /**
-   * Gets an object containing the nodes and links in the graph.
-   *
-   * @returns The graph object.
-   */
-  public get graph(): TimelineGraph {
-    return {
-      links: Object.values(this.links),
-      nodes: Object.values(this.nodes).sort((a, b) => a.links.length - b.links.length),
-    };
-  }
-
-  /**
-   * Maximum link flow in the graph.
-   *
-   * @returns The largest flow value in the graph.
-   */
-  public get maxFlow(): number {
-    let maxFlow = 0;
-    Object.values(this.links).forEach((link) => {
-      if (link.flow > maxFlow) {
-        maxFlow = link.flow;
-      }
-    });
-    return maxFlow;
-  }
-
-  /**
-   * Maximum node size in the graph.
-   *
-   * @returns The maximum node size in the graph.
-   */
-  public get maxSize(): number {
-    let maxSize = 0;
-    Object.values(this.nodes).forEach((node) => {
-      if (node.size > maxSize) {
-        maxSize = node.size;
-      }
-    });
-    return maxSize;
-  }
-
-  /**
-   * Gets the maximum key time in the graph.
-   *
-   * @returns The maximum key time in the graph.
-   */
-  public get maxTime(): number {
-    if (this.keyTimes.length > 0) {
-      return this.keyTimes[this.keyTimes.length - 1];
-    }
-    return 0;
-  }
-
-  /**
-   * Gets the smallest key time in the graph.
-   *
-   * @returns The smallest key time in the graph.
-   */
-  public get minTime(): number {
-    if (this.keyTimes.length > 0) {
-      return this.keyTimes[0];
-    }
-    return 0;
   }
 
   /**
@@ -257,24 +241,20 @@ export default class SankeyTimeline {
    * @param color - The color to set.
    */
   public setNodeColor(targetNode: number, color: string) {
-    this.nodes[targetNode].setColor(color);
+    this.nodes[targetNode]?.setColor(color);
   }
 
   /**
-   * Gets nodes with no outputs.
+   * Adds key times if they don't already exist.
    *
-   * @returns Nodes with no outputs.
+   * @param times - The times to add.
    */
-  public get sinkNodes(): TimelineNode[] {
-    return Object.values(this.nodes).filter((node) => node.outgoingLinks.length === 0);
-  }
-
-  /**
-   * Gets nodes with no inputs.
-   *
-   * @returns Nodes with no inputs.
-   */
-  public get sourceNodes(): TimelineNode[] {
-    return Object.values(this.nodes).filter((node) => node.incomingLinks.length === 0);
+  private addKeyTimes(...times: number[]) {
+    for (const time of times) {
+      if (!this.keyTimes.includes(time)) {
+        this.keyTimes.push(time);
+        this.keyTimes.sort((a, b) => a - b);
+      }
+    }
   }
 }

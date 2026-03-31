@@ -1,9 +1,9 @@
-import { describe, expect, test } from 'vitest';
-import { getExtSim, render, save } from '../../../test-utils';
-import ExtSimContextProvider from '../../../../contexts/ExtSimContext';
-import ExtSimForm from '../../../../components/forms/ExtSimForm/ExtSimForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { ExtSimForm } from '../../../../components/forms/ExtSimForm/ExtSimForm';
+import { ExtSimContextProvider } from '../../../../contexts/ExtSimContext';
+import { getExtSim, render, save } from '../../../test-utils';
 import expected from './ExtSimForm.expected.json';
 
 describe('ExtSim Form', () => {
@@ -11,14 +11,17 @@ describe('ExtSim Form', () => {
     const name = 'creates ext sim';
     render(
       <ExtSimContextProvider>
-        <ExtSimForm></ExtSimForm>
+        <ExtSimForm />
       </ExtSimContextProvider>,
     );
     const user = userEvent.setup();
 
     // Enter name and application name
     await user.type(await screen.findByLabelText('Name'), name);
-    await user.type(await screen.findByLabelText('Application Name'), 'Application Name');
+    await user.type(
+      await screen.findByLabelText('Application Name'),
+      'Application Name',
+    );
 
     await save();
     expect(getExtSim(name)).toEqual(expected[name]);
@@ -34,7 +37,7 @@ describe('ExtSim Form', () => {
             name,
             resourceName: 'Application Name',
           }}
-        ></ExtSimForm>
+        />
       </ExtSimContextProvider>,
     );
     const user = userEvent.setup();
@@ -43,7 +46,10 @@ describe('ExtSim Form', () => {
     await user.clear(await screen.findByLabelText('Name'));
     await user.type(await screen.findByLabelText('Name'), 'changed name');
     await user.clear(await screen.findByLabelText('Application Name'));
-    await user.type(await screen.findByLabelText('Application Name'), 'changed app name');
+    await user.type(
+      await screen.findByLabelText('Application Name'),
+      'changed app name',
+    );
 
     await save();
     expect(getExtSim('changed name')).toEqual(expected[name]);

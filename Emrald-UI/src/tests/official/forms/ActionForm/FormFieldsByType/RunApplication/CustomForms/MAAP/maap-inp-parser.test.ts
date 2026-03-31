@@ -262,7 +262,9 @@ PRINT INTERVAL IS 5000`);
   });
 
   test('multi expression', async () => {
-    const program = parser.parse(await readTestData('multi-expression.INP')).output;
+    const program = parser.parse(
+      await readTestData('multi-expression.INP'),
+    ).output;
     const expected: Program = {
       type: 'program',
       comments: [[], []],
@@ -544,7 +546,10 @@ describe('statements', () => {
           type: 'identifier',
           value: 'SENSITIVITY',
           comments: [
-            ['No value', 'Should parse as an identifier, not a sensitivity statement'],
+            [
+              'No value',
+              'Should parse as an identifier, not a sensitivity statement',
+            ],
             [],
           ],
         },
@@ -651,7 +656,10 @@ END`);
         {
           type: 'block',
           blockType: 'PARAMETER CHANGE',
-          comments: [['With nested source elements', 'Comment 1', 'Comment 2'], ['Comment 12']],
+          comments: [
+            ['With nested source elements', 'Comment 1', 'Comment 2'],
+            ['Comment 12'],
+          ],
           value: [
             {
               type: 'conditional_block',
@@ -729,7 +737,10 @@ END`);
         {
           type: 'block',
           blockType: 'INITIATORS',
-          comments: [['With nested source elements', 'Comment 1', 'Comment 2'], ['Comment 12']],
+          comments: [
+            ['With nested source elements', 'Comment 1', 'Comment 2'],
+            ['Comment 12'],
+          ],
           value: [
             {
               type: 'conditional_block',
@@ -796,10 +807,15 @@ END`);
   });
 
   test('conditional block statements', async () => {
-    const program = parser.parse(await readTestData('conditionalBlock.INP')).output;
+    const program = parser.parse(
+      await readTestData('conditionalBlock.INP'),
+    ).output;
     const expected: Program = {
       type: 'program',
-      comments: [['Tests conditional block statements **', 'When default', 'Comment 1'], []],
+      comments: [
+        ['Tests conditional block statements **', 'When default', 'Comment 1'],
+        [],
+      ],
       value: [
         {
           blockType: 'WHEN',
@@ -1245,7 +1261,10 @@ END`);
             value: 'VariableName',
           },
           type: 'lookup_variable',
-          value: ['You can type anything in here for now', 'It just gets separated by row'],
+          value: [
+            'You can type anything in here for now',
+            'It just gets separated by row',
+          ],
           comments: [['Comment 1'], ['Comment 2']],
         },
       ],
@@ -1260,7 +1279,9 @@ END`);
 
 describe('program blocks', () => {
   test('source elements', async () => {
-    const program = parser.parse(await readTestData('sourceElements.INP')).output;
+    const program = parser.parse(
+      await readTestData('sourceElements.INP'),
+    ).output;
     const expected: Program = {
       type: 'program',
       comments: [['Tests SourceElements **', 'Statement'], []],
@@ -1315,7 +1336,9 @@ Identifier AS Value`);
 });
 
 test('june 2025 bug fixes', async () => {
-  const program = parser.parse((await readFile(join(__dirname, 'Test2.INP'))).toString()).output;
+  const program = parser.parse(
+    (await readFile(join(__dirname, 'Test2.INP'))).toString(),
+  ).output;
   const expected: Program = {
     type: 'program',
     comments: [[], []],
@@ -1328,7 +1351,7 @@ test('june 2025 bug fixes', async () => {
       {
         type: 'title',
         value: 'Test 2',
-        comments: [[""], []],
+        comments: [[''], []],
       },
       {
         type: 'file',

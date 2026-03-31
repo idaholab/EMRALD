@@ -1,12 +1,12 @@
-import type SankeyTimeline from './SankeyTimeline';
+import type { SankeyTimeline } from './SankeyTimeline';
 import type { Link } from './SankeyTimelineDiagram';
-import type TimelineNode from './TimelineNode';
+import type { TimelineNode } from './TimelineNode';
 import type { LinkLayout } from './types';
 
 /**
  * Represents a link between two nodes in the graph.
  */
-export default class TimelineLink {
+export class TimelineLink {
   public data!: Link;
 
   public flow: number;
@@ -52,17 +52,17 @@ export default class TimelineLink {
    *
    * @returns If the link is circular.
    */
-  public get isCircular(): boolean {
+  public get isCircular() {
     if (this.isSelfLinking) {
       return true;
     }
     let isCircular = false;
-    this.graph.circuits.forEach((circuit) => {
+    for (const circuit of this.graph.circuits) {
       const lastLink = circuit.slice(-2);
       if (lastLink[0] === this.source.id && lastLink[1] === this.target.id) {
         isCircular = true;
       }
-    });
+    }
     return isCircular;
   }
 
@@ -71,7 +71,7 @@ export default class TimelineLink {
    *
    * @returns If the link is self-linking.
    */
-  public get isSelfLinking(): boolean {
+  public get isSelfLinking() {
     return this.source.id === this.target.id;
   }
 }

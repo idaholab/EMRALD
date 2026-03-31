@@ -1,11 +1,11 @@
 import { MenuItem } from '@mui/material';
-import { useActionFormContext } from '../ActionFormContext';
-import { useVariableContext } from '../../../../contexts/VariableContext';
-import CodeEditorWithVariables from '../../../common/CodeEditorWithVariables';
-import SelectComponent from '../../../common/SelectComponent';
 import { useEffect } from 'react';
+import { useVariableContext } from '../../../../contexts/VariableContext';
+import { CodeEditorWithVariables } from '../../../common/CodeEditorWithVariables';
+import { SelectComponent } from '../../../common/SelectComponent';
+import { useActionFormContext } from '../ActionFormContext';
 
-const ChangeVarValue = () => {
+export const ChangeVarValue: React.FC = () => {
   const {
     variableName,
     codeVariables,
@@ -23,8 +23,12 @@ const ChangeVarValue = () => {
 
   return (
     <>
-      <SelectComponent label="Variable" value={variableName} setValue={setVariableName}>
-        {variableList.value.map((variable) => (
+      <SelectComponent
+        label="Variable"
+        value={variableName}
+        setValue={setVariableName}
+      >
+        {variableList.value.map(variable => (
           <MenuItem value={variable.name} key={variable.id}>
             {variable.name}
           </MenuItem>
@@ -48,5 +52,3 @@ const ChangeVarValue = () => {
     </>
   );
 };
-
-export default ChangeVarValue;

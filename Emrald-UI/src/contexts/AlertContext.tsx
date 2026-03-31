@@ -1,28 +1,32 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import {
+  createContext,
+  type PropsWithChildren,
+  useContext,
+  useState,
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 interface AlertContextType {
-  showAlert: (message: string, severity?: 'error' | 'warning' | 'info' | 'success') => void;
+  showAlert: (
+    message: string,
+    severity?: 'error' | 'warning' | 'info' | 'success',
+  ) => void;
   handleClose: () => void;
 }
 
 const AlertContext = createContext<AlertContextType | undefined>(undefined);
 
-export const useAlertContext = (): AlertContextType => {
+export function useAlertContext() {
   const context = useContext(AlertContext);
   if (!context) {
     throw new Error('useAlertContext must be used within an AlertProvider');
   }
   return context;
-};
-
-interface AlertProviderProps {
-  children: ReactNode;
 }
 
-export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
+export const AlertProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [alert, setAlert] = useState<{
     id: string;
     message: string;

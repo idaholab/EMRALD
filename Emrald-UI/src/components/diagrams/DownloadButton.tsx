@@ -1,7 +1,11 @@
-import React from 'react';
-import { useReactFlow, getNodesBounds, getViewportForBounds, type Node } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { FaCamera } from 'react-icons/fa';
+import {
+  getNodesBounds,
+  getViewportForBounds,
+  type Node,
+  useReactFlow,
+} from 'reactflow';
 import { ControlButton } from 'reactflow';
 
 function downloadImage(dataUrl: string, diagramName: string) {
@@ -17,12 +21,20 @@ const imageHeight = 768;
 interface DownloadButtonProps {
   diagramName: string;
 }
-const DownloadButton: React.FC<DownloadButtonProps> = ({ diagramName }) => {
+export const DownloadButton: React.FC<DownloadButtonProps> = ({
+  diagramName,
+}) => {
   const { getNodes } = useReactFlow();
 
   const onClick = async () => {
     const nodesBounds = getNodesBounds(getNodes() as Node[]);
-    const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
+    const viewport = getViewportForBounds(
+      nodesBounds,
+      imageWidth,
+      imageHeight,
+      0.5,
+      2,
+    );
     const reactFlowViewport = document.querySelector('.react-flow__viewport');
     if (reactFlowViewport) {
       try {
@@ -51,5 +63,3 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ diagramName }) => {
     </ControlButton>
   );
 };
-
-export default DownloadButton;

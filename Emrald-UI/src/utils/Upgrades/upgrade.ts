@@ -1,15 +1,16 @@
-import { Upgrade } from './upgradeGiveID';
-import { v4 as uuidv4 } from 'uuid';
 import type { EMRALD_Model } from '../../types/EMRALD_Model';
-import { EMRALD_SchemaVersion } from '../../types/ModelUtils';
 import Ajv from 'ajv';
+import { v4 as uuidv4 } from 'uuid';
+import { EMRALD_SchemaVersion } from '../../types/ModelUtils';
+import { Upgrade } from './upgradeGiveID';
 
-export function upgradeModel(emraldData: string, toVersion?: number): EMRALD_Model | null {
+export function upgradeModel(emraldData: string, toVersion?: number) {
+  console.log(emraldData);
   const upgradeModel = new Upgrade(emraldData);
   upgradeModel.upgradeGiveID(toVersion ?? EMRALD_SchemaVersion, uuidv4); // upgrade to version 3.0 true;
   if (
-    !upgradeModel.newModel ||
-    (upgradeModel.errorsStr.length > 0 && upgradeModel.errorsStr[0] != '')
+    !upgradeModel.newModel
+    || (upgradeModel.errorsStr.length > 0 && upgradeModel.errorsStr[0] != '')
   ) {
     console.log(upgradeModel.errorsStr);
     return null;
@@ -18,13 +19,7 @@ export function upgradeModel(emraldData: string, toVersion?: number): EMRALD_Mod
   }
 }
 
-//export async function validateModel (eModel: EMRALD_Model): Promise<string[]> {
-//    const upgradeModel = new Upgrade("");
-//    await upgradeModel.validateModel(eModel);
-//    return upgradeModel.errorsStr;
-//}
-
-export async function validateModel(model: EMRALD_Model): Promise<string[]> {
+export async function validateModel(model: EMRALD_Model) {
   const _errors = [];
   const schemaPath = './src/utils/Upgrades/v3_0/EMRALD_JsonSchemaV3_0.json';
 
@@ -41,10 +36,10 @@ export async function validateModel(model: EMRALD_Model): Promise<string[]> {
     const validate = ajv.compile(schema);
     // Validate the data against the schema
     const isValid = validate(model);
-    if (!isValid) {
-      validate.errors?.forEach((e) => {
+    if (!isValid && validate.errors) {
+      for (const e of validate.errors) {
         _errors.push(`${e.message ?? ''} - ${e.schemaPath}`);
-      });
+      }
     }
   } catch (error) {
     _errors.push((error as Error).message);

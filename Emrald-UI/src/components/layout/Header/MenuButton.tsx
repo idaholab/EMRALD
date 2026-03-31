@@ -1,20 +1,24 @@
-import { useState, useEffect, useRef } from 'react';
+import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import { startCase } from 'lodash';
-import { downloadOptions, projectOptions, templateSubMenuOptions } from './menuOptions';
-import { useAssembledData } from '../../../hooks/useAssembledData';
-import { useTemplateContext } from '../../../contexts/TemplateContext';
-import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import DialogComponent from '../../common/DialogComponent/DialogComponent';
 import Typography from '@mui/material/Typography';
-import { useWindowContext } from '../../../contexts/WindowContext';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { startCase } from 'lodash';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
+import { useTemplateContext } from '../../../contexts/TemplateContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 import { appData } from '../../../hooks/useAppData';
+import { useAssembledData } from '../../../hooks/useAssembledData';
+import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
+import {
+  downloadOptions,
+  projectOptions,
+  templateSubMenuOptions,
+} from './menuOptions';
 
 type MenuOption = keyof typeof projectOptions | keyof typeof downloadOptions;
 
@@ -25,21 +29,25 @@ interface MenuButtonProps {
   handleClick?: () => void;
   sx?: Record<string, number>;
   openVersionDialog?: () => void;
+  openNameDialog?: () => void;
   handleModelError?: (message: string) => void;
 }
 
-const MenuButton: React.FC<MenuButtonProps> = ({
+export const MenuButton: React.FC<MenuButtonProps> = ({
   id,
   title,
   options,
   handleClick,
   sx,
   openVersionDialog,
+  openNameDialog,
   handleModelError,
 }) => {
-  const { newProject, mergeNewData, populateNewData, compareData } = useAssembledData();
-  const { templatesList, mergeTemplateToList, clearTemplateList } = useTemplateContext();
-  const { updateFileName } = useModelDetailsContext();
+  const { newProject, mergeNewData, populateNewData, compareData }
+    = useAssembledData();
+  const { templatesList, mergeTemplateToList, clearTemplateList }
+    = useTemplateContext();
+  const { setFileName } = useModelDetailsContext();
   const { addWindow } = useWindowContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [subAnchorEl, setSubAnchorEl] = useState<null | HTMLElement>(null);
@@ -54,7 +62,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 
   const subMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+  const handleMouseEnter = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
@@ -64,7 +72,10 @@ const MenuButton: React.FC<MenuButtonProps> = ({
     setOpen(false);
   };
 
-  const handleSubMenuMouseEnter = (event: React.MouseEvent<HTMLElement>, option: MenuOption) => {
+  const handleSubMenuMouseEnter = (
+    event: MouseEvent<HTMLElement>,
+    option: MenuOption,
+  ) => {
     if (option === 'Templates') {
       const templateMenuEl = event.currentTarget;
       const timeout = setTimeout(() => {
@@ -99,34 +110,42 @@ const MenuButton: React.FC<MenuButtonProps> = ({
 
   const handleMenuItemClick = async (option: MenuOption) => {
     switch (option) {
-      case 'New':
+      case 'New': {
         setShowNewProjectDialog(true);
         break;
-      case 'Open':
-        projectOptions.Open(populateNewData, updateFileName, handleModelError);
+      }
+      case 'Open': {
+        projectOptions.Open(populateNewData, setFileName, handleModelError);
         break;
-      case 'Merge':
+      }
+      case 'Merge': {
         projectOptions.Merge(mergeNewData, handleModelError);
         break;
-      case 'Save':
+      }
+      case 'Save': {
         await projectOptions.Save();
         break;
-      case 'Load Results':
+      }
+      case 'Load Results': {
         projectOptions['Load Results'](addWindow, handleModelError);
         break;
+      }
       // Add cases for other menu items as needed
       case 'Templates':
-      case 'Clear Cached Data':
+      case 'Clear Cached Data': {
         projectOptions[option]();
         break;
-      case 'Compare':
+      }
+      case 'Compare': {
         projectOptions.Compare(compareData, handleModelError);
         break;
-      default:
+      }
+      default: {
         // The default case currently handles all download menu options which don't take any arguments
         if (options) {
           downloadOptions[option]();
         }
+      }
     }
     // handleMouseLeave();
   };
@@ -134,11 +153,17 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   const handleSubMenuItemClick = (option: string) => {
     let content; // Declare the variable outside the if statement
     switch (option) {
-      case 'Import Templates':
-        templateSubMenuOptions['Import Templates'](mergeTemplateToList, handleModelError);
+      case 'Import Templates': {
+        templateSubMenuOptions['Import Templates'](
+          mergeTemplateToList,
+          handleModelError,
+        );
         break;
-      case 'Export Templates':
-        content = templateSubMenuOptions['Export Templates'](templatesList.value);
+      }
+      case 'Export Templates': {
+        content = templateSubMenuOptions['Export Templates'](
+          templatesList.value,
+        );
         if (content !== undefined || templatesList.value.length === 0) {
           setShowAlert(true);
           setAlertMessage('No templates to export');
@@ -147,18 +172,24 @@ const MenuButton: React.FC<MenuButtonProps> = ({
           }, 3000);
         }
         break;
-      case 'Clear Templates':
+      }
+      case 'Clear Templates': {
         templateSubMenuOptions['Clear Templates'](clearTemplateList);
         break;
+      }
       default:
     }
     handleMouseLeave();
   };
 
   useEffect(() => {
-    const handleClickOutside: EventListener = (event) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
-      if (subMenuRef.current && !(subMenuRef.current.title === (event.target as any).title)) {
+    const handleClickOutside: EventListener = event => {
+      if (
+        subMenuRef.current
+        && !(
+          subMenuRef.current.title === (event.target as HTMLDivElement).title
+        )
+      ) {
         closeMenus();
       }
     };
@@ -215,21 +246,29 @@ const MenuButton: React.FC<MenuButtonProps> = ({
           horizontal: 'left',
         }}
       >
-        {options &&
-          Object.keys(options)
-            .map((option) => option as MenuOption)
+        {options
+          && Object.keys(options)
+            .map(option => option as MenuOption)
             .map((option, index) => (
               <MenuItem
                 key={index}
                 onClick={() => {
                   // TODO: The "new" option doesn't reset the name / version number
-                  if (option === 'Save' && appData.value.version > 1 && openVersionDialog) {
-                    openVersionDialog();
-                  } else {
+                  let interrupted = false;
+                  if (option === 'Save') {
+                    if (appData.value.name === undefined && openNameDialog) {
+                      openNameDialog();
+                      interrupted = true;
+                    } else if (appData.value.version > 1 && openVersionDialog) {
+                      openVersionDialog();
+                      interrupted = true;
+                    }
+                  }
+                  if (!interrupted) {
                     void handleMenuItemClick(option);
                   }
                 }}
-                onMouseEnter={(e) => {
+                onMouseEnter={e => {
                   handleSubMenuMouseEnter(e, option);
                 }}
                 onMouseLeave={handleSubMenuMouseLeave}
@@ -237,11 +276,13 @@ const MenuButton: React.FC<MenuButtonProps> = ({
                 {option}
                 {option === 'Templates' && (
                   <Menu
-                    id={`menu-submenu`}
+                    id="menu-submenu"
                     anchorEl={subAnchorEl}
                     keepMounted
                     open={subMenuOpen}
-                    slotProps={{ list: { onMouseLeave: handleSubMenuMouseLeave } }}
+                    slotProps={{
+                      list: { onMouseLeave: handleSubMenuMouseLeave },
+                    }}
                     anchorOrigin={{
                       vertical: 'top',
                       horizontal: 'right',
@@ -253,17 +294,21 @@ const MenuButton: React.FC<MenuButtonProps> = ({
                     title="Templates Menu"
                     ref={subMenuRef}
                   >
-                    {Object.keys(templateSubMenuOptions).map((option, index) => (
-                      <MenuItem
-                        key={index}
-                        onClick={() => {
-                          handleSubMenuItemClick(option as keyof typeof templateSubMenuOptions);
-                          closeMenus();
-                        }}
-                      >
-                        {startCase(option)}
-                      </MenuItem>
-                    ))}
+                    {Object.keys(templateSubMenuOptions).map(
+                      (option, index) => (
+                        <MenuItem
+                          key={index}
+                          onClick={() => {
+                            handleSubMenuItemClick(
+                              option as keyof typeof templateSubMenuOptions,
+                            );
+                            closeMenus();
+                          }}
+                        >
+                          {startCase(option)}
+                        </MenuItem>
+                      ),
+                    )}
                   </Menu>
                 )}
               </MenuItem>
@@ -298,12 +343,11 @@ const MenuButton: React.FC<MenuButtonProps> = ({
           }}
         >
           <Typography>
-            Are you sure you want to create a new project? Any unsaved changes will be lost.
+            Are you sure you want to create a new project? Any unsaved changes
+            will be lost.
           </Typography>
         </DialogComponent>
       )}
     </Box>
   );
 };
-
-export default MenuButton;

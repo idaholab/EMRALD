@@ -1,25 +1,51 @@
-import eslint from '@eslint/js';
+import vuetify from 'eslint-config-vuetify';
+import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
-  eslint.configs.recommended,
+// eslint-disable-next-line no-restricted-exports
+export default defineConfig(
   tseslint.configs.strictTypeChecked,
-  tseslint.configs.stylisticTypeChecked,
+  await vuetify({
+    rules: {
+      '@stylistic/semi': ['warn', 'always'],
+      '@stylistic/jsx-one-expression-per-line': ['warn', { allow: 'non-jsx' }],
+      '@stylistic/space-before-function-paren': [
+        'warn',
+        { named: 'never', anonymous: 'always' },
+      ],
+      'no-restricted-exports': [
+        'error',
+        {
+          restrictDefaultExports: {
+            direct: true,
+          },
+        },
+      ],
+      '@stylistic/member-delimiter-style': [
+        'warn',
+        {
+          multiline: {
+            delimiter: 'semi',
+            requireLast: true,
+          },
+        },
+      ],
+      '@stylistic/multiline-ternary': 'off',
+      '@stylistic/jsx-wrap-multilines': 'off',
+      '@stylistic/quote-props': ['warn', 'as-needed'],
+      'unicorn/no-nested-ternary': 'off',
+      'unicorn/prefer-event-target': 'off',
+      'no-control-regex': 'off',
+      complexity: 'off',
+      '@typescript-eslint/no-dynamic-delete': 'off',
+    },
+  }),
   {
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
       },
     },
-    rules: {
-        // These rules are broken in typescript-eslint 8.32.1 but should be enabled (removed from this object) if they're fixed in future versions
-        '@typescript-eslint/no-unused-expressions': 'off',
-        '@typescript-eslint/no-empty-function': 'off',
-        '@typescript-eslint/dot-notation': 'off',
-        // Daniel's preferred rules
-        "@typescript-eslint/consistent-type-imports": "error",
-        "@typescript-eslint/no-deprecated": "error"
-    }
-  }
+  },
+  { ignores: ['**/*.js', '**/vite.config.ts'] },
 );

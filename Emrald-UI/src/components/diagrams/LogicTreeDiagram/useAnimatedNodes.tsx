@@ -1,34 +1,38 @@
+import { timer } from 'd3';
 import { useEffect, useState } from 'react';
 import { type Node, useReactFlow } from 'reactflow';
-import { timer } from 'd3-timer';
 
 export interface UseAnimatedNodeOptions {
   animationDuration?: number;
 }
 
-function useAnimatedNodes(nodes: Node[], { animationDuration = 300 }: UseAnimatedNodeOptions = {}) {
+export function useAnimatedNodes(
+  nodes: Node[],
+  { animationDuration = 300 }: UseAnimatedNodeOptions = {},
+) {
   const [tmpNodes, setTmpNodes] = useState(nodes);
   const { getNode } = useReactFlow();
 
   useEffect(() => {
-    const transitions = nodes.map((node) => ({
+    const transitions = nodes.map(node => ({
       id: node.id,
       from: getNode(node.id)?.position ?? node.position,
       to: node.position,
       node,
     }));
 
-    const t = timer((elapsed) => {
+    const t = timer(elapsed => {
       const s = elapsed / animationDuration;
 
-      const currNodes = transitions.map(({ node, from, to }) => {
-        return {
+      setTmpNodes(
+        transitions.map(({ node, from, to }) => ({
           ...node,
-          position: { x: from.x + (to.x - from.x) * s, y: from.y + (to.y - from.y) * s },
-        };
-      });
-
-      setTmpNodes(currNodes);
+          position: {
+            x: from.x + (to.x - from.x) * s,
+            y: from.y + (to.y - from.y) * s,
+          },
+        })),
+      );
 
       if (elapsed > animationDuration) {
         // it's important to set the final nodes here to avoid glitches
@@ -44,5 +48,3 @@ function useAnimatedNodes(nodes: Node[], { animationDuration = 300 }: UseAnimate
 
   return { nodes: tmpNodes };
 }
-
-export default useAnimatedNodes;

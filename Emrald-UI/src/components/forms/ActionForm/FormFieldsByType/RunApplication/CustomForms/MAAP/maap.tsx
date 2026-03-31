@@ -1,27 +1,47 @@
-import { useEffect, useState } from 'react';
-import { useCustomForm } from '../useCustomForm';
-import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
-import { TextFieldComponent, FileUploadComponent, TabPanel } from '../../../../../../common';
-import { Parameters, Initiators, InputBlocks, Outputs } from './FormFieldsByType';
-import { parser } from './Parser';
-import { parse as parameterParser } from './Parser/maap-par-parser';
-import { useActionFormContext } from '../../../../ActionFormContext';
-import { MAAPToString } from './Parser/maap-to-string';
 import type {
-  MAAPParameter,
-  MAAPConditionalBlockStatement,
-  MAAPSourceElement,
   MAAPAssignment,
+  MAAPConditionalBlockStatement,
+  MAAPParameter,
+  MAAPSourceElement,
 } from '../../../../../../../types/EMRALD_Model';
+import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import {
+  FileUploadComponent,
+  TabPanel,
+  TextFieldComponent,
+} from '../../../../../../common';
+import { useActionFormContext } from '../../../../ActionFormContext';
+import { useCustomForm } from '../useCustomForm';
+import {
+  Initiators,
+  InputBlocks,
+  Outputs,
+  Parameters,
+} from './FormFieldsByType';
+import { parser } from './Parser';
+import {
+  parse as parameterParser,
+  type SyntaxError,
+} from './Parser/maap-par-parser';
+import { MAAPToString } from './Parser/maap-to-string';
 
-const MAAP = () => {
-  const { formData, setFormData, setReturnProcess, ReturnPreCode, ReturnPostCode, ReturnExePath } =
-    useCustomForm();
+export const MAAP: React.FC = () => {
+  const {
+    formData,
+    setFormData,
+    setReturnProcess,
+    ReturnPreCode,
+    ReturnPostCode,
+    ReturnExePath,
+  } = useCustomForm();
   const { setCodeVariables } = useActionFormContext();
   const [parameterFile, setParameterFile] = useState<File | null>(null);
   const [inputFile, setInputFile] = useState<File | null>(null);
   const [currentTab, setCurrentTab] = useState(0);
-  const [parameterPath, setParameterPath] = useState(formData?.parameterPath ?? '');
+  const [parameterPath, setParameterPath] = useState(
+    formData?.parameterPath ?? '',
+  );
   const [inputPath, setInputPath] = useState(formData?.inputPath ?? '');
   const handleTabChange = (_event: React.SyntheticEvent, tabValue: number) => {
     setCurrentTab(tabValue);
@@ -31,14 +51,17 @@ const MAAP = () => {
     if (formData?.sourceElements) {
       let newSource: MAAPSourceElement[] = [];
       let cidx = -1;
-      formData.sourceElements.forEach((se, i) => {
+      for (const [i, se] of formData.sourceElements.entries()) {
         if (se.type === 'block') {
           if (se.blockType === 'PARAMETER CHANGE' && formData.parameters) {
             // This is set up with the assumption we're only modifying assignment statements in the parameter change section
             newSource.push({
               type: 'block',
               blockType: 'PARAMETER CHANGE',
-              value: [...formData.parameters, ...se.value.filter((v) => v.type !== 'assignment')],
+              value: [
+                ...formData.parameters,
+                ...se.value.filter(v => v.type !== 'assignment'),
+              ],
               comments: [[], []],
             });
           } else if (formData.initiators) {
@@ -56,7 +79,7 @@ const MAAP = () => {
         } else if (se.type !== 'conditional_block') {
           newSource.push(se);
         }
-      });
+      }
       if (formData.inputBlocks) {
         newSource = [
           ...newSource.slice(0, cidx),
@@ -239,11 +262,11 @@ const MAAP = () => {
     setFormData(
       formData
         ? {
-          ...formData,
-          exePath: cleanExePath,
-          inputPath: cleanInputPath,
-          parameterPath: cleanParameterPath,
-        }
+            ...formData,
+            exePath: cleanExePath,
+            inputPath: cleanInputPath,
+            parameterPath: cleanParameterPath,
+          }
         : undefined,
     );
   }, [inputPath, parameterFile, parameterPath, JSON.stringify(formData)]);
@@ -267,12 +290,14 @@ const MAAP = () => {
                   type: 'parameter',
                 });
               }
-            } catch (err) {
-              console.log('Error parsing line:', line, ' err is: ', err);
+            } catch (error) {
+              console.log(
+                `Error parsing line: ${line} err is: ${(error as SyntaxError).message}`,
+              );
             }
           }
         }
-        setFormData((prevFormData) =>
+        setFormData(prevFormData =>
           prevFormData
             ? {
                 ...prevFormData,
@@ -297,33 +322,37 @@ const MAAP = () => {
           const inputBlocks: MAAPConditionalBlockStatement[] = [];
           const fileRefs: string[] = [];
 
-          data?.value.forEach((sourceElement) => {
+          for (const sourceElement of data?.value ?? []) {
             switch (sourceElement.type) {
-              case 'file':
+              case 'file': {
                 fileRefs.push(sourceElement.value);
                 break;
-              case 'block':
+              }
+              case 'block': {
                 if (sourceElement.blockType === 'PARAMETER CHANGE') {
-                  sourceElement.value.forEach((innerElement) => {
+                  for (const innerElement of sourceElement.value) {
                     parameters.push(innerElement);
-                  });
+                  }
                 } else {
                   initiators = initiators.concat(sourceElement.value);
                 }
                 break;
-              case 'conditional_block':
+              }
+              case 'conditional_block': {
                 if (!inputBlocks.includes(sourceElement)) {
                   inputBlocks.push(sourceElement);
                 }
                 break;
-              default:
+              }
+              default: {
                 break;
+              }
             }
-          });
+          }
 
           // Set state variables or perform other actions with comments, sections, and parameters
           const newParameters: MAAPAssignment[] = [];
-          parameters.forEach((param) => {
+          for (const param of parameters) {
             if (param.type === 'assignment') {
               newParameters.push(param);
             } else {
@@ -332,9 +361,9 @@ const MAAP = () => {
                 `Unhandled parameter format: ${new MAAPToString().sourceElementToString(param)}`,
               );
             }
-          });
+          }
 
-          setFormData((prevFormData) =>
+          setFormData(prevFormData =>
             prevFormData
               ? {
                   ...prevFormData,
@@ -343,12 +372,12 @@ const MAAP = () => {
                   inputBlocks,
                   fileRefs,
                   sourceElements: data?.value,
-                  needsUpgrade: false
+                  needsUpgrade: false,
                 }
               : undefined,
           );
-        } catch (err) {
-          console.log('Error parsing file:', err);
+        } catch (error) {
+          console.log('Error parsing file:', error);
         }
       }
     };
@@ -357,11 +386,11 @@ const MAAP = () => {
 
   return (
     <>
-      <Box display={'flex'} flexDirection={'column'}>
+      <Box display="flex" flexDirection="column">
         <TextFieldComponent
           value={formData?.exePath ?? ''}
           label="MAAP Executable Path"
-          setValue={(value) => {
+          setValue={value => {
             setFormData(
               formData
                 ? {
@@ -409,13 +438,17 @@ const MAAP = () => {
 
         {formData?.needsUpgrade ? (
           <Typography fontWeight="bold">
-            Your project was created in an older version of the MAAP form. Please re-open your .INP
-            file.
+            Your project was created in an older version of the MAAP form.
+            Please re-open your .INP file.
           </Typography>
         ) : (
           <>
             <Box>
-              <Tabs value={currentTab} onChange={handleTabChange} aria-label="basic tabs example">
+              <Tabs
+                value={currentTab}
+                onChange={handleTabChange}
+                aria-label="basic tabs example"
+              >
                 <Tab label="Parameters" />
                 <Tab label="Initiators" />
                 <Tab label="Input Blocks" />
@@ -441,5 +474,3 @@ const MAAP = () => {
     </>
   );
 };
-
-export default MAAP;

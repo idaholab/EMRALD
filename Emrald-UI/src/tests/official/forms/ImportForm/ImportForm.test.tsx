@@ -1,16 +1,18 @@
-import { describe, expect, test } from 'vitest';
-import { getDiagram, render } from '../../../test-utils';
-import ImportForm from '../../../../components/forms/ImportForm/ImportForm';
-import userEvent from '@testing-library/user-event';
-import fs from 'fs/promises';
-import path from 'path';
-import { act, screen } from '@testing-library/react';
-import expected from './ImportForm.expected.json';
-import { updateAppData } from '../../../../hooks/useAppData';
 import type { EMRALD_Model } from '../../../../types/EMRALD_Model';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { act, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { ImportForm } from '../../../../components/forms/ImportForm/ImportForm';
 import emraldModel from '../../../../emraldData.json';
+import { updateAppData } from '../../../../hooks/useAppData';
+import { getDiagram, render } from '../../../test-utils';
+import expected from './ImportForm.expected.json';
 
-const C_CKV_A = JSON.parse((await fs.readFile(path.join(__dirname, 'C-CKV-A.json'))).toString()) as EMRALD_Model;
+const C_CKV_A = JSON.parse(
+  (await fs.readFile(path.join(__dirname, 'C-CKV-A.json'))).toString(),
+) as EMRALD_Model;
 
 describe('Import Form', () => {
   test('imports diagram', async () => {
@@ -47,7 +49,7 @@ describe('Import Form', () => {
     expect(screen.queryAllByText('CONFLICTS').length).toBe(4);
 
     // Ignore all unlocked conflicts
-    await user.click(await screen.findByText("Ignore Unlocked"));
+    await user.click(await screen.findByText('Ignore Unlocked'));
     expect(screen.queryAllByText('CONFLICTS').length).toBe(3);
 
     // Enter new names for the other three conflicts
@@ -82,7 +84,7 @@ describe('Import Form', () => {
     expect(screen.queryAllByText('CONFLICTS').length).toBe(1);
 
     // Replace all unlocked conflicts
-    await user.click(await screen.findByText("Replace Unlocked"));
+    await user.click(await screen.findByText('Replace Unlocked'));
     expect(screen.queryAllByText('CONFLICTS').length).toBe(0);
 
     await user.click(await screen.findByText('Create'));

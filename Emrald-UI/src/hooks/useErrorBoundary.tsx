@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-function useErrorBoundary() {
+export function useErrorBoundary() {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -21,5 +21,3 @@ function useErrorBoundary() {
 
   return { hasError, errorMessage };
 }
-
-export default useErrorBoundary;

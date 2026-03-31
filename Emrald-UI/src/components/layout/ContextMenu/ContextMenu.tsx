@@ -1,4 +1,3 @@
-import React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -16,7 +15,12 @@ interface ContextMenuProps {
   options: Option[] | undefined;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ mouseX, mouseY, handleClose, options }) => {
+export const ContextMenu: React.FC<ContextMenuProps> = ({
+  mouseX,
+  mouseY,
+  handleClose,
+  options,
+}) => {
   // Open the menu if both mouseX and mouseY are not null
   const open = mouseX !== null && mouseY !== null;
 
@@ -43,5 +47,3 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ mouseX, mouseY, handleClose, 
     </Menu>
   );
 };
-
-export default ContextMenu;

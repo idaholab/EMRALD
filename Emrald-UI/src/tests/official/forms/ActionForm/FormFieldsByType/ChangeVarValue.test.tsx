@@ -1,4 +1,7 @@
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
+import { ActionForm } from '../../../../../components/forms/ActionForm/ActionForm';
 import {
   ensureVariable,
   getAction,
@@ -6,9 +9,6 @@ import {
   save,
   selectOption,
 } from '../../../../test-utils';
-import ActionForm from '../../../../../components/forms/ActionForm/ActionForm';
-import userEvent from '@testing-library/user-event';
-import { screen } from '@testing-library/react';
 import expected from './ChangeVarValue.expected.json';
 
 // Require a variable to be set to close the form
@@ -25,7 +25,7 @@ describe('Change Var Value Actions', () => {
           actType: 'atCngVarVal',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -53,7 +53,7 @@ describe('Change Var Value Actions', () => {
           actType: 'atCngVarVal',
           mainItem: true,
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 

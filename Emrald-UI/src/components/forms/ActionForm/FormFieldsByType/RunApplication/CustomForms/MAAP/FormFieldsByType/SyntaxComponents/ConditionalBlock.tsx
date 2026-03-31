@@ -1,9 +1,9 @@
-import { Expression } from './Expression';
 import type {
   MAAPExpression,
   MAAPSourceElement,
 } from '../../../../../../../../../types/EMRALD_Model';
 import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
+import { Expression } from './Expression';
 import { SourceElement } from './SourceElement';
 
 export const ConditionalBlock: React.FC<{
@@ -21,7 +21,7 @@ export const ConditionalBlock: React.FC<{
       </Box>
       <Divider />
       <Box sx={{ marginTop: 2 }}>
-        {value.map((se) => (
+        {value.map(se => (
           <SourceElement value={se} />
         ))}
       </Box>

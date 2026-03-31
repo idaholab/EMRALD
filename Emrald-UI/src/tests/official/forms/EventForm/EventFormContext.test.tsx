@@ -1,8 +1,8 @@
-import { describe, expect, test } from 'vitest';
-import { getEvent, renderEventForm, save } from '../../../test-utils';
-import EventForm from '../../../../components/forms/EventForm/EventForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { getEvent, renderEventForm, save } from '@/tests/test-utils';
 import expected from './EventFormContext.expected.json';
 
 describe('Event Form Context', () => {
@@ -17,7 +17,7 @@ describe('Event Form Context', () => {
           mainItem: true,
           evType: 'etStateCng',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -26,7 +26,9 @@ describe('Event Form Context', () => {
 
     // Switch event type to distribution
     await user.click(await screen.findByLabelText('Type'));
-    await user.click(await screen.findByRole('option', { name: 'Distribution' }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Distribution' }),
+    );
 
     // Confirm that the distribution form is displayed
     expect(screen.queryByLabelText('Distribution Type')).not.toBeNull();
@@ -43,21 +45,23 @@ describe('Event Form Context', () => {
           mainItem: true,
           evType: 'etStateCng',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 
     // Switch event type to failure rate
     await user.click(await screen.findByLabelText('Type'));
-    await user.click(await screen.findByRole('option', { name: 'Failure Rate' }));
+    await user.click(
+      await screen.findByRole('option', { name: 'Failure Rate' }),
+    );
 
     // Confirm that the failure rate form is displayed
     expect(screen.queryByLabelText('Lambda')).not.toBeNull();
 
     // Invalid values should be set such that the save button is not clickable without a lambda value
-    await expect(
-      async () => { await user.click(await screen.findByText('Save')); },
-    ).rejects.toThrowError();
+    await expect(async () => {
+      await user.click(await screen.findByText('Save'));
+    }).rejects.toThrowError();
   });
 
   test('changes event name', async () => {
@@ -71,7 +75,7 @@ describe('Event Form Context', () => {
           mainItem: true,
           evType: 'etStateCng',
         }}
-      ></EventForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -85,7 +89,7 @@ describe('Event Form Context', () => {
 
   test('creates a new event', async () => {
     const name = 'creates a new event';
-    renderEventForm(<EventForm></EventForm>);
+    renderEventForm(<EventForm />);
     const user = userEvent.setup();
 
     // Ensure this event does not exist

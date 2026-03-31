@@ -1,25 +1,31 @@
+import {
+  Box,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  SvgIcon,
+} from '@mui/material';
 import { useState } from 'react';
-import { Box, SpeedDial, SpeedDialIcon, SpeedDialAction, SvgIcon } from '@mui/material';
-import WindowComponent from '../Window/Window';
-import { TbCube3dSphere, TbSchema } from 'react-icons/tb';
-import { GrPerformance } from 'react-icons/gr';
-import { VscSymbolEvent } from 'react-icons/vsc';
-import { HiOutlineVariable } from 'react-icons/hi';
 import { GiFamilyTree } from 'react-icons/gi';
+import { GrPerformance } from 'react-icons/gr';
+import { HiOutlineVariable } from 'react-icons/hi';
+import { TbCube3dSphere, TbSchema } from 'react-icons/tb';
+import { VscSymbolEvent } from 'react-icons/vsc';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
+import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import DiagramForm from '../../forms/DiagramForm/DiagramForm';
-import MinimizedWindows from '../Window/MinimizedWindows';
-import LogicNodeForm from '../../forms/LogicNodeForm/LogicNodeForm';
-import ActionForm from '../../forms/ActionForm/ActionForm';
-import EventForm from '../../forms/EventForm/EventForm';
-import VariableForm from '../../forms/VariableForm/VariableForm';
-import ActionFormContextProvider from '../../forms/ActionForm/ActionFormContext';
-import VariableFormContextProvider from '../../forms/VariableForm/VariableFormContext';
-import EventFormContextProvider from '../../forms/EventForm/EventFormContext';
-import ExtSimForm from '../../forms/ExtSimForm/ExtSimForm';
-import LogicNodeFormContextProvider from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { ActionForm } from '../../forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '../../forms/DiagramForm/DiagramForm';
+import { ExtSimForm } from '../../forms/ExtSimForm/ExtSimForm';
+import { LogicNodeForm } from '../../forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../../forms/LogicNodeForm/LogicNodeFormContext';
+import { VariableForm } from '../../forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '../../forms/VariableForm/VariableFormContext';
+import { MinimizedWindows } from '../Window/MinimizedWindows';
+import { WindowComponent } from '../Window/Window';
 
-const MainCanvas: React.FC = () => {
+export const MainCanvas: React.FC = () => {
   const actions = [
     {
       icon: (
@@ -133,7 +139,7 @@ const MainCanvas: React.FC = () => {
       >
         <MinimizedWindows />
 
-        {/* Figure this out later */}
+        {/* TODO Figure this out later */}
         {/* {storedHistory && storedHistory.length > 1 ? (
           <Fab color="secondary" aria-label="add" onClick={() => undoChange()}>
             <UndoIcon />
@@ -148,7 +154,7 @@ const MainCanvas: React.FC = () => {
           open={open}
           direction="down"
         >
-          {actions.map((action) => (
+          {actions.map(action => (
             <SpeedDialAction
               key={action.name}
               icon={action.icon}
@@ -166,5 +172,3 @@ const MainCanvas: React.FC = () => {
     </Box>
   );
 };
-
-export default MainCanvas;

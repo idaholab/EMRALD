@@ -3,6 +3,7 @@
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import path from 'node:path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,6 +19,11 @@ export default defineConfig({
   build: {
     // Ensure sourcemaps are generated for debugging
     sourcemap: true,
-    outDir: 'dist' // Adjust the output directory if needed
+    outDir: 'dist', // Adjust the output directory if needed
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
 });

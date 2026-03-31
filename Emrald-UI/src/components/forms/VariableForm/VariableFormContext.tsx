@@ -1,18 +1,17 @@
-import { createContext, type PropsWithChildren, useContext, useState } from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { v4 as uuidv4 } from 'uuid';
-import { emptyVariable, useVariableContext } from '../../../contexts/VariableContext';
-
 import type {
-  Variable,
   AccrualVarTableType,
-  DocVarType,
+  Variable,
   VariableType,
-  VarScope,
-} from '../../../types/EMRALD_Model';
-import type { SelectChangeEvent } from '@mui/material';
-import { useSignal } from '@preact/signals-react';
-import { appData } from '../../../hooks/useAppData';
+} from '@/types/EMRALD_Model';
+import {
+  createContext,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
+  useContext,
+  useState,
+} from 'react';
+import { emptyVariable } from '@/contexts/VariableContext';
 
 export interface AccrualStateItem {
   stateName: string;
@@ -23,103 +22,52 @@ export interface AccrualStateItem {
 }
 
 interface VariableFormContextType {
+  variable: Variable;
   accrualStatesData?: AccrualStateItem[];
   hasError: boolean;
-  name: string;
-  namePrefix: string | undefined;
-  desc: string;
   type: VariableType;
-  varScope: VarScope;
   value: number | string | boolean;
-  sim3DId?: string;
-  extSim?: string;
-  resetOnRuns?: boolean;
-  canMonitor?: boolean;
-  monitorInSim?: boolean;
-  cumulativeStats?: boolean;
-  docType?: string;
-  docPath?: string;
-  docLink?: string;
-  pathMustExist?: boolean;
-  regExpLine?: number;
-  begPosition?: number;
-  showRegExFields?: boolean;
-  showNumChars?: boolean;
-  numChars?: number;
-  setAccrualStatesData: React.Dispatch<React.SetStateAction<AccrualStateItem[] | undefined>>;
+  typeProperties: (keyof Variable)[];
+  sync: (values: Partial<Variable>) => void;
+  setVariable: Dispatch<SetStateAction<Variable>>;
+  setAccrualStatesData: Dispatch<SetStateAction<AccrualStateItem[] | undefined>>;
+  setHasError: Dispatch<SetStateAction<boolean>>;
   sortNewStates: (accrualStatesData: AccrualStateItem[]) => AccrualStateItem[];
-  InitializeForm: (variableData?: Variable) => void;
-  setNamePrefix: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setName: React.Dispatch<React.SetStateAction<string>>;
-  handleClose: () => void;
-  setValue: React.Dispatch<React.SetStateAction<number | string | boolean>>;
-  setType: React.Dispatch<React.SetStateAction<VariableType>>;
-  setDesc: React.Dispatch<React.SetStateAction<string>>;
-  setResetOnRuns: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setCanMonitor: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setMonitorInSim: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setCumulativeStats: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setDocType: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setDocPath: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setDocLink: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setVarScope: React.Dispatch<React.SetStateAction<VarScope>>;
-  setSim3DId: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setExtSim: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setPathMustExist: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  handleTypeChange: (newType: VariableType) => void;
-  handleNameChange: (updatedName: string) => void;
-  handleSave: (variableData?: Variable) => void;
-  handleFloatValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleBoolValueChange: (e: SelectChangeEvent) => void;
-  handleStringValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  setRegExpLine: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setBegPosition: React.Dispatch<React.SetStateAction<number | undefined>>;
-  setShowRegExFields: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setShowNumChars: React.Dispatch<React.SetStateAction<boolean | undefined>>;
-  setNumChars: React.Dispatch<React.SetStateAction<number | undefined>>;
-  reset: () => void;
+  setValue: Dispatch<SetStateAction<number | string | boolean>>;
+  setType: Dispatch<SetStateAction<VariableType>>;
+  setTypeProperties: Dispatch<SetStateAction<(keyof Variable)[]>>;
 }
 
-const VariableFormContext = createContext<VariableFormContextType | undefined>(undefined);
+const VariableFormContext = createContext<VariableFormContextType | undefined>(
+  undefined,
+);
 
-export const useVariableFormContext = (): VariableFormContextType => {
+export function useVariableFormContext() {
   const context = useContext(VariableFormContext);
   if (!context) {
-    throw new Error('useActionFormContext must be used within an ActionFormContextProvider');
+    throw new Error(
+      'useActionFormContext must be used within an ActionFormContextProvider',
+    );
   }
   return context;
-};
+}
 
-const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
+  const [variable, setVariable] = useState(emptyVariable);
   const [accrualStatesData, setAccrualStatesData] = useState<AccrualStateItem[]>();
-  const { handleClose } = useWindowContext();
-  const [name, setName] = useState('Int_');
-  const [originalName, setOriginalName] = useState<string>();
-  const [namePrefix, setNamePrefix] = useState<string>();
-  const [desc, setDesc] = useState('');
   const [type, setType] = useState<VariableType>('int');
-  const [varScope, setVarScope] = useState<VarScope>('gtGlobal');
   const [value, setValue] = useState<number | string | boolean>('');
-  const [sim3DId, setSim3DId] = useState<string>();
-  const [resetOnRuns, setResetOnRuns] = useState<boolean | undefined>(true);
-  const [canMonitor, setCanMonitor] = useState<boolean | undefined>(false);
-  const [monitorInSim, setMonitorInSim] = useState<boolean | undefined>(false);
-  const [cumulativeStats, setCumulativeStats] = useState<boolean | undefined>(false);
-  const [docType, setDocType] = useState<string>();
-  const [docPath, setDocPath] = useState<string>();
-  const [docLink, setDocLink] = useState<string>();
-  const [pathMustExist, setPathMustExist] = useState<boolean>();
   const [hasError, setHasError] = useState(false);
-  const variable = useSignal(emptyVariable);
-  const [extSim, setExtSim] = useState<string>();
-  const { updateVariable, createVariable } = useVariableContext();
-  const [regExpLine, setRegExpLine] = useState<number>();
-  const [begPosition, setBegPosition] = useState<number>();
-  const [showRegExFields, setShowRegExFields] = useState<boolean>();
-  const [showNumChars, setShowNumChars] = useState<boolean>();
-  const [numChars, setNumChars] = useState<number>();
-  const sortNewStates = (newStateItems: AccrualStateItem[]) => {
-    return newStateItems.sort((a, b) => {
+  const [typeProperties, setTypeProperties] = useState<(keyof Variable)[]>([]);
+
+  const sync = (values: Partial<Variable>) => {
+    setVariable(prev => ({ ...prev, ...values }));
+  };
+
+  const sortNewStates = (newStateItems: AccrualStateItem[]) =>
+    newStateItems.toSorted((a, b) => {
       if (a.stateName && !b.stateName) {
         return 1;
       }
@@ -128,215 +76,27 @@ const VariableFormContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       }
       return 0;
     });
-  };
-  const InitializeForm = (variableData?: Variable) => {
-    console.log(variableData);
-    if (!variableData) return;
-    if (variableData.name) {
-      setName(variableData.name);
-      setOriginalName(variableData.name);
-      const prefix = variableData.name.split('_')[1]
-        ? (variableData.name.split('_')[0] ?? '') + '_'
-        : '';
-      setNamePrefix(prefix);
-    } else {
-      setNamePrefix('Int_');
-    }
-    setDesc(variableData.desc ?? '');
-    setType(variableData.type);
-    setVarScope(variableData.varScope);
-    setValue(String(variableData.value));
-    variableData.sim3DId && setSim3DId(variableData.sim3DId);
-    variableData.extSim && setExtSim(variableData.extSim);
-    setResetOnRuns(variableData.resetOnRuns);
-    setCanMonitor(variableData.canMonitor);
-    setMonitorInSim(variableData.monitorInSim);
-    setCumulativeStats(variableData.cumulativeStats);
-    variableData.docType && setDocType(variableData.docType);
-    variableData.docPath && setDocPath(variableData.docPath);
-    variableData.docLink && setDocLink(variableData.docLink);
-    setPathMustExist(variableData.pathMustExist ?? true);
-    variableData.accrualStatesData && setAccrualStatesData(variableData.accrualStatesData);
-    if (typeof variableData.regExpLine !== 'undefined') {
-      setShowRegExFields(true);
-      setRegExpLine(variableData.regExpLine);
-    }
-    if (typeof variableData.begPosition !== 'undefined') {
-      setShowRegExFields(true);
-      setBegPosition(variableData.begPosition);
-    }
-    if (typeof variableData.numChars !== 'undefined') {
-      setShowNumChars(true);
-      setNumChars(variableData.numChars);
-    }
-  };
-
-  // Maps 'type' values to their corresponding prefixes.
-  const PREFIXES: Record<string, string> = {
-    string: 'Str_',
-    double: 'Dbl_',
-    bool: 'Bool_',
-    default: 'Int_',
-  };
-
-  const handleTypeChange = (newType: VariableType) => {
-    if (name.split('_')[1]) {
-      const updatedPrefix: string = PREFIXES[newType] ?? PREFIXES.default;
-      setNamePrefix(updatedPrefix);
-
-      const nameWithoutPrefix: string = name.split('_')[1] ? name.split('_')[1] : name;
-
-      setName(`${updatedPrefix}${nameWithoutPrefix}`);
-    }
-
-    if (newType === 'bool') setValue('');
-  };
-
-  const handleNameChange = (updatedName: string) => {
-    const variables = appData.value.VariableList;
-    const trimmedName = updatedName.trim();
-    const duplicateExists = variables
-      .filter((variable) => variable.name !== originalName)
-      .some((variable) => variable.name === trimmedName);
-    const hasInvalidChars = /[^a-zA-Z0-9-_]/.test(trimmedName);
-    setHasError(duplicateExists || hasInvalidChars);
-    setName(updatedName);
-  };
-
-  const reset = () => {
-    setAccrualStatesData(undefined); // Reset to undefined
-    setVarScope('gtGlobal'); // Default value for varScope
-    setValue(''); // Default value for value
-    setSim3DId(undefined); // Reset to undefined
-    setExtSim(undefined);
-    setResetOnRuns(true); // Reset to true
-    setCanMonitor(false);
-    setMonitorInSim(false);
-    setCumulativeStats(false);
-    setDocType(undefined); // Reset to undefined
-    setDocPath(undefined); // Reset to undefined
-    setDocLink(undefined); // Reset to undefined
-    setPathMustExist(undefined); // Reset to undefined
-    setHasError(false); // Reset to undefined
-  };
-
-  const handleSave = (variableData?: Variable) => {
-    console.log(canMonitor);
-    variable.value = {
-      ...variable.value,
-      id: variableData?.id ?? uuidv4(),
-      type,
-      name: name.trim(),
-      desc,
-      varScope,
-      sim3DId,
-      extSim,
-      docType: docType as DocVarType,
-      docPath,
-      docLink,
-      pathMustExist,
-      value,
-      accrualStatesData,
-      resetOnRuns: resetOnRuns ?? true,
-      canMonitor,
-      monitorInSim,
-      cumulativeStats,
-      regExpLine,
-      begPosition,
-      numChars,
-    };
-    // Remove undefined properties from the JSON
-    Object.keys(variable.value).forEach((key) =>
-      variable.value[key as keyof Variable] === undefined
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        ? delete variable.value[key as keyof Variable]
-        : {},
-    );
-
-    variableData ? updateVariable(variable.value) : createVariable(variable.value);
-    handleClose();
-  };
-
-  const handleFloatValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const parsedValue = parseFloat(e.target.value); // Convert string to number
-    if (!isNaN(parsedValue)) {
-      // check if the value is a number
-      setValue(parsedValue);
-    } else {
-      setValue('');
-    }
-  };
-  const handleBoolValueChange = (e: SelectChangeEvent) => {
-    const boolValue: boolean = e.target.value === 'true';
-    setValue(boolValue);
-  };
-  const handleStringValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
 
   return (
     <VariableFormContext.Provider
       value={{
+        variable,
         accrualStatesData,
         hasError,
-        name,
-        namePrefix,
-        desc,
         type,
-        varScope,
         value,
-        sim3DId,
-        extSim,
-        resetOnRuns,
-        canMonitor,
-        monitorInSim,
-        cumulativeStats,
-        docType,
-        docPath,
-        docLink,
-        pathMustExist,
-        regExpLine,
-        begPosition,
-        showRegExFields,
-        showNumChars,
-        numChars,
+        typeProperties,
+        sync,
+        setVariable,
         setAccrualStatesData,
+        setHasError,
         sortNewStates,
-        InitializeForm,
-        setNamePrefix,
-        setName,
-        handleClose,
         setValue,
         setType,
-        setDesc,
-        setResetOnRuns,
-        setCanMonitor,
-        setMonitorInSim,
-        setCumulativeStats,
-        setDocType,
-        setDocPath,
-        setDocLink,
-        setVarScope,
-        setSim3DId,
-        setExtSim,
-        setPathMustExist,
-        handleTypeChange,
-        handleNameChange,
-        handleSave,
-        handleFloatValueChange,
-        handleBoolValueChange,
-        handleStringValueChange,
-        setRegExpLine,
-        setBegPosition,
-        setShowRegExFields,
-        setShowNumChars,
-        setNumChars,
-        reset,
+        setTypeProperties,
       }}
     >
       {children}
     </VariableFormContext.Provider>
   );
 };
-
-export default VariableFormContextProvider;

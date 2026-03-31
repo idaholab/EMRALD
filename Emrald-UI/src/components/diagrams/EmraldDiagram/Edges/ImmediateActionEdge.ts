@@ -1,28 +1,31 @@
-import type React from 'react';
-import { type Edge, type Node, MarkerType } from 'reactflow';
+import type { Dispatch, SetStateAction } from 'react';
 import type { Action } from '../../../../types/EMRALD_Model';
+import { type Edge, MarkerType, type Node } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
 import { showRemainingValues } from './EventActionEdge';
 
-const getImmediateActionEdges = (
+export function getImmediateActionEdges(
   stateId: string,
   nodes: Node<{ label: string }>[],
   immediateActions: string[],
-  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
+  setEdges: Dispatch<SetStateAction<Edge[]>>,
   getActionByActionName: (actionName: string) => Action | undefined,
-  getNewStatesByActionName: (actionName: string) => { toState: string; prob: number }[],
-) => {
-  immediateActions.forEach((action: string) => {
+  getNewStatesByActionName: (
+    actionName: string,
+  ) => { toState: string; prob: number }[],
+) {
+  for (const action of immediateActions) {
     if (action) {
       const currentAction = getActionByActionName(action);
-      const newStates = getNewStatesByActionName(action);
       if (!currentAction) {
-        return;
+        continue;
       }
-      newStates.forEach((newState) => {
-        const moveToState = nodes.find((node) => node.data.label === newState.toState);
+      for (const newState of getNewStatesByActionName(action)) {
+        const moveToState = nodes.find(
+          node => node.data.label === newState.toState,
+        );
         if (moveToState) {
-          setEdges((prevEdges: Edge[]) => [
+          setEdges(prevEdges => [
             ...prevEdges,
             {
               id: uuidv4(),
@@ -45,9 +48,7 @@ const getImmediateActionEdges = (
             },
           ]);
         }
-      });
+      }
     }
-  });
-};
-
-export default getImmediateActionEdges;
+  }
+}

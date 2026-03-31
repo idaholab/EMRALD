@@ -1,14 +1,14 @@
 import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
-import EventForm from '../../../../../components/forms/EventForm/EventForm';
+import { EventForm } from '@/components/forms/EventForm/EventForm';
 import {
   ensureVariable,
   getEvent,
   renderEventForm,
   save,
   selectOption,
-} from '../../../../test-utils';
+} from '@/tests/test-utils';
 import expected from './Distribution.expected.json';
 
 describe('Distribution Events', () => {

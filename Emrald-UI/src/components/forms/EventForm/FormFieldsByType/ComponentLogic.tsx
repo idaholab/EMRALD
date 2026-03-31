@@ -1,29 +1,33 @@
+import type { EventFormProps } from '../EventForm';
 import { FormControlLabel, MenuItem, Radio, RadioGroup } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { SelectComponent } from '@/components/common';
+import { appData } from '@/hooks/useAppData';
 import { useEventFormContext } from '../EventFormContext';
-import { SelectComponent } from '../../../common';
-import { appData } from '../../../../hooks/useAppData';
-import { useEffect } from 'react';
 
-const ComponentLogic = () => {
-  const {
-    onSuccess,
-    setOnSuccess,
-    triggerOnFalse,
-    setTriggerOnFalse,
-    logicTop,
-    setLogicTop,
-    setInvalidValues,
-  } = useEventFormContext();
+export const ComponentLogic: React.FC<EventFormProps> = ({ eventData }) => {
+  const { setInvalidValues, setTypeProperties, sync } = useEventFormContext();
+
+  const [onSuccess, setOnSuccess] = useState<boolean>();
+  const [triggerOnFalse, setTriggerOnFalse] = useState<boolean>();
+  const [logicTop, setLogicTop] = useState<string>();
 
   useEffect(() => {
-    if (onSuccess === undefined) setOnSuccess(false);
-    if (triggerOnFalse === undefined) setTriggerOnFalse(false);
+    setOnSuccess(eventData?.onSuccess ?? false);
+    setTriggerOnFalse(eventData?.triggerOnFalse ?? false);
+    setLogicTop(eventData?.logicTop);
+    setTypeProperties(['onSuccess', 'triggerOnFalse', 'logicTop']);
   }, []);
+
+  useEffect(() => {
+    sync({ onSuccess, triggerOnFalse, logicTop });
+  }, [onSuccess, triggerOnFalse, logicTop]);
+
   return (
     <div>
       <RadioGroup
         value={onSuccess ?? false}
-        onChange={(e) => {
+        onChange={e => {
           setOnSuccess(e.target.value === 'true' ? true : false);
         }}
         sx={{ display: 'flex', flexDirection: 'row' }}
@@ -43,7 +47,7 @@ const ComponentLogic = () => {
       </RadioGroup>
       <RadioGroup
         value={triggerOnFalse ?? false}
-        onChange={(e) => {
+        onChange={e => {
           setTriggerOnFalse(e.target.value === 'true' ? true : false);
         }}
         sx={{ display: 'flex', flexDirection: 'row' }}
@@ -63,25 +67,25 @@ const ComponentLogic = () => {
       </RadioGroup>
       <SelectComponent
         value={logicTop ?? ''}
-        label={'LogicTop'}
-        setValue={(value) => {
+        label="LogicTop"
+        setValue={value => {
           setLogicTop(value);
           if (value.length > 0) {
-            setInvalidValues((prevInvalidValues) => {
+            setInvalidValues(prevInvalidValues => {
               prevInvalidValues.delete('LogicTop');
               return prevInvalidValues;
             });
           }
         }}
       >
-        {appData.value.LogicNodeList.filter((node) => node.isRoot).map((node, index) => (
-          <MenuItem key={index} value={node.name}>
-            {node.name}
-          </MenuItem>
-        ))}
+        {appData.value.LogicNodeList.filter(node => node.isRoot).map(
+          (node, index) => (
+            <MenuItem key={index} value={node.name}>
+              {node.name}
+            </MenuItem>
+          ),
+        )}
       </SelectComponent>
     </div>
   );
 };
-
-export default ComponentLogic;

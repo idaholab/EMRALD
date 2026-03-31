@@ -1,56 +1,54 @@
-import React, { createContext, useContext, useState } from 'react';
-import type { EmraldContextWrapperProps } from './EmraldContextWrapper';
+import {
+  createContext,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
+  useContext,
+  useState,
+} from 'react';
 import { appData } from '../hooks/useAppData';
 
 interface ModelDetailsContextType {
-  id: string | undefined;
-  name: string;
-  desc: string;
+  id?: string;
+  name?: string;
+  desc?: string;
   emraldVersion: number;
   version?: number;
-  fileName: string;
-  updateFileName: (fileName: string) => void;
-  updateName: (name: string) => void;
-  updateDescription: (desc: string) => void;
-  updateEmraldVersion: (version: number) => void;
-  updateVersion: (version: number) => void;
+  fileName?: string;
+  setFileName: Dispatch<SetStateAction<string | undefined>>;
+  setName: Dispatch<SetStateAction<string | undefined>>;
+  setDesc: Dispatch<SetStateAction<string | undefined>>;
+  setEmraldVersion: Dispatch<SetStateAction<number>>;
+  setVersion: Dispatch<SetStateAction<number>>;
   clearFileName: () => void;
 }
 
-const ModelDetailsContext = createContext<ModelDetailsContextType | undefined>(undefined);
+const ModelDetailsContext = createContext<ModelDetailsContextType | undefined>(
+  undefined,
+);
 
 export function useModelDetailsContext() {
   const context = useContext(ModelDetailsContext);
   if (!context) {
-    throw new Error('useModelDetailsContext must be used within a ModelDetailsContextProvider');
+    throw new Error(
+      'useModelDetailsContext must be used within a ModelDetailsContextProvider',
+    );
   }
   return context;
 }
 
-const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ children }) => {
-  // const { newDiagramList } = useDiagramContext();
+export const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
   const id = appData.value.id;
   const [name, setName] = useState(appData.value.name);
   const [desc, setDesc] = useState(appData.value.desc);
-  const [emraldVersion, setEmraldVersion] = useState(appData.value.emraldVersion ?? 0);
-  const [version, setVersion] = useState<number | undefined>(appData.value.version);
-  const [fileName, setFileName] = useState<string>('');
+  const [emraldVersion, setEmraldVersion] = useState(
+    appData.value.emraldVersion,
+  );
+  const [version, setVersion] = useState(appData.value.version);
+  const [fileName, setFileName] = useState<string>();
 
-  const updateName = (updatedName: string) => {
-    setName(updatedName);
-  };
-  const updateDescription = (updatedDesc: string) => {
-    setDesc(updatedDesc);
-  };
-  const updateEmraldVersion = (updatedVersion: number) => {
-    setEmraldVersion(updatedVersion);
-  };
-  const updateVersion = (updatedVersion: number) => {
-    setVersion(updatedVersion);
-  };
-  const updateFileName = (updatedName: string) => {
-    setFileName(updatedName);
-  };
   const clearFileName = () => {
     setFileName('');
   };
@@ -64,11 +62,11 @@ const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ chil
         emraldVersion,
         version,
         fileName,
-        updateFileName,
-        updateName,
-        updateDescription,
-        updateEmraldVersion,
-        updateVersion,
+        setFileName,
+        setName,
+        setDesc,
+        setEmraldVersion,
+        setVersion,
         clearFileName,
       }}
     >
@@ -76,5 +74,3 @@ const ModelDetailsContextProvider: React.FC<EmraldContextWrapperProps> = ({ chil
     </ModelDetailsContext.Provider>
   );
 };
-
-export default ModelDetailsContextProvider;

@@ -1,12 +1,12 @@
-import type SankeyTimeline from './SankeyTimeline';
+import type { SankeyTimeline } from './SankeyTimeline';
 import type { Node } from './SankeyTimelineDiagram';
-import type TimelineLink from './TimelineLink';
+import type { TimelineLink } from './TimelineLink';
 import type { NodeLayout, NodeTimes } from './types';
 
 /**
  * Represents a node in the timeline.
  */
-export default class TimelineNode {
+export class TimelineNode {
   public color?: string;
 
   public data!: Node;
@@ -72,6 +72,24 @@ export default class TimelineNode {
   }
 
   /**
+   * Gets all links through the node.
+   *
+   * @returns All links through the node.
+   */
+  public get links() {
+    return this.incomingLinks.concat(this.outgoingLinks);
+  }
+
+  /**
+   * Gets the "size" of the node based on associated links.
+   *
+   * @returns The size of the node.
+   */
+  public get size() {
+    return this.data.count;
+  }
+
+  /**
    * Adds an incoming link.
    *
    * @param link - The incoming link.
@@ -91,15 +109,6 @@ export default class TimelineNode {
   public addOutgoingLink(link: TimelineLink) {
     this.outgoingLinks.push(link);
     return this;
-  }
-
-  /**
-   * Gets all links through the node.
-   *
-   * @returns All links through the node.
-   */
-  public get links(): TimelineLink[] {
-    return this.incomingLinks.concat(this.outgoingLinks);
   }
 
   /**
@@ -128,14 +137,5 @@ export default class TimelineNode {
    */
   public setRow(row: number) {
     this.layout.row = row;
-  }
-
-  /**
-   * Gets the "size" of the node based on associated links.
-   *
-   * @returns The size of the node.
-   */
-  public get size(): number {
-    return this.data.count;
   }
 }

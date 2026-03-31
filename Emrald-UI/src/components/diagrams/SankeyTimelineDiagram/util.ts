@@ -6,8 +6,10 @@ import type { NodeTimes } from './types';
  * @param times - The time configuration to check.
  * @returns If the configuration has a distribution.
  */
-export function hasDist(times: NodeTimes): boolean {
-  return typeof times.meanTime === 'number' && typeof times.stdDeviation === 'number';
+export function hasDist(times: NodeTimes) {
+  return (
+    typeof times.meanTime === 'number' && typeof times.stdDeviation === 'number'
+  );
 }
 
 /**
@@ -16,7 +18,7 @@ export function hasDist(times: NodeTimes): boolean {
  * @param times - The time configuration.
  * @returns The key start/end times.
  */
-export function getKeyTimes(times: NodeTimes): number[] {
+export function getKeyTimes(times: NodeTimes) {
   return [times.meanTime || 0];
   /*
   const keyTimes = [times.startTime, times.endTime];
@@ -35,10 +37,10 @@ export function getKeyTimes(times: NodeTimes): number[] {
  * @param fn - The value function.
  * @returns The sum of the values of items in the array.
  */
-export function sum<T>(arr: T[], fn: (link: T) => number): number {
+export function sum<T>(arr: T[], fn: (link: T) => number) {
   let s = 0;
-  arr.forEach((value) => {
+  for (const value of arr) {
     s += fn(value);
-  });
+  }
   return s;
 }

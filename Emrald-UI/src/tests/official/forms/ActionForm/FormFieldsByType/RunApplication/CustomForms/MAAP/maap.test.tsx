@@ -1,12 +1,17 @@
-import 'blob-polyfill';
-import { describe, expect, test } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { getAction, renderActionForm, save, selectOption } from '../../../../../../../test-utils';
-import ActionForm from '../../../../../../../../components/forms/ActionForm/ActionForm';
-import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { ActionForm } from '../../../../../../../../components/forms/ActionForm/ActionForm';
+import {
+  getAction,
+  renderActionForm,
+  save,
+  selectOption,
+} from '../../../../../../../test-utils';
 import expected from './maap.expected.json';
+import 'blob-polyfill';
 
 describe('MAAP Form', async () => {
   const TestPAR = new File(
@@ -35,7 +40,7 @@ describe('MAAP Form', async () => {
           mainItem: true,
           actType: 'atRunExtApp',
         }}
-      ></ActionForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -44,9 +49,18 @@ describe('MAAP Form', async () => {
     await selectOption('Custom Application Type', 'MAAP');
 
     // Enter file paths
-    await user.type(await screen.findByLabelText('MAAP Executable Path'), 'C:\\MAAP.exe');
-    await user.type(await screen.findByLabelText('Full Parameter File Path'), 'C:\\Test.PAR');
-    await user.type(await screen.findByLabelText('Full Input File Path'), 'C:\\Test.INP');
+    await user.type(
+      await screen.findByLabelText('MAAP Executable Path'),
+      String.raw`C:\MAAP.exe`,
+    );
+    await user.type(
+      await screen.findByLabelText('Full Parameter File Path'),
+      String.raw`C:\Test.PAR`,
+    );
+    await user.type(
+      await screen.findByLabelText('Full Input File Path'),
+      String.raw`C:\Test.INP`,
+    );
 
     // Upload parameter file
     await user.upload(await screen.findByLabelText('Parameter File'), TestPAR);

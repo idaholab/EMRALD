@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useActionFormContext } from '../../ActionFormContext';
 
-const useRunApplication = () => {
+export function useRunApplication() {
   const { setMakeInputFileCode } = useActionFormContext();
   const [preCodeUsed, setPreCodeUsed] = useState(false);
   const [results, setResults] = useState<Record<string, Map<string, string>>>({});
@@ -18,5 +18,3 @@ const useRunApplication = () => {
     setResults,
   };
 };
-
-export default useRunApplication;

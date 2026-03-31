@@ -1,8 +1,11 @@
-import React from 'react';
-import { useReactFlow, getNodesBounds, getViewportForBounds, type Node } from 'reactflow';
 import { toPng } from 'html-to-image';
 import { FaCamera } from 'react-icons/fa';
-import { ControlButton } from 'reactflow';
+import {
+  ControlButton,
+  getNodesBounds,
+  getViewportForBounds,
+  useReactFlow,
+} from 'reactflow';
 import { currentDiagram } from './EmraldDiagram';
 
 function downloadImage(dataUrl: string) {
@@ -15,12 +18,18 @@ function downloadImage(dataUrl: string) {
 const imageWidth = 1024;
 const imageHeight = 768;
 
-const DownloadButton: React.FC = () => {
+export const DownloadButton: React.FC = () => {
   const { getNodes } = useReactFlow();
 
   const onClick = () => {
-    const nodesBounds = getNodesBounds(getNodes() as Node[]);
-    const viewport = getViewportForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
+    const nodesBounds = getNodesBounds(getNodes());
+    const viewport = getViewportForBounds(
+      nodesBounds,
+      imageWidth,
+      imageHeight,
+      0.5,
+      2,
+    );
 
     const reactFlowViewport = document.querySelector('.react-flow__viewport');
 
@@ -50,5 +59,3 @@ const DownloadButton: React.FC = () => {
     </ControlButton>
   );
 };
-
-export default DownloadButton;

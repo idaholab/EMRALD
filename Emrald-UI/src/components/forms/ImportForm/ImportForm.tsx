@@ -1,4 +1,3 @@
-import React from 'react';
 import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import {
   Backdrop,
@@ -17,11 +16,11 @@ import {
   TableHead,
   TableRow,
   TextField,
+  type Theme,
   Typography,
 } from '@mui/material';
+import { FaLock, FaLockOpen } from 'react-icons/fa6';
 import { TextFieldComponent } from '../../common';
-import { FaLock } from 'react-icons/fa6';
-import { FaLockOpen } from 'react-icons/fa6';
 import { useImportForm } from './useImportForm';
 
 interface ImportDiagramFormProps {
@@ -29,7 +28,10 @@ interface ImportDiagramFormProps {
   fromTemplate?: boolean;
 }
 
-const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTemplate }) => {
+export const ImportForm: React.FC<ImportDiagramFormProps> = ({
+  importedData,
+  fromTemplate,
+}) => {
   const {
     findValue,
     replaceValue,
@@ -55,7 +57,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       <Backdrop
         sx={{
           color: '#008080',
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          zIndex: (theme: Theme) => theme.zIndex.drawer + 1,
           position: 'absolute',
           top: '35px',
         }}
@@ -63,8 +65,13 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Box display={'flex'} alignItems={'center'}>
-        <TextFieldComponent label="Find" value={findValue} setValue={setFindValue} sx={{ mr: 4 }} />
+      <Box display="flex" alignItems="center">
+        <TextFieldComponent
+          label="Find"
+          value={findValue}
+          setValue={setFindValue}
+          sx={{ mr: 4 }}
+        />
         <TextFieldComponent
           label="Replace With"
           value={replaceValue}
@@ -78,7 +85,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         </Box>
       </Box>
 
-      <Box display={'flex'} alignItems={'center'}>
+      <Box display="flex" alignItems="center">
         <Box mt={2} mr={3}>
           <Button startIcon={<FaLock />} variant="contained" onClick={lockAll}>
             Lock All
@@ -96,7 +103,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
         </Box>
       </Box>
 
-      <Box display={'flex'} alignItems={'center'}>
+      <Box display="flex" alignItems="center">
         <Box mt={2} mr={2}>
           <Button
             color="secondary"
@@ -158,7 +165,10 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
           </TableHead>
           <TableBody>
             {importedItems.map((row, index) => (
-              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableRow
+                key={index}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
                 <TableCell component="th" scope="row">
                   {row.type}
                 </TableCell>
@@ -193,7 +203,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       row
                       name="row-radio-buttons-group"
                       value={row.action}
-                      onChange={(e) => {
+                      onChange={e => {
                         handleActionChange(index, e.target.value);
                       }}
                     >
@@ -202,9 +212,10 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                         control={
                           <Radio
                             disabled={
-                              row.locked ||
-                              row.required ||
-                              (row.type === 'State' && importedData.DiagramList.length > 0)
+                              row.locked
+                              || row.required
+                              || (row.type === 'State'
+                                && importedData.DiagramList.length > 0)
                             }
                           />
                         }
@@ -215,9 +226,10 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                         control={
                           <Radio
                             disabled={
-                              row.locked ||
-                              row.required ||
-                              (row.type === 'State' && importedData.DiagramList.length > 0)
+                              row.locked
+                              || row.required
+                              || (row.type === 'State'
+                                && importedData.DiagramList.length > 0)
                             }
                           />
                         }
@@ -225,7 +237,9 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                       />
                       <FormControlLabel
                         value="rename"
-                        control={<Radio disabled={row.locked || row.required} />}
+                        control={
+                          <Radio disabled={row.locked || row.required} />
+                        }
                         label="Rename"
                       />
                     </RadioGroup>
@@ -236,7 +250,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                     label="New Name"
                     value={row.newName}
                     disabled={row.locked || row.action !== 'rename'}
-                    onChange={(e) => {
+                    onChange={e => {
                       handleNewNameChange(index, e.target.value);
                     }}
                     size="small"
@@ -245,7 +259,11 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
                 <TableCell align="left">
                   <Typography
                     fontSize={14}
-                    color={getConflictStatus(row) === 'NO CONFLICT' ? '#1b8f55' : '#d32c38'}
+                    color={
+                      getConflictStatus(row) === 'NO CONFLICT'
+                        ? '#1b8f55'
+                        : '#d32c38'
+                    }
                   >
                     {getConflictStatus(row)}
                   </Typography>
@@ -255,7 +273,7 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
           </TableBody>
         </Table>
       </Box>
-      <Box mt={3} textAlign={'right'}>
+      <Box mt={3} textAlign="right">
         <Button
           variant="contained"
           sx={{ mr: 2 }}
@@ -277,5 +295,3 @@ const ImportForm: React.FC<ImportDiagramFormProps> = ({ importedData, fromTempla
     </Box>
   );
 };
-
-export default ImportForm;

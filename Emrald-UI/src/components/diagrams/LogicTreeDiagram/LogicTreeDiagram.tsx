@@ -1,33 +1,35 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { LogicNode } from '../../../types/EMRALD_Model';
+import { Alert, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PiDotsNine } from 'react-icons/pi';
+import { TbLogicAnd, TbLogicNot, TbLogicOr, TbMap } from 'react-icons/tb';
 import ReactFlow, {
-  ConnectionLineType,
   Background,
   BackgroundVariant,
-  Controls,
-  Panel,
-  type NodeMouseHandler,
-  useReactFlow,
+  ConnectionLineType,
   ControlButton,
+  Controls,
   MiniMap,
+  type NodeMouseHandler,
+  Panel,
+  useReactFlow,
 } from 'reactflow';
+import { DraggableItem } from '../../drag-and-drop/DraggableItem';
+import { ContextMenu } from '../../layout/ContextMenu/ContextMenu';
+import { DownloadButton } from '../DownloadButton';
+import { TreeNodeComponent } from './TreeNodeComponent/TreeNodeComponent';
+import { useExpandCollapse } from './useExpandCollapse';
+import { useLogicNodeTreeDiagram } from './useLogicTreeDiagram';
 import 'reactflow/dist/style.css';
-import type { LogicNode } from '../../../types/EMRALD_Model';
-import useLogicNodeTreeDiagram from './useLogicTreeDiagram';
-import Box from '@mui/material/Box';
-import TreeNodeComponent from './TreeNodeComponent/TreeNodeComponent';
-import ContextMenu from '../../layout/ContextMenu/ContextMenu';
-import { TbLogicAnd, TbLogicNot, TbLogicOr, TbMap } from 'react-icons/tb';
-import DraggableItem from '../../drag-and-drop/DraggableItem';
-import { Alert, Typography } from '@mui/material';
-import useExpandCollapse from './useExpandCollapse';
-import DownloadButton from '../DownloadButton';
-import { PiDotsNine } from 'react-icons/pi';
 
 interface LogicNodeTreeDiagramProps {
   logicNode: LogicNode;
 }
 
-const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }) => {
+export const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({
+  logicNode,
+}) => {
   const [showMap, setShowMap] = useState(false);
   const [showBackgroundDots, setShowBackgroundDots] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
@@ -52,28 +54,30 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
   const treeWidth = 180;
   const treeHeight = 140;
 
-  const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(nodes, edges, {
-    treeWidth,
-    treeHeight,
-  });
+  const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(
+    nodes,
+    edges,
+    {
+      treeWidth,
+      treeHeight,
+    },
+  );
 
   const onNodeClick: NodeMouseHandler = useCallback(
     (_, node) => {
-      setNodes((nds) => {
-        const updatedNodes = nds.map((n) => {
-          if (n.id === node.id) {
-            return {
-              ...n,
-              data: { ...n.data, expanded: !n.data.expanded },
-            };
-          }
-          return n;
-        });
-        return updatedNodes;
-      });
+      setNodes(nds =>
+        nds.map(n =>
+          n.id === node.id
+            ? {
+                ...n,
+                data: { ...n.data, expanded: !n.data.expanded },
+              }
+            : n,
+        ),
+      );
 
       // Fit view after node click
-      reactFlowInstance.fitView({ nodes: nodes, padding: 0.75 });
+      reactFlowInstance.fitView({ nodes, padding: 0.75 });
     },
     [setNodes, reactFlowInstance, visibleNodes],
   );
@@ -89,7 +93,11 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="tree-diagram" ref={ref} style={{ width: '100%', height: '100%' }}>
+        <div
+          className="tree-diagram"
+          ref={ref}
+          style={{ width: '100%', height: '100%' }}
+        >
           <ReactFlow
             nodes={visibleNodes}
             edges={visibleEdges}
@@ -111,13 +119,22 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
                   Drag and Drop Gates
                 </Typography>
                 <Box sx={{ display: 'flex', padding: '10px' }}>
-                  <DraggableItem itemType="Gate" itemData={{ objType: 'Gate', gateType: 'gtAnd' }}>
+                  <DraggableItem
+                    itemType="Gate"
+                    itemData={{ objType: 'Gate', gateType: 'gtAnd' }}
+                  >
                     <TbLogicAnd className="gate-icon" />
                   </DraggableItem>
-                  <DraggableItem itemType="Gate" itemData={{ objType: 'Gate', gateType: 'gtOr' }}>
+                  <DraggableItem
+                    itemType="Gate"
+                    itemData={{ objType: 'Gate', gateType: 'gtOr' }}
+                  >
                     <TbLogicOr className="gate-icon" />
                   </DraggableItem>
-                  <DraggableItem itemType="Gate" itemData={{ objType: 'Gate', gateType: 'gtNot' }}>
+                  <DraggableItem
+                    itemType="Gate"
+                    itemData={{ objType: 'Gate', gateType: 'gtNot' }}
+                  >
                     <TbLogicNot className="gate-icon" />
                   </DraggableItem>
                 </Box>
@@ -167,12 +184,11 @@ const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({ logicNode }
               setNodeExistsAlert(false);
             }}
           >
-            Pasting this node will create a circular reference. Please review the node structure.
+            Pasting this node will create a circular reference. Please review
+            the node structure.
           </Alert>
         </div>
       )}
     </Box>
   );
 };
-
-export default LogicNodeTreeDiagram;

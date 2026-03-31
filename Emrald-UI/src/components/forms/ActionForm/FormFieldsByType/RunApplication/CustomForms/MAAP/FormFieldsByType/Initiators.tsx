@@ -1,3 +1,8 @@
+import type {
+  MAAPAssignment,
+  MAAPSourceElement,
+} from '../../../../../../../../types/EMRALD_Model';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Autocomplete,
   Table,
@@ -8,13 +13,11 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useActionFormContext } from '../../../../../ActionFormContext';
 import { useEffect, useState } from 'react';
-import type { MAAPAssignment, MAAPSourceElement } from '../../../../../../../../types/EMRALD_Model';
+import { useActionFormContext } from '../../../../../ActionFormContext';
 import { MAAPToString } from '../Parser/maap-to-string';
 
-const Initiators = () => {
+export const Initiators: React.FC = () => {
   const { formData, setFormData } = useActionFormContext();
   const [initiators, setInitiators] = useState<MAAPSourceElement[]>([]);
 
@@ -23,15 +26,19 @@ const Initiators = () => {
   }, [formData]);
 
   const removeInitiator = (row: MAAPSourceElement) => {
-    const updatedInitiators = initiators.filter((initiator) => initiator !== row);
+    const updatedInitiators = initiators.filter(initiator => initiator !== row);
     setInitiators(updatedInitiators);
-    setFormData((prevFormData) =>
-      prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
+    setFormData(prevFormData =>
+      prevFormData
+        ? { ...prevFormData, initiators: updatedInitiators }
+        : undefined,
     );
   };
 
   const addInitiator = (desc: string) => {
-    const initiator = formData?.possibleInitiators?.find((init) => init.desc === desc);
+    const initiator = formData?.possibleInitiators?.find(
+      init => init.desc === desc,
+    );
     if (initiator) {
       const newInitiator: MAAPAssignment = {
         type: 'assignment',
@@ -50,8 +57,10 @@ const Initiators = () => {
       };
       const updatedInitiators = [...initiators, newInitiator];
       setInitiators(updatedInitiators);
-      setFormData((prevFormData) =>
-        prevFormData ? { ...prevFormData, initiators: updatedInitiators } : undefined,
+      setFormData(prevFormData =>
+        prevFormData
+          ? { ...prevFormData, initiators: updatedInitiators }
+          : undefined,
       );
     }
   };
@@ -61,12 +70,14 @@ const Initiators = () => {
       <Autocomplete
         size="small"
         disablePortal
-        options={formData?.possibleInitiators?.map((initiator) => initiator.desc) ?? []}
-        onChange={(e) => {
+        options={
+          formData?.possibleInitiators?.map(initiator => initiator.desc) ?? []
+        }
+        onChange={e => {
           addInitiator(e.currentTarget.innerHTML);
         }}
         sx={{ width: 300 }}
-        renderInput={(params) => <TextField {...params} label="Add Initiator" />}
+        renderInput={params => <TextField {...params} label="Add Initiator" />}
       />
       <Table sx={{ minWidth: 650 }} size="small">
         <TableHead>
@@ -81,7 +92,10 @@ const Initiators = () => {
         </TableHead>
         <TableBody>
           {initiators.map((row, idx) => (
-            <TableRow key={idx} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TableRow
+              key={idx}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
               <TableCell component="th" scope="row">
                 {row.type === 'assignment'
                   ? row.target.type === 'call_expression'
@@ -106,5 +120,3 @@ const Initiators = () => {
     </>
   );
 };
-
-export default Initiators;

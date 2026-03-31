@@ -1,18 +1,18 @@
-import { useEffect } from 'react';
-import Button from '@mui/material/Button';
+import type { GateType, LogicNode } from '../../../types/EMRALD_Model';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import type { LogicNode, GateType } from '../../../types/EMRALD_Model';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import StateValuesTable from './StateValuesTable';
+import Divider from '@mui/material/Divider';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { useEffect } from 'react';
+import { MainDetailsForm } from '../MainDetailsForm';
 import { useLogicNodeFormContext } from './LogicNodeFormContext';
-import MainDetailsForm from '../MainDetailsForm';
+import { StateValuesTable } from './StateValuesTable';
 
 interface LogicNodeFormProps {
   logicNodeData?: LogicNode;
@@ -25,7 +25,7 @@ interface LogicNodeFormProps {
   fromSidebar?: boolean;
 }
 
-const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
+export const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   logicNodeData,
   gateType,
   nodeType,
@@ -78,12 +78,15 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
   return (
     <Box mx={3} pb={3}>
       <Typography variant="h5" my={3}>
-        {logicNodeData ? 'Edit' : 'Create New'} {leafNodeType === 'comp' ? 'Component' : 'Gate'}
+        {logicNodeData ? 'Edit' : 'Create New'}{' '}
+        {leafNodeType === 'comp' ? 'Component' : 'Gate'}
       </Typography>
       <form>
         {leafNodeType ? (
           <>
-            {!editing ? (
+            {editing ? (
+              <></>
+            ) : (
               <>
                 <FormControl
                   variant="outlined"
@@ -100,18 +103,16 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                     }}
                     label="Node Type"
                   >
-                    <MenuItem key={'gate'} value="gate">
+                    <MenuItem key="gate" value="gate">
                       Gate
                     </MenuItem>
-                    <MenuItem key={'comp'} value="comp">
+                    <MenuItem key="comp" value="comp">
                       Component
                     </MenuItem>
                   </Select>
                 </FormControl>
                 <Divider sx={{ mb: 3 }} />
               </>
-            ) : (
-              <></>
             )}
           </>
         ) : (
@@ -149,7 +150,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                 }}
                 label="Component Diagrams"
               >
-                {componentDiagrams.map((diagram) => (
+                {componentDiagrams.map(diagram => (
                   <MenuItem key={diagram.id} value={diagram.name}>
                     {diagram.name}
                   </MenuItem>
@@ -163,7 +164,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
                   <Checkbox
                     checked={defaultValues}
                     value={defaultValues}
-                    onChange={(e) => {
+                    onChange={e => {
                       setDefaultValues(e.target.checked);
                     }}
                   />
@@ -173,13 +174,13 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
             ) : (
               <></>
             )}
-            {!defaultValues ? (
+            {defaultValues ? (
+              <></>
+            ) : (
               <StateValuesTable
                 componentNode={currentNode}
                 setCurrentNodeStateValues={setCurrentNodeStateValues}
               />
-            ) : (
-              <></>
             )}
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 5 }}>
@@ -207,7 +208,7 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
           </>
         ) : (
           <MainDetailsForm
-            itemType={'LogicNode'}
+            itemType="LogicNode"
             type={gateTypeValue}
             setType={setGateTypeValue}
             typeOptions={gateTypeOptions}
@@ -228,8 +229,8 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
               disabled={fromSidebar === true || availableAsTopOrSubtree()}
               control={
                 <Checkbox
-                  checked={isRoot ? true : false}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  checked={isRoot}
+                  onChange={e => {
                     setIsRoot(e.target.checked);
                   }}
                 />
@@ -241,5 +242,3 @@ const LogicNodeForm: React.FC<LogicNodeFormProps> = ({
     </Box>
   );
 };
-
-export default LogicNodeForm;

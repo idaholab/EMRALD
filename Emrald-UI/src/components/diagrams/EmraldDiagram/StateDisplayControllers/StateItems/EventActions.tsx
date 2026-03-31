@@ -1,20 +1,20 @@
-import React from 'react';
-import { Handle, Position } from 'reactflow';
-import { Typography, Box } from '@mui/material';
-import { BiExit } from 'react-icons/bi';
-import DropTargetComponent from '../../../../drag-and-drop/Droppable';
-import { ActionTypeIcon, EventTypeIcon } from '../../IconTypes';
 import type { State } from '../../../../../types/EMRALD_Model';
+import { Box, Typography } from '@mui/material';
+import { BiExit } from 'react-icons/bi';
 import { FaLink } from 'react-icons/fa';
-import useEmraldDiagram from '../../useEmraldDiagram';
-import ContextMenu from '../../../../layout/ContextMenu/ContextMenu';
-import useContextMenu from '../../useContextMenu';
-import DialogComponent from '../../../../common/DialogComponent/DialogComponent';
+import { Handle, Position } from 'reactflow';
+import { DialogComponent } from '../../../../common/DialogComponent/DialogComponent';
+import { DropTargetComponent } from '../../../../drag-and-drop/Droppable';
+import { ContextMenu } from '../../../../layout/ContextMenu/ContextMenu';
+import { ActionTypeIcon, EventTypeIcon } from '../../IconTypes';
+import { useContextMenu } from '../../useContextMenu';
+import { useEmraldDiagram } from '../../useEmraldDiagram';
 
 interface EventActionsProps {
   state: State;
 }
-const EventActions: React.FC<EventActionsProps> = ({ state }) => {
+
+export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
   const {
     isStateInCurrentDiagram,
     openDiagramFromNewState,
@@ -41,15 +41,17 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
     event: getEventByEventName(event),
     actions: state.eventActions[index]
       ? state.eventActions[index].actions
-          .map((action: string) => getActionByActionName(action))
-          .filter((action) => action !== undefined)
+          .map(action => getActionByActionName(action))
+          .filter(action => action !== undefined)
       : [],
-    moveFromCurrent: state.eventActions[index] ? state.eventActions[index].moveFromCurrent : false,
+    moveFromCurrent: state.eventActions[index]
+      ? state.eventActions[index].moveFromCurrent
+      : false,
   }));
 
   return (
     <>
-      {events.map((item) => (
+      {events.map(item => (
         // Event container
         <Box
           key={item.event?.name}
@@ -75,10 +77,10 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
             <EventTypeIcon type={item.event?.evType ?? 'etStateCng'} />
           </Box>
           <Box
-            onDoubleClick={(e) => {
+            onDoubleClick={e => {
               onEventDoubleClick(e, item.event, state);
             }}
-            onContextMenu={(e) => void onEventContextMenu(e, state, item.event)}
+            onContextMenu={e => void onEventContextMenu(e, state, item.event)}
             sx={{
               width: '100%',
               borderLeft: '1px solid rgba(0, 0, 0, .125)',
@@ -129,12 +131,12 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
 
             {/* Event Actions */}
             <Box>
-              {item.actions.map((action) => (
+              {item.actions.map(action => (
                 <Box
-                  onDoubleClick={(e) => {
+                  onDoubleClick={e => {
                     onActionDoubleClick(e, action);
                   }}
-                  onContextMenu={(e) => {
+                  onContextMenu={e => {
                     onActionContextMenu(e, state, action, 'event');
                   }}
                   key={action.id}
@@ -147,43 +149,42 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                     py: '5px',
                   }}
                 >
-                  {
-                    <>
-                      {action.actType === 'atTransition' ? (
-                        <Handle
-                          className="state-node__handle-right source-handle"
-                          type="source"
-                          position={Position.Right}
-                          id={`${item.event?.name ?? ''}*${action.id ?? ''}`}
-                        />
-                      ) : (
+                  <>
+                    {action.actType === 'atTransition' ? (
+                      <Handle
+                        className="state-node__handle-right source-handle"
+                        type="source"
+                        position={Position.Right}
+                        id={`${item.event?.name ?? ''}*${action.id ?? ''}`}
+                      />
+                    ) : (
+                      <></>
+                    )}
+                    <ActionTypeIcon type={action.actType} />
+                    <Box
+                      sx={{
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography sx={{ fontSize: 10, ml: '5px' }}>
+                        &nbsp;
+                        {action.name}
+                      </Typography>
+                      {isStateInCurrentDiagram(action) ? (
                         <></>
+                      ) : (
+                        <FaLink
+                          onClick={() => {
+                            openDiagramFromNewState(action);
+                          }}
+                          style={{ cursor: 'pointer', width: '20px' }}
+                        />
                       )}
-
-                      <ActionTypeIcon type={action.actType} />
-
-                      <Box
-                        sx={{
-                          width: '100%',
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Typography sx={{ fontSize: 10, ml: '5px' }}> {action.name}</Typography>
-                        {!isStateInCurrentDiagram(action) ? (
-                          <FaLink
-                            onClick={() => {
-                              openDiagramFromNewState(action);
-                            }}
-                            style={{ cursor: 'pointer', width: '20px' }}
-                          />
-                        ) : (
-                          <></>
-                        )}
-                      </Box>
-                    </>
-                  }
+                    </Box>
+                  </>
                 </Box>
               ))}
             </Box>
@@ -202,8 +203,8 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
               }}
             >
               <Typography>
-                Are you sure you want to delete {itemToDelete?.name}? It will be removed from all
-                other places it is used.
+                Are you sure you want to delete {itemToDelete?.name}? It will be
+                removed from all other places it is used.
               </Typography>
             </DialogComponent>
           )}
@@ -212,5 +213,3 @@ const EventActions: React.FC<EventActionsProps> = ({ state }) => {
     </>
   );
 };
-
-export default EventActions;

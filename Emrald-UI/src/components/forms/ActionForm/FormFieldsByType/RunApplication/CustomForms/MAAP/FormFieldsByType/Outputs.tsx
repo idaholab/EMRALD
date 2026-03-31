@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Autocomplete,
   Box,
@@ -10,15 +11,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
+import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
 import { useCustomForm } from '../../useCustomForm';
 
-const Outputs = () => {
+export const Outputs: React.FC = () => {
   const { formData, setFormData, setVariableName } = useCustomForm();
-  const [docLinkVariable, setDocLinkVariable] = useState<string>(formData?.docLinkVariable ?? '');
-  const [output, setOutput] = useState<string>(formData?.output ?? '');
+  const [docLinkVariable, setDocLinkVariable] = useState(
+    formData?.docLinkVariable ?? '',
+  );
+  const [output, setOutput] = useState(formData?.output ?? '');
   const { variableList } = useVariableContext();
 
   const docLinkVariables = variableList.value
@@ -26,12 +28,12 @@ const Outputs = () => {
     .map(({ name }) => name);
 
   useEffect(() => {
-    setFormData((prevFormData) =>
+    setFormData(prevFormData =>
       prevFormData
         ? {
             ...prevFormData,
-            docLinkVariable: docLinkVariable,
-            output: output,
+            docLinkVariable,
+            output,
           }
         : undefined,
     );
@@ -46,12 +48,14 @@ const Outputs = () => {
       </Typography>
 
       <Box>
-        <Box display={'flex'} alignItems={'center'}>
+        <Box display="flex" alignItems="center">
           <Autocomplete
             freeSolo
             options={docLinkVariables}
             value={docLinkVariable}
-            renderInput={(params) => <TextField {...params} label="Doc Link Variables" />}
+            renderInput={params => (
+              <TextField {...params} label="Doc Link Variables" />
+            )}
             onChange={(_, event) => {
               setDocLinkVariable(event ?? '');
             }}
@@ -68,7 +72,7 @@ const Outputs = () => {
               id="output-variables"
               label="Output"
               value={output || ''}
-              onChange={(event) => {
+              onChange={event => {
                 setOutput(event.target.value);
               }}
             >
@@ -91,5 +95,3 @@ const Outputs = () => {
     </Box>
   );
 };
-
-export default Outputs;

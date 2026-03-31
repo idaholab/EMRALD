@@ -1,17 +1,22 @@
-import { TbLogicAnd, TbLogicOr, TbLogicNot } from 'react-icons/tb';
 import type { GateType } from '../../../../types/EMRALD_Model';
+import { TbLogicAnd, TbLogicNot, TbLogicOr } from 'react-icons/tb';
 
-const GateTypeIcon = ({ type, className }: { type: GateType; className?: string }) => {
+export const GateTypeIcon: React.FC<{ type: GateType; className?: string }> = ({
+  type,
+  className,
+}) => {
   switch (type) {
-    case 'gtAnd':
+    case 'gtAnd': {
       return <TbLogicAnd className={className} />;
-    case 'gtOr':
+    }
+    case 'gtOr': {
       return <TbLogicOr className={className} />;
-    case 'gtNot':
+    }
+    case 'gtNot': {
       return <TbLogicNot className={className} />;
-    default:
+    }
+    default: {
       return <></>;
+    }
   }
 };
-
-export default GateTypeIcon;

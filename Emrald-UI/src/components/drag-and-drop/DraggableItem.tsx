@@ -1,15 +1,15 @@
-import { Box } from '@mui/material';
-import React, { type PropsWithChildren } from 'react';
-import { useDrag } from 'react-dnd';
+import type { PropsWithChildren, Ref } from 'react';
 import type {
   Action,
-  Event as EventType,
-  LogicNode,
   Diagram,
-  State,
-  MainItemType,
+  Event as EventType,
   GateType,
+  LogicNode,
+  MainItemType,
+  State,
 } from '../../types/EMRALD_Model';
+import { Box } from '@mui/material';
+import { useDrag } from 'react-dnd';
 
 interface DraggableItemProps {
   itemData:
@@ -22,7 +22,7 @@ interface DraggableItemProps {
   itemType: MainItemType | 'Gate';
 }
 
-const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
+export const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
   itemType,
   itemData,
   children,
@@ -31,9 +31,9 @@ const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
     type:
       itemType === 'LogicNode'
         ? 'LogicNode'
-        : itemType === 'Diagram' &&
-            itemData.objType === 'Diagram' &&
-            itemData.diagramType === 'dtSingle'
+        : itemType === 'Diagram'
+          && itemData.objType === 'Diagram'
+          && itemData.diagramType === 'dtSingle'
           ? 'Diagram'
           : itemData.objType === 'Action'
             ? 'Action'
@@ -46,10 +46,11 @@ const DraggableItem: React.FC<PropsWithChildren<DraggableItemProps>> = ({
   });
 
   return (
-    <Box ref={drag} sx={{ cursor: 'grab', width: '100%' }}>
+    <Box
+      ref={drag as unknown as Ref<unknown>}
+      sx={{ cursor: 'grab', width: '100%' }}
+    >
       {children}
     </Box>
   );
 };
-
-export default DraggableItem;

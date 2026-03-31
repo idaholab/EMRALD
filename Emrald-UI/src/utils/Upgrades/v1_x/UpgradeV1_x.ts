@@ -5,7 +5,7 @@ export interface UpgradeReturn {
   errors: string[];
 }
 
-export function UpgradeV1_x(modelTxt: string): UpgradeReturn {
+export function UpgradeV1_x(modelTxt: string) {
   const newModel = JSON.parse(modelTxt) as EMRALD_ModelV0;
 
   if (newModel.version == undefined || newModel.version <= 1.2) {
@@ -18,7 +18,7 @@ export function UpgradeV1_x(modelTxt: string): UpgradeReturn {
     //   a.Action.mutExcl = !!a.Action.mutExcl && a.Action.mutExcl.toUpperCase() === "TRUE";
     // });
     if (newModel.ActionList != undefined) {
-      newModel.ActionList.forEach((a) => {
+      for (const a of newModel.ActionList) {
         const action = a.Action;
         action.mainItem ??= false;
         if (typeof action.mainItem === 'string') {
@@ -28,11 +28,11 @@ export function UpgradeV1_x(modelTxt: string): UpgradeReturn {
           action.mutExcl = action.mutExcl.toUpperCase() === 'TRUE';
         }
         delete action.simEndtime;
-      });
+      }
     }
 
     if (newModel.EventList != undefined) {
-      newModel.EventList.forEach((e) => {
+      for (const e of newModel.EventList) {
         const event = e.Event;
         event.mainItem ??= false;
         if (typeof event.mainItem === 'string') {
@@ -59,13 +59,11 @@ export function UpgradeV1_x(modelTxt: string): UpgradeReturn {
         delete event.ndMin;
         event.max = event.ndMax;
         delete event.ndMax;
-      });
+      }
     }
   }
 
   newModel.version = 1.2;
 
-  const retModel: UpgradeReturn = { newModel: JSON.stringify(newModel), errors: [] };
-
-  return retModel;
+  return { newModel: JSON.stringify(newModel), errors: [] };
 }

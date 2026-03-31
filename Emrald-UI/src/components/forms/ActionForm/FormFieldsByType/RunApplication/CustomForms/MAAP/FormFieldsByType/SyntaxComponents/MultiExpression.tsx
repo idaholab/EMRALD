@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
 import type { MAAPExpression } from '../../../../../../../../../types/EMRALD_Model';
+import { Box, Typography } from '@mui/material';
 import { Expression } from './Expression';
 
 export const MultiExpression: React.FC<{

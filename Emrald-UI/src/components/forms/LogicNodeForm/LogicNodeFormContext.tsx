@@ -1,26 +1,36 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { emptyLogicNode, useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { useSignal } from '@preact/signals-react';
 import type {
   CompChild,
   CompChildItems,
-  LogicNode,
   Diagram,
   GateType,
+  LogicNode,
   StateEvalValue,
 } from '../../../types/EMRALD_Model';
-import { v4 as uuidv4 } from 'uuid';
 import type { ComponentStateValue } from './StateValuesTable';
+import { useSignal } from '@preact/signals-react';
+import {
+  createContext,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction,
+  useContext,
+  useEffect,
+  useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
+import {
+  emptyLogicNode,
+  useLogicNodeContext,
+} from '../../../contexts/LogicNodeContext';
+import { useWindowContext } from '../../../contexts/WindowContext';
 import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
 
 interface LogicNodeFormContextType {
   name: string;
   desc: string;
   isRoot: boolean;
-  currentNode: CompChildItems | undefined;
-  leafNodeType: string | undefined;
+  currentNode?: CompChildItems;
+  leafNodeType?: string;
   compDiagram: string;
   componentDiagrams: Diagram[];
   defaultValues: boolean;
@@ -31,30 +41,30 @@ interface LogicNodeFormContextType {
   }[];
   hasError: boolean;
   reqPropsFilled: boolean;
-  setDesc: React.Dispatch<React.SetStateAction<string>>;
-  setGateTypeValue: React.Dispatch<React.SetStateAction<GateType>>;
-  setIsRoot: React.Dispatch<React.SetStateAction<boolean>>;
-  setLeafNodeType: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setCompDiagram: React.Dispatch<React.SetStateAction<string>>;
-  setNewCompChild: React.Dispatch<
-    React.SetStateAction<
+  setDesc: Dispatch<SetStateAction<string>>;
+  setGateTypeValue: Dispatch<SetStateAction<GateType>>;
+  setIsRoot: Dispatch<SetStateAction<boolean>>;
+  setLeafNodeType: Dispatch<SetStateAction<string | undefined>>;
+  setCompDiagram: Dispatch<SetStateAction<string>>;
+  setNewCompChild: Dispatch<
+    SetStateAction<
       | {
-          diagramName: string;
-          stateValues?: { stateName: string; stateValue: StateEvalValue }[];
-        }
+        diagramName: string;
+        stateValues?: { stateName: string; stateValue: StateEvalValue }[];
+      }
       | undefined
     >
   >;
-  setDefaultValues: React.Dispatch<React.SetStateAction<boolean>>;
-  setCurrentNodeStateValues: React.Dispatch<React.SetStateAction<ComponentStateValue[]>>;
+  setDefaultValues: Dispatch<SetStateAction<boolean>>;
+  setCurrentNodeStateValues: Dispatch<SetStateAction<ComponentStateValue[]>>;
   handleSave: () => void;
   handleClose: () => void;
   handleNameChange: (newName: string) => void;
   checkForDuplicateNames: () => boolean;
   availableAsTopOrSubtree: () => boolean | undefined;
   initializeForm: (
-    logicNodeData: LogicNode | undefined,
-    editing: boolean | undefined,
+    logicNodeData?: LogicNode,
+    editing?: boolean,
     component?: string,
     parentNodeName?: string,
     nodeType?: 'gate' | 'comp',
@@ -63,47 +73,58 @@ interface LogicNodeFormContextType {
   ) => void;
 }
 
-const LogicNodeFormContext = createContext<LogicNodeFormContextType | undefined>(undefined);
+const LogicNodeFormContext = createContext<
+  LogicNodeFormContextType | undefined
+>(undefined);
 
-export const useLogicNodeFormContext = (): LogicNodeFormContextType => {
+export function useLogicNodeFormContext() {
   const context = useContext(LogicNodeFormContext);
   if (!context) {
-    throw new Error('useLogicNodeFormContext must be used within a LogicNodeFormContextProvider');
+    throw new Error(
+      'useLogicNodeFormContext must be used within a LogicNodeFormContextProvider',
+    );
   }
   return context;
-};
+}
 
-const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LogicNodeFormContextProvider: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
   const { handleClose, updateTitle } = useWindowContext();
-  const { logicNodeList, createLogicNode, updateLogicNode } = useLogicNodeContext();
+  const { logicNodeList, createLogicNode, updateLogicNode }
+    = useLogicNodeContext();
   const { diagrams } = useDiagramContext();
   // Signals
-  const logicNode = useSignal<LogicNode>(structuredClone(emptyLogicNode));
+  const logicNode = useSignal(structuredClone(emptyLogicNode));
   const compChildren = useSignal<CompChild>([]);
   // States
-  const [logicNodeData, setLogicNodeData] = useState<LogicNode | undefined>(undefined);
+  const [logicNodeData, setLogicNodeData] = useState<LogicNode | undefined>(
+    undefined,
+  );
   const [editing, setEditing] = useState<boolean>();
-  const [name, setName] = useState<string>('');
-  const [desc, setDesc] = useState<string>('');
-  const [hasError, setHasError] = useState<boolean>(false);
+  const [name, setName] = useState('');
+  const [desc, setDesc] = useState('');
+  const [hasError, setHasError] = useState(false);
   const [parentNode, setParentNode] = useState<LogicNode | undefined>();
   const [componentDiagrams, setComponentDiagrams] = useState<Diagram[]>([]);
   const [currentNode, setCurrentNode] = useState<CompChildItems | undefined>();
-  const [currentNodeStateValues, setCurrentNodeStateValues] = useState<ComponentStateValue[]>([]);
+  const [currentNodeStateValues, setCurrentNodeStateValues] = useState<
+    ComponentStateValue[]
+  >([]);
   const [leafNodeType, setLeafNodeType] = useState<string | undefined>();
-  const [compDiagram, setCompDiagram] = useState<string>('');
-  const [defaultValues, setDefaultValues] = useState<boolean>(false);
+  const [compDiagram, setCompDiagram] = useState('');
+  const [defaultValues, setDefaultValues] = useState(false);
   const [newCompChild, setNewCompChild] = useState<
     | {
-        diagramName: string;
-        stateValues?: { stateName: string; stateValue: StateEvalValue }[];
-      }
+      diagramName: string;
+      stateValues?: { stateName: string; stateValue: StateEvalValue }[];
+    }
     | undefined
   >();
-  const [gateTypeValue, setGateTypeValue] = useState<GateType>('gtAnd' as GateType);
+  const [gateTypeValue, setGateTypeValue] = useState('gtAnd' as GateType);
   const [originalName, setOriginalName] = useState<string | undefined>();
-  const [isRoot, setIsRoot] = useState<boolean>(false);
-  const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
+  const [isRoot, setIsRoot] = useState(false);
+  const [reqPropsFilled, setReqPropsFilled] = useState(false);
 
   useEffect(() => {
     setReqPropsFilled(!!name && !!gateTypeValue);
@@ -116,8 +137,8 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   ];
 
   const initializeForm = (
-    logicNodeInfo: LogicNode | undefined,
-    editing: boolean | undefined,
+    logicNodeInfo?: LogicNode,
+    editing?: boolean,
     component?: string,
     parentNodeName?: string,
     nodeType?: 'gate' | 'comp',
@@ -131,7 +152,7 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
       logicNode.value = logicNodeInfo;
     }
 
-    //Main info
+    // Main info
     setName(logicNodeInfo?.name ?? '');
     setOriginalName(logicNodeInfo?.name);
     setDesc(logicNodeInfo?.desc ?? '');
@@ -142,34 +163,46 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     setComponentDiagrams(
       editing && component
         ? diagrams.filter(
-            (diagram) => diagram.diagramType === 'dtSingle' && diagram.name === component,
+            diagram =>
+              diagram.diagramType === 'dtSingle' && diagram.name === component,
           )
         : diagrams.filter(
-            (diagram) =>
-              diagram.diagramType === 'dtSingle' &&
-              !logicNode.value.compChildren.find((child) => child.diagramName === diagram.name),
+            diagram =>
+              diagram.diagramType === 'dtSingle'
+              && !logicNode.value.compChildren.some(
+                child => child.diagramName === diagram.name,
+              ),
           ),
     );
-    const parent = logicNodeList.value.find((node) => node.name === parentNodeName);
+    const parent = logicNodeList.value.find(
+      node => node.name === parentNodeName,
+    );
     if (nodeType === 'comp' && parent) {
       logicNode.value = parent;
     }
     setParentNode(parent);
-    const current = logicNode.value.compChildren.find((child) => child.diagramName === component);
+    const current = logicNode.value.compChildren.find(
+      child => child.diagramName === component,
+    );
     setCurrentNode(current);
     setCurrentNodeStateValues(current?.stateValues ?? []);
     setLeafNodeType(nodeType);
     setCompDiagram(component ?? '');
-    setDefaultValues(current?.stateValues && current.stateValues.length > 0 ? false : true);
+    setDefaultValues(
+      current?.stateValues && current.stateValues.length > 0 ? false : true,
+    );
     setGateTypeValue(gateType ?? ('gtAnd' as GateType));
-    if (typeof isRoot !== 'undefined') {
+    if (isRoot !== undefined) {
       setIsRoot(isRoot);
     }
   };
 
   const availableAsTopOrSubtree = () => {
-    const currentReferences = GetModelItemsReferencing(logicNode.value.name, 'LogicNode', 1);
-    if (currentReferences.LogicNodeList.length >= 1) {
+    if (
+      GetModelItemsReferencing(logicNode.value.name, 'LogicNode', 1)
+        .LogicNodeList
+        .length > 0
+    ) {
       return false;
     }
     if (logicNode.value.isRoot && parentNode === undefined) {
@@ -180,28 +213,26 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
   // Add new comp child
   const handleAddNewCompChild = () => {
     if (newCompChild) {
-      const newCompChildren = [...logicNode.value.compChildren, newCompChild];
-      compChildren.value = newCompChildren;
+      compChildren.value = [...logicNode.value.compChildren, newCompChild];
       setNewCompChild(undefined);
     }
   };
 
   const handleNameChange = (newName: string) => {
     const trimmedName = newName.trim();
-    const nameExists = logicNodeList.value
-      .filter((logicNode) => logicNode.name !== originalName)
-      .some((node) => node.name === trimmedName); // Check for invalid characters (allowing spaces, hyphens, and underscores)
-    const hasInvalidChars = /[^a-zA-Z0-9-_ ]/.test(trimmedName);
-    setHasError(nameExists || hasInvalidChars);
+    setHasError(
+      logicNodeList.value
+        .filter(logicNode => logicNode.name !== originalName)
+        .some(node => node.name === trimmedName)
+        || /[^a-zA-Z0-9-_ ]/.test(trimmedName),
+    );
     setName(newName);
   };
 
-  const checkForDuplicateNames = () => {
-    const nameExists = logicNodeList.value
-      .filter((node) => node.name !== originalName)
-      .some((node) => node.name === name.trim());
-    return nameExists;
-  };
+  const checkForDuplicateNames = () =>
+    logicNodeList.value
+      .filter(node => node.name !== originalName)
+      .some(node => node.name === name.trim());
 
   // Save logic node
   const handleSave = () => {
@@ -233,7 +264,10 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
       updateLogicNode(logicNode.value);
     } else if (leafNodeType === 'gate' && parentNode?.name) {
       createLogicNode(logicNode.value);
-      parentNode.gateChildren = [...parentNode.gateChildren, logicNode.value.name];
+      parentNode.gateChildren = [
+        ...parentNode.gateChildren,
+        logicNode.value.name,
+      ];
       updateLogicNode(parentNode);
     } else {
       createLogicNode(logicNode.value);
@@ -276,5 +310,3 @@ const LogicNodeFormContextProvider: React.FC<{ children: React.ReactNode }> = ({
     </LogicNodeFormContext.Provider>
   );
 };
-
-export default LogicNodeFormContextProvider;

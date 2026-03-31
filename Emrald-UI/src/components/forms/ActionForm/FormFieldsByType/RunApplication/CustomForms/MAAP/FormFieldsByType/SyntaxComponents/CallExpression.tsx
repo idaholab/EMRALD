@@ -10,7 +10,7 @@ export const CallExpression: React.FC<{
 }> = ({ args, value }) => (
   <>
     {value.value}(
-    {args.map((arg) => (
+    {args.map(arg => (
       <ExpressionType value={arg} />
     ))}
     )

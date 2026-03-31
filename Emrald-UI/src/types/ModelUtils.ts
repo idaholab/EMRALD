@@ -2,11 +2,11 @@ import type {
   Action,
   Diagram,
   EMRALD_Model,
+  Event,
   ExtSim,
   LogicNode,
   State,
   Variable,
-  Event,
 } from './EMRALD_Model';
 
 export const EMRALD_SchemaVersion = 3.2;
@@ -14,9 +14,9 @@ export const EMRALD_SchemaVersion = 3.2;
 export function CreateEmptyEMRALDModel(): EMRALD_Model {
   return {
     objType: 'EMRALD_Model',
-    name: '',
-    desc: '',
-    version: 1.0,
+    name: undefined,
+    desc: undefined,
+    version: 1,
     versionHistory: [],
     emraldVersion: EMRALD_SchemaVersion,
     DiagramList: [],

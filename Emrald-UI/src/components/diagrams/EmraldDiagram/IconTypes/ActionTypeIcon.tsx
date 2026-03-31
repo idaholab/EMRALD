@@ -1,22 +1,27 @@
-import { TbArrowBarToRight } from 'react-icons/tb';
-import { PiArrowSquareDownLeft } from 'react-icons/pi';
-import { HiOutlineVariable } from 'react-icons/hi';
-import { FaCog } from 'react-icons/fa';
 import type { ActionType } from '../../../../types/EMRALD_Model';
+import { FaCog } from 'react-icons/fa';
+import { HiOutlineVariable } from 'react-icons/hi';
+import { PiArrowSquareDownLeft } from 'react-icons/pi';
+import { TbArrowBarToRight } from 'react-icons/tb';
 
-const ActionTypeIcon = ({ type }: { type: ActionType }) => {
+export const ActionTypeIcon: React.FC<{ type: ActionType }> = ({ type }) => {
   switch (type) {
-    case 'atTransition':
+    case 'atTransition': {
       return <TbArrowBarToRight />;
-    case 'atCngVarVal':
+    }
+    case 'atCngVarVal': {
       return <HiOutlineVariable />;
-    case 'at3DSimMsg':
-      return <PiArrowSquareDownLeft style={{ width: '15px', height: '15px' }} />;
-    case 'atRunExtApp':
+    }
+    case 'at3DSimMsg': {
+      return (
+        <PiArrowSquareDownLeft style={{ width: '15px', height: '15px' }} />
+      );
+    }
+    case 'atRunExtApp': {
       return <FaCog />;
-    default:
+    }
+    default: {
       return <></>;
+    }
   }
 };
-
-export default ActionTypeIcon;

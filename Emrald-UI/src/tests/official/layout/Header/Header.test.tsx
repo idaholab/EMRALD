@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
-import App from '../../../../App';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { App } from '../../../../App';
 import { appData } from '../../../../hooks/useAppData';
 import { ensureState, ensureVariable } from '../../../test-utils';
 
@@ -28,13 +28,13 @@ describe('Header', () => {
     const user = userEvent.setup();
 
     // Add things to the model to search for
-    ensureVariable("abcd");
-    ensureState("abcd");
+    ensureVariable('abcd');
+    ensureState('abcd');
 
-    await user.type(await screen.findByLabelText("Search"), "abcd");
-    await user.click(await screen.findByTestId("SearchIcon"));
+    await user.type(await screen.findByLabelText('Search'), 'abcd');
+    await user.click(await screen.findByTestId('SearchIcon'));
 
-    expect(screen.queryByText("Variables (1)")).not.toBeNull();
-    expect(screen.queryByText("States (1)")).not.toBeNull();
-  })
+    expect(screen.queryByText('Variables (1)')).not.toBeNull();
+    expect(screen.queryByText('States (1)')).not.toBeNull();
+  });
 });

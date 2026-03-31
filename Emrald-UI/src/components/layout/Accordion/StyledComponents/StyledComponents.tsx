@@ -1,8 +1,8 @@
-import MuiAccordion, { type AccordionProps } from '@mui/material/Accordion';
-import { styled } from '@mui/material/styles';
-import MuiAccordionSummary, { type AccordionSummaryProps } from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
+import MuiAccordion, { type AccordionProps } from '@mui/material/Accordion';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import MuiAccordionSummary, { type AccordionSummaryProps } from '@mui/material/AccordionSummary';
+import { styled } from '@mui/material/styles';
 
 export const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />

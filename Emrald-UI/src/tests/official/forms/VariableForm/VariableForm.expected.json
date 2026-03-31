@@ -6,7 +6,10 @@
     "resetOnRuns": false,
     "type": "int",
     "value": 1,
-    "varScope": "gtGlobal"
+    "varScope": "gtGlobal",
+    "canMonitor": false,
+    "cumulativeStats": false,
+    "monitorInSim": false
   },
   "accrual_variable": {
     "objType": "Variable",
@@ -16,6 +19,9 @@
     "type": "double",
     "value": 0,
     "varScope": "gtAccrual",
+    "canMonitor": false,
+    "cumulativeStats": false,
+    "monitorInSim": false,
     "accrualStatesData": [
       {
         "accrualMult": 12,
@@ -44,19 +50,21 @@
     "type": "string",
     "value": "Test",
     "varScope": "gt3DSim",
-    "sim3DId": "1234"
+    "sim3DId": "1234",
+    "canMonitor": false,
+    "cumulativeStats": false,
+    "monitorInSim": false
   },
   "doc_link_variable": {
     "objType": "Variable",
     "name": "doc_link_variable",
     "desc": "",
-    "resetOnRuns": true,
     "type": "string",
     "value": "Default",
     "varScope": "gtDocLink",
     "docLink": "Test",
     "docPath": "C:/",
     "docType": "dtJSON",
-    "pathMustExist": true
+    "pathMustExist": false
   }
 }

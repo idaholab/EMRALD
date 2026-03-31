@@ -1,14 +1,14 @@
-import { describe, expect, test } from 'vitest';
-import { drag, ensureState, getVariable, renderVariableForm, save } from '../../../test-utils';
-import VariableForm from '../../../../components/forms/VariableForm/VariableForm';
-import userEvent from '@testing-library/user-event';
 import { findByRole, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test } from 'vitest';
+import { VariableForm } from '@/components/forms/VariableForm/VariableForm';
+import { drag, ensureState, getVariable, renderVariableForm, save } from '@/tests/test-utils';
 import expected from './VariableForm.expected.json';
 
 describe('Variable Form', () => {
   test('creates a global variable', async () => {
     const name = 'creates_a_global_variable';
-    renderVariableForm(<VariableForm></VariableForm>);
+    renderVariableForm(<VariableForm />);
     const user = userEvent.setup();
 
     // Enter name, description, and value
@@ -36,7 +36,7 @@ describe('Variable Form', () => {
           value: 0,
           type: 'double',
         }}
-      ></VariableForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -83,7 +83,7 @@ describe('Variable Form', () => {
           value: '',
           type: 'string',
         }}
-      ></VariableForm>,
+      />,
     );
     const user = userEvent.setup();
 
@@ -107,7 +107,7 @@ describe('Variable Form', () => {
           value: '',
           type: 'string',
         }}
-      ></VariableForm>,
+      />,
     );
     const user = userEvent.setup();
 

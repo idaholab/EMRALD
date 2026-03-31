@@ -1,19 +1,31 @@
-import { findByRole, fireEvent, render, type RenderOptions, screen } from '@testing-library/react';
-import 'jest-extended';
-import EmraldContextWrapper from '../contexts/EmraldContextWrapper';
-import React, { act } from 'react';
-import type { EMRALD_Model, Variable, State, LogicNode, ExtSim } from '../types/EMRALD_Model';
-import { appData, updateAppData } from '../hooks/useAppData';
-import Sidebar from '../components/layout/Sidebar/Sidebar';
+import type {
+  EMRALD_Model,
+  ExtSim,
+  LogicNode,
+  State,
+  Variable,
+} from '../types/EMRALD_Model';
+import {
+  findByRole,
+  fireEvent,
+  render,
+  type RenderOptions,
+  screen,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import EventContextProvider from '../contexts/EventContext';
-import EventFormContextProvider from '../components/forms/EventForm/EventFormContext';
-import ActionContextProvider from '../contexts/ActionContext';
-import ActionFormContextProvider from '../components/forms/ActionForm/ActionFormContext';
-import VariableContextProvider from '../contexts/VariableContext';
-import VariableFormContextProvider from '../components/forms/VariableForm/VariableFormContext';
+import { act, type ReactNode } from 'react';
+import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
+import { ActionFormContextProvider } from '../components/forms/ActionForm/ActionFormContext';
+import { VariableFormContextProvider } from '../components/forms/VariableForm/VariableFormContext';
+import { Sidebar } from '../components/layout/Sidebar/Sidebar';
+import { ActionContextProvider } from '../contexts/ActionContext';
+import { EmraldContextWrapper } from '../contexts/EmraldContextWrapper';
+import { EventContextProvider } from '../contexts/EventContext';
+import { VariableContextProvider } from '../contexts/VariableContext';
+import { appData, updateAppData } from '../hooks/useAppData';
+import 'jest-extended';
 
-const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
+function customRender(ui: ReactNode, options?: RenderOptions) {
   render(
     <EmraldContextWrapper>
       <Sidebar />
@@ -23,45 +35,45 @@ const customRender = (ui: React.ReactNode, options?: RenderOptions) => {
       ...options,
     },
   );
-};
+}
 
 export { customRender as render };
 
 /**
  * Shortcut function to render the EventForm component with all the required context provider wrappers.
  */
-export const renderEventForm = (ui: React.ReactNode, options?: RenderOptions) => {
+export function renderEventForm(ui: ReactNode, options?: RenderOptions) {
   customRender(
     <EventContextProvider>
       <EventFormContextProvider>{ui}</EventFormContextProvider>
     </EventContextProvider>,
     options,
   );
-};
+}
 
 /**
  * Shortcut function to render the ActionForm component with all the required context provider wrappers.
  */
-export const renderActionForm = (ui: React.ReactNode, options?: RenderOptions) => {
+export function renderActionForm(ui: ReactNode, options?: RenderOptions) {
   customRender(
     <ActionContextProvider>
       <ActionFormContextProvider>{ui}</ActionFormContextProvider>
     </ActionContextProvider>,
     options,
   );
-};
+}
 
 /**
  * Shortcut function to render the VariableForm component with all the required context provider wrappers.
  */
-export const renderVariableForm = (ui: React.ReactNode, options?: RenderOptions) => {
+export function renderVariableForm(ui: ReactNode, options?: RenderOptions) {
   customRender(
     <VariableContextProvider>
       <VariableFormContextProvider>{ui}</VariableFormContextProvider>
     </VariableContextProvider>,
     options,
   );
-};
+}
 
 /**
  * Helper function to create/reset the model in sessionStorage.
@@ -114,7 +126,7 @@ export function ensureVariable(name: string, data?: Partial<Variable>) {
   try {
     getVariable(name);
   } catch {
-    updateModel((model) => {
+    updateModel(model => {
       let v: Variable = {
         objType: 'Variable',
         name,
@@ -143,7 +155,7 @@ export function ensureState(name: string, data?: Partial<State>) {
   try {
     getState(name);
   } catch {
-    updateModel((model) => {
+    updateModel(model => {
       let s: State = {
         objType: 'State',
         name,
@@ -175,7 +187,7 @@ export function ensureLogicNode(name: string, data?: Partial<LogicNode>) {
   try {
     getLogicNode(name);
   } catch {
-    updateModel((model) => {
+    updateModel(model => {
       let n: LogicNode = {
         objType: 'LogicNode',
         name,
@@ -206,7 +218,7 @@ export function ensureExtSim(name: string, data?: Partial<ExtSim>) {
   try {
     getExtSim(name);
   } catch {
-    updateModel((model) => {
+    updateModel(model => {
       let e: ExtSim = {
         objType: 'ExtSim',
         name,
@@ -230,12 +242,12 @@ export function ensureExtSim(name: string, data?: Partial<ExtSim>) {
  * @returns The most recently added event with the given name, with the ID property removed.
  */
 export function getEvent(name: string) {
-  const matches = appData.value.EventList.filter((e) => e.name === name);
+  const matches = appData.value.EventList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find event ${name} in model.`);
   }
-  const event = matches[matches.length - 1];
-  delete event.id;
+  const event = matches.at(-1);
+  delete event?.id;
   return event;
 }
 
@@ -245,12 +257,12 @@ export function getEvent(name: string) {
  * @returns The most recently added state with the given name, with the ID property removed.
  */
 export function getState(name: string) {
-  const matches = appData.value.StateList.filter((e) => e.name === name);
+  const matches = appData.value.StateList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find state ${name} in model.`);
   }
-  const state = matches[matches.length - 1];
-  delete state.id;
+  const state = matches.at(-1);
+  delete state?.id;
   return state;
 }
 
@@ -260,12 +272,12 @@ export function getState(name: string) {
  * @returns The most recently added variable with the given name, with the ID property removed.
  */
 export function getVariable(name: string) {
-  const matches = appData.value.VariableList.filter((e) => e.name === name);
+  const matches = appData.value.VariableList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find variable ${name} in model.`);
   }
-  const variable = matches[matches.length - 1];
-  delete variable.id;
+  const variable = matches.at(-1);
+  delete variable?.id;
   return variable;
 }
 
@@ -275,12 +287,12 @@ export function getVariable(name: string) {
  * @returns The most recently added logic node with the given name, with the ID property removed.
  */
 export function getLogicNode(name: string) {
-  const matches = appData.value.LogicNodeList.filter((e) => e.name === name);
+  const matches = appData.value.LogicNodeList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find logic node ${name} in model.`);
   }
-  const node = matches[matches.length - 1];
-  delete node.id;
+  const node = matches.at(-1);
+  delete node?.id;
   return node;
 }
 
@@ -290,12 +302,12 @@ export function getLogicNode(name: string) {
  * @returns The most recently added diagram with the given name, with the ID property removed.
  */
 export function getDiagram(name: string) {
-  const matches = appData.value.DiagramList.filter((e) => e.name === name);
+  const matches = appData.value.DiagramList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find diagram ${name} in model.`);
   }
-  const diagram = matches[matches.length - 1];
-  delete diagram.id;
+  const diagram = matches.at(-1);
+  delete diagram?.id;
   return diagram;
 }
 
@@ -305,12 +317,12 @@ export function getDiagram(name: string) {
  * @returns The most recently added external sim with the given name, with the ID property removed.
  */
 export function getExtSim(name: string) {
-  const matches = appData.value.ExtSimList.filter((e) => e.name === name);
+  const matches = appData.value.ExtSimList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find ext sim ${name} in model.`);
   }
-  const extSim = matches[matches.length - 1];
-  delete extSim.id;
+  const extSim = matches.at(-1);
+  delete extSim?.id;
   return extSim;
 }
 
@@ -320,12 +332,12 @@ export function getExtSim(name: string) {
  * @returns The most recently added action with the given name, with the ID property removed.
  */
 export function getAction(name: string) {
-  const matches = appData.value.ActionList.filter((e) => e.name === name);
+  const matches = appData.value.ActionList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find action ${name} in model.`);
   }
-  const action = matches[matches.length - 1];
-  delete action.id;
+  const action = matches.at(-1);
+  delete action?.id;
   return action;
 }
 
@@ -348,7 +360,9 @@ export function drag(from: HTMLElement, to: HTMLElement) {
  */
 export async function selectOption(label: string, option: string) {
   const user = userEvent.setup();
-  await user.click(await findByRole(await screen.findByLabelText(label), 'combobox'));
+  await user.click(
+    await findByRole(await screen.findByLabelText(label), 'combobox'),
+  );
   await user.click(await screen.findByRole('option', { name: option }));
 }
 

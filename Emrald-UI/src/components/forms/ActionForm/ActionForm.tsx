@@ -1,11 +1,20 @@
-import React from 'react';
-import { useEffect } from 'react';
+import type {
+  Action,
+  ActionType,
+  Event,
+  State,
+} from '../../../types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import MainDetailsForm from '../MainDetailsForm';
-import type { Action, State, Event, ActionType } from '../../../types/EMRALD_Model';
+import { createElement, useEffect } from 'react';
+import { MainDetailsForm } from '../MainDetailsForm';
 import { useActionFormContext } from './ActionFormContext';
-import { Transition, ChangeVarValue, ExtSimulation, RunApplication } from './FormFieldsByType';
+import {
+  ChangeVarValue,
+  ExtSimulation,
+  RunApplication,
+  Transition,
+} from './FormFieldsByType';
 interface ActionFormProps {
   actionData?: Action;
   event?: Event;
@@ -16,13 +25,17 @@ export interface NewStateItem {
   id: string;
   toState: string;
   prob: number;
-  varProb?: string | null | undefined;
+  varProb?: string | null;
   failDesc?: string;
   remaining: boolean;
   probType: string;
 }
 
-const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => {
+export const ActionForm: React.FC<ActionFormProps> = ({
+  actionData,
+  event,
+  state,
+}) => {
   const {
     name,
     desc,
@@ -44,7 +57,10 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
   }, []);
 
   // Map action types to their respective sub-components and props
-  const actionTypeToComponent: Record<ActionType, { component: React.FC<any>; props: any }> = {
+  const actionTypeToComponent: Record<
+    ActionType,
+    { component: React.FC<any>; props: any }
+  > = {
     atTransition: { component: Transition, props: {} },
     atCngVarVal: { component: ChangeVarValue, props: {} },
     at3DSimMsg: { component: ExtSimulation, props: {} },
@@ -58,7 +74,7 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
       </Typography>
       <form>
         <MainDetailsForm
-          itemType={'Action'}
+          itemType="Action"
           type={actType}
           setType={setActType}
           typeOptions={actionTypeOptions}
@@ -70,11 +86,13 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
           error={hasError}
           errorMessage="An action with this name already exists, or includes an invalid character."
           reset={reset}
-          handleSave={() => { handleSave(event, state); }}
+          handleSave={() => {
+            handleSave(event, state);
+          }}
           reqPropsFilled={reqPropsFilled}
         >
           {/* Render the appropriate sub-component based on selected action type */}
-          {React.createElement(
+          {createElement(
             actionTypeToComponent[actType].component,
             actionTypeToComponent[actType].props,
           )}
@@ -83,5 +101,3 @@ const ActionForm: React.FC<ActionFormProps> = ({ actionData, event, state }) => 
     </Box>
   );
 };
-
-export default ActionForm;

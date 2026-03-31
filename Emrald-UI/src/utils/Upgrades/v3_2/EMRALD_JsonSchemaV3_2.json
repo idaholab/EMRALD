@@ -1033,7 +1033,8 @@
           "type": "number",
           "description": "The version number"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "CustomFormType": {
       "title": "CustomFormType",

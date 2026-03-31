@@ -1,4 +1,6 @@
-import type { Ref } from 'react';
+import type { EventFormProps } from '../EventForm';
+import type { State } from '@/types/EMRALD_Model';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Checkbox,
@@ -11,23 +13,37 @@ import {
   TableHead,
   Tooltip,
 } from '@mui/material';
-import { useEventFormContext } from '../EventFormContext';
+import { type Ref, useEffect, useState } from 'react';
 import { useDrop } from 'react-dnd';
-import type { State } from '../../../../types/EMRALD_Model';
-import { StyledTableCell, StyledTableRow } from '../../ActionForm/ActionToStateTable';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  StyledTableCell,
+  StyledTableRow,
+} from '@/components/forms/ActionForm/ActionToStateTable';
+import { useEventFormContext } from '../EventFormContext';
 
-const StateChange = () => {
-  const {
-    allItems,
-    ifInState,
-    setAllItems,
-    setIfInState,
-    triggerStates,
-    setTriggerStates,
-    evalEvOnStateEntry,
-    setEvalEvOnStateEntry,
-  } = useEventFormContext();
+export const StateChange: React.FC<EventFormProps> = ({ eventData }) => {
+  const { setTypeProperties, sync } = useEventFormContext();
+
+  const [ifInState, setIfInState] = useState(true);
+  const [triggerStates, setTriggerStates] = useState<string[] | undefined>();
+  const [allItems, setAllItems] = useState(true);
+  const [evalEvOnStateEntry, setEvalEvOnStateEntry] = useState(true);
+
+  useEffect(() => {
+    setIfInState(eventData?.ifInState ?? true);
+    setTriggerStates(eventData?.triggerStates);
+    setAllItems(eventData?.allItems ?? true);
+    if (eventData?.evalEvOnStateEntry === undefined) {
+      setEvalEvOnStateEntry(ifInState);
+    } else {
+      setEvalEvOnStateEntry(eventData.evalEvOnStateEntry);
+    }
+    setTypeProperties(['ifInState', 'triggerStates', 'allItems', 'evalEvOnStateEntry']);
+  }, []);
+
+  useEffect(() => {
+    sync({ ifInState, triggerStates, allItems, evalEvOnStateEntry });
+  }, [ifInState, triggerStates, allItems, evalEvOnStateEntry]);
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
@@ -38,7 +54,7 @@ const StateChange = () => {
         setTriggerStates([...triggerStates, item.name]);
       }
     },
-    collect: (monitor) => ({
+    collect: monitor => ({
       isOver: monitor.isOver(),
     }),
   });
@@ -46,17 +62,23 @@ const StateChange = () => {
   const removeTriggerState = (name: string) => {
     let newTriggerStates = triggerStates;
     if (newTriggerStates) {
-      newTriggerStates = newTriggerStates.filter((state) => state !== name);
+      newTriggerStates = newTriggerStates.filter(state => state !== name);
       setTriggerStates(newTriggerStates);
     }
   };
+
   return (
     <>
-      <div style={{ display: 'flex', alignItems: ifInState ? 'flex-start' : 'flex-end' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: ifInState ? 'flex-start' : 'flex-end',
+        }}
+      >
         <RadioGroup
           name="radio-buttons-group"
           value={ifInState}
-          onChange={(e) => {
+          onChange={e => {
             setIfInState(e.target.value === 'true');
             setEvalEvOnStateEntry(e.target.value === 'true');
           }}
@@ -80,7 +102,7 @@ const StateChange = () => {
           control={
             <Checkbox
               checked={evalEvOnStateEntry ? true : false}
-              onChange={(e) => {
+              onChange={e => {
                 setEvalEvOnStateEntry(e.target.checked);
               }}
             />
@@ -93,7 +115,7 @@ const StateChange = () => {
         control={
           <Checkbox
             checked={allItems ? true : false}
-            onChange={(e) => {
+            onChange={e => {
               setAllItems(e.target.checked);
             }}
           />
@@ -153,5 +175,3 @@ const StateChange = () => {
     </>
   );
 };
-
-export default StateChange;

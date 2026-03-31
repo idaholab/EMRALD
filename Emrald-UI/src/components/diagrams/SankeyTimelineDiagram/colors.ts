@@ -1,4 +1,4 @@
-export default [
+export const colors = [
   '#F44336',
   '#E91E63',
   '#9C27B0',
