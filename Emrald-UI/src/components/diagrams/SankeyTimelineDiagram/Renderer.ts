@@ -7,11 +7,20 @@ import type { TimelineLink } from './TimelineLink';
 import type { TimelineNode } from './TimelineNode';
 import type { TimelineGraph } from './types';
 import { Bezier } from 'bezier-js';
-import { color, type RGBColor } from 'd3-color';
-import { drag } from 'd3-drag';
-import { easeCubicIn } from 'd3-ease';
-import { type BaseType, select, selectAll, type Selection } from 'd3-selection';
-import { type Transition, transition } from 'd3-transition';
+import {
+  axisBottom,
+  type BaseType,
+  color,
+  drag,
+  easeCubicIn,
+  type RGBColor,
+  scaleLinear,
+  select,
+  selectAll,
+  type Selection,
+  type Transition,
+  transition,
+} from 'd3';
 import { EventEmitter } from 'ee-ts';
 import { colors } from './colors';
 import { hasDist } from './util';
@@ -64,7 +73,7 @@ export class Renderer extends EventEmitter<{
       width: 3,
     },
     nodeTitle: (d: TimelineNode): string => d.label,
-    ticks: 25,
+    ticks: 10,
     transitionSpeed: 75,
     width: window.innerWidth,
   };
@@ -79,8 +88,6 @@ export class Renderer extends EventEmitter<{
   private maxY = 0;
 
   private range: [number, number];
-
-  private shift = 0;
 
   private container!: Selection<BaseType, HTMLElement, BaseType, any>;
 
@@ -119,8 +126,6 @@ export class Renderer extends EventEmitter<{
     this.initializeLayout();
     this.calculateLayout();
     this.calculateLinkPaths();
-    this.calculateShift();
-    this.calculateLinkPaths(); // Reposition links after shifting
     if (this.options.layout === 'timeline') {
       this.createAxis();
     }
@@ -293,53 +298,6 @@ export class Renderer extends EventEmitter<{
   }
 
   /**
-   * Shifts the layout to prevent things from going off the left hand side.
-   */
-  private calculateShift() {
-    let minX = Infinity;
-    for (const link of this.graph.links) {
-      const x = this.getCurveExtrema(link)[0] ?? 0;
-      if (x < minX) {
-        minX = x;
-      }
-    }
-    if (minX < 0) {
-      const shift = 0 - minX;
-      for (const [n, node] of this.graph.nodes.entries()) {
-        if (this.graph.nodes[n]) {
-          this.graph.nodes[n].layout.x += shift;
-          let right = this.graph.nodes[n].layout.x;
-          if (hasDist(node.times) && this.options.distributions) {
-            node.layout.distribution = [
-              {
-                x:
-                  shift
-                  + this.getTimeX(
-                    node.times.meanTime - (node.times.stdDeviation ?? 0),
-                  ),
-                y: node.layout.y,
-              },
-              {
-                x:
-                  shift
-                  + this.getTimeX(
-                    node.times.meanTime + (node.times.stdDeviation ?? 0),
-                  ),
-                y: node.layout.y,
-              },
-            ];
-            right = this.graph.nodes[n].layout.distribution?.[1]?.x ?? 0;
-          }
-          if (right > this.maxRight) {
-            this.maxRight = node.layout.x + node.layout.width;
-          }
-        }
-      }
-      this.shift = shift;
-    }
-  }
-
-  /**
    * Places nodes in their initial positions.
    */
   private initializeLayout() {
@@ -391,48 +349,14 @@ export class Renderer extends EventEmitter<{
    * Creates the axis.
    */
   private createAxis() {
-    const axisContainer = this.container.append('g').style('width', '100%');
-    axisContainer
-      .append('rect')
-      .attr('width', '100%')
-      .attr('height', this.options.axis.height)
-      .attr('fill', this.options.axis.color);
-    const tickInterval = Math.round(
-      (this.timeline.maxTime - this.timeline.minTime) / this.options.ticks,
-    );
-    for (
-      let i = this.timeline.minTime;
-      i <= this.timeline.maxTime + 1;
-      i += 1
-    ) {
-      if (i % tickInterval === 0) {
-        const x = this.getTimeX(i);
-        const renderer = this;
-        axisContainer
-          .append('text')
-          .text(new Date(Math.round(i) * 1000).toISOString().slice(11, 19))
-          .attr('font-size', this.options.axis.fontSize)
-          .attr('x', function () {
-            return renderer.shift + x - this.getBBox().width / 2;
-          })
-          .attr(
-            'y',
-            this.options.axis.height
-            + this.options.axis.tick.height
-            + this.options.axis.margin,
-          );
-        axisContainer
-          .append('rect')
-          .style(
-            'height',
-            this.options.axis.tick.height - this.options.axis.height,
-          )
-          .style('width', this.options.axis.tick.width)
-          .attr('x', this.shift + x)
-          .attr('y', this.options.axis.height)
-          .attr('fill', this.options.axis.color);
-      }
-    }
+    this.container
+      .append('g')
+      .style('width', '100%')
+      .call(
+        axisBottom(
+          scaleLinear([this.timeline.minTime, this.timeline.maxTime], [this.options.margin, this.maxRight - this.options.margin]),
+        ).ticks(this.options.ticks),
+      );
   }
 
   /**

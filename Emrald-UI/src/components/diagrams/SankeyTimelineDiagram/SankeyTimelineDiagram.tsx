@@ -18,7 +18,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { select } from 'd3-selection';
+import { select } from 'd3';
 import { type RefObject, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import { colors } from './colors';
