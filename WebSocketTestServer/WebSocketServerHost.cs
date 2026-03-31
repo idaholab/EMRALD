@@ -62,6 +62,11 @@ namespace WebSocketTestServer
     {
       _cts.Cancel();
       _listener.Stop();
+
+      // Cancel all active connection state machines so their dispatcher tasks exit
+      foreach (var conn in Program.GetActiveConnections())
+        conn.StateMachine?.Cancel();
+
       if (_acceptLoop is not null)
         await _acceptLoop;
       _listener.Close();

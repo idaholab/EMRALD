@@ -56,6 +56,7 @@ namespace SimulationEngine
     public string user { get; set; } = "user"; //user, currently for XMPP user name if needed
     public string couplingURL { get; set; } = null;
     public int timeout { get; set; } = 30; //timeout in seconds
+    public bool logCouplingMsgs { get; set; } = true; //log coupling messages to console (debug builds only), set false to suppress during testing
   }
 
   public class Options_cur

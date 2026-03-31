@@ -121,6 +121,14 @@ namespace WebSocketTestServer
         /// </summary>
         /// <param name="action">Client-requested simulation action.</param>
         /// <returns>Task that completes when the state finishes handling.</returns>
+        /// <summary>
+        /// Cancel the dispatcher and stop processing, used during shutdown.
+        /// </summary>
+        internal void Cancel()
+        {
+            _dispatcherCts.Cancel();
+        }
+
         internal Task HandleActionAsync(SimAction action)
         {
             if (action == null)

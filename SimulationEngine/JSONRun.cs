@@ -432,6 +432,8 @@ namespace SimulationEngine
 
       if (optionsOut.couplingInfo != null)
       {
+        CouplingWebSocket.WebSocketClient.LogMessages = optionsOut.couplingInfo.logCouplingMsgs;
+
         switch (optionsOut.couplingInfo.couplingType)
         {
           case CouplingType.WebSocket:
@@ -442,7 +444,6 @@ namespace SimulationEngine
             break;
           default:
             throw new Exception("Coupling Type not implemeted");
-            
         }
       }
 

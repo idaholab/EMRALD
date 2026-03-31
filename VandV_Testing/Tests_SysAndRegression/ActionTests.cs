@@ -281,8 +281,10 @@ namespace SysAndRegressionTesting
       {
         couplingType = CouplingType.WebSocket,
         couplingURL = host.WsUri.ToString(), // e.g., "ws://localhost:52743/"
-        timeout = 10
+        timeout = 10,
+        logCouplingMsgs = false
       };
+      WebSocketTestServer.Program.LogMessages = false;
       options.opsVer = 1.02;
 
       var testRun = new JSONRun(options);
