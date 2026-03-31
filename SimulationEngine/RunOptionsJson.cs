@@ -101,7 +101,7 @@ namespace SimulationEngine
     // Input file path
     public string inpfile { get; set; } = "";
     // Results output file path
-    public string resout { get; set; } = "BasicResults.txt";
+    public string resout { get; set; } = "";
     // Result paths JSON output file path
     public string jsonRes { get; set; } = "";
     //variables to output in the results

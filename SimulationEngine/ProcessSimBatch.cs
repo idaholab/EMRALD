@@ -250,8 +250,9 @@ namespace SimulationEngine
         try
         {
           // Set the file paths with the rootPath
-          this._resultFile = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
-          if (_jsonResultPaths != "")
+          if (!string.IsNullOrEmpty(_resultFile))
+            this._resultFile = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
+          if (!string.IsNullOrEmpty(_jsonResultPaths))
           {
             this._jsonResultPaths = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths)));
           }
@@ -642,7 +643,7 @@ namespace SimulationEngine
       //  _progress.curRun = runCnt;
       //}
 
-      if (_resultFile == null)
+      if (string.IsNullOrEmpty(_resultFile))
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);

@@ -44,6 +44,7 @@ namespace EMRALD_Sim
     private int _pathResultsInterval = -1;
     private List<string> _recentFiles = new List<string>();
     private bool _skipApplyOptionsOnce = false;
+    private bool _isCommandLineRun = false;
     private Options_cur _curSimOptions = new Options_cur();
     private ContextMenuStrip _monitorVarsContextMenu = null;
 
@@ -62,7 +63,7 @@ namespace EMRALD_Sim
       teModel.SetHighlighting("JSON");
       tcCouplingTypeInfo.SelectedIndex = 1;
       ResetResults();
-      _curSimOptions.seed = null; 
+      _curSimOptions.seed = null;
       _curSimOptions.opsVer = 1.02;
       _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
       _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
@@ -102,6 +103,7 @@ namespace EMRALD_Sim
             _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0]));
             model = _curSimOptions.inpfile;
             execute = true;
+            _isCommandLineRun = true;
           }
           catch
           {
@@ -373,6 +375,9 @@ namespace EMRALD_Sim
         _pathResultsInterval = pathResultsInterval;
         _curSimOptions.pathResultsInterval = pathResultsInterval;
       }
+
+      if (execute)
+        _isCommandLineRun = true;
 
       return execute;
     }
@@ -693,6 +698,30 @@ namespace EMRALD_Sim
         MessageBox.Show("You must select a client to send it to. Left of the Send Bttn.");
     }
 
+    private bool ValidateOrCreateFolder(string filePath, string fieldLabel)
+    {
+      if (string.IsNullOrWhiteSpace(filePath))
+        return true;
+
+      string folder = Path.GetDirectoryName(filePath);
+      if (string.IsNullOrWhiteSpace(folder) || Directory.Exists(folder))
+        return true;
+
+      DialogResult res = MessageBox.Show(
+        $"The folder for {fieldLabel} does not exist:\n{folder}\n\nCreate it?",
+        "Folder Not Found",
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Question);
+
+      if (res == DialogResult.Yes)
+      {
+        Directory.CreateDirectory(folder);
+        return true;
+      }
+
+      return false;
+    }
+
     private void SetRunningVis()
     {
       btnStartSims.Enabled = !_running;
@@ -731,6 +760,11 @@ namespace EMRALD_Sim
           }
         }
 
+        // Sync UI fields to options in case Leave events never fired
+        _curSimOptions.resout = tbSavePath.Text;
+        _curSimOptions.jsonRes = tbSavePath2.Text;
+        SaveUISettingsToJson();
+
         // Validate max time
         TimeSpan maxTime;
         try
@@ -740,6 +774,31 @@ namespace EMRALD_Sim
         catch
         {
           MessageBox.Show("Invalid Max Simulation Time, please fix.");
+          _running = false;
+          SetRunningVis();
+          return;
+        }
+
+        // Require resout when run from command line
+        if (_isCommandLineRun && string.IsNullOrEmpty(tbSavePath.Text))
+        {
+          Console.Write("Basic results output path (-r) is required when running from command line.");
+          _running = false;
+          SetRunningVis();
+          return;
+        }
+
+        // Validate output folder paths
+        if (!ValidateOrCreateFolder(tbSavePath.Text, "Basic Results"))
+        {
+          tbSavePath.Focus();
+          _running = false;
+          SetRunningVis();
+          return;
+        }
+        if (!ValidateOrCreateFolder(tbSavePath2.Text, "Path Results"))
+        {
+          tbSavePath2.Focus();
           _running = false;
           SetRunningVis();
           return;
@@ -1074,8 +1133,11 @@ namespace EMRALD_Sim
     {
       tbRunCnt.Text = _curSimOptions.runct.ToString();
       tbMaxSimTime.Text = _curSimOptions.runtime ?? "365.00:00:00";
-      tbSavePath.Text = _curSimOptions.resout ?? @"c:\temp\NewSimResults.txt";
-      tbSavePath2.Text = _curSimOptions.jsonRes ?? @"c:\temp\PathResults.json";
+      if (!string.IsNullOrEmpty(_curSimOptions.resout))
+        tbSavePath.Text = _curSimOptions.resout;
+      if (!string.IsNullOrEmpty(_curSimOptions.jsonRes))
+        tbSavePath2.Text = _curSimOptions.jsonRes;
+
       tbSeed.Text = _curSimOptions.seed.HasValue ? _curSimOptions.seed.ToString() : "";
       LoadLib.SetSeed(tbSeed.Text);
       tbThreads.Text = _curSimOptions.threads > 0 ? _curSimOptions.threads.ToString() : "";
@@ -1118,7 +1180,7 @@ namespace EMRALD_Sim
       for (int i = 0; i < lbMonitorVars.Items.Count; i++)
       {
         string val = lbMonitorVars.Items[i].ToString();
-        if(_curSimOptions.variables != null)
+        if (_curSimOptions.variables != null)
           lbMonitorVars.SetItemChecked(i, _curSimOptions.variables.Contains(val));
       }
 
