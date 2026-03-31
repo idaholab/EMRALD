@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Entry point for running an EMRALD simulation from JSON options and model data, coordinating simulation batches and messaging.
 
 using System;
 using System.Collections.Generic;
@@ -38,12 +39,7 @@ namespace SimulationEngine
     // Create attributes for objects
     private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
     private EmraldModel _model = null;
-    // Create attributes for options (things formerly input on the command line)
-    //private string run_count;
-    //private TimeSpan maxTime;
-    //private string inpfile_path = "";
-    //private string outfile_path = "";
-    //private int nseed = 0;
+    
     // Create other attributes
     public bool cancel = false;
     public double percentDone = 0;
@@ -91,7 +87,8 @@ namespace SimulationEngine
 
       try
       {
-        _modelJsonStr = File.ReadAllText(options.inpfile);
+        if (_modelJsonStr == "")
+          _modelJsonStr = File.ReadAllText(options.inpfile);
       }
       // If it is not acceptable, fill in the error message
       catch (Exception ex)
@@ -146,8 +143,6 @@ namespace SimulationEngine
         //Set coupling connection stuff
         if (options.couplingInfo.couplingPassword != null)
           _msgCoupler.connectionPassword = options.couplingInfo.couplingPassword;
-        //if (options.couplingInfo. != null)
-        //  _msgCoupler.
 
         if (options.couplingInfo.couplingType == CouplingType.WebSocket)
         {

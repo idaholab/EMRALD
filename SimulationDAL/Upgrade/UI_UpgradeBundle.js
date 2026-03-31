@@ -562,26 +562,28 @@ function UpgradeV3_2(modelTxt) {
     };
 }
 function UpgradeV3_2_Recursive(oldModel) {
-    const upgradeModel = (oldModel) => {
-        return {
-            ...oldModel,
-            StateList: oldModel.StateList.map((state) => {
-                // eslint-disable-next-line prefer-const
-                let { geometryInfo } = state;
-                if (typeof state.geometryInfo === 'undefined' && typeof state.geometry === 'string') {
-                    geometryInfo = JSON.parse(state.geometry.replace(/([A-z]+):\s/g, '"$1": '));
-                }
-                return {
-                    ...state,
-                    geometryInfo,
-                };
-            }),
-            emraldVersion: 3.2,
-        };
-    };
+    const upgradeModel = (oldModel) => ({
+        ...oldModel,
+        ActionList: oldModel.ActionList.map(action => ({
+            ...action,
+            formData: action.formData, // Differences in types are just superficial, so this casts them to get typescript to stop complaining
+        })),
+        StateList: oldModel.StateList.map(state => {
+            let geometryInfo = state.geometryInfo;
+            if (state.geometryInfo === undefined
+                && typeof state.geometry === 'string') {
+                geometryInfo = JSON.parse(state.geometry.replace(/([A-z]+):\s/g, '"$1": '));
+            }
+            return {
+                ...state,
+                geometryInfo,
+            };
+        }),
+        emraldVersion: 3.2,
+    });
     return {
         ...upgradeModel(oldModel),
-        templates: oldModel.templates?.map((template) => {
+        templates: oldModel.templates?.map(template => {
             return upgradeModel(template);
         }),
     };

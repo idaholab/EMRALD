@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Implements ISimMessaging over XMPP, managing coupled application connections, message dispatch, and roster tracking for EMRALD.
 
 using Matrix;
 using Matrix.Xmpp.Base;
@@ -24,17 +25,11 @@ namespace XmppMessageServer
     private XmppMessageServer _xmppMsgServer;
     private IMessageDispHandling _form;
     private int _nextMsgId = 0;
-    //private string _passwd = "secret";
     private TEventCallBack _evCallBackFunc = null;
 
-    //private List<string> _connections = new List<string>();
-
-    //public Dictionary<string, JIDandApp> clientApps { get { return _clientApps; } }
-    //public List<string> connections { get { return _connections; } }
     private Dictionary<string, string> _resourceLookup = new Dictionary<string, string>(); //User & Resource lookup for jID into _roster.
     private Dictionary<string, Matrix.Xmpp.Roster.RosterItem> _roster = new Dictionary<string, Matrix.Xmpp.Roster.RosterItem>();
-    //private Matrix.Xmpp.Client.RosterManager _rosterMan = new Matrix.Xmpp.Client.RosterManager();
-
+    
     // TODO - The server should save these as properties
     private int m_port = 5222;
 
@@ -185,17 +180,7 @@ namespace XmppMessageServer
         var clientCon = Global.ServerConnections[clientJid];
         var resAndName = clientCon.Resource + " - " + clientCon.User;
         if (_resourceLookup.ContainsKey(resAndName))
-          return false;
-
-        //var ri = new Matrix.Xmpp.Roster.RosterItem
-        //{
-        //  Jid = clientJid,
-        //  Name = user,
-        //  Subscription = Matrix.Xmpp.Roster.Subscription.Both
-        //};
-
-        //ri.AddGroup("EMRALD");
-        //_roster.Add(clientJid, ri);
+          return false;        
 
         _resourceLookup.Add(resAndName, clientJid);
         _form?.OnConnectCng();
@@ -242,18 +227,5 @@ namespace XmppMessageServer
     {
       return _resourceLookup.Count();
     }
-
-    //void AddToRoster(RosterItem item)
-    //{
-    //  _roster.Add(item.Jid, item);
-    //}
-
-    //void DelFromRoster(string jID)
-    //{
-    //  if(_roster.ContainsKey(jID))
-    //  {
-    //    _roster.Remove(jID);
-    //  }
-    //}
   }
 }

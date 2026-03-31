@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines result data structures for simulation runs including key state statistics, merging, and serialization to output files.
 
 using System;
 using System.Collections.Generic;
@@ -203,51 +204,7 @@ namespace SimulationEngine
     }
   }
 
-  //public class PathsConverter : JsonConverter
-  //{
-  //  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-  //  {
-  //    throw new NotImplementedException("Unnecessary because CanRead is false. The type will skip the converter.");
-  //  }
-
-  //  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-  //  {
-  //    if (reader.TokenType == JsonToken.Null)
-  //    {
-  //      return string.Empty;
-  //    }
-  //    else if (reader.TokenType == JsonToken.String)
-  //    {
-  //      return serializer.Deserialize(reader, objectType);
-  //    }
-  //    else
-  //    {
-  //      JObject obj = JObject.Load(reader);
-  //      if (obj["paths"] != null)
-  //        return obj["Code"].ToString();
-  //      else
-  //        return serializer.Deserialize(reader, objectType);
-  //    }
-  //  }
-
-  //  public override bool CanWrite
-  //  {
-  //    get { return false; }
-  //  }
-
-  //  public override bool CanRead
-  //  {
-  //    get { return true; }
-  //  }
-
-  //  public override bool CanConvert(Type objectType)
-  //  {
-  //    if (objectType == typeof(List<ResultState>))
-  //      return true;
-  //    return false;
-  //  }
-  //}
-
+  
   public class ResultState : ResultStateBase
   {
     [JsonProperty(Order = 9998)] //on the end
@@ -266,7 +223,6 @@ namespace SimulationEngine
     public ResultState(string name, bool inKeyPath) : base(name, inKeyPath) { }
 
   }
-
   public class ResultStateBase
   {
     [JsonProperty(Order = 1)]
@@ -287,8 +243,8 @@ namespace SimulationEngine
     [JsonProperty(Order = 6)]
     public TimeSpan timeMean
     {
-      get { return (_totalTime / count) + TimeSpan.FromDays(_extraDays / count); }
-      set { _extraDays = value.TotalDays * count; } //just put all in extra days, easier.
+      get { return count == 0 ? TimeSpan.Zero : (_totalTime / count) + TimeSpan.FromDays(_extraDays / count); }
+      set { _extraDays = value.TotalDays * count; }
     }
     [JsonProperty(Order = 7)]
     public TimeSpan timeStdDeviation

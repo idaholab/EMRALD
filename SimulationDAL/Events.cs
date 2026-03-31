@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines the Event base class and concrete event types (failure rate, variable condition, timer, distributions, etc.) for EMRALD state transitions.
 
 using System;
 using System.Collections;
@@ -25,10 +26,8 @@ namespace SimulationDAL
     protected MyBitArray _relatedIDsBitSet = null!;
     public bool mainItem = false;
     public string rootPath = "";
-    //protected virtual EnModifiableTypes GetModType() { return EnModifiableTypes.mtNone; }
 
     public ReadOnlyCollection<int> relatedIDs { get { return _relatedIDs.AsReadOnly(); } }
-    //public EnModifiableTypes modType { get { return GetModType(); } }
     public MyBitArray relatedIDsBitSet { get { return _relatedIDsBitSet; } }
 
     protected abstract EnEventType GetEvType();
@@ -152,7 +151,6 @@ namespace SimulationDAL
 
   public class StateCngEvent : CondBasedEvent //etStateCngevalEvOnStateEntry
   {
-    //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; }
     public bool ifInState = true;
     public bool allItems = false;
     public bool evalEvOnStateEntry = true;
@@ -344,12 +342,6 @@ namespace SimulationDAL
       }
 
       addToList.allEvents.Add(this, false);
-
-      //foreach (int id in this._relatedIDs)
-      //{
-      //  State curItem = all.allStates[this.relatedIDs[0]];
-      //  curItem.LookupRelatedItems(all, addToList);
-      //}
     }
 
     public override void Reset()
@@ -361,15 +353,11 @@ namespace SimulationDAL
 
   public class ComponentLogicEvent : CondBasedEvent //etComponentLogic
   {
-    //bool onSuccess;//true if our logic evaluation is looking for a true.
     public bool successSpace = true;
     public bool triggerOnFalse = false;
     private LogicNode logicTop = null!;
     private Dictionary<int, bool?> lastEvalVal = new Dictionary<int, bool?>(); //what value did the tree have last time it was evaluated for the given state (hash is state ID)
-    //private bool? lastEvalVal = null; //what value did the tree have last time it was evaluated
-
-    //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtState; } //the modified items concerned about for component logic are states.
-
+    
     protected override EnEventType GetEvType() { return EnEventType.etComponentLogic; }
 
     public ComponentLogicEvent() : base("") { }
@@ -496,11 +484,6 @@ namespace SimulationDAL
       }
 
       addToList.allEvents.Add(this, false);
-
-      //if (logicTop != null)
-      //{
-      //  logicTop.LookupRelatedItems(all, addToList);
-      //}
     }
 
     public override void Reset()
@@ -516,10 +499,7 @@ namespace SimulationDAL
     protected ScriptEngine compiledComp;
     protected VariableList varList = null!;
     protected string modelPath = ""; //save here because we cant get it from EventTriggered. 
-    //protected override EnModifiableTypes GetModType() { return EnModifiableTypes.mtVar; }
-
-    //protected override EnEventType GetEvType() { return (variable == "") ? EnEventType.etVarCond : EnEventType.et3dSimEv; }
-
+    
     public EvalVarEvent() : base("")
     {
       compiledComp = new ScriptEngine(ScriptEngine.Languages.CSharp);
@@ -558,11 +538,10 @@ namespace SimulationDAL
         }
         varNames = varNames.TrimStart(',');
       }
-      //varNames = string.Join(",", varList.Values);
+      
 
       string retStr = null!;
-      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
-      //                "\"code\":\"" + compCodeStr + "\"";
+      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;
 
       retStr = retStr + Environment.NewLine;
 
@@ -722,17 +701,6 @@ namespace SimulationDAL
       }
 
       addToList.allEvents.Add(this, false);
-
-      //if (varList != null)
-      //{
-      //  foreach (SimVariable item in varList.Values)
-      //  {
-      //    item.LookupRelatedItems(all, addToList);
-      //  }
-      //}
-
-      //SimVariable varItem = all.allVariables[this.relatedIDs[0]];
-      //varItem.LookupRelatedItems(all, addToList);
     }
 
     public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
@@ -816,11 +784,9 @@ namespace SimulationDAL
         }
         varNames = varNames.TrimStart(',');
       }
-      //varNames = string.Join(",", varList.Values);
 
       string retStr = null!;
-      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;// +
-      //                "\"code\":\"" + compCodeStr + "\"";
+      retStr = retStr + "\"varNames\": [" + varNames + "]," + Environment.NewLine;
 
       retStr = retStr + "," + Environment.NewLine + "\"extEventType\":" + this.extEventType;
 
@@ -850,9 +816,6 @@ namespace SimulationDAL
       if (dynObj.extEventType != null)
       {
         this.extEventType = (SimEventType)Enum.Parse(typeof(SimEventType), (string)dynObj.extEventType, true);
-
-        //if (dynObj.varNames == null)
-        //throw new Exception("External Sim Event, missing varNames value for the 3D SimVar ");
       }
 
       //3D simulation var condition has a variable link
@@ -942,7 +905,7 @@ namespace SimulationDAL
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref compCode, oldRef, newRef);
 
-      if (paths.Count >= 0)
+      if (paths.Count == 0)
         throw new Exception("Failed to find string in the path " + oldRef + " in the source of the External Simulation Event.");
 
     }
@@ -1186,15 +1149,7 @@ namespace SimulationDAL
 
   public class FailProbEvent : TimeBasedEvent //etFailRate
   {
-    //public TimeSpan timeRate { get { return _dbItem.dFailRateEv.lambdaTimeRate; } set { this.locOutOfSync = true; _dbItem.dFailRateEv.lambdaTimeRate = value; } }
     protected double _lambda = 0.0;
-    //protected TimeSpan _compMissionTime { get { return _dbItem.dFailRateEv.missionTime; } set { this.locOutOfSync = true; _dbItem.dFailRateEv.missionTime = value; } }
-
-    //protected TimeSpan _lambdaTimeRate;
-    //protected double _lambda;
-    //protected TimeSpan _compMissionTime;
-    //protected FailProbEvType _failType;
-    //public int FailureFuncID { get { return _FailureFuncID; } set { this.linksModified = true; _FailureFuncID = value; } }
     public TimeSpan timeRate = TimeSpan.FromDays(365.25);
     public TimeSpan compMissionTime = TimeSpan.FromHours(24);
     protected SimVariable lambdaVariable = null!;
@@ -1260,7 +1215,6 @@ namespace SimulationDAL
       }
       else
       {
-
         try //may not exist in earlier versions so use a default
         {
           onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
@@ -1317,8 +1271,6 @@ namespace SimulationDAL
         }
       }
 
-      //Random rand = new Random();
-      //rand.NextDouble();
       double randNum = SingleRandom.Instance.NextDouble();
       double tempD = Math.Log(1 - randNum);
       double timeToFail = -(tempD / (_lambda));
@@ -1357,18 +1309,13 @@ namespace SimulationDAL
     {
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        //todo: how to adjust
-        //Random rnd = new Random();
+        //adjust
         double rnd = SingleRandom.Instance.NextDouble();
 
-
-
-        //double var1 = (Math.Log(Dbl_Treshold) + (Dbl_C4Lambda1 * CurTime)) / (-Dbl_C4Lambda2);
         double var1 = (Math.Log(rnd) + (_lambda * curTime.TotalHours)) / (-lambdaVariable.dblValue);
         _lambda = lambdaVariable.dblValue;
         //what will happen if we have more than 2 loops (example: cooling system is repaired)
         return (TimeSpan.FromHours(var1) + curTime);
-        //return NextTime() - (curTime - sampledTime);
       }
 
       //if not "ocAdjust" call parent as they are all the same.
@@ -1700,7 +1647,6 @@ namespace SimulationDAL
         throw new Exception("Failed to set time for " + this._distType.ToString() + " - " + sampled);
       }
       
-      //Globals.ConvertToNewTimeSpan(_dParams[1].timeRate, (double)valuePs[1], _dParams[0].timeRate)
       try
       {
         TimeSpan minTime = TimeSpan.Zero;
@@ -2045,15 +1991,6 @@ namespace SimulationDAL
 
       return foundList;
     }
-
-    //void LoadIfNot()
-    //{
-    //  if (jsonList != N)
-    //  {
-    //    //todo
-    //    jsonList = "";
-    //  }
-    //}
   }
 
 }

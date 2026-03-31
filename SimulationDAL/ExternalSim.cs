@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Represents an external simulation client connection, including resource name, model reference, and timeout configuration.
 
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,6 @@ namespace SimulationDAL
     public bool verified = false; //verified there is a link to a external sim client
     public int timeout = 10; //time before timeout in trying to connect to external sim
     public string connectionID = ""; //Probably a GUID, For connections that privide a unique connection ID. Set after establishing a connection for the external sim
-
-    //public string msgServerClient { get; set; } = ""; //
 
 
     public ExternalSim(string clientResourceName, string desc, string modelRef, TimeSpan maxRunTime, string configData = "")
@@ -49,9 +48,6 @@ namespace SimulationDAL
 
     public override string GetJSON(bool incBrackets, EmraldModel lists)
     {
-      //EnDiagramType enumTest = (EnDiagramType)Enum.Parse(typeof(EnDiagramType), "dtComponent", true);
-
-
       string retStr = "";
       if (incBrackets)
       {
@@ -91,17 +87,7 @@ namespace SimulationDAL
       lists.allExtSims.Add(this);
 
       this.resourceName = (string)dynObj.resourceName;
-      //this.modelRef = dynObj.modelRef;
-      //this.configData = dynObj.configData;
-      //try
-      //{
-      //  this.simMaxTime = XmlConvert.ToTimeSpan((string)dynObj.simMaxTime); 
-      //}
-      //catch
-      //{
-      //  throw new Exception("Invalid Time format.");
-      //}
-
+      
 
       processed = true;
       return true;
@@ -109,7 +95,7 @@ namespace SimulationDAL
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
-      //TODO :
+      //TODO : Currently nothing, but verify as external sims develop.
       return true;
     }
 
@@ -299,7 +285,10 @@ namespace SimulationDAL
     {
       var foundList = new List<ScanForReturnItem>();
 
-      if ((scanType == ScanForTypes.sfMultiThreadIssues) && (this.Count > 0)) //shortcircuit
+      if ((scanType == ScanForTypes.sfMultiThreadIssues) &&
+          (this != null) &&
+          (this.Count > 0) &&
+          (this[0] != null)) 
       {
         foundList.Add(new ScanForRefsItem(this[0].id,
                                           this[0].name,

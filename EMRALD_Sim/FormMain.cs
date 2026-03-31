@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Main application form that provides the EMRALD simulation GUI, including model loading, run control, and results display.
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;

@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines logic gate nodes (AND, OR, NOT, N-of-M) used to evaluate composite component-state conditions in EMRALD.
 
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,6 @@ using Newtonsoft.Json;
 namespace SimulationDAL
 {
   public enum EnGateType { gtAnd, gtOr, gtNot, gtNofM };
-
-  //interface IEvaluateable<MyBitArray>
-  //{
-  //  bool Evaluate(MyBitArray curStates);
-  //}
 
   public class compChild
   {
@@ -30,7 +26,6 @@ namespace SimulationDAL
     private List<LogicNode> _subGates = new List<LogicNode>();
 
     public EnGateType gateType = EnGateType.gtAnd;
-    //public bool isTop { get { return _isTop; } }
     public int val1 = 0;
     public LogicNode ChildGate(int idx) {return _subGates[idx];}
     public int childGateCnt { get { return _subGates.Count; } }
@@ -213,8 +208,31 @@ namespace SimulationDAL
           {
             foreach (var item in child.stateValues)
             {
-              State state = lists.allStates.FindByName(item.name);
-              compChild.stateValues.Add(state.id, item.stateValues);
+              if (item.stateName == null)
+                throw new Exception("Invalid JSON missing stateName property in stateValues list.");
+              if (item.stateValue == null)
+                throw new Exception("Invalid JSON missing stateValue property in stateValues list for - " + item.stateName);
+
+              State state = lists.allStates.FindByName((string)item.stateName);              
+              if(state == null)
+                throw new Exception("Invalid stateName property in stateValues list - " + (string)item.stateName + " doesn't exist");
+
+              int stateVal = -1;
+              switch ((string)dynObj.defaultSingleStateValue)
+              {
+                case "True":
+                  stateVal = 1;
+                  break;
+                case "False":
+                  stateVal = 0;
+                  break;
+                case "Unknown":
+                case "Ignore":
+                  stateVal = -1;
+                  break;
+              }
+
+              compChild.stateValues.Add(state.id, stateVal);
             }
           }
           
@@ -316,26 +334,6 @@ namespace SimulationDAL
         return retVal.Distinct().ToList();
       }
     }
-
-    //public void LookupRelatedItems(LookupLists all, LookupLists addToList)
-    //{
-    //  if (addToList.allLogicNodes.ContainsKey(this.id))
-    //  {
-    //    return;
-    //  }
-
-    //  addToList.allLogicNodes.Add(this);
-
-    //  foreach(LogicNode curItem in this._subGates)
-    //  {
-    //    curItem.LookupRelatedItems(all, addToList);
-    //  }
-
-    //  foreach (Diagram curItem in this._compChildren)
-    //  {
-    //    curItem.LookupRelatedItems(all, addToList);
-    //  }
-    //}
 
     public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {

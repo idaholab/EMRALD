@@ -1,4 +1,6 @@
-﻿using MyStuff.Collections;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Tracks current simulation state paths, variable values, and state transition history for each simulation run.
+using MyStuff.Collections;
 using Newtonsoft.Json.Schema.Generation;
 using SimulationDAL;
 using System;
@@ -102,40 +104,16 @@ namespace SimulationTracking
       return timeInIt;
     }
 
-    public TimeSpan CurTimeInState(int stateID, TimeSpan curTIme)
+    public TimeSpan CurTimeInState(int stateID, TimeSpan curTime)
     {
-      TimeSpan timeInIt = new TimeSpan();
       StatePath curStatePath;
       if (this.TryGetValue(stateID, out curStatePath))
       {
-        this.Remove(stateID);
+        return curTime - curStatePath.times.Last();
       }
 
-      return timeInIt;
+      return new TimeSpan();
     }
-
-    ////public void SaveStateQue(Dictionary<int, RemovedStateInfo> removedItems, MyBitArray curStates)
-    //public void SaveCurrent(TimeStateVariable curSave)
-    //{
-    //  curSave.SaveStateQue(this, removedItems, _bitMap);
-    //}
-
-    //public void RevertToGivenTime(TimeStateVariable saved)
-    //{
-    //  this.Clear();
-    //  foreach (var st in saved.curStates)
-    //  {
-    //    this.Add(st.Key, new StatePath(st.Value));
-    //  }
-
-    //  //this.removedItems.Clear();
-    //  //foreach (var st in saved.removedItems)
-    //  //{
-    //  //  this.removedItems.Add(st.Key, new RemovedStateInfo(st.Value));
-    //  //}
-
-    //  this._bitMap = new MyStuff.Collections.MyBitArray(saved.curStatesBS);
-    //}
 
     public void RevertToGivenTime(TimeSpan forTime, ConditionEventLists condEvs) //returns states put back in CurrentState list
     {
@@ -259,17 +237,18 @@ namespace SimulationTracking
       }
       else
       {
-        if (fromState != -1)
+        RemovedStateInfo rItem = null;
+        if ((fromState != -1) && removedItems.TryGetValue(fromState, out rItem))
         {
-          addList.AddRange(removedItems[fromState].statePath.path);
-          addTimes.AddRange(removedItems[fromState].statePath.times);
-          eventNames.AddRange(removedItems[fromState].statePath.eventNames);
-          actionNames.AddRange(removedItems[fromState].statePath.actionNames);
+          addList.AddRange(rItem.statePath.path);
+          addTimes.AddRange(rItem.statePath.times);
+          eventNames.AddRange(rItem.statePath.eventNames);
+          actionNames.AddRange(rItem.statePath.actionNames);
 
           //copy the variable value change over time
           foreach (var v in model.allVariables.Values)
           {
-            varVals[v.name].AddRange(removedItems[fromState].statePath.varValues[v.name]);
+            varVals[v.name].AddRange(rItem.statePath.varValues[v.name]);
           }
         }
         
@@ -283,16 +262,7 @@ namespace SimulationTracking
           varVals[v.name].Add(v.GetValue(true)); //use getValue(true) so default value is used if it has an issue getting the value and it isn't required on startup
         }
       }
-      //}
       
-      ////get all the current variable values
-      //Dictionary<string, List<object>> varVals = new Dictionary<string, List<object>>();
-      //foreach(var v in model.allVariables.Values)
-      //{
-      //  if()
-      //  varVals.Add(v.name, v.value);
-      //}
-
       this.Add(toState.id, new StatePath(toState, addList, addTimes, eventNames, actionNames, varVals));
 
       if (toState.id >= _bitMap.Length)
@@ -346,17 +316,19 @@ namespace SimulationTracking
           {
             if (nextState != null)
               curState = nextState;
-            else
+            else if (i + 1 < curStatePath.path.Count)   // check for i+1
               curState = model.allStates[curStatePath.path[i + 1]];
+            else
+              break; // nothing valid to move to
 
-            if (i < (curStatePath.path.Count - 2))
+            if (i + 2 < curStatePath.path.Count)        // check for i+2
               nextState = model.allStates[curStatePath.path[i + 2]];
-            else if (i == (curStatePath.path.Count - 2))
+            else if (i + 1 < curStatePath.path.Count)   // still safe to use final state
               nextState = curStatePath.state;
             else
               nextState = null;
 
-            
+
             //see if the item is already in the current result dictionary
             if (!curResDict.TryGetValue(curState.name, out curResState))
             {

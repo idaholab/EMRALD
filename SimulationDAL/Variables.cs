@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines the SimVariable hierarchy (local, global, accrual, doc-link) for storing and updating simulation variable values.
 
 using System;
 using System.Collections;
@@ -123,7 +124,6 @@ namespace SimulationDAL
         retStr = retStr + "\"value\": " + this._value.ToString()!.ToLower() + "," + Environment.NewLine;
       }
 
-      //retStr = retStr + "\"monitorInSim\": \"" + this._monitor.ToString() +"\"," + Environment.NewLine; //Defined in simulation GUI, not in model editor
       if (this.varScope != EnVarScope.gtDocLink)//should not have resetOnRuns for doc variables
       {
         retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
@@ -262,17 +262,6 @@ namespace SimulationDAL
       processed = true;
       return true;
     }
-
-    //public virtual void LookupRelatedItems(LookupLists all, LookupLists addToList)
-    //{
-
-    //  if (addToList.allVariables.ContainsKey(this.id))
-    //  {
-    //    return;
-    //  }
-
-    //  addToList.allVariables.Add(this);
-    //}
 
     public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
@@ -446,19 +435,6 @@ namespace SimulationDAL
 
       return true;
     }
-
-    //public override void LookupRelatedItems(LookupLists all, LookupLists addToList)
-    //{
-
-    //  if (addToList.allVariables.ContainsKey(this.id))
-    //  {
-    //    return;
-    //  }
-
-    //  addToList.allVariables.Add(this);
-
-    //  simCompOwner.LookupRelatedItems(all, addToList);
-    //}
   }
 
   public class AccrualVariable : SimVariable
@@ -474,7 +450,7 @@ namespace SimulationDAL
       public EnTimeRate multRate = EnTimeRate.trHours; //for ctTable or ctMultiplier type, rate of accrual in table
       public List<List<double>> accrualTable = new List<List<double>>();
 
-      //todo for custScript
+      //todo for custScript if added
       //public string compCode = "";
       //protected bool compiled;
       //protected ScriptEngine compiledComp;
@@ -656,10 +632,6 @@ namespace SimulationDAL
           break;
 
         case EnCumultiveType.ctTable:
-          //double compTime = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, EnTimeRate.);
-
-          //double prevTime = 0;
-          //tblMult = Globals.ConvertToNewTimeSpan(aData.multRate, aData.accrualTable[0][1], aData.simRate);
           //add all the full table sections
           int i;
           double totalTblTime = 0;
@@ -717,7 +689,7 @@ namespace SimulationDAL
           break;
         }
         int end = 1;
-        while (Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_'))
+        while (((end + index) <= _linkStr.Count()) && ((Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_'))))
           end++;
         string varName = _linkStr.Substring(index, end).Trim('%');
         SimVariable replVar = _vars.FindByName(varName, false);
@@ -1333,27 +1305,6 @@ namespace SimulationDAL
         this._numChars = Convert.ToInt32(dynObj.numChars);
 
 
-      //if (dynObj.regExpLine == null)
-      //  throw new Exception("Missing regExpLine for regEx document variable");
-
-
-      //if (dynObj.begPosition == null)
-      //  throw new Exception("Missing begPosition for RegEx document variable");
-
-      //if (dynObj.numChars == null)
-      //  throw new Exception("Missing begPosition for regEx document variable");
-
-      //try
-      //{
-      //  this._regExpLine = Convert.ToInt32(dynObj.regExpLine);
-      //  this._begPosition = Convert.ToInt32(dynObj.begPosition);
-      //  this._numChars = Convert.ToInt32(dynObj.numChars);
-      //}
-      //catch (Exception e)
-      //{
-      //  throw new Exception("Failed to get data from TextRegEx document variable bad format - " + e.Message);
-      //}
-
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
@@ -1377,7 +1328,7 @@ namespace SimulationDAL
           // Find matches.
           MatchCollection matches = rx.Matches(docTxt);
 
-          if (matches.Count < 0)
+          if (matches.Count < 1)
           {
             throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
           }
@@ -1568,148 +1519,6 @@ namespace SimulationDAL
 
       return result;
     }
-
-    //public class TimeStateVariable : SimVariable
-    //{
-    //  public BTreeDictionary<TimeSpan, TimeMoveEvent> timedEvQue = new BTreeDictionary<TimeSpan, TimeMoveEvent>();
-    //  public Dictionary<int, List<TimeSpan>> stateRefLookup = new Dictionary<int, List<TimeSpan>>(); //lookup of state IDs to a key in TimedEvQue.
-    //  public List<TimeMoveEvent> poppedList = new List<TimeMoveEvent>();
-
-    //  public Dictionary<int, StatePath> curStates = new Dictionary<int, StatePath>();
-    //  public Dictionary<int, RemovedStateInfo> removedItems = new Dictionary<int, RemovedStateInfo>();
-    //  public MyBitArray curStatesBS;
-
-    //  //public List<Tuple<int, int, string>> nextStateQue = new List<Tuple<int, int, string>>();
-    //  //public List<EventListData> processEventList = new List<EventListData>();
-
-    //  public TimeStateVariable(string inName)
-    //    : base(inName, EnVarScope.gtTimeState, typeof(double))
-    //  {
-    //  }
-
-    //  public override string GetDerivedJSON()
-    //  {
-    //    string retStr = "";
-
-    //    //todo
-    //    ////add derived items
-    //    //retStr = retStr + "," + Environment.NewLine + "\"simCompOwner\": \"" + this.simCompOwner.name + "\"";
-
-    //    return retStr;
-    //  }
-
-    //  public override bool DeserializeDerived(object obj, bool wrapped, LookupLists lists, bool useGivenIDs)
-    //  {
-    //    //TODO
-    //    //dynamic dynObj = (dynamic)obj;
-    //    //if (wrapped)
-    //    //{
-    //    //  if (dynObj.Variable == null)
-    //    //    return false;
-
-    //    //  dynObj = ((dynamic)obj).Variable;
-    //    //}
-
-    //    //bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
-
-
-    //    //if (retVal && (dynObj.simCompOwner != null))
-    //    //{
-    //    //  lists.allVariables.Add(this, false);
-
-    //    //  simCompOwner = (EvalDiagram)lists.allDiagrams.FindByName((string)dynObj.simCompOwner);
-
-    //    //  retVal = simCompOwner != null;
-    //    //}
-
-    //    //processed = true;
-    //    //return retVal;
-
-
-    //    return true;
-    //  }
-
-    //  public override bool LoadObjLinks(object obj, bool wrapped, LookupLists lists)
-    //  {
-    //    //todo
-    //    //dynamic dynObj = (dynamic)obj;
-    //    //if (wrapped)
-    //    //{
-    //    //  if (dynObj.Variable == null)
-    //    //    return false;
-
-    //    //  dynObj = ((dynamic)obj).Variable;
-    //    //}
-
-    //    //if (dynObj.simCompOwner != null)
-    //    //{
-    //    //  lists.allVariables.Add(this, false);
-
-    //    //  simCompOwner = (EvalDiagram)lists.allDiagrams.FindByName((string)dynObj.simCompOwner);
-
-    //    //  if (simCompOwner == null)
-    //    //    throw new Exception("Failed to find Diagram named - " + (string)dynObj.simCompOwner);
-    //    //}
-
-    //    return true;
-    //  }
-
-    //  public void SaveTimeQue(TimeSpan toTime,  BTreeDictionary<TimeSpan, TimeMoveEvent> timedEvQue, Dictionary<int, List<TimeSpan>> stateRefLookup, List<TimeMoveEvent> poppedList)
-    //  {
-    //    this.timedEvQue.Clear();
-    //    this.value = toTime.TotalHours;
-
-    //    foreach(var ev in timedEvQue)
-    //    {
-    //      this.timedEvQue.Add(new TimeSpan(ev.Key.Ticks), new TimeMoveEvent(ev.Value));
-    //    }
-
-    //    this.stateRefLookup.Clear();
-    //    foreach (var sRef in stateRefLookup)
-    //    {
-    //      this.stateRefLookup.Add(sRef.Key, new List<TimeSpan>(sRef.Value));
-    //    }
-
-    //    //this.poppedList.Clear();
-    //    //for(int i=0; i<poppedList.Count(); i++)
-    //    //{
-    //    //  this.poppedList.Add(new TimeMoveEvent(poppedList[i]));
-    //    //}
-    //  }
-
-    //  public void SaveStateQue(Dictionary<int, StatePath> inCurStates, Dictionary<int, RemovedStateInfo> inRemovedItems, MyBitArray inCurStatesBS)
-    //  {
-    //    this.curStates.Clear();
-    //    foreach (var st in inCurStates)
-    //    {
-    //      this.curStates.Add(st.Key, new StatePath(st.Value));
-    //    }
-
-    //    //this.removedItems.Clear();
-    //    //foreach (var st in inRemovedItems)
-    //    //{
-    //    //  this.removedItems.Add(st.Key, new RemovedStateInfo(st.Value));
-    //    //}
-
-    //    this.curStatesBS = new MyBitArray(inCurStatesBS);
-    //  }
-
-    //  //public void SaveProcessLists(List<EventListData> inProcessEventList, List<Tuple<int, int, string>> inNextStateQue)
-    //  //{
-    //  //  this.processEventList.Clear();
-    //  //  foreach(var ev in inProcessEventList)
-    //  //  {
-    //  //    this.processEventList.Add(ev);
-    //  //  }
-
-    //  //  this.nextStateQue.Clear();
-    //  //  foreach(var st in inNextStateQue)
-    //  //  {
-    //  //    this.nextStateQue.Add(st);
-    //  //  }
-    //  //}
-    //}
-
   }
 
   public class VariableList : Dictionary<int, SimVariable>, ModelItemLists
@@ -1833,14 +1642,6 @@ namespace SimulationDAL
         else
           return null!;
       }
-
-      //int loc = -1;
-      //if (nameToID.TryGetValue(name, out loc))
-      //{
-      //  return this[nameToID[name]];
-      //}
-
-      //return null;
     }
 
     public SimVariable FindBySim3dId(string findSim3dNameId)

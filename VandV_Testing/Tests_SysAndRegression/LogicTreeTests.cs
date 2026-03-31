@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿// Copyright 2026 Battelle Energy Alliance
+// System and regression tests for EMRALD logic tree evaluation including gate types and fault tree calculations.
+using Newtonsoft.Json.Linq;
 using SimulationEngine;
 using System;
 using System.Collections.Generic;

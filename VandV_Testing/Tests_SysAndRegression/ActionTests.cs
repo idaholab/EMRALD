@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// System and regression tests for EMRALD actions including state transitions, variable changes, and external application calls.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

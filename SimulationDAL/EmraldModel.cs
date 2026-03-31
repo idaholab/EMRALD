@@ -1,5 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance{
-
+// Central model class that owns all diagrams, states, events, actions, variables, and external sims for an EMRALD simulation.
 
 using System;
 using System.Collections;
@@ -26,21 +26,6 @@ using Sop.Collections.BTree;
 
 namespace SimulationDAL
 {
-
-  //public delegate int NewStateDecisionCallBack(StEvKey stEvKey);
-
-
-  //public static class GlobalVar
-  //{
-  //  public const string GET_EVS_FOR_ST_SQL = "Select * from rEvent inner join bState_Events on rEvent.Event_ID = bState_Events.Event_ID where Sim_ID = ";
-  //  public const string GET_ACTS_FOR_ST_SQL = "Select * from rAction inner join bState_Actions on rAction.Action_ID = bState_Actions.Action_ID where Sim_ID = 1 and State_ID = ";
-  //  public const string GET_STATES_SQL = "Select State_ID, BegEnd, Sim_ID from rState where Sim_ID = ";
-  //  public const string GET_COMPONENTS_SQL = "Select * from rComponent inner join bSim_Comps on rComponent.Component_ID = bSim_Comps.Comp_ID where Sim_ID = ";
-  //}
-
-
-
-
 
   //[DataContract]
   public class EmraldModel : BaseObjInfo
@@ -158,26 +143,29 @@ namespace SimulationDAL
 
     public override string GetJSON(bool incBrackets, EmraldModel lists)
     {
-      string retStr = "";
-      if (incBrackets)
+      var parts = new List<string>
       {
-        retStr = "{";
-      }
-      retStr = retStr + base.GetJSON(false, lists);
-      retStr = retStr + "," + this.allActions.GetJSON(false, lists);
-      retStr = retStr + "," + this.allDiagrams.GetJSON(false, lists);
-      retStr = retStr + "," + this.allEvents.GetJSON(false, lists);
-      retStr = retStr + "," + this.allLogicNodes.GetJSON(false, lists);
-      retStr = retStr + "," + this.allStates.GetJSON(false, lists);
-      retStr = retStr + "," + this.allVariables.GetJSON(false, lists);
-      retStr = retStr + "," + this.allExtSims.GetJSON(false, lists);
+          base.GetJSON(false, lists),
+          allActions.GetJSON(false, lists),
+          allDiagrams.GetJSON(false, lists),
+          allEvents.GetJSON(false, lists),
+          allLogicNodes.GetJSON(false, lists),
+          allStates.GetJSON(false, lists),
+          allVariables.GetJSON(false, lists),
+          allExtSims.GetJSON(false, lists)
+      };
+
+      var jsonBody = string.Join(",", parts);
 
       if (incBrackets)
       {
-        retStr = retStr + Environment.NewLine + "}";
+        return "{"
+             + jsonBody
+             + Environment.NewLine
+             + "}";
       }
 
-      return retStr;
+      return jsonBody;
     }
 
     public string UpdateModel(string jsonModel)
@@ -216,6 +204,9 @@ namespace SimulationDAL
     {
       SingleNextIDs.Instance.Reset();
 
+      if (!Directory.Exists(modelPath))
+        throw new Exception("Invalid path - " + modelPath);
+
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel)!;
       this.modelTxt = jsonModel;
       this.fileName = fileName;
@@ -223,6 +214,7 @@ namespace SimulationDAL
       this._rootPath = modelPath;
       this._origRootPath = modelPath;
 
+      
       // Deserialize multiThreadInfo if present
       if (jsonObj.multiThreadInfo != null)
       {
@@ -510,25 +502,7 @@ namespace SimulationDAL
 
       //put the multiTheadInfo back onto the model JSON string by assigning it;
       SetMultiThreadInfo();
-      //dynamic jsonObj = JsonConvert.DeserializeObject(this.modelTxt);
-      //string multiThreadInfoJson = JsonConvert.SerializeObject(multiThreadInfo);
-      //JToken multiThreadInfoToken = JToken.Parse(multiThreadInfoJson);
-
-      //// Check if the "multiThreadInfo" property exists
-      //if (jsonObj.multiThreadInfo != null)
-      //{
-      //  // Replace the existing value
-      //  jsonObj.multiThreadInfo = multiThreadInfoToken;
-      //}
-      //else
-      //{
-      //  // Add the new property and value
-      //  ((JObject)jsonObj).Add("multiThreadInfo", multiThreadInfoToken);
-      //}
-
-      //// Serialize the modified object back into a JSON string
-      //this.modelTxt = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-
+     
       _multiThreadReady = notAccountedFor.Count == 0;
       return notAccountedFor;
     }
@@ -782,9 +756,6 @@ namespace SimulationDAL
       addComp.desc = desc;
       allDiagrams.Add(addComp);
 
-      //Action addAct;
-      //Event addEv;
-
       //all items going to have active state and failed state
       State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp, -1);
       State activeState = new State(compName + "_Active", EnStateType.stStandard, addComp, 1);
@@ -866,10 +837,6 @@ namespace SimulationDAL
       if ((runningFailRates.Count() > 0) || ((sim3DComp != null) && (sim3DComp != ""))) //add the fail to run links
       {
         //add transition leading from active to failed for the event above
-        //TransitionAct failAct = new TransitionAct("Goto_" + compName + "_Failed");
-        //failAct.AddToState(failedState);
-        //allActions.Add(failAct);
-
         for (int i = 0; i < runningFailRates.Count(); ++i)
         {
           if (sepFailStates)
@@ -939,9 +906,6 @@ namespace SimulationDAL
       EvalDiagram addComp = new EvalDiagram(compName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
-
-      //Action addAct;
-      //Event addEv;
 
       //all items going to have active state and failed state
       State standbyState = new State(compName + "_Standby", EnStateType.stStandard, addComp, -1);
@@ -1037,10 +1001,6 @@ namespace SimulationDAL
       if ((runningFailRates.Count() > 0) || ((sim3DComp != null) && (sim3DComp != ""))) //add the fail to run links
       {
         //add transition leading from active to failed for the event above
-        //TransitionAct failAct = new TransitionAct("Goto_" + compName + "_Failed");
-        //failAct.AddToState(failedState);
-        //allActions.Add(failAct);
-
         for (int i = 0; i < runningFailRates.Count(); ++i)
         {
           if (sepFailStates)
@@ -1105,9 +1065,6 @@ namespace SimulationDAL
       EvalDiagram addComp = new EvalDiagram(compName);
       addComp.desc = desc;
       allDiagrams.Add(addComp);
-
-      //Action addAct;
-      //Event addEv;
 
       //all items going to have active state and failed state
       State standbyState = new State(compName + "_Standby", EnStateType.stStart, addComp, -1);
@@ -1289,13 +1246,7 @@ namespace SimulationDAL
 
       allLogicNodes.AddRecursive(logicTop);
 
-
       return activeState;
     }
-
-   
-   
   }
-
-
 }

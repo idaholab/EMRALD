@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Manual tests requiring human verification for UI behaviors and visual outputs that cannot be fully automated.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

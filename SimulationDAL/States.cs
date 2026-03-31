@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines the State class and its event/action associations within an EMRALD diagram.
 
 using System;
 using System.Collections.Generic;
@@ -21,11 +22,9 @@ namespace SimulationDAL
     protected Diagram _Diagram = null!;
     protected int _dfltStateValue; //[-1 = unknow, 0 = false, 1 = true]
     public int dfltStateValue { get { return _dfltStateValue; } }
-
-    //public readonly EnStateType stateType;
     public int eventCnt { get { return _events.Count; } }
 
-    public State()//Diagram inDiagram)
+    public State()
     {
       geometry = "";
 
@@ -243,45 +242,6 @@ namespace SimulationDAL
         }
       }
       
-
-      //Now done in LoadObjLinks()
-      ////load the Immediate Actions
-      //this._immediateActions.Clear();
-      //foreach (dynamic actName in dynObj.immediateActions)
-      //{
-      //  Action curAct = lists.allActions.FindByName(actName);
-      //  if (curAct == null)
-      //  {
-      //    throw new Exception("Deserialize State, failed to find immediateAction - " + actName);
-      //  }
-        
-      //  _immediateActions.Add(curAct);
-      //}
-
-      ////load the Event Items
-      //foreach (dynamic eventName in dynObj.events)
-      //{
-      //  Event curEv = lists.allEvents.FindByName(eventName);
-      //  if (curEv == null)
-      //  {
-      //    throw new Exception("Deserialize State, failed to find event - " + eventName);
-      //  }
-      //  _events.Add(curEv);
-      //}
-
-      ////load the Event Actions
-      //if (dynObj.eventActions != null)
-      //{
-      //  this._evActions.Clear();
-
-      //  foreach (dynamic curToObj in dynObj.eventActions)
-      //  {
-      //    ActionList curEvActList = new ActionList();
-      //    curEvActList.DeserializeJSON(curToObj, lists);
-      //    this._evActions.Add(curEvActList);
-      //  }
-      //}
-
       processed = true;
       return true;
     }

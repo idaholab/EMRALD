@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Interface defining callbacks for handling incoming XMPP messages, receipts, client connections, and disconnections.
 
 using Matrix;
 using Matrix.Xmpp.Base;

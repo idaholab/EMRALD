@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Helper that builds and returns the application IConfiguration from environment variables, AppSettings.json, and user secrets.
 
 using System;
 using System.Linq;

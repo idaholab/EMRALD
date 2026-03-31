@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Defines JSON-serializable run option classes including simulation settings, coupling configuration, and output parameters.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

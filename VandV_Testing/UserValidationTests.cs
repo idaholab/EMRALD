@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// User validation tests that run full simulation models and compare results against user-verified reference output files.
 
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
-﻿// Copyright 2021 Battelle Energy Alliance
+// Copyright 2021 Battelle Energy Alliance
+// Contains core enumerations, ID management, and the BaseObjInfo base class shared across all EMRALD simulation DAL types.
 
 using System;
 using System.Collections.Generic;
@@ -18,82 +19,198 @@ using NLog;
 
 namespace SimulationDAL
 {
-  //public delegate void AddObject(TEntity entity);
-  //public delegate bool ExecuteEvCallBack(int evID);
+  /// <summary>
+  /// Callback delegate used to log event messages from the simulation engine to the UI or log output.
+  /// </summary>
   public delegate void TLogEvCallBack(string text);
 
-  //[JsonConverter(typeof(StringEnumConverter))]
-  //public enum T3DPacketType { ptEvent = 0, ptAction = 1, ptRequest = 2, ptStillProcessing = 3, ptAck = 4 };
-  //[JsonConverter(typeof(StringEnumConverter))]
-  //public enum T3DEventType { etWaterContact = 0, etWaterSubmerge = 1, etTimer = 2, etSubSim = 3, etSimStarted = 4, etEndSim = 5 };
-  //[JsonConverter(typeof(StringEnumConverter))]
-  //public enum T3DActionType { atStartSim = 0, atPauseSim = 1, atCancelSim = 2, atContinue = 3, atTimer = 4, atReset = 5, atSetVal = 6 };
 
+  /// <summary>
+  /// Defines the types of events that can trigger state transitions in an EMRALD simulation.
+  /// </summary>
   [JsonConverter(typeof(StringEnumConverter))]
   public enum EnEventType
   {
-    et3dSimEv,// = 0, //event from a 3D simulation
-    etFailRate, //probabilistic failure rate - fails after a sampled time
-    etVarCond, //executes when the value of a variable meets a condition 
-    etStateCng, //executes when a different desired state\s are executed
+    /// <summary>Event triggered by an external 3D simulation.</summary>
+    et3dSimEv,
+    /// <summary>Probabilistic failure rate event; fails after a sampled time.</summary>
+    etFailRate,
+    /// <summary>Executes when the value of a variable meets a specified condition.</summary>
+    etVarCond,
+    /// <summary>Executes when a set of desired states have been entered.</summary>
+    etStateCng,
+    /// <summary>Logic tree of component boolean value evaluation.</summary>
     etComponentLogic,
+    /// <summary>Event triggered at a specific simulation time.</summary>
     etTimer,
-    etNormalDist, //time event following a normal distribution.
+    /// <summary>Deprecated: use Distribution with type instead.</summary>
+    etNormalDist,
+    /// <summary>Deprecated: use Distribution with type instead.</summary>
     etWeibullDist,
+    /// <summary>Deprecated: use Distribution with type instead.</summary>
     etExponentialDist,
+    /// <summary>Deprecated: use Distribution with type instead.</summary>
     etLogNormalDist,
+    /// <summary>Samples time-to-event from a specified statistical distribution.</summary>
     etDistribution
   };
 
   //public enum EnDiagramType { dtComponent = 0, dtSystem, dtPlant, dtOther };
-  public enum EnDiagramType2 { dtSingle = 0, dtMulti };
+  /// <summary>
+  /// Specifies whether a diagram allows a single active state or multiple simultaneous active states.
+  /// </summary>
+  public enum EnDiagramType2
+  {
+    /// <summary>Only one state can be active at a time in this diagram.</summary>
+    dtSingle = 0,
+    /// <summary>Multiple states can be active simultaneously in this diagram.</summary>
+    dtMulti
+  };
 
-  public enum EnStateType { stStart = 0, stStandard, stKeyState, stTerminal };
-  public enum EnActionType { atTransition = 0, atCngVarVal, at3DSimMsg, atRunExtApp, atCustomStateShift, atJumpToTime, atCngVarDll };
-  public enum EnModifiableTypes { mtNone = 0, mtVar, mtComp, mtState, mtExtEv };
-  public enum EnFailType { ftFailToStart = 0, ftFailToRun }
+  /// <summary>
+  /// Classifies the role of a state within an EMRALD diagram.
+  /// </summary>
+  public enum EnStateType
+  {
+    /// <summary>The initial entry state of a diagram.</summary>
+    stStart = 0,
+    /// <summary>A normal intermediate state.</summary>
+    stStandard,
+    /// <summary>A state that is tracked as a key outcome in simulation results.</summary>
+    stKeyState,
+    /// <summary>A terminal/absorbing state that ends the simulation path for a diagram.</summary>
+    stTerminal
+  };
 
+  /// <summary>
+  /// Specifies the type of action to perform when a state event fires.
+  /// </summary>
+  public enum EnActionType
+  {
+    /// <summary>Transition to another state.</summary>
+    atTransition = 0,
+    /// <summary>Change the value of a simulation variable.</summary>
+    atCngVarVal,
+    /// <summary>Send a message to an external 3D simulation.</summary>
+    at3DSimMsg,
+    /// <summary>Run an external application.</summary>
+    atRunExtApp,
+    /// <summary>Perform a custom state shift across one or more components.</summary>
+    atCustomStateShift,
+    /// <summary>Jump simulation time forward to a specific point.</summary>
+    atJumpToTime,
+    /// <summary>Change a variable value via a DLL callback.</summary>
+    atCngVarDll
+  };
+
+  /// <summary>
+  /// Identifies which type of modifiable model item is involved in an operation.
+  /// </summary>
+  public enum EnModifiableTypes
+  {
+    /// <summary>No modifiable type specified.</summary>
+    mtNone = 0,
+    /// <summary>A simulation variable.</summary>
+    mtVar,
+    /// <summary>A component (diagram).</summary>
+    mtComp,
+    /// <summary>A state within a diagram.</summary>
+    mtState,
+    /// <summary>An external event source.</summary>
+    mtExtEv
+  };
+
+  /// <summary>
+  /// Describes how a component failure mode is classified.
+  /// </summary>
+  public enum EnFailType
+  {
+    /// <summary>The component fails to start when demanded.</summary>
+    ftFailToStart = 0,
+    /// <summary>The component fails while it is running.</summary>
+    ftFailToRun
+  }
+
+  /// <summary>
+  /// Time units used to express simulation time values and rates.
+  /// </summary>
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum EnTimeRate { trYears, trDays, trHours, trMinutes, trSeconds}
+  public enum EnTimeRate
+  {
+    /// <summary>Time expressed in years.</summary>
+    trYears,
+    /// <summary>Time expressed in days.</summary>
+    trDays,
+    /// <summary>Time expressed in hours.</summary>
+    trHours,
+    /// <summary>Time expressed in minutes.</summary>
+    trMinutes,
+    /// <summary>Time expressed in seconds.</summary>
+    trSeconds
+  }
 
+  /// <summary>
+  /// Identifies the category of a model object for use in ID management and bit-array tracking.
+  /// </summary>
   [JsonConverter(typeof(StringEnumConverter))]
-  public enum EnIDTypes { itVar = 0, itComp, itState, itEvent, itAction, itTreeNode, itTimer, itDiagram, itExtSim };
-  public enum EnDistType { dtNormal, dtWeibull, dtExponential, dtLogNormal, dtUniform, dtTriangular, dtGamma, dtGompertz};
-  //public class ModelTypesInfo
-  //{
-  //  //private static readonly string[] EnDiagramTypeName = { "Component", "System", "Plant Response", "Other" };
-  //  //private static readonly string[] EnDiagramTypeDesc = {
-  //  //  "Models a specific component and it's failure methods. (Single active state)",
-  //  //  "Should model and evaluate a defined logic. (single active state)",
-  //  //  "Models sequences and scenarios of concern with key end states. (multiple active states)" ,
-  //  //  "Other" };
+  public enum EnIDTypes
+  {
+    /// <summary>A simulation variable.</summary>
+    itVar = 0,
+    /// <summary>A component (diagram).</summary>
+    itComp,
+    /// <summary>A state within a diagram.</summary>
+    itState,
+    /// <summary>An event definition.</summary>
+    itEvent,
+    /// <summary>An action definition.</summary>
+    itAction,
+    /// <summary>A logic tree node.</summary>
+    itTreeNode,
+    /// <summary>A timer instance.</summary>
+    itTimer,
+    /// <summary>A diagram.</summary>
+    itDiagram,
+    /// <summary>An external simulation resource.</summary>
+    itExtSim
+  };
 
-  //  //private static readonly string[] EnActionTypeName = { "Transition", "Change Var Value", "External Sim msg"};
-  //  //private static readonly string[] EnActionTypeDesc = {
-  //  //  "Move from the current state to new one or add a new state to the active ones.",
-  //  //  "Evaluate a script and change the value of a the assigned variable to the result.",
-  //  //  "Send a message to and external simulation."};
+  /// <summary>
+  /// Statistical distribution types available for sampling time-to-event values.
+  /// </summary>
+  public enum EnDistType
+  {
+    /// <summary>Normal (Gaussian) distribution.</summary>
+    dtNormal,
+    /// <summary>Weibull distribution.</summary>
+    dtWeibull,
+    /// <summary>Exponential distribution.</summary>
+    dtExponential,
+    /// <summary>Log-normal distribution.</summary>
+    dtLogNormal,
+    /// <summary>Uniform distribution.</summary>
+    dtUniform,
+    /// <summary>Triangular distribution.</summary>
+    dtTriangular,
+    /// <summary>Gamma distribution.</summary>
+    dtGamma,
+    /// <summary>Gompertz distribution.</summary>
+    dtGompertz
+  };
 
-  //  //private static readonly string[] EnEventTypeName = { "Ext Simulation Ev", "Failure Rate Ev", "Variable Condition", "State Change", "Component Logic", "Timer" };
-  //  //private static readonly string[] EnEventTypeDesc = {
-  //  //  "Event tied to external simulation event.",
-  //  //  "Event with a failure rate that sampled and then triggers it according to the next sampled time.",
-  //  //  "Executes if evaluation of a variable meets a specified condition.",
-  //  //  "Executes if a specified state is entered or exited.",
-  //  //  "Executes if evaluate a set of logic from component states is equal to specified boolean value.",
-  //  //  "Executes at a specified simulation time."
-  //  //};
+  /// <summary>
+  /// Enumerates the types of issues or patterns that can be scanned for across model item lists.
+  /// </summary>
+  public enum ScanForTypes
+  {
+    /// <summary>Scan for variables or references that may cause multi-threading race conditions.</summary>
+    sfMultiThreadIssues = 0
+  };
 
-
-  //  //public static string DiagramTypeName(EnDiagramType dType) {return EnDiagramTypeName[(int)dType];}
-  //  //public static string DiagramTypeDesc(EnDiagramType dType) { return EnDiagramTypeName[(int)dType]; }
-  //  //public static string ActionTypeName(EnActionType dType) { return EnActionTypeName[(int)dType]; }
-  //  //public static string ActionTypeDesc(EnActionType dType) { return EnActionTypeName[(int)dType]; }
-  //  //public static string EventTypeName(EnEventType dType) { return EnActionTypeName[(int)dType]; }
-  //  //public static string EventTypeDesc(EnEventType dType) { return EnActionTypeName[(int)dType]; }
-  //}
-  public enum ScanForTypes { sfMultiThreadIssues = 0};
-
+  /// <summary>
+  /// Holds global simulation configuration values such as thread count, random seed, and debug log settings,
+  /// typically sourced from command-line arguments or application configuration.
+  /// </summary>
   public static class ConfigData
   {
     static public int? threads = null;
@@ -103,7 +220,11 @@ namespace SimulationDAL
     static public int? debugRunEnd = null;
   }
 
-    public class DBModified
+  /// <summary>
+  /// Base class for tracking whether a model item's core data or its links to other objects
+  /// have been modified and need to be persisted.
+  /// </summary>
+  public class DBModified
   {
     protected bool _itemModified = true;
     protected bool _linksModified = true;
@@ -112,6 +233,10 @@ namespace SimulationDAL
     public bool linksModified { get { return _linksModified; } set { _linksModified = value; } }
   }
 
+  /// <summary>
+  /// Lightweight pair associating an integer index with a string value,
+  /// used for indexed lookups where both a numeric key and a label are needed.
+  /// </summary>
   public class IdxAndStr
   {
     public int idx;
@@ -123,7 +248,12 @@ namespace SimulationDAL
       str = inStr;
     }
   }
-    
+
+  /// <summary>
+  /// Abstract base class for all named model objects in the EMRALD simulation DAL.
+  /// Provides a local integer ID, name, description, and common JSON serialization
+  /// and deserialization methods inherited by all diagram, state, event, action, and variable types.
+  /// </summary>
   public abstract class BaseObjInfo// : IDBMinimumInfo
   {
     protected int _id; //ids are local only, to be used for lookups where names can't be used like bitsets
@@ -133,11 +263,6 @@ namespace SimulationDAL
     public string desc { get; set; } = "";
     public bool processed = false;
 
-
-    //public abstract bool LoadLinks(LookupLists list);
-    //public abstract bool SavePrep(LookupLists lists);
-    //public abstract bool SaveLinks(LookupLists lists);
-    //public abstract bool DeleteFromDB(LookupLists lists);
 
     public virtual string GetJSON(bool incBrackets, EmraldModel lists)
     {
@@ -177,7 +302,7 @@ namespace SimulationDAL
     public virtual bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
       if (wrapped)
-        throw new Exception("Deserialize of base object cannot be wrapped in an object."); //base class does not know how to handle 
+        throw new Exception("Deserialize of base object cannot be wrapped in an object."); //base class does not know how to handle
 
       dynamic dynObj = (dynamic)obj;
       if (String.IsNullOrEmpty((string)dynObj.name) && (name == ""))
@@ -203,14 +328,13 @@ namespace SimulationDAL
   }
 
 
+  /// <summary>
+  /// Interface implemented by all typed model-item list containers (e.g., AllDiagrams, AllStates).
+  /// Provides a consistent contract for JSON serialization, deserialization, link loading,
+  /// processed-flag management, and model scanning.
+  /// </summary>
   public interface ModelItemLists
   {
-    //void DeleteAll();
-    //bool SaveItemsPrep(LookupLists lists);
-    //bool RemoveDeletedFromDB(LookupLists lists);
-    //void SaveDone();
-    //void LoadFromDB();
-    //bool LoadLinks(LookupLists lists);  //after loading all objects from the DB load the reference links or bridge items
     string GetJSON(bool incBrackets, EmraldModel lists);
     void DeserializeJSON(object obj, EmraldModel lists, bool useGivenIDs);
     bool LoadLinks(object obj, EmraldModel lists); //load any links to other objects after initial lists are loaded.
@@ -222,15 +346,15 @@ namespace SimulationDAL
     /// <param name="scanType">What is being looked for</param>
     /// <returns></returns>
     List<ScanForReturnItem> ScanFor(ScanForTypes scanType, EmraldModel model);
-    
-
-    //void LoadIfNot();
   }
 
 
+  /// <summary>
+  /// Provides globally shared simulation constants and utility methods including time-span
+  /// conversions, failure-type lists, and event-class-to-enum mapping.
+  /// </summary>
   public static class Globals
   {
-    //public static int simID = 1;
     public static TimeSpan NowTimeSpan = new TimeSpan();
     public static TimeSpan SecondTimeSpan = new TimeSpan(0, 0, 1);
     public static TimeSpan MinTimeSpan = new TimeSpan(0, 1, 0);
@@ -293,27 +417,36 @@ namespace SimulationDAL
 
     public static double ConvertToNewTimeSpan(EnTimeRate fromTimeRate, double number, EnTimeRate toTimeRate)
     {
-      TimeSpan asTS;
+      double totalDays;
+
       switch (fromTimeRate)
       {
         case EnTimeRate.trYears:
-          asTS = TimeSpan.FromDays(number * 365);
+          totalDays = number * 365.0;
           break;
         case EnTimeRate.trDays:
-          asTS = TimeSpan.FromDays(number);
+          totalDays = number;
           break;
         case EnTimeRate.trHours:
-          asTS = TimeSpan.FromHours(number);
+          totalDays = number / 24.0;
           break;
         case EnTimeRate.trMinutes:
-          asTS = TimeSpan.FromMinutes(number);
+          totalDays = number / 1440.0;
           break;
         case EnTimeRate.trSeconds:
-          asTS = TimeSpan.FromSeconds(number);
+          totalDays = number / 86400.0;
           break;
         default:
           throw new Exception("Invalid time rate");
       }
+
+      // make sure not over max
+      if (totalDays > TimeSpan.MaxValue.TotalDays)
+        totalDays = TimeSpan.MaxValue.TotalDays;
+      else if (totalDays < TimeSpan.MinValue.TotalDays)
+        totalDays = TimeSpan.MinValue.TotalDays;
+
+      TimeSpan asTS = TimeSpan.FromDays(totalDays);
 
       switch (toTimeRate)
       {
@@ -333,34 +466,26 @@ namespace SimulationDAL
     }
   }
 
+  /// <summary>
+  /// Holds constant collections used throughout the simulation, such as the set of
+  /// event types that represent conditional (non-time-sampled) triggers.
+  /// </summary>
   public static class Constants
   {
-    public static List<EnEventType> CondEventTypes = new List<EnEventType> 
-    { 
-      EnEventType.et3dSimEv, 
-      EnEventType.etVarCond, 
-      EnEventType.etStateCng, 
-      EnEventType.etComponentLogic 
+    public static List<EnEventType> CondEventTypes = new List<EnEventType>
+    {
+      EnEventType.et3dSimEv,
+      EnEventType.etVarCond,
+      EnEventType.etStateCng,
+      EnEventType.etComponentLogic
     };
-
-    //public List<int> CondEventTypes = new List<int> 
-    //{ 
-    //  (int)EnEventType.et3dSimEv, 
-    //  (int)EnEventType.etVarCond, 
-    //  (int)EnEventType.etStateCng, 
-    //  (int)EnEventType.etStateLogic 
-    //};
-
-    //public bool IsCondEventType(EnEventType etType)
-    //{
-    //  return (etType == EnEventType.et3dSimEv) ||
-    //         (etType == EnEventType.etVarCond) ||
-    //         (etType == EnEventType.etStateCng) ||
-    //         (etType == EnEventType.etStateLogic);
-
-    //}
   }
 
+  /// <summary>
+  /// Thread-safe random number generator that provides a per-execution-context <see cref="Random"/> instance.
+  /// Supports optional seeding via <see cref="ConfigData.seed"/> for reproducible simulation runs.
+  /// Uses <see cref="AsyncLocal{T}"/> so the same RNG flows across async/await continuations.
+  /// </summary>
   public class SingleRandom : Random
   {
     // Use AsyncLocal so the same RNG instance flows across async/await continuations,
@@ -405,6 +530,11 @@ namespace SimulationDAL
   }
 
 
+  /// <summary>
+  /// Singleton that accumulates optional diagnostic statistics during a simulation run,
+  /// including initiating event times, component failure counts, and total sample count.
+  /// Statistics collection is disabled by default and activated via <see cref="logStats"/>.
+  /// </summary>
   public class Stats
   {
     public bool logStats = false;
@@ -419,87 +549,11 @@ namespace SimulationDAL
     private Stats() { }
   }
 
-  //public class DBLoad : SimRunnerEntities
-  //{
-  //  static string _dbName = null;
-  //  static DBLoad _Instance;
-  //  static Dictionary<int, int> _ordToStateType;
-  //  static Dictionary<int, int> _ordToVarScopeType;
-
-  //  public static void SetDBName(string dbName)
-  //  {
-  //    _dbName = dbName.Replace(' ', '_');
-  //  }
-
-  //  private DBLoad() : base() 
-  //  {
-  //    //_dbName = dbName;
-  //  }
-
-  //  private DBLoad(string connStr) : base(connStr) { }
-
-  //  public static DBLoad Instance
-  //  {
-  //    get
-  //    {
-  //      if (_Instance == null)
-  //      {
-  //        string connStr = null;
-
-  //        //if (!localDB)
-  //        //{ 
-  //          connStr = System.Configuration.ConfigurationManager.ConnectionStrings["SimRunnerEntities"].ConnectionString;
-  //          try
-  //          {
-  //            //NOTE: comment this line out. Switching between connection is done in the app/web config file.
-  //            //string connStrTest = System.Configuration.ConfigurationManager.ConnectionStrings["SimRunnerEntitiesTest"].ConnectionString;
-  //            EntityConnectionStringBuilder ECSB = new EntityConnectionStringBuilder(connStr);
-  //            using (SqlConnection conn = new SqlConnection(ECSB.ProviderConnectionString))
-  //            {
-  //              conn.Open(); // throws if invalid
-  //              conn.Close();
-  //            }
-  //          }
-  //          catch (Exception ex)
-  //          {
-  //            //localDB = true;
-  //            throw ex;
-  //          }
-
-
-  //        //_Instance = new DBLoad();
-  //        _Instance = new DBLoad(connStr);
-  //      } //      
-
-
-  //      if (_ordToStateType == null)
-  //      {
-  //        _ordToStateType = new Dictionary<int, int>();
-  //        foreach (rStateType curState in _Instance.rStateTypes)
-  //        {
-  //          _ordToStateType.Add(curState.EnumVal, curState.StateType_ID);
-  //        }
-  //      }
-
-  //      if (_ordToVarScopeType == null)
-  //      {
-  //        _ordToVarScopeType = new Dictionary<int, int>();
-  //        foreach (rScopeType curState in _Instance.rScopeTypes)
-  //        {
-  //          _ordToVarScopeType.Add(curState.EnumVal, curState.ScopeType_ID);
-  //        }
-  //      }
-
-  //      return _Instance;
-  //    }
-  //  }
-
-  //  public static void ResetInstance()
-  //  {
-  //    _Instance = null;
-  //  }
-  //}
-
+  /// <summary>
+  /// Thread-local singleton that dispenses monotonically increasing integer IDs for each
+  /// <see cref="EnIDTypes"/> category. Keeping IDs per-thread ensures that parallel simulation
+  /// runs do not share or collide on ID sequences.
+  /// </summary>
   public class SingleNextIDs
   {
     private int[] curMaxID = null!;
@@ -554,11 +608,15 @@ namespace SimulationDAL
 
 
 
+  /// <summary>
+  /// Associates an event with the set of states that reference it and the corresponding
+  /// action lists to execute when the event fires in each of those states.
+  /// </summary>
   public class EventStatesAndActions
   {
     public readonly Dictionary<int, ActionList> statesAndActions = new Dictionary<int, ActionList>();
     public readonly int eventID;
-    
+
 
     public EventStatesAndActions(int evID, int stID, ActionList inActions)
     {
@@ -570,19 +628,10 @@ namespace SimulationDAL
       this.eventID = evID;
     }
 
-    //public StEvKey(List<int> stIDs, int evID, ActionList inActions)
-    //{
-    //  this.stateIDs = stIDs;
-    //  this.eventID = evID;
-    //  this.actions = inActions;
-    //}
-
     public void AddStateEv(int stID, ActionList inActions)
     {
       if (!statesAndActions.ContainsKey(stID))
         this.statesAndActions.Add(stID, inActions);
-      //else
-      //  throw new Exception("Already has state ID " + stID.ToString() + " In the list");
     }
 
     public void RemoveStateActions(int stID)
@@ -592,6 +641,10 @@ namespace SimulationDAL
     }
   }
 
+  /// <summary>
+  /// Extension methods for <see cref="JToken"/> and <see cref="JObject"/> that add
+  /// in-place value replacement by JSONPath expression.
+  /// </summary>
   public static class JsonExtensions
   {
     public static JObject ReplacePath<T>(this JToken root, string path, T newValue)
@@ -631,6 +684,11 @@ namespace SimulationDAL
     }
   }
 
+  /// <summary>
+  /// Static utility class providing cross-platform file and directory path helpers,
+  /// file-path reference scanning and replacement within script strings, and
+  /// directory copy operations used throughout the EMRALD simulation toolchain.
+  /// </summary>
   public class CommonFunctions
   {
     /// <summary>
@@ -698,10 +756,10 @@ namespace SimulationDAL
     {
       // Define a regular expression pattern to match file paths, including paths separated by spaces
       string pattern = @"(?<![:\/])(?:""((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+)""|((?:[a-zA-Z]:\\|(?:\.\.\/)|(?:\.\.\\))(?:[\w\.-]+?[\\\/])*[\w\.-]+))(?=\s|$|(?=""))";
-      
-      //doesn't get items with a space in the string and adds extra stuff if is escaped for code in a script 
+
+      //doesn't get items with a space in the string and adds extra stuff if is escaped for code in a script
       //string pattern = @"(?:(?:[a-zA-Z]:)?[\\/]|\.{1,2}[\\/])(?:[^\s\\/]+[\\/]?)+";
-            
+
       //doesn't get multiple items in a script string because it has quotes
 //      string pattern = @"
 //(?:
@@ -918,27 +976,37 @@ namespace SimulationDAL
 
   }
 
+  /// <summary>
+  /// Stores the list of file references that must be copied when distributing a simulation
+  /// model for multi-threaded execution, along with the timestamp of when the list was last assigned.
+  /// </summary>
   public class MultiThreadInfo
   {
     public List<ToCopyForRef> ToCopyForRefs { get; set; }
     public DateTime AssignedTime { get; set; } //if assigned time is earlier than the model modified then we need to re-evaluate the ToCopyForRefs
-    public MultiThreadInfo() 
+    public MultiThreadInfo()
     {
       ToCopyForRefs = new List<ToCopyForRef>();
       AssignedTime = DateTime.Now;
     }
   }
 
+  /// <summary>
+  /// Describes a single file or directory reference within a model item that must be copied
+  /// and re-pathed when the model is distributed for multi-threaded or remote execution.
+  /// Includes the item name, its type, the original reference path, files to copy, and
+  /// the adjusted relative path to use in the copied model.
+  /// </summary>
   public class ToCopyForRef
   {
     public string ItemName { get; set; } = "";
     [JsonConverter(typeof(StringEnumConverter))]
     public EnIDTypes ItemType { get; set; }  //type of item reference is in
     public string RefPath { get; set; } = ""; //reference string in the item
-    public List<string>? ToCopy { get; set; } //list if items to copy, path is relative to the EMRALD model 
+    public List<string>? ToCopy { get; set; } //list if items to copy, path is relative to the EMRALD model
     public string RelPath { get; set; } = ""; //relative path to replace RefPath in the model
-    public string AdjRelRoot { get; set; } = ""; //if the relative path (RelPath) is not relative to the model location but another loc this is the adjustment. example would be an RunExe where the paths are relative to the exe location. 
-    
+    public string AdjRelRoot { get; set; } = ""; //if the relative path (RelPath) is not relative to the model location but another loc this is the adjustment. example would be an RunExe where the paths are relative to the exe location.
+
 
     //[JsonIgnore]
     // Constructor to initialize all properties
@@ -958,19 +1026,6 @@ namespace SimulationDAL
 
       RelPath = relPath;
     }
-
-    //[JsonIgnore]
-    //public EnIDTypes GetEnumType()
-    //{
-    //  foreach (EnIDTypes type in Enum.GetValues(typeof(EnIDTypes)))
-    //  {
-    //    if (type.ToString().Substring(2).Equals(this.ItemType, StringComparison.OrdinalIgnoreCase))
-    //    {
-    //      return type;
-    //    }
-    //  }
-    //  throw new ArgumentException($"Invalid item type string: {this.ItemType}");
-    //}
   }
 
   /// <summary>
@@ -982,7 +1037,7 @@ namespace SimulationDAL
     public string itemName { get; set; }
     public EnIDTypes itemType { get; set; }
     public string msg { get; set; }
-    
+
     // Constructor
     public ScanForReturnItem(
         int itemId,
@@ -998,6 +1053,11 @@ namespace SimulationDAL
 
   }
 
+  /// <summary>
+  /// Extends <see cref="ScanForReturnItem"/> with a file path reference and copy metadata,
+  /// used when a scan identifies an external file reference that may need to be relocated
+  /// when the model is saved to a new location or distributed for parallel execution.
+  /// </summary>
   public class ScanForRefsItem : ScanForReturnItem
   {
     public string Path { get; set; }

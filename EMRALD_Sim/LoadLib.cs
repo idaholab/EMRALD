@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Provides methods to load and validate EMRALD model files from disk into an EmraldModel instance.
 
 using System;
 using System.Collections.Generic;

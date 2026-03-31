@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Implements IAppSettingsService to retrieve XMPP server settings such as the license key from application configuration.
 
 using Microsoft.Extensions.Configuration;
 

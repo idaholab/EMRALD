@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines the Diagram and AllDiagrams classes that represent state-machine diagrams within an EMRALD simulation model.
 
 using System;
 using System.Collections.Generic;
@@ -21,14 +22,11 @@ namespace SimulationDAL
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itDiagram);
       this.diagType = inDiagType;
       this._States = new Dictionary<int, State>();
-      //_Sim = inSim;
     }
 
     public Diagram(string inName, EnDiagramType2 inDiagType)
     {
       this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itDiagram);
-
-      //this._Sim = inSim;
       this.diagType = inDiagType;
       this.name = inName;
       this._States = new Dictionary<int, State>();
@@ -62,9 +60,6 @@ namespace SimulationDAL
 
     public override string GetJSON(bool incBrackets, EmraldModel lists)
     {
-      //EnDiagramType enumTest = (EnDiagramType)Enum.Parse(typeof(EnDiagramType), "dtComponent", true);
-
-
       string retStr = "";
       if (incBrackets)
       {
@@ -99,42 +94,6 @@ namespace SimulationDAL
       return retStr;
     }
 
-    //public override string GetJSONExpanded(bool incBrackets, LookupLists lists, bool includeIDs = true)
-    //{
-    //  string retStr = "";
-    //  if (incBrackets)
-    //  {
-    //    retStr = "{";
-    //  }
-    //  retStr = retStr + "\"Diagram\": {" + Environment.NewLine + base.GetJSON(false, lists,);
-    //  retStr = retStr + "," + Environment.NewLine + "\"diagramType\": \"" + diagType.ToString() + "\"";
-    //  retStr = retStr + "," + Environment.NewLine + "\"states\": [";
-
-    //  StateSort sorter = new StateSort();
-    //  _States.Sort(sorter);
-    //  //foreach (State curSt in this._States)
-    //  for (int i = 0; i < this._States.Count; ++i)
-    //  {
-    //    retStr = retStr + Environment.NewLine + this._States[i].GetJSON(true, lists);
-        
-
-    //    if (i < this._States.Count - 1)
-    //    {
-    //      retStr = retStr + "," + Environment.NewLine;
-    //    }
-    //  }
-
-    //  retStr = retStr + "]" + Environment.NewLine;
-    //  retStr = retStr + GetDerivedJSON(lists) + Environment.NewLine + "}";
-
-    //  if (incBrackets)
-    //  {
-    //    retStr = retStr + Environment.NewLine + "}";
-    //  }
-
-    //  return retStr;
-    //}
-
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
       dynamic dynObj = (dynamic)obj;
@@ -155,24 +114,6 @@ namespace SimulationDAL
         throw new Exception("Diagram types do not match, cannot change the type once an item is created!");
 
       lists.allDiagrams.Add(this);
-
-      //Done in LoadObjLinks()
-      ////load the Event Items
-      //if (dynObj.states != null)
-      //{
-      //  this._States.Clear();
-
-      //  foreach (dynamic stateName in dynObj.states)
-      //  {
-      //    State curState = lists.allStates.FindByName(stateName);
-      //    if (curState == null)
-      //    {
-      //      throw new Exception("Failed to find State - " + stateName);
-      //    }
-          
-      //    this.AddState(curState);
-      //  }
-      //}
 
       processed = true;
       return true;
@@ -471,14 +412,6 @@ namespace SimulationDAL
           return null!;
       }      
 
-      //Diagram diag = null;
-      //if (nameToID.ContainsKey(name))
-      //{
-      //  var dId = nameToID[name];
-      //  if (this.ContainsKey(dId))
-      //    diag = this[dId];
-      //}
-      //return diag;
     }
 
     public string GetJSON(bool incBrackets, EmraldModel lists)
@@ -518,12 +451,6 @@ namespace SimulationDAL
 
     public void DeserializeJSON(object obj, EmraldModel lists, bool useGivenIDs)
     {
-      //dynamic dynObj = (dynamic)obj;
-      //dynObj = ((dynamic)obj).Diagram;
-
-      //if (!string.IsNullOrEmpty(jsonListString))
-      //{
-
       var dynamicObj = (dynamic)obj;//Json.Decode(jsonListString);
       string curName = "";
       try

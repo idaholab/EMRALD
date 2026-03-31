@@ -1,4 +1,5 @@
 // Copyright 2021 Battelle Energy Alliance
+// System and regression tests for the EMRALD simulation engine covering core behaviors such as system variables and run execution.
 
 using System;
 using System.Collections.Generic;
