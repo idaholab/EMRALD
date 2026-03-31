@@ -137,34 +137,30 @@ export const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     setHasError(false);
     setAlertMessage('');
     if (model) {
-      const reader = new FileReader();
-      reader.addEventListener('load', e => {
-        const content = e.target?.result as string;
-        try {
-          const parsedContent = JSON.parse(content) as EMRALD_Model;
-          const importedModel = parsedContent.emraldVersion
-            ? parsedContent
-            : upgradeModel(content);
-          if (
-            importedModel
-            && importedModel.DiagramList.length === 1
-            && formWindowId
-          ) {
-            importedModel.id = uuidv4();
-            importedModel.name = importedModel.DiagramList[0]?.name;
-            setImportDiagram(importedModel);
-          } else {
-            setHasError(true);
-            setAlertMessage(
-              'The imported item is not a valid EMRALD model or contains multiple diagrams.',
-            );
-            setImportDiagram(undefined);
-          }
-        } catch {
-          console.error('Invalid JSON format');
+      const content = await model.text();
+      try {
+        const parsedContent = JSON.parse(content) as EMRALD_Model;
+        const importedModel = parsedContent.emraldVersion
+          ? parsedContent
+          : upgradeModel(content);
+        if (
+          importedModel
+          && importedModel.DiagramList.length === 1
+          && formWindowId
+        ) {
+          importedModel.id = uuidv4();
+          importedModel.name = importedModel.DiagramList[0]?.name;
+          setImportDiagram(importedModel);
+        } else {
+          setHasError(true);
+          setAlertMessage(
+            'The imported item is not a valid EMRALD model or contains multiple diagrams.',
+          );
+          setImportDiagram(undefined);
         }
-      });
-      await model.text();
+      } catch {
+        console.error('Invalid JSON format');
+      }
     }
 
     setSelectedTemplate(undefined);

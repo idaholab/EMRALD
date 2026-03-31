@@ -37,37 +37,29 @@ export const projectOptions = {
       if (setFileName) {
         setFileName(fileName);
       }
-      // Create a FileReader to read the file content
-      const reader = new FileReader();
-      reader.addEventListener('load', e => {
-        const content = e.target?.result as string; // Get the file content as a string
 
-        try {
-          const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (
-            !Object.prototype.hasOwnProperty.call(
-              parsedContent,
-              'emraldVersion',
-            )
-            || parsedContent.emraldVersion < EMRALD_SchemaVersion
-          ) {
-            const upgradedModel = upgradeModel(content);
-            if (upgradedModel) {
-              upgradedModel.id = uuidv4();
-              populateNewData(upgradedModel);
-            }
-          } else {
-            populateNewData(parsedContent);
+      const content = await selectedFile.text(); // Read the file as text
+      try {
+        const parsedContent = JSON.parse(content) as EMRALD_Model;
+        if (
+          !Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
+          || parsedContent.emraldVersion < EMRALD_SchemaVersion
+        ) {
+          const upgradedModel = upgradeModel(content);
+          if (upgradedModel) {
+            upgradedModel.id = uuidv4();
+            populateNewData(upgradedModel);
           }
-        } catch (error) {
-          console.error('Invalid JSON format');
-          console.error(error);
-          if (handleModelError) {
-            handleModelError((error as Error).message);
-          }
+        } else {
+          populateNewData(parsedContent);
         }
-      });
-      await selectedFile.text(); // Read the file as text
+      } catch (error) {
+        console.error('Invalid JSON format');
+        console.error(error);
+        if (handleModelError) {
+          handleModelError((error as Error).message);
+        }
+      }
     };
 
     // Add an event listener for when a file is selected
@@ -102,32 +94,27 @@ export const projectOptions = {
         return; // If no file is selected, exit
       }
 
-      // Create a FileReader to read the file content
-      const reader = new FileReader();
-      reader.addEventListener('load', e => {
-        const content = e.target?.result as string; // Get the file content as a string
-        // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
-        try {
-          const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (
-            Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
-          ) {
-            mergeNewData(parsedContent);
-          } else {
-            const upgradedModel = upgradeModel(content);
-            if (upgradedModel) {
-              upgradedModel.id = uuidv4();
-              mergeNewData(upgradedModel);
-            }
-          }
-        } catch (error) {
-          console.error('Invalid JSON format');
-          if (handleModelError) {
-            handleModelError((error as Error).message);
+      const content = await selectedFile.text(); // Read the file as text
+      // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+      try {
+        const parsedContent = JSON.parse(content) as EMRALD_Model;
+        if (
+          Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
+        ) {
+          mergeNewData(parsedContent);
+        } else {
+          const upgradedModel = upgradeModel(content);
+          if (upgradedModel) {
+            upgradedModel.id = uuidv4();
+            mergeNewData(upgradedModel);
           }
         }
-      });
-      await selectedFile.text(); // Read the file as text
+      } catch (error) {
+        console.error('Invalid JSON format');
+        if (handleModelError) {
+          handleModelError((error as Error).message);
+        }
+      }
     };
 
     // Add an event listener for when a file is selected
@@ -201,36 +188,31 @@ export const projectOptions = {
         return; // If no file is selected, exit
       }
 
-      // Create a FileReader to read the file content
-      const reader = new FileReader();
-      reader.addEventListener('load', e => {
-        const content = e.target?.result as string; // Get the file content as a string
-        // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
-        try {
-          const parsedContent = JSON.parse(content) as TimelineOptions;
-          parsedContent.name = selectedFile.name;
-          // TODO - Opening a results file with a different results file already open displays the same file in both windows
-          addWindow(
-            `${parsedContent.name} - Results View`,
-            <div
-              style={{
-                width: '100%',
-                height: '100%',
-                position: 'relative',
-              }}
-            >
-              <SankeyTimelineDiagram data={parsedContent} />
-            </div>,
-          );
-        } catch (error) {
-          console.error('Invalid JSON format or other error:', error);
-          if (handleModelError) {
-            handleModelError((error as Error).message);
-          }
+      const content = await selectedFile.text(); // Read the file as text
+      // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+      try {
+        const parsedContent = JSON.parse(content) as TimelineOptions;
+        console.log(parsedContent);
+        parsedContent.name = selectedFile.name;
+        // TODO - Opening a results file with a different results file already open displays the same file in both windows
+        addWindow(
+          `${parsedContent.name} - Results View`,
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              position: 'relative',
+            }}
+          >
+            <SankeyTimelineDiagram data={parsedContent} />
+          </div>,
+        );
+      } catch (error) {
+        console.error('Invalid JSON format or other error:', error);
+        if (handleModelError) {
+          handleModelError((error as Error).message);
         }
-        // You can now work with the JSON content here
-      });
-      await selectedFile.text(); // Read the file as text
+      }
     };
 
     // Add an event listener for when a file is selected
@@ -273,34 +255,29 @@ export const projectOptions = {
         return; // If no file is selected, exit
       }
 
-      // Create a FileReader to read the file content
-      const reader = new FileReader();
-      reader.addEventListener('load', e => {
-        const content = e.target?.result as string; // Get the file content as a string
-        // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
-        try {
-          const parsedContent = JSON.parse(content) as EMRALD_Model;
-          if (
-            Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
-          ) {
-            compareData(parsedContent);
-          } else {
-            const upgradedModel = upgradeModel(content);
-            if (upgradedModel) {
-              upgradedModel.id = uuidv4();
-              compareData(upgradedModel);
-            }
-          }
-        } catch (error) {
-          console.error('Invalid JSON format');
-          if (handleModelError) {
-            handleModelError((error as Error).message);
+      const content = await selectedFile.text(); // Read the file as text
+      // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
+      try {
+        const parsedContent = JSON.parse(content) as EMRALD_Model;
+        if (
+          Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
+        ) {
+          compareData(parsedContent);
+        } else {
+          const upgradedModel = upgradeModel(content);
+          if (upgradedModel) {
+            upgradedModel.id = uuidv4();
+            compareData(upgradedModel);
           }
         }
-        fileInput.remove();
-        inputLabel.remove();
-      });
-      await selectedFile.text(); // Read the file as text
+      } catch (error) {
+        console.error('Invalid JSON format');
+        if (handleModelError) {
+          handleModelError((error as Error).message);
+        }
+      }
+      fileInput.remove();
+      inputLabel.remove();
     };
 
     // Add an event listener for when a file is selected
@@ -339,31 +316,26 @@ export const templateSubMenuOptions = {
         return; // If no file is selected, exit
       }
 
-      // Create a FileReader to read the file content
-      const reader = new FileReader();
-      reader.addEventListener('load', e => {
-        const content = e.target?.result as string; // Get the file content as a string
-        try {
-          const parsedContent = JSON.parse(content) as EMRALD_Model[];
-          for (const model of parsedContent) {
-            if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
-              mergeTemplateToList(model);
-            } else {
-              const upgradedModel = upgradeModel(JSON.stringify(model));
-              if (upgradedModel) {
-                upgradedModel.id = uuidv4();
-                mergeTemplateToList(upgradedModel);
-              }
+      const content = await selectedFile.text(); // Read the file as text
+      try {
+        const parsedContent = JSON.parse(content) as EMRALD_Model[];
+        for (const model of parsedContent) {
+          if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
+            mergeTemplateToList(model);
+          } else {
+            const upgradedModel = upgradeModel(JSON.stringify(model));
+            if (upgradedModel) {
+              upgradedModel.id = uuidv4();
+              mergeTemplateToList(upgradedModel);
             }
           }
-        } catch (error) {
-          console.error('Invalid JSON format');
-          if (handleModelError) {
-            handleModelError((error as Error).message);
-          }
         }
-      });
-      await selectedFile.text(); // Read the file as text
+      } catch (error) {
+        console.error('Invalid JSON format');
+        if (handleModelError) {
+          handleModelError((error as Error).message);
+        }
+      }
     };
 
     // Add an event listener for when a file is selected
