@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Implements the ISimMessaging interface over WebSocket to couple EMRALD with external simulation applications.
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;

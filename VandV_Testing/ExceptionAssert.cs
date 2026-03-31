@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Provides test assertion helpers for verifying that expected exceptions are thrown with correct type and message.
 
 using System;
 using Xunit;

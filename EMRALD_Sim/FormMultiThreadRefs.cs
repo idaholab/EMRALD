@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Form for reviewing and editing multi-thread reference paths used when distributing an EMRALD simulation across threads.
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

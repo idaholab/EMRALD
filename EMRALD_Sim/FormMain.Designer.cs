@@ -1242,6 +1242,7 @@ namespace EMRALD_Sim
       tbSavePath2.Size = new System.Drawing.Size(433, 23);
       tbSavePath2.TabIndex = 4;
       tbSavePath2.Text = "c:\\temp\\PathResults.json";
+      toolTip1.SetToolTip(tbSavePath2, "Path Results output file. If a relative path is given, it is relative to the simulation engine exe directory.");
       tbSavePath2.Leave += Leave_SaveSettings;
       // 
       // button2
@@ -1439,6 +1440,7 @@ namespace EMRALD_Sim
       tbSavePath.Size = new System.Drawing.Size(433, 23);
       tbSavePath.TabIndex = 2;
       tbSavePath.Text = "c:\\temp\\NewSimResults.txt";
+      toolTip1.SetToolTip(tbSavePath, "Basic Results output file. If a relative path is given, it is relative to the simulation engine exe directory.");
       tbSavePath.Leave += Leave_SaveSettings;
       // 
       // label13
@@ -1617,10 +1619,10 @@ namespace EMRALD_Sim
       // 
       tpWebSocket.Controls.Add(tbWebSocketURL);
       tpWebSocket.Controls.Add(label22);
-      tpWebSocket.Location = new System.Drawing.Point(4, 14);
+      tpWebSocket.Location = new System.Drawing.Point(4, 5);
       tpWebSocket.Name = "tpWebSocket";
       tpWebSocket.Padding = new System.Windows.Forms.Padding(3);
-      tpWebSocket.Size = new System.Drawing.Size(190, 217);
+      tpWebSocket.Size = new System.Drawing.Size(190, 226);
       tpWebSocket.TabIndex = 1;
       tpWebSocket.UseVisualStyleBackColor = true;
       // 

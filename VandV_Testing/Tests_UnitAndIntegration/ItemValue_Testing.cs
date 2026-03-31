@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Unit and integration tests for individual simulation item value calculations, including failure rate event sampling.
 
 using System;
 using SimulationDAL;

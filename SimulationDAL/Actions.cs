@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Defines the Action base class and derived action types (transition, variable change, external message, etc.) for EMRALD states.
 
 using System;
 using System.CodeDom.Compiler;
@@ -311,136 +312,6 @@ namespace SimulationDAL
     }
 
 
-    //private void RecalcBoundBoxes()
-    //{
-    //  if (_toStateProb[_toStateProb.Count - 1] != -1)
-    //    return;
-
-    //  if (_toStateProb.Count() <= 0) return;
-
-    //  double probSum = 0;
-    //  double remProb = 1.0;
-    //  for (int i=0; i< _toStateProb.Count; ++i)
-    //  {
-    //    if (_toStateVarProb[i] != null)
-    //    {
-    //      _toStateProb[i] = _toStateVarProb[i].value;
-    //      if (_toStateProb[i] < 0)
-    //        if (i < (_toStateProb.Count - 1))
-    //          throw new Exception("More than 1 to state is trying to use the remaining probability.");
-    //        else
-    //        {
-    //          probSum += _toStateProb[i];
-    //          remProb = remProb - (remProb * _toStateProb[i]);
-    //        }
-    //    }
-    //  }
-
-    //  if ((this._toStateProb[_toStateProb.Count() - 1] < 0) && (!mutuallyExclusive))
-    //  {
-    //    if (probSum < 1)
-    //    {
-    //      probSum = probSum + (1 - probSum);
-    //    }
-    //    else
-    //      throw new Exception("Remainder to State will never be hit, the Probabilities add up to more than 1.0. Action - " + this.name);
-    //  }
-
-
-    //  //double remProb = 1.0;
-    //  //for (int i = 0; i < _toStateProb.Count(); ++i)
-    //  //{
-    //  //  if (_toStateProb[i] >= 0)
-    //  //  {
-    //  //    remProb = remProb - (remProb * _toStateProb[i]);
-    //  //  }
-    //  //  else if (i < _toStateProb.Count - 1)
-    //  //  {
-    //  //    throw new Exception("More than 1 to state is trying to use the remaining probability.");
-    //  //  }
-    //  //}
-
-    //  bounds = new double[_toStateProb.Count()]; 
-    //  if(mutuallyExclusive) //redistribute the bounding boxes as a % of the (1-remProb)
-    //  {
-
-    //    for (int i = 0; i < _toStateProb.Count(); ++i)
-    //    {
-    //      if (_toStateProb[i] >= 0)
-    //        bounds[i] = ((1-remProb)/probSum)*_toStateProb[i];
-    //      else
-    //        bounds[i] = 1;
-    //    }
-    //  }
-    //  else //redistribute the bounding boxes and use overlapping for multiple to states.
-    //  {
-    //    double prevBound = 0;
-    //    for (int i = 0; i < _toStateProb.Count(); ++i)
-    //    {
-    //      if (_toStateProb[i] >= 0)
-    //      {
-    //        bounds[i] = _toStateProb[i] + (_toStateProb[i] - (_toStateProb[i] * prevBound));
-    //        prevBound = bounds[i];
-    //      }
-    //      else
-    //        bounds[i] = 1;
-    //    }
-    //  }
-    //}
-
-    //private void RecalcBoundBoxes()
-    //{
-    //  if (_toStateProb[_toStateProb.Count - 1] != -1)
-    //    return;
-
-    //  double probSum = this._toStateProb.Sum();
-    //  if (_toStateProb.Count() <= 0) return;
-
-    //  if (this._toStateProb[_toStateProb.Count() - 1] < 0)
-    //    probSum = probSum + 1;
-
-    //  bounds = new double[_toStateProb.Count()];
-
-    //  double remProb = 1.0;
-    //  for (int i = 0; i < _toStateProb.Count(); ++i)
-    //  {
-    //    if (_toStateProb[i] >= 0)
-    //    {
-    //      remProb = remProb - (remProb * _toStateProb[i]);
-    //    }
-    //    else if (i < _toStateProb.Count - 1)
-    //    {
-    //      throw new Exception("More than 1 to state is trying to use the remaining probability.");
-    //    }
-    //  }
-
-
-    //  if (mutuallyExclusive) //redistribute the bounding boxes as a % of the (1-remProb)
-    //  {
-
-    //    for (int i = 0; i < _toStateProb.Count(); ++i)
-    //    {
-    //      if (_toStateProb[i] >= 0)
-    //        bounds[i] = ((1 - remProb) / probSum) * _toStateProb[i];
-    //      else
-    //        bounds[i] = 1;
-    //    }
-    //  }
-    //  else //redistribute the bounding boxes and use overlapping for multiple to states.
-    //  {
-    //    double prevBound = 0;
-    //    for (int i = 0; i < _toStateProb.Count(); ++i)
-    //    {
-    //      if (_toStateProb[i] >= 0)
-    //      {
-    //        bounds[i] = _toStateProb[i] + (_toStateProb[i] - (_toStateProb[i] * prevBound));
-    //        prevBound = bounds[i];
-    //      }
-    //      else
-    //        bounds[i] = 1;
-    //    }
-    //  }
-    //}
 
     public List<IdxAndStr> WhichToState()
     {
@@ -471,15 +342,7 @@ namespace SimulationDAL
       {
         throw new Exception("For action " + this.name + " Mutually Exclusive Transition and probabilities don't add up to 1.0 or no default path");
       }
-      //      else if (mutExcl && (_toStateProb[_toStateProb.Count - 1] != -1) && (_toStateProb[_toStateProb.Count - 1] != 1))
-      //      {
-      //#if DEBUG
-      //        throw new Exception("Missing default option for independent failures " + this.name);
-      //#else
-      //        System.Diagnostics.Debug.Write("Missing default option for independent failures. " + this.name);
-      //        return retStateIDs;
-      //#endif
-      //      }
+      
       else if ((_newStateIDs.Count < 1) || (_newStateIDs.Count != _toStateProb.Count))
       {
 #if DEBUG
@@ -893,6 +756,8 @@ namespace SimulationDAL
   }
 
   
+  //Initial concept for DLL variable assigning vs code execution for speedup. Part of code so it can be maintained with code, but not offically included.
+  //TODO : This currently has hard coded paths and values for testing and needs to be removed if released
   public class VarValueDLLAct : VarValueAct //atCngVarValDLL
   {
     public class DllParamInfo
@@ -923,13 +788,6 @@ namespace SimulationDAL
       this.scriptRunner.addUsing.Add("System.Runtime.InteropServices");
     }
 
-    //public VarValueDLLAct(string inName, SimVariable inSimVar, Type inRetType, List<string> inCodeVars)
-    //  : base(inName, inSimVar, "", inRetType, inCodeVars )
-    //{
-    //  this._actType = EnActionType.atCngVarDll;
-    //  this.scriptRunner.addUsing.Add("System.Runtime.InteropServices");
-    //}  
-
     public override string GetDerivedJSON(EmraldModel lists)
     {
       //script code is dynamically created and not specified by the user
@@ -949,7 +807,7 @@ namespace SimulationDAL
 
       retStr = retStr + "," + Environment.NewLine + "\"callParams\":" + "\"" + callParams + "\"";
 
-     
+      
 
       return retStr;
     }
@@ -972,7 +830,7 @@ namespace SimulationDAL
       {
         functionName = Convert.ToString(dynObj.functionName);
         string pathRef = Convert.ToString(dynObj.libPath);
-        if (!Path.IsPathRooted(pathRef) && (pathRef[0] == '.'))
+        if (!Path.IsPathRooted(pathRef) && (pathRef.Length > 0) && (pathRef[0] == '.'))
         {
           libPath = lists.rootPath;
           if (!libPath.EndsWith(@"\"))
@@ -1087,14 +945,6 @@ namespace SimulationDAL
       this._actType = EnActionType.atJumpToTime;
     }
 
-    //public JumpToTimeAct(string inName, TimeStateVariable saved)
-    //  : base(inName, saved, "", typeof(double), null)
-    //  //: base(inName, "", null, EnActionType.atJumpToTime)
-    //{
-    //  this._actType = EnActionType.atJumpToTime;
-    //  this._retType = typeof(double);
-    //  savedTime = saved;
-    //}
 
     public JumpToTimeAct(string inName, string inNewValCode, List<String> inCodeVars)
       : base(inName, null, inNewValCode, typeof(double), inCodeVars)
@@ -1831,7 +1681,8 @@ namespace SimulationDAL
           List<String> retStates = processOutputFileCompEval.EvaluateStrList();
           System.Threading.Thread.Sleep(10);
 
-          while (File.Exists(CommonFunctions.NormalizeGetDirectoryName(exePath) + Path.AltDirectorySeparatorChar + "_out.txt"))
+          int delTries = 0;
+          while ((delTries < 30) && (File.Exists(CommonFunctions.NormalizeGetDirectoryName(exePath) + Path.AltDirectorySeparatorChar + "_out.txt")))
           {
             try
             {
@@ -1839,7 +1690,9 @@ namespace SimulationDAL
             }
             catch
             {
-              //do nothing;
+              //try again in a bit;
+              ++delTries;
+              System.Threading.Thread.Sleep(10);
             }
           }
 
@@ -2043,9 +1896,7 @@ namespace SimulationDAL
       {
         openSimVarParams = (bool)dynObj.openSimVarParams;
       }
-
-      //sim3DMessage = dynObj.sim3DMessage;
-
+      
       //Done in LoadObjLinks
       //SimVar
       //extSim

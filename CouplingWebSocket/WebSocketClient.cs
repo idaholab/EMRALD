@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Low-level WebSocket client that manages connection, message sending, and asynchronous receive loop for simulation coupling.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;

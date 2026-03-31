@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Abstract base class providing shared setup, directory management, and comparison utilities for EMRALD simulation tests.
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;

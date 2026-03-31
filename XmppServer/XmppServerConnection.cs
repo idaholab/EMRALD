@@ -1,4 +1,5 @@
 // Copyright 2021 Battelle Energy Alliance
+// Manages an individual XMPP client socket connection including authentication, stream parsing, and message routing.
 
 using System;
 using System.Diagnostics;

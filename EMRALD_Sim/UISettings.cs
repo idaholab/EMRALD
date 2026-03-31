@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Defines UI settings and per-model simulation configuration options persisted across sessions.
+using System.Collections.Generic;
 
 namespace EMRALD_Sim
 {

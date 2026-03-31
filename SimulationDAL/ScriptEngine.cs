@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Compiles and executes user-supplied C# scripts at runtime using Roslyn for custom EMRALD simulation logic.
 
 using System;
 using System.Collections.Generic;

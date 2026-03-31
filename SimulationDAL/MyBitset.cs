@@ -343,7 +343,7 @@ namespace MyStuff.Collections
         int num = slot;
         num = num - ((num >> 1) & 0x55555555);
         num = (num & 0x33333333) + ((num >> 2) & 0x33333333);
-        retCnt += (((num + (num >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+        retCnt += unchecked(((num + (num >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24; //don't error check this is classic popcount trick that intentionally overflows — it sums byte lanes by exploiting 32-bit wraparound.
       }
 
       return retCnt;
@@ -364,35 +364,29 @@ namespace MyStuff.Collections
 
       if (m_length == value.m_length)
       {
-        int ints = ((m_length + 31) / 32);
+        int ints = (m_length + 31) / 32;
         for (int i = 0; i < ints; i++)
           m_array[i] &= value.m_array[i];
       }
       else
       {
         int ints = Math.Min(m_length / 32, value.m_length / 32);
-        int maxInts = ((m_length + 31) / 32);
-        //copy full initial array pieces
-        for (int i = 0; i < ints - 1; i++)
+        int maxInts = (m_length + 31) / 32;
+
+        // AND the full words covered by both arrays
+        for (int i = 0; i < ints; i++)
           m_array[i] &= value.m_array[i];
 
-        //copy incomplete piece
+        // AND the partial word bit-by-bit
         int begPiece = ints * 32;
         int endPiece = begPiece + (value.m_length % 32);
         for (int i = begPiece; i < endPiece; i++)
-        {
           this[i] = value[i] && this[i];
-        }
-        //finish up incomplete with 0's
-        for (int i = endPiece; i < (begPiece + 32); i++)
-        {
-          this[i] = false;
-        }
 
-        //end piece change to all 0's
-        ints++;
-        for (int i = ints; i < maxInts; i++)
-          m_array[i] &= 0;
+        // Zero out remaining words in this that are beyond value's length
+        int tailStart = ints + (endPiece > begPiece ? 1 : 0);
+        for (int i = tailStart; i < maxInts; i++)
+          m_array[i] = 0;
       }
       _version++;
 
@@ -451,7 +445,7 @@ namespace MyStuff.Collections
         int endPiece = begPiece + (value.m_length % 32);
         for (int i = begPiece; i < endPiece; i++)
         {
-          this[i] = value[i] |= this[i];
+          this[i] = value[i] ^ this[i];
         }
 
         //XOr, so leave end the same as the other array is considered 0's

@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Manages a batch of simulation runs, orchestrating parallel execution and aggregating results across all runs.
 
 using System;
 using System.Collections.Generic;
@@ -27,14 +28,6 @@ using XmppMessageServer;
 
 namespace SimulationEngine
 {
-  //public class Progress
-  //{
-  //  public int percentDone = 0;
-  //  public TimeSpan runTime = TimeSpan.Zero;
-  //  public int curRun = 0;
-  //  public bool done = false;
-  //}
-
   public delegate void TProgressCallBack(TimeSpan runTime, int runCnt, bool finalValOnly, int? threadNum);
     
   public class FailedItems 
@@ -257,8 +250,9 @@ namespace SimulationEngine
         try
         {
           // Set the file paths with the rootPath
-          this._resultFile = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
-          if (_jsonResultPaths != "")
+          if (!string.IsNullOrEmpty(_resultFile))
+            this._resultFile = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_resultFile)));
+          if (!string.IsNullOrEmpty(_jsonResultPaths))
           {
             this._jsonResultPaths = CommonFunctions.NormalizeGetFullPath(Path.Combine(this._lists.rootPath, Path.GetFileName(_jsonResultPaths)));
           }
@@ -308,10 +302,6 @@ namespace SimulationEngine
       int curI = 0;
       if (_pathResultsInterval < 1)
         _pathResultsInterval = _numRuns;
-
-      ////if user defined the seed then reset random so that seed is used.
-      //if ((threadNum == null) && ((ConfigData.seed != null) && (ConfigData.seed >= 0))
-      //  SingleRandom.Reset();
      
       try
       {
@@ -401,7 +391,7 @@ namespace SimulationEngine
             foreach (var v in _lists.allVariables.Values)
             {
               //save cumulativeStats for numeric types
-              if (v.cumulativeStats && ((v.dType != typeof(string)) || (v.dType != typeof(bool))))
+              if (v.cumulativeStats && ((v.dType != typeof(string)) && (v.dType != typeof(bool))))
               {
                 List<double> values;
                 if (!finalVarValueList.TryGetValue(v.name, out values))
@@ -449,12 +439,8 @@ namespace SimulationEngine
           _error = _error + Environment.NewLine + e.InnerException;
         }
 
-//#if DEBUG
-//        throw e;
-//#else
-
         logger.Info(_error);
-//#endif
+
         retVal = false;
       }
 
@@ -466,27 +452,6 @@ namespace SimulationEngine
       batchSuccess = retVal;
     }
 
-    //protected virtual bool IsFileLocked(FileInfo file)
-    //{
-    //  try
-    //  {
-    //    using (FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
-    //    {
-    //      stream.Close();
-    //    }
-    //  }
-    //  catch (IOException)
-    //  {
-    //    //the file is unavailable because it is:
-    //    //still being written to
-    //    //or being processed by another thread
-    //    //or does not exist (has already been processed)
-    //    return true;
-    //  }
-
-    //  //file is not locked
-    //  return false;
-    //}
     private readonly ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
 
     public void WriteToFileThreadSafe(string path, string text)
@@ -498,17 +463,27 @@ namespace SimulationEngine
         if(File.Exists(path))
         {
           bool deleted = false;
-          while (!deleted)
+          int failes = 0;
+          while (!deleted && (failes < 100))
           {
             try
             {
               File.Delete(path);
               deleted = true;
             }
-            catch { };
+            catch
+            {
+              ++failes;
+              Thread.Sleep(10);
+            };
           }
-
         }
+
+        if (File.Exists(path))
+        {
+          throw new Exception("Write to \"" + path + "\" failed because file is locked"); 
+        }
+
         // Append text to the file
         using (StreamWriter sw = File.AppendText(path))
         {
@@ -668,7 +643,7 @@ namespace SimulationEngine
       //  _progress.curRun = runCnt;
       //}
 
-      if (_resultFile == null)
+      if (string.IsNullOrEmpty(_resultFile))
         return;
 
       System.IO.File.WriteAllText(_resultFile, "Simulation = " + this._lists.name + Environment.NewLine);

@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Application entry point for EMRALD_Sim: configures logging, dependency injection, and launches the main WinForms window.
 using System;
 using System.Collections.Generic;
 using System.IO;

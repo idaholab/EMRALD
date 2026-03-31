@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright 2026 Battelle Energy Alliance
+// Upgrades an EMRALD model JSON string to the current schema version by executing the bundled JavaScript upgrade script.
+using System;
 using Microsoft.ClearScript.V8;
 using System.IO;
 using Microsoft.ClearScript;

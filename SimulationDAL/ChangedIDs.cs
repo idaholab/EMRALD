@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Tracks bit-array sets of changed variable, component, and state IDs during an EMRALD simulation run.
 
 using System;
 using System.Collections.Generic;

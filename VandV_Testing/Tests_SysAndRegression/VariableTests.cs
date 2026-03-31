@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿// Copyright 2026 Battelle Energy Alliance
+// System and regression tests for EMRALD variable handling including time-based variable changes and variable-driven events.
+using Newtonsoft.Json.Linq;
 using SimulationEngine;
 using System;
 using System.Collections.Generic;

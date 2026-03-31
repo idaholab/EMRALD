@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Tracks the active event queue and current state assignments for a single simulation run, driving state transitions over time.
 
 using System;
 using System.Collections.Generic;
@@ -32,15 +33,6 @@ namespace SimulationTracking
       this.eventData = inEventData;
       this.name = inName;
     }
-
-    //public EventListData(EventListData copyThis)
-    //{
-    //  this.id = copyThis.id;
-    //  this.stEvID = copyThis.stEvID;
-    //  this.eventData = copyThis.eventData;
-    //  this.actions = copyThis.actions;
-    //  this.name = copyThis.name;
-    //}
   }
 
   public class TimeMoveEvent : EventListData
@@ -280,13 +272,6 @@ namespace SimulationTracking
                   break;
               }
             }
-            //after first evaluation always check applicable items have changed for all events
-            //else if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-            //   ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, runIdx)))
-            //{
-            //  retList.Add(item);
-            //}
-
           }
         }
       }
@@ -548,34 +533,6 @@ namespace SimulationTracking
       }
     }
 
-    //public void SaveCurrent(TimeStateVariable curSave, TimeSpan curTime)
-    //{
-    //  curSave.SaveTimeQue(curTime, timedEvQue, stateRefLookup, poppedList);
-    //}
-
-    //public TimeSpan RevertToTime(TimeStateVariable curSave)
-    //{
-    //  this.timedEvQue.Clear();
-    //  foreach (var ev in curSave.timedEvQue)
-    //  {
-    //    this.timedEvQue.Add(new TimeSpan(ev.Key.Ticks), new TimeMoveEvent(ev.Value));
-    //  }
-
-    //  this.stateRefLookup.Clear();
-    //  foreach (var sRef in curSave.stateRefLookup)
-    //  {
-    //    this.stateRefLookup.Add(sRef.Key, new List<TimeSpan>(sRef.Value));
-    //  }
-
-    //  this.poppedList.Clear();
-    //  //for (int i = 0; i < curSave.poppedList.Count(); i++)
-    //  //{
-    //  //  this.poppedList.Add(new TimeMoveEvent(curSave.poppedList[i]));
-    //  //}
-
-    //  return TimeSpan.FromHours((double)curSave.value);
-    //}
-
     public void RevertToTime(TimeSpan curTime, TimeSpan revertTo)
     {
       //TODO this is not correct because we are missing items that were not popped off but RemoveMatchingStateItems 
@@ -627,7 +584,10 @@ namespace SimulationTracking
 
           poppedList.Remove(emEv);
           --idx;
-          emEv = poppedList[idx];
+          if (poppedList.Count() > idx)
+            emEv = poppedList[idx];
+          else
+            throw new Exception("Error in RevertToTime index out of range");
         }
       }
     }
@@ -708,17 +668,14 @@ namespace SimulationTracking
     /// </summary>
     private ISimMessaging sim3DServer;
     //todo store these in ExternalSim object and adjust code for multiple simulations
-    private bool extSimRunning = false;
-    private bool emraldStopping3D = false;
-    private bool extSimStarting = false;
+    private volatile bool extSimRunning = false;
+    private volatile bool emraldStopping3D = false;
+    private volatile bool extSimStarting = false;
     private StatusType prevExtSimState = StatusType.stIdle;
     private StatusType curExtSimState = StatusType.stIdle;
     private List<string> stopped3DSims = new List<string>();
     private bool inProcessingLoop = false;
     private TimeSpan sim3DStartTime;
-    //private double sim3DFameRate;
-    //private string sim3dPath;
-    //private HoudiniSimClient.TLogEvCallBack p_logEvCallBack;
     private bool terminated = false;
     private TimeSpan settingsMaxTime;
     /// <summary>
@@ -1219,10 +1176,6 @@ namespace SimulationTracking
           ScanCondEvList();
       }
 
-      ////see if we need to save the current time and States 
-      //if (this.toSave != null)
-      //  SaveCurrentTimeState();
-
       inProcessingLoop = false;
       if (terminated)
         return false;
@@ -1448,13 +1401,7 @@ namespace SimulationTracking
       changedItems.Clear();
     }
 
-    //private void SaveCurrentTimeState()
-    //{
-    //  timeEvList.SaveCurrent(toSave, curTime);
-    //  curStates.SaveCurrent(toSave);
-    //  //(toSave).SaveProcessLists(this.processEventList, this.nextStateQue);
-    //  toSave = null;
-    //}
+    
     /// <summary>
     /// Process the given actions and necessary steps depending on the action type. 
     /// </summary>
@@ -1620,22 +1567,7 @@ namespace SimulationTracking
             //change the current time to the result of this action.
             JumpToTimeAct timeJumpAct = (curAct as JumpToTimeAct);
 
-            //TimeStateVariable savedSlot = timeJumpAct.SavedSlot();
-            //if (savedSlot != null)
-            //{
-            //  TimeSpan newTime = TimeSpan.FromHours((double)savedSlot.value);
-            //  this.timeEvList.RevertToTime(savedSlot);
-            //  this.curStates.RevertToGivenTime(savedSlot);
-
-            //  //make sure the processEventList and processStateQue is empty
-            //  processEventList.RemoveRange(1, processEventList.Count - 1);
-            //  nextStateQue.RemoveRange(0, nextStateQue.Count);
-
-            //  maxTime = maxTime + (curTime - newTime);
-            //  this.curTime = newTime;
-            //}
-            //else
-            //{
+            
             double temp = 0.0;
             timeJumpAct.SetVal(ref temp, this.allLists, curTime, sim3DStartTime, this.allLists.curRunIdx);
             TimeSpan newTime = TimeSpan.FromHours(temp);
@@ -1864,12 +1796,6 @@ namespace SimulationTracking
                     this.emraldStopping3D = true; //Stopping call from EMRALD not processed by ext sim yet. 
                     sim3DServer.SendMessage(msg, cur3DAct.resourceName);
 
-                    //while (this.sim3DRunning)
-                    //{
-                    //  Application.DoEvents();
-                    //  System.Threading.Thread.Sleep(10);
-                    //}
-                    //sim3DServer.Clear();
                   }
                 }
                 else
@@ -1979,20 +1905,5 @@ namespace SimulationTracking
 
       return retList.ToArray();
     }
-
-    //public List<Tuple<int, TimeSpan, String>> GetFailedComponentsDetailed()
-    //{
-    //  List<Tuple<int, TimeSpan, String>> retList = new List<Tuple<int, TimeSpan, String>>();
-
-    //  foreach (StatePath curStateInfo in curStates.Values)
-    //  {
-    //    if (curStateInfo.state.diagram is CompDiagram)
-    //    {
-    //      retList.Add(Tuple.Create(curStateInfo.state.diagram.id, curStateInfo.time, curStateInfo.leadingAction));
-    //    }
-    //  }
-
-    //  return retList;
-    //}
   }
 }

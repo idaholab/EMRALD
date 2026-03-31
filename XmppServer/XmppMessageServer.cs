@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Core XMPP server that listens for incoming client socket connections and routes messages between connected EMRALD clients.
 
 using Matrix;
 using Matrix.Xmpp;

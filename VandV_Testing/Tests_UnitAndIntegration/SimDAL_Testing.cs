@@ -1,4 +1,5 @@
 ﻿// Copyright 2021 Battelle Energy Alliance
+// Unit and integration tests for the simulation data access layer, verifying JSON round-trip serialization of model objects.
 
 using System;
 using SimulationDAL;
