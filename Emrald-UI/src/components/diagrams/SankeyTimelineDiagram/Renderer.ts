@@ -14,6 +14,7 @@ import {
   drag,
   easeCubicIn,
   type RGBColor,
+  type ScaleLinear,
   scaleLinear,
   select,
   selectAll,
@@ -87,7 +88,7 @@ export class Renderer extends EventEmitter<{
 
   private maxY = 0;
 
-  private range: [number, number];
+  private scale: ScaleLinear<number, number>;
 
   private container!: Selection<BaseType, HTMLElement, BaseType, any>;
 
@@ -101,10 +102,10 @@ export class Renderer extends EventEmitter<{
     svgRef: RefObject<SVGSVGElement>,
   ) {
     super();
-    this.range = [
-      this.options.margin,
-      this.options.width - this.options.margin,
-    ];
+    this.scale = scaleLinear(
+      [this.timeline.minTime, this.timeline.maxTime],
+      [this.options.margin, this.options.width - this.options.margin],
+    );
     this.container = select<BaseType, HTMLElement>(svgRef.current);
   }
 
@@ -113,10 +114,6 @@ export class Renderer extends EventEmitter<{
    */
   public render() {
     this.graph = this.timeline.graph;
-    this.range = [
-      this.options.margin,
-      this.options.width - this.options.margin,
-    ];
     this.container
       .style('background', this.options.background)
       .style('top', '23px')
@@ -266,21 +263,20 @@ export class Renderer extends EventEmitter<{
             = (node.layout.row / (maxRow + 1)) * this.options.height;
         }
       } else if (this.options.layout === 'timeline') {
-        node.layout.x
-          = this.getTimeX(node.times.meanTime) - node.layout.width / 2;
+        node.layout.x = this.scale(node.times.meanTime) - node.layout.width / 2;
         node.layout.y = node.persist
           ? node.persist.timeline.y
           : (node.layout.row / (maxRow + 1)) * this.options.height;
         if (hasDist(node.times) && this.options.distributions) {
           node.layout.distribution = [
             {
-              x: this.getTimeX(
+              x: this.scale(
                 node.times.meanTime - (node.times.stdDeviation ?? 0),
               ),
               y: node.layout.y,
             },
             {
-              x: this.getTimeX(
+              x: this.scale(
                 node.times.meanTime + (node.times.stdDeviation ?? 0),
               ),
               y: node.layout.y,
@@ -302,7 +298,7 @@ export class Renderer extends EventEmitter<{
    */
   private initializeLayout() {
     for (const [n, node] of this.graph.nodes.entries()) {
-      const x = this.getTimeX(node.times.meanTime);
+      const x = this.scale(node.times.meanTime);
       let height = this.options.maxNodeHeight;
       if (this.options.dynamicNodeHeight) {
         height *= node.size / this.timeline.maxSize;
@@ -352,11 +348,7 @@ export class Renderer extends EventEmitter<{
     this.container
       .append('g')
       .style('width', '100%')
-      .call(
-        axisBottom(
-          scaleLinear([this.timeline.minTime, this.timeline.maxTime], [this.options.margin, this.maxRight - this.options.margin]),
-        ).ticks(this.options.ticks),
-      );
+      .call(axisBottom(this.scale).ticks(this.options.ticks));
   }
 
   /**
@@ -754,19 +746,5 @@ export class Renderer extends EventEmitter<{
       ).toString()},${curve[2]?.[0]?.toString() ?? ''},${(curve[2]?.[1] ?? 0 - this.options.curve.height).toString()},${(curve[3]?.[0] ?? 0 + 5).toString()},${curve[3]?.[1]?.toString() ?? ''}`;
     }
     return path;
-  }
-
-  /**
-   * Scales the given time value to the range specified in options.
-   *
-   * @param time - The original x coordinate.
-   * @returns - The scaled x coordinate.
-   */
-  private getTimeX(time: number) {
-    return (
-      (this.range[1] - this.range[0])
-      * (time / (this.timeline.maxTime - this.timeline.minTime))
-      + this.range[0]
-    );
   }
 }
