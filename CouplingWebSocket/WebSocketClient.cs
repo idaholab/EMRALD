@@ -22,6 +22,9 @@ namespace CouplingWebSocket
     // Configurable timeout in milliseconds
     public int RequestTimeoutMs { get; set; } = 5000; //set by WebApiCoupling constructor
 
+    // Set to false to suppress console logging even in debug builds (e.g. during tests)
+    public static bool LogMessages { get; set; } = true;
+
     // Event for incoming messages - now includes the GUID
     public event EventHandler<(Guid conID, string message)>? MessageReceived;
     public event EventHandler<string>? ErrorOccurred;
@@ -166,7 +169,9 @@ namespace CouplingWebSocket
 
     private async Task SendMessageAsync(string message)
     {
-      Console.WriteLine("Sent : " + message);
+#if DEBUG
+      if (LogMessages) Console.WriteLine("Sent : " + message);
+#endif
       byte[] messageBytes = Encoding.UTF8.GetBytes(message);
       await _client.SendAsync(
           new ArraySegment<byte>(messageBytes),

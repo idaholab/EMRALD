@@ -12,6 +12,7 @@ Developers Summary- (Follow the full process outlined in the Testing Plan)
 	If it is a integration or system test, add it to IntegerationTsting_Simulation code.
 	If it is a manual test add to the MantualTests code and add a section to the applicable document in /TestingFiles/ManualTestInstructions/ or create a new one if none are applicable.	
 
-	To run tests for an official major verion release:
+	Use VS2022 Test Explorer for evaluating branch changes. If tests don't pass and it is a comparison test, it is easiest to uncomment the "CopyToValidated" and if ti then passes compare the differences in Git to see if the new results are correct.
+	To run tests for an official major verion release (this can take up to 10 min.):
 		1. Open command propmt and run -  dotnet test VandV_Testing/testing.csproj --logger "html;LogFileName=TestResults.html"
 		2. Print the results html file and copy to ??? as part of the V&V.

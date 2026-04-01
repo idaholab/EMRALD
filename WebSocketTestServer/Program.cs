@@ -21,10 +21,15 @@ namespace WebSocketTestServer
     // - Adjust the listening URL/port in Main (`url` variable).
     // - Use any ConnectionInfo info as needed.
     // - Extend ConnectionStateMachine with real simulation hooks (parsing actions, advancing time, sending events).
-    class Program
+    public class Program
     {
-        private static Dictionary<Guid, ConnectionInfo> activeConnections = 
+        // Set to false to suppress console logging even in debug builds (e.g. during tests)
+        public static bool LogMessages { get; set; } = true;
+
+        private static Dictionary<Guid, ConnectionInfo> activeConnections =
             new Dictionary<Guid, ConnectionInfo>();
+
+        internal static IEnumerable<ConnectionInfo> GetActiveConnections() => activeConnections.Values;
 
         // Entry point: starts the HTTP listener and hands off WebSocket requests.
         static async Task Main(string[] args)
@@ -35,9 +40,11 @@ namespace WebSocketTestServer
             listener.Prefixes.Add(url);
             listener.Start();
             
-            Console.WriteLine($"WebSocket Server started on {url}");
-            Console.WriteLine("Waiting for connections...");
-            Console.WriteLine();
+#if DEBUG
+            if (LogMessages) Console.WriteLine($"WebSocket Server started on {url}");
+            if (LogMessages) Console.WriteLine("Waiting for connections...");
+            if (LogMessages) Console.WriteLine();
+#endif
 
             while (true)
             {
@@ -61,15 +68,19 @@ namespace WebSocketTestServer
             WebSocketContext wsContext = await context.AcceptWebSocketAsync(null);
             WebSocket webSocket = wsContext.WebSocket;
             
-            Console.WriteLine($"Client connected from {context.Request.RemoteEndPoint}");
-            Console.WriteLine();
+#if DEBUG
+            if (LogMessages) Console.WriteLine($"Client connected from {context.Request.RemoteEndPoint}");
+            if (LogMessages) Console.WriteLine();
+#endif
 
             await HandleWebSocketConnection(webSocket);
-            
+
             // Clean up any connections associated with this socket
             CleanupDisconnectedSocket(webSocket);
-            Console.WriteLine("Ready for next connection...");
-            Console.WriteLine();
+#if DEBUG
+            if (LogMessages) Console.WriteLine("Ready for next connection...");
+            if (LogMessages) Console.WriteLine();
+#endif
         }
 
         // Removes connection entries tied to a socket that has closed.
@@ -83,7 +94,9 @@ namespace WebSocketTestServer
             foreach (var conID in toRemove)
             {
                 activeConnections.Remove(conID);
-                Console.WriteLine($"Cleaned up connection {conID}");
+#if DEBUG
+                if (LogMessages) Console.WriteLine($"Cleaned up connection {conID}");
+#endif
             }
         }
 
@@ -104,17 +117,21 @@ namespace WebSocketTestServer
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
                         await webSocket.CloseAsync(
-                            WebSocketCloseStatus.NormalClosure, 
-                            "Closing", 
+                            WebSocketCloseStatus.NormalClosure,
+                            "Closing",
                             CancellationToken.None);
-                        Console.WriteLine("Client disconnected");
+#if DEBUG
+                        if (LogMessages) Console.WriteLine("Client disconnected");
+#endif
                         break;
                     }
 
                     if (result.MessageType == WebSocketMessageType.Text)
                     {
                         string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                        Console.WriteLine($"Received: {message}");
+#if DEBUG
+                        if (LogMessages) Console.WriteLine($"Received: {message}");
+#endif
                         
                         // Process the JSON command and optionally send a response.
                         string response = await ProcessCommand(message, webSocket);
@@ -128,7 +145,9 @@ namespace WebSocketTestServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+    #if DEBUG
+            if (LogMessages) Console.WriteLine($"Error: {ex.Message}");
+#endif
             }
         }
 
@@ -171,7 +190,9 @@ namespace WebSocketTestServer
         {
             var response = new { names = Enum.GetNames(typeof(AvailableApp)) };
             string json = JsonConvert.SerializeObject(response);
-            Console.WriteLine($"Sending app options: {json}");
+#if DEBUG
+            if (LogMessages) Console.WriteLine($"Sending app options: {json}");
+#endif
             return json;
         }
 
@@ -195,8 +216,10 @@ namespace WebSocketTestServer
             
             activeConnections[conID] = connInfo;
             
-            Console.WriteLine($"Created connection {conID} for app '{appName}'");
-            Console.WriteLine($"Watch items: {string.Join(", ", watchItems ?? new List<string>())}");
+#if DEBUG
+            if (LogMessages) Console.WriteLine($"Created connection {conID} for app '{appName}'");
+            if (LogMessages) Console.WriteLine($"Watch items: {string.Join(", ", watchItems ?? new List<string>())}");
+#endif
 
             var response = new { conID = conID };
             return Task.FromResult(JsonConvert.SerializeObject(response));
@@ -209,13 +232,17 @@ namespace WebSocketTestServer
         {
             if (actionWrapper is null)
             {
-                Console.WriteLine("Action wrapper was null");
+#if DEBUG
+                if (LogMessages) Console.WriteLine("Action wrapper was null");
+#endif
                 return;
             }
 
             if (!activeConnections.ContainsKey(conID))
             {
-                Console.WriteLine($"Connection {conID} not found");
+#if DEBUG
+                if (LogMessages) Console.WriteLine($"Connection {conID} not found");
+#endif
                 return;
             }
 
@@ -233,11 +260,14 @@ namespace WebSocketTestServer
             }
             else
             {
-                Console.WriteLine("Could not parse action message");
+#if DEBUG
+                if (LogMessages) Console.WriteLine("Could not parse action message");
+#endif
                 return;
             }
-            
-            Console.WriteLine($"Received action for {conID}: {simAction.actType}");
+#if DEBUG
+            if (LogMessages) Console.WriteLine($"Received action for {conID}: {simAction.actType}");
+#endif
             
             if (!activeConnections.TryGetValue(conID, out var connInfo))
                 return;
@@ -258,7 +288,9 @@ namespace WebSocketTestServer
                 true,
                 CancellationToken.None);
             
-            Console.WriteLine($"Sent: {message}");
+#if DEBUG
+            if (LogMessages) Console.WriteLine($"Sent: {message}");
+#endif
         }
     }
 
