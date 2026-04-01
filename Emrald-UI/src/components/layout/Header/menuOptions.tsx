@@ -387,8 +387,8 @@ export const downloadOptions = {
     const link = document.createElement('a');
     link.target = '_blank';
     link.href = window.location.href.includes('acc')
-      ? 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'
-      : `https://github.com/idaholab/EMRALD/releases/download/v${EMRALD_SchemaVersion.toString().padEnd(5, '.0')}/EMRALD_SimEngine.zip`; // The file to download.
+      ? `https://github.com/idaholab/EMRALD/releases/download/v${EMRALD_SchemaVersion.toString().padEnd(5, '.0')}/EMRALD_SimEngine.zip` // In the dev environment, explictly link to the current version, which should set as a pre-release on GitHub
+      : 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip' // Otherwise link to the latest full release
     link.click();
   },
   'Client Tester': () => {
