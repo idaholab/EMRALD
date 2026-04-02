@@ -188,6 +188,7 @@ namespace SysAndRegressionTesting
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.runct = 10;
       options.threads = 2;
+      options.clearThreadTemps = true;
       options.variables = new List<string>() { "Var" };
 
       JSONRun testRun = new JSONRun(options);
