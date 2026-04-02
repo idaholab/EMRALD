@@ -29,4 +29,11 @@ export function CreateEmptyEMRALDModel(): EMRALD_Model {
   };
 }
 
-export type ModelItem = Diagram | LogicNode | ExtSim | Action | Event | State | Variable;
+export type ModelItem
+  = | Diagram
+    | LogicNode
+    | ExtSim
+    | Action
+    | Event
+    | State
+    | Variable;

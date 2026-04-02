@@ -54,7 +54,6 @@ export class Upgrade {
     this._newModelTxt = this._oldModelTxt;
 
     // Define upgrade functions
-    console.log(this._newModelTxt);
     const upgrades: {
       emraldVersion: number;
       upgradeFunction: (modelTxt: string) => UpgradeReturn;

@@ -386,9 +386,6 @@ export const downloadOptions = {
   'Solve Engine': () => {
     const link = document.createElement('a');
     link.target = '_blank';
-    console.log(window.location.href.includes('acc')
-      ? `https://github.com/idaholab/EMRALD/releases/download/v${EMRALD_SchemaVersion.toString().padEnd(5, '.0')}/EMRALD_SimEngine.zip` // In the dev environment, explictly link to the current version, which should set as a pre-release on GitHub
-      : 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip');
     link.href = window.location.href.includes('acc')
       ? `https://github.com/idaholab/EMRALD/releases/download/v${EMRALD_SchemaVersion.toString().padEnd(5, '.0')}/EMRALD_SimEngine.zip` // In the dev environment, explictly link to the current version, which should set as a pre-release on GitHub
       : 'https://github.com/idaholab/EMRALD/releases/latest/download/EMRALD_SimEngine.zip'; // Otherwise link to the latest full release

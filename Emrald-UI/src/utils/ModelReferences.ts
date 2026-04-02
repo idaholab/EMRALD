@@ -614,7 +614,10 @@ export function GetModelItemsReferencedBy(
       } else if (removeNotIncludedRefs) {
         // remove references to other items for things like copy or template. User will have to fix any errors.
         for (const jsonPathSet of jsonPathRefArray) {
-          for (const jPath of jsonpath.paths(retRefModel, jsonPathSet[0] as string)) {
+          for (const jPath of jsonpath.paths(
+            retRefModel,
+            jsonPathSet[0] as string,
+          )) {
             let childNames = jsonpath.value(
               retRefModel,
               jPath.join('.'),
@@ -638,11 +641,7 @@ export function GetModelItemsReferencedBy(
                 // Insert the new condition at the correct position
                 const updatedJsonPath = [
                   jsonPathSet[0]?.slice(0, insertPosition),
-                  ' && @.'
-                  + (childItemSearchName as string)
-                  + '.indexOf(\''
-                  + childName
-                  + '\') != -1',
+                  ` && @.${childItemSearchName as string}=='${childName}'`,
                   jsonPathSet[0]?.slice(insertPosition),
                 ].join('');
 
