@@ -98,6 +98,7 @@ const RefsToVariableItem: ItemReferencesArray = [
 const RefsToExtSimItem: ItemReferencesArray = [
   ['$.ExtSimList[?(@.name == \'nameRef\')].name', 'ExtSim', null],
   ['$.ActionList[?(@.extSim == \'nameRef\')].name', 'Action', null],
+  ['$.VariableList[?(@.extSim == \'nameRef\')].name', 'Variable', null],
 ];
 
 // LogicNodes (items using specified LogicNode)
@@ -105,7 +106,6 @@ const RefsToLogicNodeItem: ItemReferencesArray = [
   ['$.LogicNodeList[?(@.name == \'nameRef\')].name', 'LogicNode', null],
   ['$.EventList[?(@.logicTop == \'nameRef\')].logicTop', 'Event', null],
   ['$.LogicNodeList[*].gateChildren[?(@ == \'nameRef\')]', 'LogicNode', null],
-  ['$.LogicNodeList[?(@.rootName == \'nameRef\')].rootName', 'LogicNode', null],
 ];
 
 /////
@@ -162,6 +162,7 @@ const InVariableRefs: ItemReferencesArray = [
     'State',
     null,
   ],
+  ['$.VariableList[?(@.extSim == \'nameRef\')]', 'ExtSim', null],
 ];
 
 // ExtSim (items the specified extSim uses)
@@ -360,7 +361,7 @@ function GetModelItemsReferencingRecursive(
           searchModel,
           parentPath.join('.'),
         ) as ModelItem;
-        while (parent.id == null && parentPath.length > 0) {
+        while (parent.id == null && parentPath.length > 1) {
           parentPath = parentPath.slice(0, -1);
           parent = jsonpath.value(
             searchModel,

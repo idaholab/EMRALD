@@ -1,7 +1,7 @@
-import type { EMRALD_Model } from '../../types/EMRALD_Model';
-import type { EMRALD_Model as ModelV2_4 } from '../../utils/Upgrades/v2_4/AllModelInterfacesV2_4';
+import type { EMRALD_Model } from '@/types/EMRALD_Model';
+import type { EMRALD_Model as ModelV2_4 } from '@/utils/Upgrades/v2_4/AllModelInterfacesV2_4';
 import { describe, expect, test } from 'vitest';
-import { upgradeModel } from '../../utils/Upgrades/upgrade';
+import { upgradeModel } from '@/utils/Upgrades/upgrade';
 import expected from './upgrade.expected.json';
 
 function removeIds(model: EMRALD_Model) {
