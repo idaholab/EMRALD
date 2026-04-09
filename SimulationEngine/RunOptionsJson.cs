@@ -127,7 +127,8 @@ namespace SimulationEngine
     
     
 
-   public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
+    public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
+    public bool clearThreadTemps { get; set; } = false; //clear temp thread files after run completes
 
     /// <summary>
     /// Converts an old version options JSON string to the new version (1.02)

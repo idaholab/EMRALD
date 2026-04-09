@@ -16,6 +16,10 @@ using SimulationDAL;
 using SimulationEngine;
 using Xunit;
 
+// Ensures all tests in the "Serial" collection run sequentially, never in parallel
+[Xunit.CollectionDefinition("Serial", DisableParallelization = true)]
+public class SerialCollectionDefinition { }
+
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
 public class DescriptionAttribute : Attribute
 {

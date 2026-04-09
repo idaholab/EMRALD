@@ -808,6 +808,7 @@ namespace EMRALD_Sim
         lbl_ResultHeader.Visible = true;
 
         // Clone the options so runtime changes in the UI don't alter the running sim
+        _curSimOptions.clearThreadTemps = cbClearTemps.Checked;
         Options_cur options = JsonConvert.DeserializeObject<Options_cur>(JsonConvert.SerializeObject(_curSimOptions));
 
         // Read model JSON
@@ -839,15 +840,7 @@ namespace EMRALD_Sim
             {
               lbl_ResultHeader.Text = "Simulation completed successfully";
 
-              // Clear temp thread files if checkbox is checked and multi-threaded
-              if (cbClearTemps.Checked && cbMultiThreaded.Checked && _jsonRunner.simRuns.Count > 0)
-              {
-                // Clear temp files for all threads
-                foreach (var simRun in _jsonRunner.simRuns)
-                {
-                  simRun.ClearTempThreadData();
-                }
-              }
+              // Thread temp files are cleared by JSONRun via options.clearThreadTemps
             }
           });
         }, _cancellationTokenSource.Token);

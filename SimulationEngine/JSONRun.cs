@@ -267,6 +267,10 @@ namespace SimulationEngine
       }
       _simRuns[0].WriteFinalResults(true, threadCnt);
 
+      if (options.clearThreadTemps)
+        foreach (var simRun in _simRuns)
+          simRun.ClearTempThreadData();
+
       return error;
     }
 

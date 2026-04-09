@@ -88,6 +88,7 @@ export function useOptionsMapping() {
             const copiedModel = structuredClone(
               GetModelItemsReferencedBy(diagram.name, 'Diagram', 3),
             );
+            console.log(copiedModel);
             addWindow(
               `Create Template`,
               <TemplateForm templatedData={copiedModel} />,
