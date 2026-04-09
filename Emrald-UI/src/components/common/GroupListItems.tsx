@@ -71,7 +71,10 @@ export const GroupListItems: React.FC<GroupListItemsProps> = ({
                   <FolderIcon />
                 )}
           </ListItemIcon>
-          <ListItemText primary={item.name} />
+          <ListItemText
+            data-testid={`group-${item.name.replace(/\s/g, '_')}`}
+            primary={item.name}
+          />
           {item.subgroup && item.subgroup.length > 0 && (
             <>
               {expanded.includes(item.name) ? <ExpandLess /> : <ExpandMore />}

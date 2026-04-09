@@ -32,12 +32,22 @@ export const DialogComponent: React.FC<
     <DialogContent>{children}</DialogContent>
     <DialogActions sx={{ p: 3 }}>
       {onSubmit && (
-        <Button onClick={onSubmit} variant="contained" disabled={disabled}>
+        <Button
+          aria-label={submitText ?? 'Save'}
+          onClick={onSubmit}
+          variant="contained"
+          disabled={disabled}
+        >
           {submitText ?? 'Save'}
         </Button>
       )}
       {onClose && (
-        <Button onClick={onClose} variant="contained" color="secondary">
+        <Button
+          aria-label={cancelText ?? 'Cancel'}
+          onClick={onClose}
+          variant="contained"
+          color="secondary"
+        >
           {cancelText ?? 'Cancel'}
         </Button>
       )}

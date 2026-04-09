@@ -100,7 +100,12 @@ export const TemplateForm: React.FC<TemplateDiagramFormProps> = ({
             {groupList.length > 0 ? (
               <span>
                 Assign this template to group:&nbsp;
-                <span style={{ fontWeight: 'bold' }}>{selectedGroup}</span>
+                <span
+                  style={{ fontWeight: 'bold' }}
+                  data-testid="selected-group"
+                >
+                  {selectedGroup}
+                </span>
               </span>
             ) : (
               'Create a new group to assign this template'

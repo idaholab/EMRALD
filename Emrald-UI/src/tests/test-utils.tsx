@@ -342,6 +342,21 @@ export function getAction(name: string) {
 }
 
 /**
+ * Gets a template from the EMRALD model.
+ * @param name - The name of the template to get.
+ * @returns The most recently added template with the given name, with the ID property removed.
+ */
+export function getTemplate(name: string) {
+  const matches = appData.value.templates?.filter(e => e.name === name);
+  if (matches === undefined || matches.length === 0) {
+    throw new Error(`Could not find template ${name} in model.`);
+  }
+  const template = matches.at(-1);
+  delete template?.id;
+  return template;
+}
+
+/**
  * Helper function for simulating dragging and dropping.
  * @param from - The element to start dragging from.
  * @param to - The element to drop to.
@@ -373,4 +388,24 @@ export async function selectOption(label: string, option: string) {
 export async function save() {
   const user = userEvent.setup();
   await user.click(await screen.findByText('Save'));
+}
+
+/**
+ * Wrapper around the click event that assumes the select element is not undefined
+ * @param element - The element to click.
+ */
+export async function click(element?: Element) {
+  const user = userEvent.setup();
+  await user.click(element as Element);
+}
+
+/**
+ * Utility function for simulating a right-click event
+ * @param element - The element to right-click.
+ */
+export function rightClick(element?: Element) {
+  return new Promise<void>(resolve => {
+    fireEvent.contextMenu(element as Element);
+    resolve();
+  });
 }
