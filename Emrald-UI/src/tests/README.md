@@ -41,9 +41,17 @@ await user.click(await findByRole(await screen.findByLabelText('<Combobox Label>
 await user.click(await screen.findByRole('option', { name: '<Option to select>' }));
 ```
 
-## Not Yet Tested
+## Manual Tests
+The following components cannot be tested automatically by unit tests.
+- The code editor in components/common/CodeEditorWithVariables.tsx can't be rendered in JSDOM, so actually saving the code entered by the user must be tested manually
+
+
 - Diagram templates: Adding templates to the model directly doesn't propagate the changes into the GroupListItems component, so the option to select a template doesn't show up in the testing environment. Using the createTemplates method causes an infinite loop somewhere.
     - Relevant files: components/common/GroupListItems.tsx, forms/DiagramForm
 - EMRALD Diagrams (state diagrams)
 - Logic Tree Diagrams
 - Sankey Timeline Diagrams
+
+## Notes on uncovered files & lines
+- App.tsx, main.tsx: Uncovered lines render the application in the browser window, it is apparent when you load the UI if these lines are working or not
+- src/components/common/FileUploadComponent.tsx: Uncovered lines are for clearing the uploaded file. Hard to unit test and not very important.
