@@ -53,5 +53,14 @@ The following components cannot be tested automatically by unit tests.
 - Sankey Timeline Diagrams
 
 ## Notes on uncovered files & lines
-- App.tsx, main.tsx: Uncovered lines render the application in the browser window, it is apparent when you load the UI if these lines are working or not
-- src/components/common/FileUploadComponent.tsx: Uncovered lines are for clearing the uploaded file. Hard to unit test and not very important.
+
+- src/components/diagrams/EmraldDiagram/EmraldDiagram.tsx: Uncovered lines are not possible to test without SVG support in jsdom, but it may possible to polyfill using svgdom to test this
+
+The following uncovered lines are not essential to constructing the model and do not need to be tested.
+- src/App.tsx, main.tsx: Uncovered lines render the application in the browser window, it is apparent when you load the UI if these lines are working or not
+- src/components/common/FileUploadComponent.tsx: Uncovered lines are for clearing the uploaded file.
+- src/components/common/GroupListItems.tsx: Uncovered line is for expanding/collapsing the panels.
+- src/components/common/ButtonGroupComponent.tsx: Uncovered lines are for switching the model item categories in the sidebar
+- src/components/diagrams/DownloadButton.tsx: Uncovered lines handle errors in generating the image, which can't really be tested
+- src/components/diagrams/EmraldDiagram/DiagramAccordion.tsx: Uncovered lines are for expanding/collapsing the accordions
+- src/components/diagrams/EmraldDiagram/StateNodeComponent.tsx: Uncovered lines are for moving nodes around in the diagram.

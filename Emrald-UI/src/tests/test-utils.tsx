@@ -254,15 +254,18 @@ export function getEvent(name: string) {
 /**
  * Gets an state from the EMRALD model.
  * @param name - The name of the state to get.
+ * @param removeIds - If true, the returned object will have it's dynamically assigned ID removed.
  * @returns The most recently added state with the given name, with the ID property removed.
  */
-export function getState(name: string) {
+export function getState(name: string, removeIds = true) {
   const matches = appData.value.StateList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find state ${name} in model.`);
   }
   const state = matches.at(-1);
-  delete state?.id;
+  if (removeIds) {
+    delete state?.id;
+  }
   return state;
 }
 

@@ -68,6 +68,7 @@
     "jest-extended": "^4.0.2",
     "jsdom": "^26.1.0",
     "prettier": "^3.5.3",
+    "resize-observer-polyfill": "^1.5.1",
     "rollup": "^4.14.2",
     "sass": "^1.65.1",
     "typescript": "^5.0.2",
