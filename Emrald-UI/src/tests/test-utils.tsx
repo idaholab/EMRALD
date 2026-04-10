@@ -254,15 +254,18 @@ export function getEvent(name: string) {
 /**
  * Gets an state from the EMRALD model.
  * @param name - The name of the state to get.
+ * @param removeIds - If true, the returned object will have it's dynamically assigned ID removed.
  * @returns The most recently added state with the given name, with the ID property removed.
  */
-export function getState(name: string) {
+export function getState(name: string, removeIds = true) {
   const matches = appData.value.StateList.filter(e => e.name === name);
   if (matches.length === 0) {
     throw new Error(`Could not find state ${name} in model.`);
   }
   const state = matches.at(-1);
-  delete state?.id;
+  if (removeIds) {
+    delete state?.id;
+  }
   return state;
 }
 
@@ -342,6 +345,21 @@ export function getAction(name: string) {
 }
 
 /**
+ * Gets a template from the EMRALD model.
+ * @param name - The name of the template to get.
+ * @returns The most recently added template with the given name, with the ID property removed.
+ */
+export function getTemplate(name: string) {
+  const matches = appData.value.templates?.filter(e => e.name === name);
+  if (matches === undefined || matches.length === 0) {
+    throw new Error(`Could not find template ${name} in model.`);
+  }
+  const template = matches.at(-1);
+  delete template?.id;
+  return template;
+}
+
+/**
  * Helper function for simulating dragging and dropping.
  * @param from - The element to start dragging from.
  * @param to - The element to drop to.
@@ -373,4 +391,24 @@ export async function selectOption(label: string, option: string) {
 export async function save() {
   const user = userEvent.setup();
   await user.click(await screen.findByText('Save'));
+}
+
+/**
+ * Wrapper around the click event that assumes the select element is not undefined
+ * @param element - The element to click.
+ */
+export async function click(element?: Element) {
+  const user = userEvent.setup();
+  await user.click(element as Element);
+}
+
+/**
+ * Utility function for simulating a right-click event
+ * @param element - The element to right-click.
+ */
+export function rightClick(element?: Element) {
+  return new Promise<void>(resolve => {
+    fireEvent.contextMenu(element as Element);
+    resolve();
+  });
 }

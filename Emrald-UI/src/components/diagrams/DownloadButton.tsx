@@ -58,7 +58,7 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({
   };
 
   return (
-    <ControlButton onClick={() => void onClick()}>
+    <ControlButton aria-label="Download Snapshot" onClick={() => void onClick()}>
       <FaCamera />
     </ControlButton>
   );

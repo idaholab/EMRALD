@@ -10,7 +10,6 @@ import type {
   State,
   Variable,
 } from '../../../types/EMRALD_Model';
-import type { ModelItem } from '@/types/ModelUtils';
 import { type MouseEvent, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useTemplateContext } from '../../../contexts/TemplateContext';
@@ -429,7 +428,7 @@ export function useTemplateForm(templatedData: EMRALD_Model) {
     removeExcludedItems(); // Remove excluded items before building the template
 
     // Go through all of the renamed items and update the pasted model
-    for (const [i, item] of templatedItems.entries()) {
+    for (const item of templatedItems) {
       if (!item.exclude) {
         const itemCopy = structuredClone(item.emraldItem);
         if (item.action === 'rename') {
@@ -437,8 +436,13 @@ export function useTemplateForm(templatedData: EMRALD_Model) {
         }
         updateSpecifiedModel(itemCopy, item.type, templatedData, false);
         const updatedItems = convertModelToArray(templatedData);
-        item.emraldItem = updatedItems[i]?.emraldItem as ModelItem;
-        item.emraldItem.id = uuidv4();
+        const updated = updatedItems.find(
+          ui => ui.type === item.type && ui.oldName === item.newName,
+        );
+        if (updated) {
+          item.emraldItem = updated.emraldItem;
+          item.emraldItem.id = uuidv4();
+        }
       }
     }
 

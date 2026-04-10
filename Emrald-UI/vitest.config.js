@@ -6,7 +6,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/setupTests.ts'],
-    reporters: ['default', 'tap-flat'],
+    reporters: ['default', /*'tap-flat'*/],
   },
   resolve: {
     alias: {

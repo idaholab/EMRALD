@@ -204,6 +204,7 @@ export const TemplateContextProvider: React.FC<PropsWithChildren> = ({
   const createTemplate = (newTemplate: EMRALD_Model) => {
     temporaryTemplates.value = [...temporaryTemplates.value, newTemplate];
     localStorage.setItem('templates', JSON.stringify(temporaryTemplates.value));
+    addTemplateToModel(newTemplate);
     setTemplates(temporaryTemplates.value);
   };
 

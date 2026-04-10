@@ -94,7 +94,6 @@ export const MAAP: React.FC = () => {
       });
       // Ensures that variable selections are locked in
       formData.sourceElements = newSource;
-      console.log(inpFile.output);
       setCodeVariables(inpFile.variables);
       return inpFile.output;
     }
