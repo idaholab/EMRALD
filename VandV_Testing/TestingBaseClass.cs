@@ -177,6 +177,12 @@ namespace Testing
     {
       var logger = NLog.LogManager.GetLogger(debugLogger);
 
+      void JSONComp(string newPath, string origPath, int[] ignoreLines = null)
+      {
+        logger.Debug("TODO JSON results compare");
+        Assert.True(false);
+      }
+
       void SingleComp(string newPath, string origPath, int[] ignoreLines = null)
       {
         List<string> newFile = File.ReadLines(newPath).ToList();
@@ -213,9 +219,15 @@ namespace Testing
       if ((string)jsonSettings["pathout"] != null)
         SingleComp((string)jsonSettings["pathout"], CompareFilesDir() + testName + pathsName);
       //Json Results file
-      if ((string)jsonSettings["jsonRes"] != null)
-        if (Directory.Exists((string)jsonSettings["jsonRes"]))
-          SingleComp((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName);
+      var token = jsonSettings["jsonRes"];
+      if (token != null && token.Type == JTokenType.Object && !token.HasValues)
+      {
+        if (File.Exists((string)jsonSettings["jsonRes"]))
+        {
+          JSONComp((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName);
+        }
+      }
+
     }
 
     protected void CopyToValidated(string loc, string testName, JObject jsonSettings)
@@ -229,7 +241,7 @@ namespace Testing
 
       if ((string)jsonSettings["jsonRes"] != null)
       {
-        if (Directory.Exists((string)jsonSettings["jsonRes"]))
+        if (File.Exists((string)jsonSettings["jsonRes"]))
           File.Copy((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName, true);
       }
     }

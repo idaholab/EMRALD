@@ -671,6 +671,7 @@ namespace SimulationTracking
     private volatile bool extSimRunning = false;
     private volatile bool emraldStopping3D = false;
     private volatile bool extSimStarting = false;
+    private volatile bool extSimWaitingForIdle = false; // true after atContinue sent on stDone; cleared on stIdle
     private StatusType prevExtSimState = StatusType.stIdle;
     private StatusType curExtSimState = StatusType.stIdle;
     private List<string> stopped3DSims = new List<string>();
@@ -831,7 +832,10 @@ namespace SimulationTracking
       if (!terminated)
         curTime = settingsMaxTime;
 
-      if (ranXMPPSim) //for all the XMPP simulations that ran send a final continue now that all other processing is done
+      // For intermediate runs the stDone handler already sent atContinue to reset the ext sim to Idle.
+      // Only send atContinue here for the last run (no more runs remain), so the ext sim resets to Idle
+      // before termination.
+      if (ranXMPPSim && (this.allLists.curRunIdx >= this.allLists.totRunsReq))
       {
         TMsgWrapper msg2 = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Current EMRALD run done, continue ext Sim");
         foreach (var name in stopped3DSims)
@@ -840,7 +844,6 @@ namespace SimulationTracking
 
           sim3DServer.SendMessage(msg2, name);
         }
-
       }
 
       //MessageBox.Show("end sim");
@@ -977,7 +980,14 @@ namespace SimulationTracking
                 sim3DServer.SendMessage(msg2, fromClient);
                 throw new Exception("Unhandled client simulation error - " + evData.desc);
               }
-              if (!this.extSimRunning)
+              if (ev.status == StatusType.stIdle)
+              {
+                this.extSimWaitingForIdle = false; // ext sim is back in Idle; atOpenSim can now be sent
+                return;
+              }
+              // Allow stDone to fall through so lines below can send atContinue when more runs remain.
+              // For all other statuses, bail early if the ext sim isn't running.
+              if (!this.extSimRunning && ev.status != StatusType.stDone)
                 return;
               break;
 
@@ -1060,12 +1070,14 @@ namespace SimulationTracking
           Send3DNextEvTimers(fromClient);
         }
 
-        //send the continue event to the 3D simulation if in waiting state or done, 
+        //send the continue event to the 3D simulation if in waiting state or done,
         if ((curExtSimState == StatusType.stWaiting) ||
             ((curExtSimState == StatusType.stDone) && (this.allLists.curRunIdx < this.allLists.totRunsReq)))
         {
           TMsgWrapper msg = new TMsgWrapper(MessageType.mtSimAction, "Continue", curTime, "Continue External Sim");
           msg.simAction = new SimAction(SimActionType.atContinue);
+          if (curExtSimState == StatusType.stDone)
+            this.extSimWaitingForIdle = true; // wait for stIdle before allowing the next atOpenSim
           sim3DServer.SendMessage(msg, fromClient);
         }
       }
@@ -1717,6 +1729,13 @@ namespace SimulationTracking
 
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
                 sim3DServer.evCallBackFunc = Sim3DEventOccurred;
+
+                // For subsequent runs: wait until the ext sim has confirmed it is back in Idle
+                // (stIdle received after the atContinue sent in response to stDone).
+                while (this.extSimWaitingForIdle)
+                {
+                  System.Threading.Thread.Sleep(10);
+                }
 
                 if (sim3DServer.SendMessage(msg, cur3DAct.resourceName))
                 {

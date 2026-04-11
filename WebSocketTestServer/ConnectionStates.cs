@@ -247,6 +247,13 @@ namespace WebSocketTestServer
                 return;
             }
 
+            if (action.actType == SimActionType.atTerminate)
+            {
+                Machine.Simulation.Pause();
+                await Machine.RequestTransitionAsync(SimulationState.NotRunning, requireDrain: true);
+                return;
+            }
+
             // TODO: implement simulation runtime loop/processing here.
             await SendStatusAsync(StatusType.stError, $"Action {action.actType} not allowed in Running state");
         }
