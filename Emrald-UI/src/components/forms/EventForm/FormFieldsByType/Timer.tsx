@@ -67,12 +67,6 @@ export const Timer: React.FC<EventFormProps> = ({ eventData }) => {
     setTime(convertToISOString(value));
   };
 
-  useEffect(() => {
-    if (!time) {
-      setTimerMilliseconds(0); // if time is a variable string, milliseconds will not be able to be converted to number
-    }
-  }, [useVariable]);
-
   return (
     <div>
       <FormControlLabel
