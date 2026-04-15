@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
@@ -41,6 +42,12 @@ namespace Testing
     const string resName = "_res.txt";
     const string jsonResultsName = "_jsonResults.json";
     const string debugLogger = "uTestLog";
+
+    // JSON fields excluded from comparison in JSONComp — add field names here to skip them.
+    static readonly string[] jsonCompareIgnoreFields = new[]
+    {
+      "otherStatePaths"
+    };
 
     protected bool ConfirmManualTest(string testName, string textDesc)
     {
@@ -179,8 +186,55 @@ namespace Testing
 
       void JSONComp(string newPath, string origPath, int[] ignoreLines = null)
       {
-        logger.Debug("TODO JSON results compare");
-        Assert.True(false);
+        if (!File.Exists(origPath))
+        {
+          logger.Debug("Missing validation file - " + origPath);
+          Assert.True(false);
+          return;
+        }
+
+        // Normalize a JToken: sort object properties alphabetically and sort
+        // arrays of objects by their compact JSON string for order-independent comparison.
+        JToken NormalizeToken(JToken token)
+        {
+          if (token is JObject obj)
+          {
+            var normalized = new JObject();
+            foreach (var prop in obj.Properties().OrderBy(p => p.Name))
+            {
+              if (!jsonCompareIgnoreFields.Contains(prop.Name))
+                normalized[prop.Name] = NormalizeToken(prop.Value);
+            }
+            return normalized;
+          }
+          if (token is JArray arr)
+          {
+            var items = arr.Select(NormalizeToken).ToList();
+            if (items.Count > 0 && items.All(t => t is JObject))
+              items = items.OrderBy(t => t.ToString(Formatting.None)).ToList();
+            return new JArray(items);
+          }
+          return token;
+        }
+
+        JToken newNorm = NormalizeToken(JToken.Parse(File.ReadAllText(newPath)));
+        JToken origNorm = NormalizeToken(JToken.Parse(File.ReadAllText(origPath)));
+
+        List<string> newLines = newNorm.ToString(Formatting.Indented).Split('\n').ToList();
+        List<string> origLines = origNorm.ToString(Formatting.Indented).Split('\n').ToList();
+
+        List<string> inOrigNotInNew = origLines.Except(newLines).ToList();
+        List<string> inNewNotInOrig = newLines.Except(origLines).ToList();
+
+        if ((inOrigNotInNew.Count > 0) || (inNewNotInOrig.Count > 0))
+        {
+          logger.Debug("JSON results - lines in orig not in new:");
+          logger.Debug(String.Join(Environment.NewLine, inOrigNotInNew));
+          logger.Debug("------");
+          logger.Debug("JSON results - lines in new not in orig:");
+          logger.Debug(String.Join(Environment.NewLine, inNewNotInOrig));
+          Assert.True(false);
+        }
       }
 
       void SingleComp(string newPath, string origPath, int[] ignoreLines = null)
@@ -219,12 +273,12 @@ namespace Testing
       if ((string)jsonSettings["pathout"] != null)
         SingleComp((string)jsonSettings["pathout"], CompareFilesDir() + testName + pathsName);
       //Json Results file
-      var token = jsonSettings["jsonRes"];
-      if (token != null && token.Type == JTokenType.Object && !token.HasValues)
+      var jsonResPath = (string)jsonSettings["jsonRes"];
+      if (!string.IsNullOrEmpty(jsonResPath))
       {
-        if (File.Exists((string)jsonSettings["jsonRes"]))
+        if (File.Exists(jsonResPath))
         {
-          JSONComp((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName);
+          JSONComp(jsonResPath, CompareFilesDir() + testName + jsonResultsName);
         }
       }
 

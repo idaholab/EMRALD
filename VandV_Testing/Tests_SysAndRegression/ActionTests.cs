@@ -81,7 +81,7 @@ namespace SysAndRegressionTesting
       Assert.True(await TestRunSim(testRun));
 
       //Uncomment to update the validation files after they verified correct
-     // CopyToValidated(dir, testName, optionsJ);
+      //CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
       Compare(dir, testName, optionsJ);
@@ -226,7 +226,7 @@ namespace SysAndRegressionTesting
       //CopyToValidated(dir, testName, optionsJ);
 
       //compare the test result and optionally the paths and json if assigned
-      //Compare(dir, testName, optionsJ);
+      Compare(dir, testName, optionsJ);
     }
 
     [Fact]
