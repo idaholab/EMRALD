@@ -56,7 +56,7 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
   const [parameters, setParameters] = useState<EventDistributionParameter[]>();
   const [distType, setDistType] = useState<DistributionType>();
   const [onVarChange, setOnVarChange] = useState<VarChangeOptions>();
-  const [persistent, setPersistent] = useState<boolean | undefined>();
+  const [persistent, setPersistent] = useState<boolean>(false);
 
   useEffect(() => {
     setDfltTimeRate(eventData?.dfltTimeRate);
@@ -79,7 +79,7 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
     }
     setAllRows(rows);
     setDistType(eventData?.distType ?? 'dtNormal');
-    setPersistent(eventData?.persistent);
+    setPersistent(eventData?.persistent ?? false);
     setTypeProperties([
       'dfltTimeRate',
       'parameters',
@@ -90,8 +90,8 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
   }, []);
 
   useEffect(() => {
-    sync({ distType, persistent, onVarChange });
-  }, [distType, persistent, onVarChange]);
+    sync({ distType, persistent, onVarChange, parameters, dfltTimeRate });
+  }, [distType, persistent, onVarChange, parameters, dfltTimeRate]);
 
   const variableChecked = Object.values(allRows)
     .map(row => row?.useVariable)
@@ -130,20 +130,6 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
     });
   }, [parameters, setAllRows]);
 
-  useEffect(() => {
-    setParameters(
-      parameters?.filter(
-        param => param.name && rowsToDisplay.includes(param.name),
-      ),
-    );
-    sync({ parameters });
-  }, [
-    distType,
-    JSON.stringify(parameters),
-    JSON.stringify(rowsToDisplay),
-    setParameters,
-  ]);
-
   const getSuffix = (row: string) => {
     const suffixes: { [k in DistributionType]?: Record<string, string> } = {
       dtExponential: {
@@ -164,13 +150,6 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
     };
     return distType ? suffixes[distType]?.[row] : undefined;
   };
-
-  useEffect(() => {
-    if (!dfltTimeRate) {
-      setDfltTimeRate('trHours');
-    }
-    sync({ dfltTimeRate });
-  }, [dfltTimeRate]);
 
   const handleSetParameters = (
     row: string,
@@ -319,7 +298,6 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
           <MenuItem value="dtGamma">Gamma Distribution</MenuItem>
           <MenuItem value="dtGompertz">Gompertz Distribution</MenuItem>
         </SelectComponent>
-
         <SelectComponent
           value={dfltTimeRate ?? 'trHours'}
           setValue={setDfltTimeRate}
