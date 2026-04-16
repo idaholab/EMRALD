@@ -53,7 +53,7 @@ export function useEmraldDiagram() {
   const getEdges = (stateNodes: Node<{ state: State }>[]) => {
     setEdges([]);
     for (const stateNode of stateNodes) {
-      const { state }: { state: State } = stateNode.data;
+      const { state } = stateNode.data;
       getEventActionEdges(
         stateNode.id,
         nodes,

@@ -45,6 +45,8 @@ export function useAssembledData() {
   // ... get data from other contexts
 
   const newProject = () => {
+    // Close any open windows
+    closeAllWindows();
     setName('');
     setDesc('');
     setVersion(1);
