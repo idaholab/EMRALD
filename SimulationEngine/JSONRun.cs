@@ -260,6 +260,13 @@ namespace SimulationEngine
       // Wait for all tasks to complete asynchronously
       await Task.WhenAll(tasks);
 
+      // Send WebSocket close frame before tearing down the connection.
+      // WebApiCoupling.Dispose() calls DisconnectAsync, but is never invoked explicitly —
+      // without this the underlying socket is abandoned and the ext sim sees an abrupt TCP close
+      // instead of a proper WebSocket close handshake.
+      if (_msgCoupler is WebApiCoupling wsCouple)
+        await wsCouple.DisconnectAsync();
+
       //compile results if needed
       for (int i = 1; i < _simRuns.Count; i++)
       {
