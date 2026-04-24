@@ -57,6 +57,13 @@ export function useAssembledData() {
     clearTemplateList();
     clearExtSimList();
     clearFileName();
+    updateAppData({
+      ...appData.value,
+      name: undefined,
+      desc: undefined,
+      version: 1,
+      versionHistory: [],
+    });
   };
 
   const refreshWithNewData = (model: EMRALD_Model) => {

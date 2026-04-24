@@ -614,7 +614,6 @@ class Upgrade {
     upgradeGiveID(toVersion, setIdFunction) {
         this._newModelTxt = this._oldModelTxt;
         // Define upgrade functions
-        console.log(this._newModelTxt);
         const upgrades = [
             { emraldVersion: 1.2, upgradeFunction: UpgradeV1_x },
             { emraldVersion: 2.4, upgradeFunction: UpgradeV2_4 },

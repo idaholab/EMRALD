@@ -31,16 +31,6 @@ export const DialogComponent: React.FC<
     {title && <DialogTitle>{title}</DialogTitle>}
     <DialogContent>{children}</DialogContent>
     <DialogActions sx={{ p: 3 }}>
-      {onSubmit && (
-        <Button
-          aria-label={submitText ?? 'Save'}
-          onClick={onSubmit}
-          variant="contained"
-          disabled={disabled}
-        >
-          {submitText ?? 'Save'}
-        </Button>
-      )}
       {onClose && (
         <Button
           aria-label={cancelText ?? 'Cancel'}
@@ -49,6 +39,16 @@ export const DialogComponent: React.FC<
           color="secondary"
         >
           {cancelText ?? 'Cancel'}
+        </Button>
+      )}
+      {onSubmit && (
+        <Button
+          aria-label={submitText ?? 'Save'}
+          onClick={onSubmit}
+          variant="contained"
+          disabled={disabled}
+        >
+          {submitText ?? 'Save'}
         </Button>
       )}
     </DialogActions>
