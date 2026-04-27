@@ -1173,8 +1173,9 @@ namespace EMRALD_Sim
       for (int i = 0; i < lbMonitorVars.Items.Count; i++)
       {
         string val = lbMonitorVars.Items[i].ToString();
-        if (_curSimOptions.variables != null)
-          lbMonitorVars.SetItemChecked(i, _curSimOptions.variables.Contains(val));
+        bool monitoredByModel = _sim?.allVariables.FindByName(val, false)?.monitorInSim ?? false;
+        bool inOptions = _curSimOptions.variables?.Contains(val) ?? false;
+        lbMonitorVars.SetItemChecked(i, monitoredByModel || inOptions);
       }
 
       _pathResultsInterval = _curSimOptions.pathResultsInterval;

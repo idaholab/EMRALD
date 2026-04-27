@@ -210,7 +210,9 @@ namespace SimulationEngine
         {
           foreach (var varItem in this.options.variables)
           {
-            _simRuns[threadIndex].logVarVals.Add(varItem.ToString());
+            string varName = varItem.ToString();
+            if (!_simRuns[threadIndex].logVarVals.Contains(varName))
+              _simRuns[threadIndex].logVarVals.Add(varName);
           }
         }
 
