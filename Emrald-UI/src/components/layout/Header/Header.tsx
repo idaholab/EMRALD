@@ -51,7 +51,6 @@ export const Header: React.FC = () => {
   const [changeDesc, setChangeDesc] = useState<string>();
   const [modelErrorDialog, setModelErrorDialog] = useState(false);
   const [modelErrorMessage, setModelErrorMessage] = useState('');
-  const [fromInterrupt, setFromInterrupt] = useState(false);
 
   useEffect(() => {
     setUpdatedName(name);
@@ -70,9 +69,6 @@ export const Header: React.FC = () => {
       version: Number(updatedVersion),
     });
     setProjectDialog(false);
-    if (fromInterrupt) {
-      void projectOptions.Save();
-    }
   };
 
   const handleClose = () => {
@@ -122,12 +118,10 @@ export const Header: React.FC = () => {
               setVersionDialog(true);
             }}
             openNameDialog={() => {
-              setFromInterrupt(true);
-              setProjectDialog(true);
+              setVersionDialog(true);
               setNameRequiredMsg(true);
             }}
             handleModelError={message => {
-              setFromInterrupt(true);
               setModelErrorDialog(true);
               setModelErrorMessage(message);
             }}
@@ -249,13 +243,12 @@ export const Header: React.FC = () => {
         </Table>
       </DialogComponent>
 
-      {/* Dialog for model version history */}
+      {/* Dialog for model version history & required project name */}
       <DialogComponent
         open={versionDialog}
-        title="Update Model Version"
+        title={nameRequiredMsg ? 'Enter Project Name' : 'Update Model Version'}
         onClose={() => {
           setVersionDialog(false);
-          setFromInterrupt(false);
         }}
         onSubmit={() => {
           const newVersion = Number(updatedVersion);
@@ -277,12 +270,30 @@ export const Header: React.FC = () => {
             version: newVersion,
             versionHistory,
           });
-          if (fromInterrupt) {
-            void projectOptions.Save();
-          }
+          void projectOptions.Save();
           setVersionDialog(false);
         }}
       >
+        <TextField
+          margin="dense"
+          id="name"
+          label="Name"
+          type="text"
+          fullWidth
+          variant="outlined"
+          size="small"
+          value={updatedName}
+          onChange={e => {
+            setUpdatedName(e.target.value);
+            if (nameRequiredMsg && e.target.value.length > 0) {
+              setNameRequiredMsg(false);
+            }
+          }}
+          error={nameRequiredMsg}
+          helperText={
+            nameRequiredMsg ? 'A project name is required' : undefined
+          }
+        />
         <TextField
           margin="dense"
           id="version"

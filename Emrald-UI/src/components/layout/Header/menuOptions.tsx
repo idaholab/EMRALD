@@ -137,6 +137,7 @@ export const projectOptions = {
     // if error TODO
     if (errors.length > 0) {
       // todo let the user know the errors and report a bug to developers, provide the model if possible
+      console.error('Model validation errors:', errors);
     }
     // Convert JSON data to a string
     const data = structuredClone(appData.value);
