@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 //using SimulationTracking;
@@ -888,6 +889,7 @@ namespace SimulationDAL
         try
         {
           XmlDocument xDoc = new XmlDocument();
+          xDoc.PreserveWhitespace = true;
           using (XmlReader reader = XmlReader.Create(_docFullPath))
           {
             xDoc.Load(reader);
@@ -922,7 +924,18 @@ namespace SimulationDAL
             }
           }
 
-          xDoc.Save(_docFullPath);
+          // Detect original BOM so the save doesn't change the file's encoding
+          Encoding writeEncoding;
+          {
+            byte[] bom = new byte[3];
+            using (FileStream fs = File.OpenRead(_docFullPath))
+              fs.ReadExactly(bom, 0, 3);
+            writeEncoding = (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
+              ? new UTF8Encoding(true)
+              : new UTF8Encoding(false);
+          }
+          using (XmlWriter xWriter = XmlWriter.Create(_docFullPath, new XmlWriterSettings { Encoding = writeEncoding }))
+            xDoc.Save(xWriter);
           fileUpdated = true;
         }
         catch (IOException ex)
