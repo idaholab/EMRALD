@@ -42,7 +42,7 @@ export const Header: React.FC = () => {
 
   const { name, desc, fileName, version, setVersion, setName, setDesc }
     = useModelDetailsContext();
-  const [openDialog, setOpenDialog] = useState(false);
+  const [projectDialog, setProjectDialog] = useState(false);
   const [nameRequiredMsg, setNameRequiredMsg] = useState(false);
   const [updatedName, setUpdatedName] = useState<string>();
   const [updatedDesc, setUpdatedDesc] = useState<string>();
@@ -68,11 +68,11 @@ export const Header: React.FC = () => {
       desc: updatedDesc,
       version: Number(updatedVersion),
     });
-    setOpenDialog(false);
+    setProjectDialog(false);
   };
 
   const handleClose = () => {
-    setOpenDialog(false);
+    setProjectDialog(false);
     setUpdatedName(undefined);
     setUpdatedDesc(undefined);
   };
@@ -118,7 +118,7 @@ export const Header: React.FC = () => {
               setVersionDialog(true);
             }}
             openNameDialog={() => {
-              setOpenDialog(true);
+              setVersionDialog(true);
               setNameRequiredMsg(true);
             }}
             handleModelError={message => {
@@ -151,10 +151,12 @@ export const Header: React.FC = () => {
               fontSize: isMediumScreen ? '1em' : '1.2em',
             }}
             onClick={() => {
-              setOpenDialog(true);
+              setProjectDialog(true);
             }}
           >
-            {name ?? 'Click Here to Name Project'}
+            {name === undefined || name.length === 0
+              ? 'Click Here to Name Project'
+              : name}
             &nbsp;
             {version && version > 1 ? `v${version.toString()}` : ''}
           </Typography>
@@ -166,7 +168,7 @@ export const Header: React.FC = () => {
 
       {/* Dialog for project updating name and description */}
       <DialogComponent
-        open={openDialog}
+        open={projectDialog}
         title="Enter new project name and description"
         disabled={updatedName === ''}
         onSubmit={handleSave}
@@ -241,16 +243,15 @@ export const Header: React.FC = () => {
         </Table>
       </DialogComponent>
 
-      {/* Dialog for model version history */}
+      {/* Dialog for model version history & required project name */}
       <DialogComponent
         open={versionDialog}
-        title="Update Model Version"
+        title={nameRequiredMsg ? 'Enter Project Name' : 'Update Model Version'}
         onClose={() => {
           setVersionDialog(false);
         }}
         onSubmit={() => {
           const newVersion = Number(updatedVersion);
-          // TODO: The existence of this array should be garuanteed by the upgrade script
           const versionHistory = appData.value.versionHistory;
           const existing = versionHistory.findIndex(
             v => v.version === newVersion,
@@ -273,6 +274,26 @@ export const Header: React.FC = () => {
           setVersionDialog(false);
         }}
       >
+        <TextField
+          margin="dense"
+          id="name"
+          label="Name"
+          type="text"
+          fullWidth
+          variant="outlined"
+          size="small"
+          value={updatedName}
+          onChange={e => {
+            setUpdatedName(e.target.value);
+            if (nameRequiredMsg && e.target.value.length > 0) {
+              setNameRequiredMsg(false);
+            }
+          }}
+          error={nameRequiredMsg}
+          helperText={
+            nameRequiredMsg ? 'A project name is required' : undefined
+          }
+        />
         <TextField
           margin="dense"
           id="version"

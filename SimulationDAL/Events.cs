@@ -1429,7 +1429,7 @@ namespace SimulationDAL
       //make sure all the variables referenced are in the variable list
       foreach (var p in this._dParams)
       {
-        if (p.variable != null)
+        if ((p.useVariable == null ? false : (bool)p.useVariable) && (p.variable != null))
         {
           SimVariable v = this.vars.FindByName(p.variable);
           if (v == null)
