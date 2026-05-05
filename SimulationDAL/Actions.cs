@@ -176,7 +176,8 @@ namespace SimulationDAL
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
-      mutExcl = Convert.ToBoolean(dynObj.mutExcl);
+      if (dynObj.mutExcl != null)
+        mutExcl = Convert.ToBoolean(dynObj.mutExcl);
 
       lists.allActions.Add(this, false);
 
