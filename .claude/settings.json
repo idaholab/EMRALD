@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -v \"//.*\\\\.Add\\\\|List<\\\\|\\\\.Add\\(new\\\\|addList\\\\|addTimes\\\\|retList\\\\|eventNames\\\\|actionNames\\\\|poppedList\\\\|processEventList\\\\|varVals\\\\|times\\\\b\\\\|times2\\\\b\\\\|actList\\\\|idList\\\\|retEvs\\\\|refs\\\\b\\\\|remList\\\\|finalVarValueList\\\\|values\\\\b\\\\|stopped3DSims\\\\|nextStateQue\")"
-    ]
-  }
-}
