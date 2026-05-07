@@ -675,9 +675,10 @@ namespace SimulationTracking
     private StatusType prevExtSimState = StatusType.stIdle;
     private StatusType curExtSimState = StatusType.stIdle;
     private List<string> stopped3DSims = new List<string>();
-    private bool inProcessingLoop = false;
+    private volatile bool inProcessingLoop = false;
+    private volatile bool firstInitDone = false; //Upon start of sim All start states, immediate actions, and conditional events have been processed  
     private TimeSpan sim3DStartTime;
-    private bool terminated = false;
+    private volatile bool terminated = false;
     private TimeSpan settingsMaxTime;
     /// <summary>
     /// max time left
@@ -742,6 +743,7 @@ namespace SimulationTracking
       this.extSimRunning = false;
       this.extSimStarting = false;
       this.inProcessingLoop = false;
+      this.firstInitDone = false;
       this.terminated = false;
       this.maxTime = settingsMaxTime;
 
@@ -796,6 +798,7 @@ namespace SimulationTracking
         retResults = curStates.GetFinalStateList();
         terminated = true;
       }
+      firstInitDone = true;
 
       bool ranXMPPSim = false;
       //in case a 3d simulations starts up in the beginning
@@ -1027,7 +1030,7 @@ namespace SimulationTracking
 
 
       //wait for state processing to be done.
-      while (inProcessingLoop)
+      while (inProcessingLoop || !firstInitDone)
       {
         //Application.DoEvents(); //this is required for the main processing of the simulation while 
         System.Threading.Thread.Sleep(10);
