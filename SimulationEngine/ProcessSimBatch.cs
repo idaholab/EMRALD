@@ -383,7 +383,19 @@ namespace SimulationEngine
 
                   //if the state is in the current Key states then add the variable value
                   if (curKeyStates.ContainsKey(keyStateName))
-                    varVals.Add(i.ToString(), curVar.strValue);
+                  {
+                    if (varVals.ContainsKey(i.ToString()))
+                    {
+#if DEBUG
+                      throw new Exception($"Duplicate key '{i}' in varVals for variable '{varName}' in key state '{keyStateName}'. " +
+                        $"logVarVals likely contains duplicate entries (e.g., variable listed in both monitorInSim and options.variables).");
+#endif
+                    }
+                    else
+                    {
+                      varVals.Add(i.ToString(), curVar.strValue);
+                    }
+                  }
                 }
               }
             }
@@ -788,7 +800,12 @@ namespace SimulationEngine
           this.keyPaths.Add(keyPath.Value.name, keyPath.Value);
           foreach (var variableCategory in toAddBatch._variableVals)
           {
-            this._variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
+            if (!_variableVals.ContainsKey(variableCategory.Key))
+              _variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
+#if DEBUG
+            else
+              throw new Exception($"Duplicate variable category key '{variableCategory.Key}' when merging batch results in AddOtherBatchResults.");
+#endif
           }
         }
         else

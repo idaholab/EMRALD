@@ -144,7 +144,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   // transition items
   const [mutuallyExclusive, setMutuallyExclusive] = useState<
     boolean | undefined
-  >();
+  >(true);
   const [newStateItems, setNewStateItems] = useState<
     NewStateItem[] | undefined
   >();
@@ -523,7 +523,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   };
 
   const reset = () => {
-    setMutuallyExclusive(undefined);
+    setMutuallyExclusive(true);
     setNewStateItems(undefined);
     setCodeVariables([]);
     setVariableName(undefined);
@@ -560,7 +560,9 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setDesc(actionData?.desc ?? '');
     setActType(actionData?.actType ?? 'atTransition');
     // transition items
-    setMutuallyExclusive(actionData?.mutExcl);
+    setMutuallyExclusive(
+      actionData?.mutExcl === undefined ? true : actionData.mutExcl,
+    );
     setNewStateItems(
       actionData?.newStates
         ? sortNewStates(

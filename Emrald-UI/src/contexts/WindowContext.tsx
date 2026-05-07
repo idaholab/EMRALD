@@ -15,6 +15,7 @@ export interface WindowPosition {
   width: number;
   height: number;
 }
+
 interface Window {
   id: string;
   title: string;
@@ -97,7 +98,7 @@ export const WindowProvider: React.FC<PropsWithChildren> = ({ children }) => {
     position?: WindowPosition,
     windowId?: string | null,
     closePrevWindowId?: string,
-  ): void => {
+  ) => {
     const existingWindow = windows.find(
       window => window.title === title || window.id === windowId,
     );
@@ -139,9 +140,7 @@ export const WindowProvider: React.FC<PropsWithChildren> = ({ children }) => {
     setNextWindowId(nextWindowId + 1);
   };
 
-  const getWindowTitleById = (id: string | null): string | undefined => {
-    return windows.find(window => window.id === id)?.title;
-  };
+  const getWindowTitleById = (id: string | null) => windows.find(window => window.id === id)?.title;
 
   const updateTitle = (currentTitle: string, newTitle: string) => {
     const windowToUpdate = windows.find(

@@ -88,7 +88,6 @@ export function useOptionsMapping() {
             const copiedModel = structuredClone(
               GetModelItemsReferencedBy(diagram.name, 'Diagram', 3),
             );
-            console.log(copiedModel);
             addWindow(
               `Create Template`,
               <TemplateForm templatedData={copiedModel} />,
@@ -341,7 +340,6 @@ export function useOptionsMapping() {
       {
         label: 'Edit Properties',
         action: (event: Event) => {
-          console.log(event);
           addWindow(
             `Edit Properties: ${event.name}`,
             <EventFormContextProvider>
@@ -453,4 +451,4 @@ export function useOptionsMapping() {
   };
 
   return optionsMapping;
-};
+}

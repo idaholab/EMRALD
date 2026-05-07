@@ -91,6 +91,7 @@ export const EventForm: React.FC<EventFormProps & { state?: State }> = ({
       desc,
       mainItem: true,
     };
+    console.log(e);
     eventData
       ? updateEvent(e, state, moveFromCurrent)
       : createEvent(e, state, moveFromCurrent);

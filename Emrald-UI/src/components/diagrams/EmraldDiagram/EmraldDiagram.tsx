@@ -1,4 +1,4 @@
-import type { Diagram } from '../../../types/EMRALD_Model';
+import type { Diagram } from '@/types/EMRALD_Model';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { signal } from '@preact/signals';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -11,11 +11,11 @@ import ReactFlow, {
   Controls,
   MiniMap,
 } from 'reactflow';
-import { emptyDiagram } from '../../../contexts/DiagramContext';
-import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
-import { ContextMenu } from '../../layout/ContextMenu/ContextMenu';
-import { DownloadButton } from '../DownloadButton';
-import { StateNode } from '../EmraldDiagram/StateNodeComponent';
+import { DialogComponent } from '@/components/common/DialogComponent/DialogComponent';
+import { DownloadButton } from '@/components/diagrams/DownloadButton';
+import { StateNode } from '@/components/diagrams/EmraldDiagram/StateNodeComponent';
+import { ContextMenu } from '@/components/layout/ContextMenu/ContextMenu';
+import { emptyDiagram } from '@/contexts/DiagramContext';
 import { CustomConnectionLine } from './Edges/ConnectionLineComponent';
 import { useContextMenu } from './useContextMenu';
 import { useEmraldDiagram } from './useEmraldDiagram';

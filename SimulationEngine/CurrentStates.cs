@@ -148,6 +148,8 @@ namespace SimulationTracking
         {
           State curState = remState.statePath.state;
           //move back to the CurrentStates and put items back in condEvList.
+          if (this.ContainsKey(curState.id))
+            throw new Exception("Tried failed to add current state to list, already there, in RevertToGivenTime");
           this.Add(curState.id, remState.statePath);
           _bitMap.Set(curState.id, true);
           remList.Add(curState.id);
@@ -424,7 +426,16 @@ namespace SimulationTracking
 
             addToRes = keyResMap[curStatePath.state.name].pathsLookup;
 
-            retStateResults.Add(curStatePath.state.name, curStatePath.times[curStatePath.times.Count - 1]);
+            if (!retStateResults.ContainsKey(curStatePath.state.name))
+            {
+              retStateResults.Add(curStatePath.state.name, curStatePath.times[^1]);
+            }
+#if DEBUG
+            else
+            {
+              throw new Exception($"Duplicate key state name '{curStatePath.state.name}' in GetKeyStatePaths. Two active key states share the same name.");
+            }
+#endif
           }
 
           foreach (var item in curResDict.Values)

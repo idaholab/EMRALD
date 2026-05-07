@@ -518,7 +518,7 @@ export function useImportForm(
       } else {
         addWindow(
           importedDataCopy.DiagramList[0]?.name ?? '',
-          <EmraldDiagram diagram={importedDataCopy.DiagramList[0]} />,
+          <EmraldDiagram diagram={importedDataCopy.DiagramList[0] as Diagram} />,
           {
             x: 75,
             y: 25,

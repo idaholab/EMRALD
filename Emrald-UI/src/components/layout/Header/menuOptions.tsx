@@ -137,6 +137,7 @@ export const projectOptions = {
     // if error TODO
     if (errors.length > 0) {
       // todo let the user know the errors and report a bug to developers, provide the model if possible
+      console.error('Model validation errors:', errors);
     }
     // Convert JSON data to a string
     const data = structuredClone(appData.value);
@@ -192,7 +193,6 @@ export const projectOptions = {
       // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
       try {
         const parsedContent = JSON.parse(content) as TimelineOptions;
-        console.log(parsedContent);
         parsedContent.name = selectedFile.name;
         // TODO - Opening a results file with a different results file already open displays the same file in both windows
         addWindow(

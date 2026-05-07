@@ -302,3 +302,4 @@ instrumented
 *.ipr
 *.iws
 /WebSocketTestServer/.vscode
+/.claude/settings.json

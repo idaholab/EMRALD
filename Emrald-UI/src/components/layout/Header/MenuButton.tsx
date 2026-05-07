@@ -256,7 +256,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
                   // TODO: The "new" option doesn't reset the name / version number
                   let interrupted = false;
                   if (option === 'Save') {
-                    if (appData.value.name === undefined && openNameDialog) {
+                    if ((appData.value.name === undefined || appData.value.name.length === 0) && openNameDialog) {
                       openNameDialog();
                       interrupted = true;
                     } else if (appData.value.version > 1 && openVersionDialog) {
