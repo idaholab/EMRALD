@@ -14,6 +14,7 @@ namespace CouplingWebSocket
 {
   public class WebApiCoupling : ISimMessaging, IDisposable
   {
+    private static readonly NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
     private WebSocketClient _client;
     private TEventCallBack? _evCallBackFunc = null;
     private IMessageDispHandling? _form = null;
@@ -215,7 +216,7 @@ namespace CouplingWebSocket
         // First parse the wrapper that contains conID and message
         var jsonObj = JObject.Parse(e.message);
 #if DEBUG
-        if (WebSocketClient.LogMessages) Console.WriteLine("Recieved : " + e.message);
+        if (WebSocketClient.LogMessages) Console.WriteLine("Received : " + e.message);
 #endif
 
         // Extract just the "message" property which contains the TMsgWrapper
@@ -239,6 +240,16 @@ namespace CouplingWebSocket
               _form.IncomingEMRALDMsg(_connectedApps[e.conID], msg);
             }
           }
+          else
+          {
+            string badMsg = $"Bad JSON from '{_connectedApps[e.conID]}': TMsgWrapper deserialized to null. Raw message: {e.message}";
+            Console.WriteLine(badMsg);
+            logger.Debug(badMsg);
+            if (_form != null)
+            {
+              _form.IncomingOtherMsg(_connectedApps[e.conID], e.message);
+            }
+          }
         }
         else
         {
@@ -249,9 +260,12 @@ namespace CouplingWebSocket
           }
         }
       }
-      catch (JsonException)
+      catch (JsonException jsonEx)
       {
         // Failed to deserialize as TMsgWrapper
+        string jsonErrMsg = $"Bad JSON from '{_connectedApps[e.conID]}': {jsonEx.Message}. Raw message: {e.message}";
+        Console.WriteLine(jsonErrMsg);
+        logger.Debug(jsonErrMsg);
         // Call the form's incoming other message handler if set
         if (_form != null)
         {
@@ -261,6 +275,9 @@ namespace CouplingWebSocket
       catch (Exception ex)
       {
         // Other errors
+        string errMsg = $"Error processing message from '{_connectedApps[e.conID]}': {ex.Message}. Raw message: {e.message}";
+        Console.WriteLine(errMsg);
+        logger.Debug(errMsg);
         if (_form != null)
         {
           _form.IncomingOtherMsg(_connectedApps[e.conID], $"Error processing message: {ex.Message}");

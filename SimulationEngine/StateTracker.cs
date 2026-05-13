@@ -693,6 +693,9 @@ namespace SimulationTracking
     //keep track of last external events so that we can trigger internal events if needed
     Dictionary<string, SimEventType> lastExtEvTypes = new Dictionary<string, SimEventType>();
 
+    //clients whose requested-vs-received sim3DNameId diff has already been logged this run
+    private HashSet<string> sim3DMissingCheckedClients = new HashSet<string>();
+
     //Save Persistent events so they only get resampled if past the sampled time. 
     private Dictionary<string, TimeMoveEvent> PersistentEvs = new Dictionary<string, TimeMoveEvent>();
 
@@ -731,6 +734,7 @@ namespace SimulationTracking
       this.processEventList.Clear();
       this.nextStateQue.Clear();
       this.lastExtEvTypes.Clear();
+      this.sim3DMissingCheckedClients.Clear();
       this.changedItems.Clear();
       this.curStates.Clear();
       this.condEvList.Clear();
@@ -896,6 +900,23 @@ namespace SimulationTracking
       //clear the tracking of last events recieved
       lastExtEvTypes.Clear();
       bool doProcessLoop = false;
+      HashSet<string> seenSim3DIdsInMessage = new HashSet<string>();
+
+      if (logger.IsDebugEnabled && evData.simEvents.Any(e => e.evType != SimEventType.etStatus))
+      {
+        var sb = new System.Text.StringBuilder();
+        sb.Append("ExtSimEventOccurred: ").Append(evData.dispName)
+          .Append(", globalRunTime=").Append(evData.globalRunTime.ToString(@"d\.hh\:mm\:ss\.f"));
+        foreach (var dEv in evData.simEvents)
+        {
+          if (dEv.evType == SimEventType.etStatus)
+            continue;
+          sb.Append(" | evType=").Append(dEv.evType);
+          if (dEv.itemData != null)
+            sb.Append(", nameId=").Append(dEv.itemData.nameId).Append(", value=").Append(dEv.itemData.value);
+        }
+        logger.Debug(sb.ToString());
+      }
 
       foreach (var ev in evData.simEvents)
       {
@@ -1006,6 +1027,7 @@ namespace SimulationTracking
               else
                 shiftTimeTo = shiftTimeTo + sim3DStartTime;
 
+              seenSim3DIdsInMessage.Add(ev.itemData.nameId);
               SimVariable curVar = allLists.allVariables.FindBySim3dId(ev.itemData.nameId);
               if (curVar != null)
               {
@@ -1015,6 +1037,12 @@ namespace SimulationTracking
                   this.timeEvList.ExternalEvOccurred(evData.desc + i.ToString(), ev, allLists, shiftTimeTo, sim3DStartTime);
                 this.allLists.allVariables[curVar.id].SetValue(ev.itemData.value);
                 this.changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
+              }
+              else
+              {
+                string unmappedMsg = "etCompEv received with no matching EMRALD variable (sim3DId='" + ev.itemData.nameId + "', value=" + ev.itemData.value + ") - item ignored.";
+                Console.WriteLine(unmappedMsg);
+                logger.Debug(unmappedMsg);
               }
               doProcessLoop = true;
               break;
@@ -1028,6 +1056,28 @@ namespace SimulationTracking
         ++i;
       }
 
+      //One-time check per client: warn if any Sim3DVariable's sim3DNameId requested in CreateConnection
+      //never showed up in this first etCompEv-bearing message from the external sim.
+      if (seenSim3DIdsInMessage.Count > 0 && !sim3DMissingCheckedClients.Contains(fromClient))
+      {
+        sim3DMissingCheckedClients.Add(fromClient);
+        List<string> missingSim3DIds = new List<string>();
+        foreach (var v in allLists.allVariables.Values)
+        {
+          if (v is Sim3DVariable sim3dVar &&
+              sim3dVar.resourceName == fromClient &&
+              !seenSim3DIdsInMessage.Contains(sim3dVar.sim3DNameId))
+          {
+            missingSim3DIds.Add(sim3dVar.sim3DNameId + " (EMRALD var: " + sim3dVar.name + ")");
+          }
+        }
+        if (missingSim3DIds.Count > 0)
+        {
+          string missingMsg = "External sim '" + fromClient + "' did not send etCompEv for requested sim3DId(s): " + string.Join(", ", missingSim3DIds);
+          Console.WriteLine(missingMsg);
+          logger.Debug(missingMsg);
+        }
+      }
 
       //wait for state processing to be done.
       while (inProcessingLoop || !firstInitDone)

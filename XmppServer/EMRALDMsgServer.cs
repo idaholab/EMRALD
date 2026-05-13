@@ -122,7 +122,7 @@ namespace XmppMessageServer
         try
         {
           TMsgWrapper msgObj = JsonConvert.DeserializeObject<TMsgWrapper>(msg.Body);
-          logger.Debug("Recieved message - " + msg.Body);
+          logger.Debug("Received message - " + msg.Body);
           if (msgObj != null)
           {
             //if (_form != null)
