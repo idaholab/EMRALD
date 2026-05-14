@@ -893,6 +893,20 @@ namespace SimulationTracking
     /// <param name="evData">the message packet</param>
     void Sim3DEventOccurred(string fromClient, TMsgWrapper evData)
     {
+      //Reject messages whose globalRunTime is earlier than the solve engine's globalRunTime
+      //(outgoing messages use curTime as globalRunTime - see TMsgWrapper(.., curTime, ..) call sites).
+      if (evData.globalRunTime < this.curTime)
+      {
+        string staleMsg = "External sim '" + fromClient + "' message globalRunTime=" +
+                          evData.globalRunTime.ToString(@"d\.hh\:mm\:ss\.f") +
+                          " is earlier than solve engine globalRunTime=" +
+                          this.curTime.ToString(@"d\.hh\:mm\:ss\.f") +
+                          ". Message ignored." + Environment.NewLine +
+                          "Full message: " + JsonConvert.SerializeObject(evData);
+        Console.WriteLine(staleMsg);
+        logger.Debug(staleMsg);
+        return;
+      }
 
       TimeSpan shiftTimeTo = new TimeSpan();
 
@@ -1029,6 +1043,14 @@ namespace SimulationTracking
 
               seenSim3DIdsInMessage.Add(ev.itemData.nameId);
               SimVariable curVar = allLists.allVariables.FindBySim3dId(ev.itemData.nameId);
+              if (curVar == null)
+              {
+                //TEMP fallback: some external sims expose values under "Postprocessors/<name>/value"
+                string postprocId = "Postprocessors/" + ev.itemData.nameId + "/value";
+                curVar = allLists.allVariables.FindBySim3dId(postprocId);
+                if (curVar != null)
+                  seenSim3DIdsInMessage.Add(postprocId);
+              }
               if (curVar != null)
               {
                 //Create a extSim time event so it is processed
@@ -1040,7 +1062,7 @@ namespace SimulationTracking
               }
               else
               {
-                string unmappedMsg = "etCompEv received with no matching EMRALD variable (sim3DId='" + ev.itemData.nameId + "', value=" + ev.itemData.value + ") - item ignored.";
+                string unmappedMsg = "etCompEv received with no matching EMRALD variable (sim3DId='" + ev.itemData.nameId + "' or 'Postprocessors/" + ev.itemData.nameId + "/value', value=" + ev.itemData.value + ") - item ignored.";
                 Console.WriteLine(unmappedMsg);
                 logger.Debug(unmappedMsg);
               }
