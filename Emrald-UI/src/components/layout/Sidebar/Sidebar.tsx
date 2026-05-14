@@ -48,7 +48,9 @@ export const Sidebar: React.FC = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: '#2FA770',
+          backgroundColor: 'primary.main',
+          display: 'flex',
+          flexDirection: 'column',
         },
       }}
     >
@@ -58,7 +60,7 @@ export const Sidebar: React.FC = () => {
           handleMouseDown();
         }}
       />
-      <Box sx={{ overflow: 'auto' }}>
+      <Box sx={{ overflow: 'auto', flex: 1 }}>
         <MenuAccordion
           panels={diagramPanels}
           group="diagrams"
@@ -84,6 +86,63 @@ export const Sidebar: React.FC = () => {
           componentGroup={componentGroup}
           handleDelete={handleDelete}
         />
+      </Box>
+      <Box
+        component="a"
+        href="https://iapsam.org/PSAM18/index.html"
+        target="_blank"
+        rel="noopener noreferrer"
+        sx={{
+          display: 'block',
+          px: 2,
+          py: 1.5,
+          backgroundColor: '#1d6b4a',
+          borderTop: '1px solid rgba(255,255,255,0.12)',
+          textDecoration: 'none',
+          transition: 'background-color 150ms cubic-bezier(0.22, 1, 0.36, 1)',
+          '&:hover': { backgroundColor: '#175840' },
+          '&:focus-visible': {
+            outline: '2px solid #7dd4aa',
+            outlineOffset: '-2px',
+          },
+        }}
+      >
+        <Typography
+          sx={{
+            display: 'block',
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: '10px',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            lineHeight: 1.2,
+            mb: 0.5,
+          }}
+        >
+          PSAM-18
+        </Typography>
+        <Typography
+          sx={{
+            display: 'block',
+            color: '#fff',
+            fontSize: '12px',
+            lineHeight: 1.4,
+            mb: 0.75,
+          }}
+        >
+          Attend EMRALD Workshop
+          <br />
+          July 20-21, 2026
+        </Typography>
+        <Typography
+          sx={{
+            display: 'block',
+            color: '#7dd4aa',
+            fontSize: '11px',
+            lineHeight: 1.2,
+          }}
+        >
+          iapsam.org/PSAM18 ↗
+        </Typography>
       </Box>
       {deleteConfirmation && (
         <DialogComponent
