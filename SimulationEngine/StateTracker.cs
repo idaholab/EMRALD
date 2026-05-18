@@ -893,19 +893,20 @@ namespace SimulationTracking
     /// <param name="evData">the message packet</param>
     void Sim3DEventOccurred(string fromClient, TMsgWrapper evData)
     {
-      //Reject messages whose globalRunTime is earlier than the solve engine's globalRunTime
-      //(outgoing messages use curTime as globalRunTime - see TMsgWrapper(.., curTime, ..) call sites).
-      if (evData.globalRunTime < this.curTime)
+      //If the ext sim's globalRunTime is earlier than EMRALD's curTime, treat the message as stale:
+      //still run protocol responses (Send3DNextEvTimers / atContinue) so the ext sim isn't left hanging,
+      //but skip every block that would mutate EMRALD state (variable updates, time queue pops, event scans).
+      bool messageIsStale = evData.globalRunTime < this.curTime;
+      if (messageIsStale)
       {
         string staleMsg = "External sim '" + fromClient + "' message globalRunTime=" +
                           evData.globalRunTime.ToString(@"d\.hh\:mm\:ss\.f") +
                           " is earlier than solve engine globalRunTime=" +
                           this.curTime.ToString(@"d\.hh\:mm\:ss\.f") +
-                          ". Message ignored." + Environment.NewLine +
+                          ". Protocol response will still run, but EMRALD state will not be updated from this message." + Environment.NewLine +
                           "Full message: " + JsonConvert.SerializeObject(evData);
         Console.WriteLine(staleMsg);
         logger.Debug(staleMsg);
-        return;
       }
 
       TimeSpan shiftTimeTo = new TimeSpan();
@@ -975,9 +976,12 @@ namespace SimulationTracking
                 return;
               }
 
-              PopNextTimeEvent();// TODO : evData.itemID);
-                                 //sendTimers = true;
-              doProcessLoop = true;
+              if (!messageIsStale)
+              {
+                PopNextTimeEvent();// TODO : evData.itemID);
+                                   //sendTimers = true;
+                doProcessLoop = true;
+              }
               break;
 
             case SimEventType.etSimLoaded:
@@ -1033,6 +1037,11 @@ namespace SimulationTracking
               if (this.emraldStopping3D || !this.extSimRunning)
               {
                 return;
+              }
+              if (messageIsStale)
+              {
+                //skip variable updates and queue mutations for stale messages
+                break;
               }
               lastExtEvTypes.Add(lastEvKey, ev.evType);
               shiftTimeTo = (TimeSpan)ev.time; //If checked and passed with schema, this will not be null.
@@ -1119,11 +1128,11 @@ namespace SimulationTracking
       }
 
 
-      if (this.curExtSimState == StatusType.stRunning)
+      if (this.curExtSimState == StatusType.stRunning && !messageIsStale)
       {
         //Look for events that now meet conditions
         ScanCondEvList();
-      
+
         lastExtEvTypes.Clear();
         //start a new round of processing
         if (doProcessLoop && !ProcessActiveLoop())
