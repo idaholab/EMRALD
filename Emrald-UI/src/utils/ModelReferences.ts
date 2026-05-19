@@ -23,6 +23,7 @@ export type ItemReferencesArray = [string, MainItemType, string[] | null][];
 // example [".", "eventActions"] would move the to the eventActions item.
 // example ["^", ".", "eventActions"] would move up one level and look at the eventActions array.
 // example ["^"] would just move up one level to the parent item.
+// Use '~' to save a trailing numeric index so it can be re-appended after the other adjustments — used when a sibling array must be addressed at the same index, e.g. state.events[i] -> state.eventActions[i] via ['~', '^', '.', 'eventActions'].
 // Diagrams (items the specified diagram uses)
 
 /////
@@ -65,7 +66,8 @@ const RefsToStateItem: ItemReferencesArray = [
 // Events (items using specified event)
 const RefsToEventItem: ItemReferencesArray = [
   ['$.EventList[?(@.name == \'nameRef\')].name', 'Event', null],
-  ['$.StateList[*].events[?(@ == \'nameRef\')]', 'State', null],
+  // State.events is 1-to-1 with State.eventActions, so splicing the event must also splice the matching eventActions entry.
+  ['$.StateList[*].events[?(@ == \'nameRef\')]', 'State', ['~', '.', 'eventActions']],
 ];
 
 // Actions (items using specified action)
@@ -97,8 +99,8 @@ const RefsToVariableItem: ItemReferencesArray = [
 // ExtSim (items using specified ExtSim)
 const RefsToExtSimItem: ItemReferencesArray = [
   ['$.ExtSimList[?(@.name == \'nameRef\')].name', 'ExtSim', null],
-  ['$.ActionList[?(@.extSim == \'nameRef\')].name', 'Action', null],
-  ['$.VariableList[?(@.extSim == \'nameRef\')].name', 'Variable', null],
+  ['$.ActionList[?(@.extSim == \'nameRef\')].extSim', 'Action', null],
+  ['$.VariableList[?(@.extSim == \'nameRef\')].extSim', 'Variable', null],
 ];
 
 // LogicNodes (items using specified LogicNode)
@@ -433,24 +435,42 @@ function GetModelItemsReferencingRecursive(
 export function AdjustJsonPathRef(
   jsonPathArray: PathComponent[],
   adjustment: string[],
-) {
-  const retArray = [...jsonPathArray];
+): PathComponent[] {
+  const retArray: PathComponent[] = [...jsonPathArray];
+  let savedIndex: PathComponent | undefined;
 
   while (adjustment.length > 0) {
     const current = adjustment.shift(); // Get the first element and remove it from the array
 
-    if (current === '.') {
-      const next = adjustment.shift(); // Get the next item
-      if (next !== undefined) {
-        retArray.pop();
-        retArray.push(next); // Only push if `next` is not undefined
+    switch (current) {
+      case '.': {
+        const next = adjustment.shift(); // Get the next item
+        if (next !== undefined) {
+          retArray.pop();
+          retArray.push(next); // Only push if `next` is not undefined
+        }
+        break;
       }
-    } else if (current === '^') {
-      retArray.pop();
+      case '^': {
+        retArray.pop();
+        break;
+      }
+      case '~': {
+        // Save a trailing numeric index so it can be re-appended after other adjustments.
+        // Used when a sibling array needs the same element index, e.g. state.events[i] -> state.eventActions[i].
+        if (typeof retArray.at(-1) === 'number') {
+          savedIndex = retArray.pop();
+        }
+        break;
+      }
     }
   }
 
-  return retArray.map(p => p.toString());
+  if (savedIndex !== undefined) {
+    retArray.push(savedIndex);
+  }
+
+  return retArray;
 }
 
 export function GetItemByNameType(

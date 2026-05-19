@@ -241,7 +241,14 @@ export function DeleteItemAndRefsInSpecifiedModel(
     item.objType as MainItemType,
     item.name,
   )) {
-    for (const ref of jsonpath.paths(updatedEMRALDModel, jsonPathSet[0] as string)) {
+    // Iterate paths in reverse so splicing earlier indices doesn't invalidate later ones
+    // when the same parent array has multiple matching entries.
+    const refPaths = jsonpath.paths(updatedEMRALDModel, jsonPathSet[0] as string);
+    for (let i = refPaths.length - 1; i >= 0; i--) {
+      const ref = refPaths[i];
+      if (!ref) {
+        continue;
+      }
       // if there are possible types to delete get all the items that may need to be deleted because they reference this item being deleted
       if (referencingTheToDel_Types.size > 0) {
         let parentPath = [...ref].slice(0, -1);
@@ -269,14 +276,25 @@ export function DeleteItemAndRefsInSpecifiedModel(
 
       // Clear the reference value at that path if it isn't the item we are deleting
       if (item.objType != jsonPathSet[1] || jsonPathSet[1] == 'LogicNode') {
-        const path = ref.join('.');
-        jsonpath.value(updatedEMRALDModel, path, '');
+        const lastSeg = ref.at(-1);
+        if (typeof lastSeg === 'number') {
+          // Reference is an array element — splice it out rather than leaving a blank slot or stringifying an object.
+          const parentArr = jsonpath.value(
+            updatedEMRALDModel,
+            ref.slice(0, -1).join('.'),
+          ) as unknown[];
+          if (Array.isArray(parentArr)) {
+            parentArr.splice(lastSeg, 1);
+          }
+        } else {
+          jsonpath.value(updatedEMRALDModel, ref.join('.'), '');
+        }
 
         if (jsonPathSet[2] != null) {
           // remove linked item data if it exists
           const linkedItemPath = AdjustJsonPathRef(ref, jsonPathSet[2] as string[]);
 
-          // if the last item is a number then remove the array item
+          // if the last item is a number then remove the linked array entry at that index
           const lastItem = linkedItemPath.at(-1);
           if (typeof lastItem === 'number') {
             linkedItemPath.pop();
@@ -284,13 +302,9 @@ export function DeleteItemAndRefsInSpecifiedModel(
               updatedEMRALDModel,
               linkedItemPath.join('.'),
             ) as ModelItem[];
-            // remove array item
-            newArray.splice(lastItem, 1);
-            jsonpath.value(
-              updatedEMRALDModel,
-              linkedItemPath.join('.'),
-              newArray,
-            );
+            if (Array.isArray(newArray)) {
+              newArray.splice(lastItem, 1);
+            }
           } else {
             // remove everything
             jsonpath.value(updatedEMRALDModel, linkedItemPath.join('.'), '');
