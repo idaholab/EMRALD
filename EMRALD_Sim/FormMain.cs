@@ -68,9 +68,8 @@ namespace EMRALD_Sim
       _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
       _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
 
-#if DEBUG
-      ConsoleHelper.Show();
-#endif
+      // Console allocation (Debug build or -console flag) is handled in Program.Main
+      // so it runs before AttachConsole below.
 
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
       LoadRecentFiles();
@@ -356,6 +355,11 @@ namespace EMRALD_Sim
             }
             break;
 
+          case "-console":
+          case "-showconsole":
+            // Handled in Program.Main before this constructor runs; consume the flag here.
+            break;
+
           case "-help":
           case "-h":
           case "-H":
@@ -387,6 +391,7 @@ namespace EMRALD_Sim
     {
       CmdLineHelp.PrintIntro();
       CmdLineHelp.PrintCommonOptions();
+      CmdLineHelp.PrintConsoleFlag();
       CmdLineHelp.PrintMergeResults();
       CmdLineHelp.PrintJsonExample();
       Environment.Exit(0);

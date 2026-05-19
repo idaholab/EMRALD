@@ -19,6 +19,7 @@ The following sections explain the different options available when running EMRA
   | -d | Specifies the debug level, either "basic" or "detailed", and an optional range <br> Example: -d basic [10 20]|
   | -rIntrv | Specifies how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete. |
   | -mergeResults | Merges two JSON path result files into a single file and estimates the 5th and 95th percentiles. <br> Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json |
+  | -console, -showConsole | Allocates a console window for stdout output when running a Release build of `EMRALD_Sim.exe`. Debug builds always show a console. Aliases: `-console`, `-showConsole`. |
   | -json-help | Prints the JSON options file syntax to the console (CommandLineCP only). |
 
 To run a coupled external simulation (XMPP or WebSocket), configure the connection in the `couplingInfo` section of the [Options JSON file](#options-json-file) rather than passing it on the command line.<br>

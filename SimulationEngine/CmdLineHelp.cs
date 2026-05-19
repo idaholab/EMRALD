@@ -34,6 +34,11 @@ namespace SimulationEngine
       Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
     }
 
+    public static void PrintConsoleFlag()
+    {
+      Console.WriteLine("-console, -showConsole \"allocate a console window for stdout (Release builds; Debug always shows a console)\"");
+    }
+
     public static void PrintJsonHelpFlag()
     {
       Console.WriteLine("-json-help \"print the JSON options file syntax and exit\"");
