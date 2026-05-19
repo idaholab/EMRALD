@@ -177,45 +177,15 @@ namespace CommandLineCP
           case "-h":
           case "-H":
           case "-HELP":
-            Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
-            Console.WriteLine("-n \"run count\"");
-            Console.WriteLine("-i \"input model path\"");
-            Console.WriteLine("-r \"results output file\"");
-            Console.WriteLine("-o \"write path statistics to json output file at specified directory\"");
-            Console.WriteLine("-t \"max run time\"");
-            Console.WriteLine("-e \"execute\"");
-            Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
-            Console.WriteLine("-s \"initial random number seed\"");
-            Console.WriteLine("-threads \"number of threads to use for parallel execution\"");
-            Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end]. " + Environment.NewLine +
-                              "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
-                              "    Example: -d basic [10 20]");
-            Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
-            Console.WriteLine("Options JSON file - ");
-            Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+            CmdLineHelp.PrintIntro();
+            CmdLineHelp.PrintCommonOptions();
+            CmdLineHelp.PrintJsonHelpFlag();
+            CmdLineHelp.PrintJsonExample();
             Environment.Exit(0);
             break;
 
           case "-json-help":
-            Console.WriteLine("Syntax for running from a JSON file :" + Environment.NewLine +
-                              "{" + Environment.NewLine +
-                              "  \"runct\": [integer - Total number of runs]," + Environment.NewLine +
-                              "  \"inpfile\": \"[string - path to input model]\"," + Environment.NewLine +
-                              "  \"resout\": \"[string - path of where to save basic results file]\"," + Environment.NewLine +
-                              "  \"jsonRes\": \"[string - path of where to save JSON results file]\"," + Environment.NewLine +
-                              "  \"runtime\": \"[string - Days.hours:min:sec 1.02:03:04]\"," + Environment.NewLine +
-                              "  \"seed\": [integer - initial random number seed]," + Environment.NewLine +
-                              "  \"threads\": [integer - number of threads to use]," + Environment.NewLine +
-                              "  \"debug\": \"[string - debug option \"basic\"\"detailed\"\"off\"]\"," + Environment.NewLine +
-                              "  \"debugStartIdx\": [integer - debug start run index]," + Environment.NewLine +
-                              "  \"debugEndIdx\": [integer - debug end run index]," + Environment.NewLine +
-                              "  \"pathResultsInterval\": [integer - how often to save path results]," + Environment.NewLine +
-                              "  \"variables\": [ " + Environment.NewLine +
-                              "    \"[string - variable watch name if any]\"," + Environment.NewLine +
-                              "    \"[string - ...]\"," + Environment.NewLine +
-                              "    \"[string - last variable watch name]\"" + Environment.NewLine +
-                              "  ] " + Environment.NewLine +
-                              "}");
+            CmdLineHelp.PrintJsonExample();
             Environment.Exit(0);
             break;
 

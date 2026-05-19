@@ -62,13 +62,13 @@ namespace SimulationEngine
   public class Options_cur
   {
 
-    //Example JSON for passing in the run options 
+    //Example JSON for passing in the run options
     public static string CmdJSON_OptionsExample = "{\n" +
     "  \"opsVer\": 1.02, //version of this options file\n" +
     "  \"runct\": 100, // Total number of runs\n" +
     "  \"inpfile\": \"\", // Input model path\n" +
-    "  \"resout\": \"BasicResults.txt\", // Results output file path\n" +
-    "  \"jsonRes\": \"c:\\\\temp\\\\PathResults.txt\", // Result paths JSON output file path\n" +
+    "  \"resout\": \"BasicResults.txt\", // Basic/text results output file path\n" +
+    "  \"jsonRes\": \"c:\\\\temp\\\\PathResults.txt\", // JSON path-results output file path\n" +
     "  \"variables\": [ // Variables to output in the results\n" +
     "    \"var1\",\n" +
     "    \"var2\"\n" +
@@ -85,12 +85,15 @@ namespace SimulationEngine
     "  \"debugStartIdx\": null, // Start index for debug if null then from beginning\n" +
     "  \"debugEndIdx\": null, // End index for debug if null then to end\n" +
     "  \"pathResultsInterval\": 1000, // how often to write the path results, every X runs (-1 to disable and write at end)\n" +
-    "  \"couplingInfo\": { // External application coupling information\n" +
+    "  \"threads\": null, // Number of threads for parallel execution; null disables threading. Any value (even 1) uses per-thread temp folders.\n" +
+    "  \"clearThreadTemps\": false, // If true, per-thread temp files are deleted after the run completes\n" +
+    "  \"couplingInfo\": { // External application coupling information (omit if no coupling needed)\n" +
     "    \"couplingType\": \"XMPP\", // XMPP or WebSocket\n" +
     "    \"couplingPassword\": \"secret\", // Password for external application connection\n" +
     "    \"user\": \"user\", // User name for coupling connection (e.g., XMPP user)\n" +
     "    \"couplingURL\": null, // If WebSocket, this is the URL to connect to; can be null for XMPP\n" +
-    "    \"timeout\": 30 // Timeout in seconds\n" +
+    "    \"timeout\": 30, // Timeout in seconds\n" +
+    "    \"logCouplingMsgs\": true // Log coupling messages to console (debug builds only); set false to suppress during testing\n" +
     "  }\n" +
     "}";
 
