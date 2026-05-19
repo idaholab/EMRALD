@@ -2,7 +2,13 @@ import type { EMRALD_Model } from '@/types/EMRALD_Model';
 import { v4 as uuid } from 'uuid';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { appData } from '@/hooks/useAppData';
-import { DeleteItemAndRefsInSpecifiedModel } from '@/utils/UpdateModel';
+import {
+  type ClearedRef,
+  ClearIncomingRefsExceptTypes,
+  DeleteItemAndRefs,
+  DeleteItemAndRefsInSpecifiedModel,
+  formatClearedRefsMessage,
+} from '@/utils/UpdateModel';
 
 // Builds a fresh model for each test so mutations don't bleed across cases.
 function buildModel(): EMRALD_Model {
@@ -134,6 +140,16 @@ function buildModel(): EMRALD_Model {
         evType: 'etStateCng',
         mainItem: true,
         triggerStates: [],
+      },
+      // Component-logic event — logicTop references the LogicNode tree-top 'Top'.
+      {
+        id: uuid(),
+        objType: 'Event',
+        name: 'Ev4',
+        desc: '',
+        evType: 'etComponentLogic',
+        mainItem: true,
+        logicTop: 'Top',
       },
     ],
     LogicNodeList: [
@@ -318,5 +334,233 @@ describe('DeleteItemAndRefs — array element references are spliced (not blanke
     expect(v2).toBeDefined();
     expect(v2?.name).toBe('Var2');
     expect(v2?.extSim).toBe('');
+  });
+
+  test('deleting a LogicNode via the core path also clears event.logicTop on etComponentLogic events', () => {
+    const top = model.LogicNodeList.find(n => n.name === 'Top');
+    DeleteItemAndRefsInSpecifiedModel(top!, model, false);
+
+    const ev4 = model.EventList.find(e => e.name === 'Ev4');
+    expect(ev4).toBeDefined();
+    expect(ev4?.evType).toBe('etComponentLogic');
+    expect(ev4?.logicTop).toBe('');
+  });
+});
+
+describe('ClearIncomingRefsExceptTypes — selective cleanup for custom-recursive deletes', () => {
+  let model: EMRALD_Model;
+
+  beforeEach(() => {
+    model = buildModel();
+    appData.value = model;
+  });
+
+  test('clears event.logicTop but leaves gateChildren intact when LogicNode is skipped', () => {
+    const top = model.LogicNodeList.find(n => n.name === 'Top');
+    const { model: updated, clearedRefs } = ClearIncomingRefsExceptTypes(
+      top!,
+      ['LogicNode'],
+      model,
+      false,
+    );
+
+    // event.logicTop got cleared.
+    const ev4 = updated.EventList.find(e => e.name === 'Ev4');
+    expect(ev4?.logicTop).toBe('');
+
+    // The LogicNode → LogicNode gateChildren row was skipped — 'Top' wasn't in any
+    // other gate's gateChildren in this fixture, but the explicit guarantee is that
+    // the helper didn't touch any LogicNode-targeting reference paths. Verify the
+    // node itself is still in the list and other LogicNode arrays are untouched.
+    expect(updated.LogicNodeList.find(n => n.name === 'Top')).toBeDefined();
+    const leafGateChildren = updated.LogicNodeList.find(
+      n => n.name === 'Top',
+    )?.gateChildren;
+    expect(leafGateChildren).toEqual(['LeafA', 'LeafB', 'LeafC']);
+
+    // Reports the broken event so the caller can surface it to the user.
+    expect(clearedRefs).toHaveLength(1);
+    expect(clearedRefs[0]).toMatchObject({
+      itemName: 'Ev4',
+      itemType: 'Event',
+      fieldPath: 'logicTop',
+    });
+    expect(clearedRefs[0]?.itemId).toBeTruthy();
+  });
+
+  test('reports every cleared scalar reference (one entry per affected item)', () => {
+    // Add a second etComponentLogic event pointing at the same tree-top so we get two
+    // scalar clears in one pass.
+    model.EventList.push({
+      id: 'ev5-id',
+      objType: 'Event',
+      name: 'Ev5',
+      desc: '',
+      evType: 'etComponentLogic',
+      mainItem: true,
+      logicTop: 'Top',
+    });
+
+    const top = model.LogicNodeList.find(n => n.name === 'Top');
+    const { clearedRefs } = ClearIncomingRefsExceptTypes(
+      top!,
+      ['LogicNode'],
+      model,
+      false,
+    );
+
+    const reportedNames = clearedRefs
+      .filter(r => r.itemType === 'Event' && r.fieldPath === 'logicTop')
+      .map(r => r.itemName)
+      .toSorted();
+    expect(reportedNames).toEqual(['Ev4', 'Ev5']);
+  });
+});
+
+describe('DeleteItemAndRefs clearedRefs accumulator — broken-reference reporting', () => {
+  let model: EMRALD_Model;
+
+  beforeEach(() => {
+    model = buildModel();
+    appData.value = model;
+  });
+
+  test('reports scalar clears on Event when deleting a Variable referenced by .variable / .variableName', () => {
+    // Add an event whose .variable points at Var1 so the scalar-clear path fires.
+    model.EventList.push({
+      id: 'ev-var-id',
+      objType: 'Event',
+      name: 'EvVar',
+      desc: '',
+      evType: 'et3dSimEv',
+      mainItem: true,
+      variable: 'Var1',
+    });
+
+    const clearedRefs: ClearedRef[] = [];
+    const v = model.VariableList.find(x => x.name === 'Var1');
+    DeleteItemAndRefsInSpecifiedModel(v!, model, false, clearedRefs);
+
+    // ActB.variableName (scalar) -> should be reported
+    expect(
+      clearedRefs.some(
+        r =>
+          r.itemType === 'Action'
+          && r.itemName === 'ActB'
+          && r.fieldPath === 'variableName',
+      ),
+    ).toBe(true);
+
+    // EvVar.variable (scalar) -> should be reported
+    expect(
+      clearedRefs.some(
+        r =>
+          r.itemType === 'Event'
+          && r.itemName === 'EvVar'
+          && r.fieldPath === 'variable',
+      ),
+    ).toBe(true);
+
+    // codeVariables / varNames are array splices — no scalar clear, no report.
+    expect(
+      clearedRefs.some(r => r.fieldPath === 'codeVariables' || r.fieldPath === 'varNames'),
+    ).toBe(false);
+  });
+
+  test('cascade-deleted items are pruned from the final clearedRefs (DeleteItemAndRefs wrapper)', () => {
+    // Wire a setup where deleting a State scalar-clears a field on an item, and that
+    // same item then gets cascade-deleted in a later step. The final list must NOT
+    // include the cascade-deleted item.
+    //
+    // Setup: StateB will be deleted. StateB.events references an Event "EvOnlyB" which
+    // also has triggerStates ['StateB']. The Event is not a mainItem and is only used
+    // by StateB, so the cascade decides to delete it. Before the cascade, the State
+    // delete clears EvOnlyB.triggerStates (array splice, NOT reported anyway) — but
+    // we want to verify that if a scalar clear hits something that later gets deleted,
+    // it doesn't end up in the final report.
+    //
+    // To exercise pruning of a scalar clear: give Action ActA a newState pointing at
+    // StateB. The toState scalar gets cleared by the State delete. ActA is NOT
+    // cascade-deleted (it's a mainItem and referenced by StateA.immediateActions),
+    // so the entry SHOULD survive.
+    //
+    // Then add a non-mainItem Action used only by an event of StateB that ALSO has
+    // a newState.toState pointing at StateB — that action will be cascade-deleted,
+    // so its scalar-clear entry must be pruned.
+    const stateB = model.StateList.find(s => s.name === 'StateB');
+
+    // ActA (mainItem) — survives. Give it a newState to StateB so toState clears.
+    const actA = model.ActionList.find(a => a.name === 'ActA');
+    actA!.newStates = [
+      ...(actA!.newStates ?? []),
+      { toState: 'StateB', prob: 0.5, failDesc: '' },
+    ];
+
+    // ActDoomed — not mainItem, only referenced by an event of StateB → cascade-deleted.
+    const evOnlyB = {
+      id: 'ev-onlyb-id',
+      objType: 'Event' as const,
+      name: 'EvOnlyB',
+      desc: '',
+      evType: 'etStateCng' as const,
+      mainItem: false,
+      triggerStates: ['StateB'],
+    };
+    model.EventList.push(evOnlyB);
+
+    const actDoomed = {
+      id: 'act-doomed-id',
+      objType: 'Action' as const,
+      name: 'ActDoomed',
+      desc: '',
+      actType: 'atTransition' as const,
+      mainItem: false,
+      newStates: [{ toState: 'StateB', prob: 1, failDesc: '' }],
+    };
+    model.ActionList.push(actDoomed);
+
+    // Hook ActDoomed and EvOnlyB into StateB so the cascade decides to delete them.
+    stateB!.events = ['EvOnlyB'];
+    stateB!.eventActions = [{ actions: ['ActDoomed'], moveFromCurrent: false }];
+
+    const clearedRefs: ClearedRef[] = [];
+    // Use DeleteItemAndRefs so pruning runs at the outer wrapper.
+    DeleteItemAndRefs(stateB!, clearedRefs);
+
+    // ActA survives → its toState clear is reported.
+    expect(
+      clearedRefs.some(
+        r =>
+          r.itemType === 'Action'
+          && r.itemName === 'ActA'
+          && r.fieldPath === 'toState',
+      ),
+    ).toBe(true);
+
+    // ActDoomed was cascade-deleted → its toState clear must be pruned.
+    expect(clearedRefs.some(r => r.itemName === 'ActDoomed')).toBe(false);
+  });
+
+  test('formatClearedRefsMessage returns null for an empty list and otherwise lists each item', () => {
+    expect(formatClearedRefsMessage('Action', 'ActA', [])).toBeNull();
+
+    const refs: ClearedRef[] = [
+      {
+        itemId: 'id-1',
+        itemName: 'Ev4',
+        itemType: 'Event',
+        fieldPath: 'logicTop',
+      },
+      {
+        itemId: 'id-2',
+        itemName: 'ActA',
+        itemType: 'Action',
+        fieldPath: 'variableName',
+      },
+    ];
+    const msg = formatClearedRefsMessage('LogicNode', 'Top', refs);
+    expect(msg).toContain('Deleted LogicNode "Top"');
+    expect(msg).toContain('Event "Ev4" (logicTop)');
+    expect(msg).toContain('Action "ActA" (variableName)');
   });
 });

@@ -13,9 +13,12 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface DiagramContextType {
   diagramList: ReadonlySignal<Diagram[]>;
@@ -60,6 +63,7 @@ export const DiagramContextProvider: React.FC<PropsWithChildren> = ({
     appData.value.DiagramList.toSorted((a, b) => a.name.localeCompare(b.name)),
   );
   const diagramList = useComputed(() => appData.value.DiagramList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -95,7 +99,16 @@ export const DiagramContextProvider: React.FC<PropsWithChildren> = ({
     }
     const diagramToDelete = getDiagramById(diagramId);
     if (diagramToDelete) {
-      updateAppData(DeleteItemAndRefs(diagramToDelete));
+      const clearedRefs: ClearedRef[] = [];
+      updateAppData(DeleteItemAndRefs(diagramToDelete, clearedRefs));
+      const msg = formatClearedRefsMessage(
+        'Diagram',
+        diagramToDelete.name,
+        clearedRefs,
+      );
+      if (msg) {
+        showAlert(msg, 'warning');
+      }
     }
     // todo else error, not diagram to delete
   };

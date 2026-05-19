@@ -12,9 +12,12 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface ActionContextType {
   actions: Action[];
@@ -61,6 +64,7 @@ export const ActionContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const actionsList = useComputed(() => appData.value.ActionList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -108,7 +112,16 @@ export const ActionContextProvider: React.FC<PropsWithChildren> = ({
       action => action.id === actionId,
     );
     if (actionToDelete) {
-      updateAppData(DeleteItemAndRefs(actionToDelete));
+      const clearedRefs: ClearedRef[] = [];
+      updateAppData(DeleteItemAndRefs(actionToDelete, clearedRefs));
+      const msg = formatClearedRefsMessage(
+        'Action',
+        actionToDelete.name,
+        clearedRefs,
+      );
+      if (msg) {
+        showAlert(msg, 'warning');
+      }
     }
     // todo else error, no action to delete
   };
