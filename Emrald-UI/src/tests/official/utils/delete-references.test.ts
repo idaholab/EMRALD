@@ -2,12 +2,14 @@ import type { EMRALD_Model } from '@/types/EMRALD_Model';
 import { v4 as uuid } from 'uuid';
 import { beforeEach, describe, expect, test } from 'vitest';
 import { appData } from '@/hooks/useAppData';
+import { GetModelItemsReferencedBy } from '@/utils/ModelReferences';
 import {
   type ClearedRef,
   ClearIncomingRefsExceptTypes,
   DeleteItemAndRefs,
   DeleteItemAndRefsInSpecifiedModel,
   formatClearedRefsMessage,
+  updateSpecifiedModel,
 } from '@/utils/UpdateModel';
 
 // Builds a fresh model for each test so mutations don't bleed across cases.
@@ -562,5 +564,130 @@ describe('DeleteItemAndRefs clearedRefs accumulator — broken-reference reporti
     expect(msg).toContain('Deleted LogicNode "Top"');
     expect(msg).toContain('Event "Ev4" (logicTop)');
     expect(msg).toContain('Action "ActA" (variableName)');
+  });
+});
+
+describe('Variable references via Event.useVariable (time / lambda)', () => {
+  let model: EMRALD_Model;
+
+  beforeEach(() => {
+    model = buildModel();
+    model.EventList.push(
+      // etTimer event using Var1 for its .time value.
+      {
+        id: 'ev-timer-id',
+        objType: 'Event',
+        name: 'EvTimerVar',
+        desc: '',
+        evType: 'etTimer',
+        mainItem: true,
+        useVariable: true,
+        time: 'Var1',
+      },
+      // etFailRate event using Var1 for its .lambda value.
+      {
+        id: 'ev-failrate-id',
+        objType: 'Event',
+        name: 'EvFailRateVar',
+        desc: '',
+        evType: 'etFailRate',
+        mainItem: true,
+        useVariable: true,
+        lambda: 'Var1',
+      },
+      // etTimer event with useVariable=false whose literal time happens to equal the
+      // variable name being deleted. This must NOT match — useVariable gates the filter.
+      {
+        id: 'ev-timer-literal-id',
+        objType: 'Event',
+        name: 'EvTimerLiteral',
+        desc: '',
+        evType: 'etTimer',
+        mainItem: true,
+        useVariable: false,
+        time: 'Var1',
+      },
+    );
+    appData.value = model;
+  });
+
+  test('deleting the variable clears Event.time on etTimer with useVariable=true', () => {
+    const v1 = model.VariableList.find(x => x.name === 'Var1');
+    const clearedRefs: ClearedRef[] = [];
+    const updated = DeleteItemAndRefs(v1!, clearedRefs);
+
+    const evTimer = updated.EventList.find(e => e.name === 'EvTimerVar');
+    expect(evTimer?.time).toBe('');
+
+    expect(
+      clearedRefs.some(
+        r =>
+          r.itemType === 'Event'
+          && r.itemName === 'EvTimerVar'
+          && r.fieldPath === 'time',
+      ),
+    ).toBe(true);
+  });
+
+  test('deleting the variable clears Event.lambda on etFailRate with useVariable=true', () => {
+    const v1 = model.VariableList.find(x => x.name === 'Var1');
+    const clearedRefs: ClearedRef[] = [];
+    const updated = DeleteItemAndRefs(v1!, clearedRefs);
+
+    const evFail = updated.EventList.find(e => e.name === 'EvFailRateVar');
+    expect(evFail?.lambda).toBe('');
+
+    expect(
+      clearedRefs.some(
+        r =>
+          r.itemType === 'Event'
+          && r.itemName === 'EvFailRateVar'
+          && r.fieldPath === 'lambda',
+      ),
+    ).toBe(true);
+  });
+
+  test('useVariable=false events are NOT touched, even when the literal value equals the variable name', () => {
+    const v1 = model.VariableList.find(x => x.name === 'Var1');
+    const clearedRefs: ClearedRef[] = [];
+    const updated = DeleteItemAndRefs(v1!, clearedRefs);
+
+    const evLiteral = updated.EventList.find(
+      e => e.name === 'EvTimerLiteral',
+    );
+    // Literal 'Var1' string preserved because useVariable=false guards the filter.
+    expect(evLiteral?.time).toBe('Var1');
+    expect(
+      clearedRefs.some(r => r.itemName === 'EvTimerLiteral'),
+    ).toBe(false);
+  });
+
+  test('renaming the variable updates Event.time and Event.lambda', () => {
+    const v1 = model.VariableList.find(x => x.name === 'Var1');
+    const renamed = { ...v1!, name: 'Var1Renamed' };
+    updateSpecifiedModel(renamed, 'Variable', model, false);
+
+    const evTimer = model.EventList.find(e => e.name === 'EvTimerVar');
+    const evFail = model.EventList.find(e => e.name === 'EvFailRateVar');
+    expect(evTimer?.time).toBe('Var1Renamed');
+    expect(evFail?.lambda).toBe('Var1Renamed');
+
+    // The literal event must NOT be renamed.
+    const evLiteral = model.EventList.find(e => e.name === 'EvTimerLiteral');
+    expect(evLiteral?.time).toBe('Var1');
+  });
+
+  test('GetModelItemsReferencedBy sees Event.time / Event.lambda as Variable references', () => {
+    // Pick the etTimer event and ask what variables it depends on. Var1 should appear
+    // because the InEventRefs row for .time matches useVariable=true.
+    const sub = GetModelItemsReferencedBy('EvTimerVar', 'Event', 0);
+    expect(sub.VariableList.some(v => v.name === 'Var1')).toBe(true);
+
+    const sub2 = GetModelItemsReferencedBy('EvFailRateVar', 'Event', 0);
+    expect(sub2.VariableList.some(v => v.name === 'Var1')).toBe(true);
+
+    // The literal event should not pull in Var1 as a referenced variable.
+    const sub3 = GetModelItemsReferencedBy('EvTimerLiteral', 'Event', 0);
+    expect(sub3.VariableList.some(v => v.name === 'Var1')).toBe(false);
   });
 });

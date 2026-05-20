@@ -94,6 +94,18 @@ const RefsToVariableItem: ItemReferencesArray = [
     'Event',
     null,
   ],
+  // etTimer event with useVariable=true uses .time as the variable name reference.
+  [
+    '$.EventList[?(@.useVariable == true && @.time == \'nameRef\')].time',
+    'Event',
+    null,
+  ],
+  // etFailRate event with useVariable=true uses .lambda as the variable name reference.
+  [
+    '$.EventList[?(@.useVariable == true && @.lambda == \'nameRef\')].lambda',
+    'Event',
+    null,
+  ],
 ];
 
 // ExtSim (items using specified ExtSim)
@@ -144,6 +156,18 @@ const InEventRefs: ItemReferencesArray = [
   ['$.EventList[?(@.name == \'nameRef\')].variable', 'Variable', null],
   [
     '$.EventList[?(@.name == \'nameRef\')].parameters[*].variable',
+    'Variable',
+    null,
+  ],
+  // When useVariable=true, etTimer events store the variable name in .time and
+  // etFailRate events store it in .lambda.
+  [
+    '$.EventList[?(@.name == \'nameRef\' && @.useVariable == true)].time',
+    'Variable',
+    null,
+  ],
+  [
+    '$.EventList[?(@.name == \'nameRef\' && @.useVariable == true)].lambda',
     'Variable',
     null,
   ],
