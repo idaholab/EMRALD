@@ -28,6 +28,7 @@ export const Timer: React.FC<EventFormProps> = ({ eventData }) => {
       setTimerMilliseconds(moment.duration(eventData.time).asMilliseconds());
     }
     setUseVariable(eventData?.useVariable);
+    setOnVarChange(eventData?.onVarChange);
     setPersistent(eventData?.persistent);
     setTypeProperties([
       'fromSimStart',
