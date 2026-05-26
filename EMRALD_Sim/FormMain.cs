@@ -410,7 +410,7 @@ namespace EMRALD_Sim
     {
       if (!File.Exists(jsonPath))
       {
-        Console.Write("Invalid path for JSON options load.");
+        Console.Write("Invalid path for JSON options load. " + jsonPath);
         return;
       }
       string optionsJsonStr = File.ReadAllText(jsonPath);
@@ -1170,17 +1170,77 @@ namespace EMRALD_Sim
         ConfigData.debugLev = LogLevel.Off;
       }
 
-      for (int i = 0; i < lbMonitorVars.Items.Count; i++)
+      lbMonitorVars.ItemCheck -= lbMonitorVars_ItemCheck; // avoid per-item save spam and BeginInvoke before handle exists
+      try
       {
-        string val = lbMonitorVars.Items[i].ToString();
-        bool monitoredByModel = _sim?.allVariables.FindByName(val, false)?.monitorInSim ?? false;
-        bool inOptions = _curSimOptions.variables?.Contains(val) ?? false;
-        lbMonitorVars.SetItemChecked(i, monitoredByModel || inOptions);
+        for (int i = 0; i < lbMonitorVars.Items.Count; i++)
+        {
+          string val = lbMonitorVars.Items[i].ToString();
+          bool monitoredByModel = _sim?.allVariables.FindByName(val, false)?.monitorInSim ?? false;
+          bool inOptions = _curSimOptions.variables?.Contains(val) ?? false;
+          lbMonitorVars.SetItemChecked(i, monitoredByModel || inOptions);
+        }
+      }
+      finally
+      {
+        lbMonitorVars.ItemCheck += lbMonitorVars_ItemCheck;
       }
 
       _pathResultsInterval = _curSimOptions.pathResultsInterval;
 
       SetCurThreadCB();
+
+      ValidateOptionsVariables();
+    }
+
+    // Verify that every name in _curSimOptions.variables and initVars exists in the loaded model.
+    // Reports any mismatches to the console and to txtMStatus.
+    private void ValidateOptionsVariables()
+    {
+      if (_sim == null || _curSimOptions == null || !_validSim)
+        return;
+
+      var missingMonitor = new List<string>();
+      var notMonitorable = new List<string>();
+      var missingInit = new List<string>();
+
+      if (_curSimOptions.variables != null)
+      {
+        foreach (var name in _curSimOptions.variables)
+        {
+          var v = _sim.allVariables.FindByName(name, false);
+          if (v == null)
+            missingMonitor.Add(name);
+          else if (!v.canMonitorSim)
+            notMonitorable.Add(name);
+        }
+      }
+
+      if (_curSimOptions.initVars != null)
+      {
+        foreach (var iv in _curSimOptions.initVars)
+        {
+          if (_sim.allVariables.FindByName(iv.varName, false) == null)
+            missingInit.Add(iv.varName);
+        }
+      }
+
+      if (missingMonitor.Count == 0 && notMonitorable.Count == 0 && missingInit.Count == 0)
+        return;
+
+      var sb = new StringBuilder();
+      sb.AppendLine("Options JSON variable check found issues:");
+      if (missingMonitor.Count > 0)
+        sb.AppendLine("  'variables' not found in model: " + string.Join(", ", missingMonitor));
+      if (notMonitorable.Count > 0)
+        sb.AppendLine("  'variables' exist but are not monitorable: " + string.Join(", ", notMonitorable));
+      if (missingInit.Count > 0)
+        sb.AppendLine("  'initVars' not found in model: " + string.Join(", ", missingInit));
+
+      string msg = sb.ToString().TrimEnd();
+      Console.WriteLine(msg);
+      txtMStatus.Text = msg;
+      txtMStatus.ForeColor = Color.Maroon;
     }
 
     private void btnValidateModel_Click(object sender, EventArgs e)
@@ -1561,7 +1621,10 @@ namespace EMRALD_Sim
       }
 
       _curSimOptions.variables = variables;
-      BeginInvoke(new System.Action(() => SaveUISettingsToJson()));
+      if (IsHandleCreated)
+        BeginInvoke(new System.Action(() => SaveUISettingsToJson()));
+      else
+        SaveUISettingsToJson();
     }
 
     private void btn_DebugOpen_Click(object sender, EventArgs e)

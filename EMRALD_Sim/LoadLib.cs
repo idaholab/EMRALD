@@ -21,7 +21,7 @@ namespace EMRALD_Sim
       string retStr = "";
       if (!File.Exists(path))
       {
-        errorMsg = "File does not exist anymore.";
+        errorMsg = "File does not exist. - " + path;
         return "";
       }
 
@@ -64,7 +64,7 @@ namespace EMRALD_Sim
       }
       catch (Exception error)
       {
-        string retError = "Failed to load model :" + Environment.NewLine;
+        string retError = "Failed to Deserialize model invalid JSON: " + modelDir + Environment.NewLine;
         retError += error.Message;
         if (error.InnerException != null && error.InnerException.Message != "")
         {
