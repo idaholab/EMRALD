@@ -1148,26 +1148,37 @@ namespace EMRALD_Sim
       rbXMPP.Checked = _curSimOptions.couplingInfo.couplingType != CouplingType.WebSocket;
       tbWebSocketURL.Text = _curSimOptions.couplingInfo.couplingURL ?? string.Empty;
 
-      if (_curSimOptions.debug == "BASIC")
+      // Detach chkLog handler so it doesn't reset radio buttons / start-end indexes / _curSimOptions while we apply.
+      chkLog.CheckedChanged -= chkLog_CheckedChanged;
+      try
       {
-        chkLog.Checked = true;
-        rbDebugBasic.Checked = true;
-        rbDebugDetailed.Checked = false;
-        ConfigData.debugLev = LogLevel.Info;
+        string debugLev = (_curSimOptions.debug ?? "").Trim().ToUpperInvariant();
+        if (debugLev == "BASIC")
+        {
+          chkLog.Checked = true;
+          rbDebugBasic.Checked = true;
+          rbDebugDetailed.Checked = false;
+          ConfigData.debugLev = LogLevel.Info;
+        }
+        else if (debugLev == "DETAILED")
+        {
+          chkLog.Checked = true;
+          rbDebugBasic.Checked = false;
+          rbDebugDetailed.Checked = true;
+          ConfigData.debugLev = LogLevel.Debug;
+        }
+        else
+        {
+          chkLog.Checked = false;
+          rbDebugBasic.Checked = false;
+          rbDebugDetailed.Checked = false;
+          ConfigData.debugLev = LogLevel.Off;
+        }
+        grpDebugOpts.Enabled = chkLog.Checked;
       }
-      else if (_curSimOptions.debug == "DETAILED")
+      finally
       {
-        chkLog.Checked = true;
-        rbDebugBasic.Checked = false;
-        rbDebugDetailed.Checked = true;
-        ConfigData.debugLev = LogLevel.Debug;
-      }
-      else
-      {
-        chkLog.Checked = false;
-        rbDebugBasic.Checked = false;
-        rbDebugDetailed.Checked = false;
-        ConfigData.debugLev = LogLevel.Off;
+        chkLog.CheckedChanged += chkLog_CheckedChanged;
       }
 
       lbMonitorVars.ItemCheck -= lbMonitorVars_ItemCheck; // avoid per-item save spam and BeginInvoke before handle exists
