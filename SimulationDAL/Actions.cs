@@ -1559,8 +1559,10 @@ namespace SimulationDAL
           makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
         if (needsExePath)
           makeInputFileCompEval.SetVariable("ExePath", typeof(string), cachedFixedExePath);
-        if (preEngineVarsUsed?.Contains("RootPath") == true)
-          makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
+        // RootPath is referenced unconditionally by the ScriptEngine wrapper (it chdir's to it
+        // before running user code), so it must always be set — independent of whether the
+        // user's script text mentions "RootPath".
+        makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
         if (preEngineVarsUsed?.Contains("OrigRootPath") == true)
           makeInputFileCompEval.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
         if (preEngineVarsUsed?.Contains("MultiThreaded") == true)
@@ -1707,8 +1709,10 @@ namespace SimulationDAL
           processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
         if (postEngineVarsUsed?.Contains("ExePath") == true)
           processOutputFileCompEval.SetVariable("ExePath", typeof(string), CommonFunctions.NormalizeGetDirectoryName(fullExePath));
-        if (postEngineVarsUsed?.Contains("RootPath") == true)
-          processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
+        // RootPath is referenced unconditionally by the ScriptEngine wrapper (it chdir's to it
+        // before running user code), so it must always be set — independent of whether the
+        // user's script text mentions "RootPath".
+        processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
         if (postEngineVarsUsed?.Contains("MultiThreaded") == true)
           processOutputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
         if (postEngineVarsUsed?.Contains("Rand") == true)
