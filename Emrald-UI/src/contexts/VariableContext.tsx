@@ -12,9 +12,12 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface VariableContextType {
   variables: Variable[];
@@ -59,6 +62,7 @@ export const VariableContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const variableList = useComputed(() => appData.value.VariableList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -95,7 +99,16 @@ export const VariableContextProvider: React.FC<PropsWithChildren> = ({
       variable => variable.id === VariableId,
     );
     if (variableToDelete) {
-      updateAppData(DeleteItemAndRefs(variableToDelete));
+      const clearedRefs: ClearedRef[] = [];
+      updateAppData(DeleteItemAndRefs(variableToDelete, clearedRefs));
+      const msg = formatClearedRefsMessage(
+        'Variable',
+        variableToDelete.name,
+        clearedRefs,
+      );
+      if (msg) {
+        showAlert(msg, 'warning');
+      }
     }
   };
 

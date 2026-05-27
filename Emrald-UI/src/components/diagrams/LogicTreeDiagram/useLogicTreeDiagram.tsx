@@ -311,8 +311,16 @@ export function useLogicNodeTreeDiagram() {
     }
   };
 
-  const recurseAndDeleteChildren = (node: LogicNode) => {
-    const result = recurseChildren(node);
+  // `explicitDeletionRoot` is the node the caller is intentionally deleting. When provided,
+  // canDeleteNode treats it as the root for the "isRoot sub-tree" gate, so the recursion
+  // can actually enter a tree-top being deleted from outside the open tree diagram (e.g.
+  // the sidebar right-click Delete, where the closure `rootNode` is null).
+  const recurseAndDeleteChildren = (
+    node: LogicNode,
+    explicitDeletionRoot?: LogicNode,
+  ) => {
+    const deletionRoot = explicitDeletionRoot ?? rootNode;
+    const result = recurseChildren(node, deletionRoot);
     if (result) {
       const { nodesToDelete, nodesToRemove } = result;
       removeChildNodes(nodesToRemove);
@@ -320,24 +328,25 @@ export function useLogicNodeTreeDiagram() {
     }
   };
   const recurseChildren = (
-    node?: LogicNode,
+    node: LogicNode | undefined,
+    deletionRoot: LogicNode | null,
     nodesToRemove: { nodeName: string; parentName: string }[] = [],
     nodesToDelete: string[] = [],
   ) => {
     if (!node) {
       return;
     }
-    if (!canDeleteNode(node.name)) {
+    if (!canDeleteNode(node.name, deletionRoot)) {
       return;
     }
     for (const gateChildName of node.gateChildren) {
       const gateChildNode = getLogicNodeByName(gateChildName);
       if (gateChildNode) {
-        if (canDeleteNode(gateChildNode.name)) {
+        if (canDeleteNode(gateChildNode.name, deletionRoot)) {
           if (gateChildNode.id) {
             nodesToDelete.push(gateChildNode.id);
           }
-          recurseChildren(gateChildNode, nodesToRemove, nodesToDelete);
+          recurseChildren(gateChildNode, deletionRoot, nodesToRemove, nodesToDelete);
         } else {
           nodesToRemove.push({
             nodeName: gateChildNode.name,
@@ -349,12 +358,17 @@ export function useLogicNodeTreeDiagram() {
     return { nodesToDelete, nodesToRemove };
   };
 
-  const canDeleteNode = (nodeName: string) => {
+  const canDeleteNode = (
+    nodeName: string,
+    deletionRoot: LogicNode | null = rootNode,
+  ) => {
     const nodeInQuestion = getLogicNodeByName(nodeName);
+    // isRoot sub-trees are preserved unless they ARE the node currently being deleted.
+    // Compare by id (stable across re-renders) rather than object identity.
     if (
       nodeInQuestion
       && nodeInQuestion.isRoot
-      && nodeInQuestion !== rootNode
+      && nodeInQuestion.id !== deletionRoot?.id
     ) {
       return false;
     }

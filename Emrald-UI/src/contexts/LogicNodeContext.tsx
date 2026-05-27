@@ -12,7 +12,12 @@ import {
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, updateAppData } from '../hooks/useAppData';
-import { updateModelAndReferences } from '../utils/UpdateModel';
+import {
+  ClearIncomingRefsExceptTypes,
+  formatClearedRefsMessage,
+  updateModelAndReferences,
+} from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface LogicNodeContextType {
   logicNodeList: ReadonlySignal<LogicNode[]>;
@@ -62,6 +67,7 @@ export const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const logicNodeList = useComputed(() => appData.value.LogicNodeList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -91,28 +97,52 @@ export const LogicNodeContextProvider: React.FC<PropsWithChildren> = ({
   };
 
   const deleteLogicNode = (logicNodeId?: string) => {
+    if (!logicNodeId) {
+      return;
+    }
     const nodeToDelete = logicNodeList.value.find(
       node => node.id === logicNodeId,
     );
-    const updatedLogicNodes = logicNodeList.value.filter(
+    if (!nodeToDelete) {
+      return;
+    }
+
+    // Clear incoming references whose target type isn't LogicNode (e.g. event.logicTop).
+    // LogicNode → LogicNode gateChildren cleanup is owned by the recursive cascade in
+    // useLogicTreeDiagram (which decides which children to delete vs. unlink based on
+    // isRoot / shared-ness), so skip that row here to avoid a competing splice.
+    const { model: clearedModel, clearedRefs } = ClearIncomingRefsExceptTypes(
+      nodeToDelete,
+      ['LogicNode'],
+      appData.value,
+    );
+
+    // Preserve existing manual gateChildren cleanup + node removal.
+    const updatedLogicNodes = clearedModel.LogicNodeList.filter(
       item => item.id !== logicNodeId,
     );
-    if (nodeToDelete) {
-      for (const node of updatedLogicNodes) {
-        if (node.gateChildren.includes(nodeToDelete.name)) {
-          node.gateChildren = node.gateChildren.filter(
-            name => name !== nodeToDelete.name,
-          );
-        }
+    for (const node of updatedLogicNodes) {
+      if (node.gateChildren.includes(nodeToDelete.name)) {
+        node.gateChildren = node.gateChildren.filter(
+          name => name !== nodeToDelete.name,
+        );
       }
-
-      // there is nothing referencing nodes except other nodes and the this takes care of that, so no need to call DeleteItemAndRefs
     }
+
     updateAppData(
-      structuredClone({ ...appData.value, LogicNodeList: updatedLogicNodes }),
+      structuredClone({ ...clearedModel, LogicNodeList: updatedLogicNodes }),
     );
 
     setLogicNodes(logicNodeList.value);
+
+    const msg = formatClearedRefsMessage(
+      'LogicNode',
+      nodeToDelete.name,
+      clearedRefs,
+    );
+    if (msg) {
+      showAlert(msg, 'warning');
+    }
   };
 
   const getLogicNodeByName = (logicNodeName?: string) =>

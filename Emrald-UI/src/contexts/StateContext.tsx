@@ -12,9 +12,12 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface StateContextType {
   states: State[];
@@ -87,6 +90,7 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const statesList = useComputed(() => appData.value.StateList);
+  const { showAlert } = useAlertContext();
   const defaultGeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
 
   effect(() => {
@@ -181,7 +185,16 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
     if (!stateToDelete) {
       throw new Error('State not found');
     }
-    updateAppData(DeleteItemAndRefs(stateToDelete));
+    const clearedRefs: ClearedRef[] = [];
+    updateAppData(DeleteItemAndRefs(stateToDelete, clearedRefs));
+    const msg = formatClearedRefsMessage(
+      'State',
+      stateToDelete.name,
+      clearedRefs,
+    );
+    if (msg) {
+      showAlert(msg, 'warning');
+    }
   };
 
   const getStateByStateId = (stateId: string | null) =>

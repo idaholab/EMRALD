@@ -158,6 +158,7 @@ export function DeleteItemAndRefsInSpecifiedModel(
     | EMRALD_Model,
   model: EMRALD_Model,
   useCopy: boolean,
+  clearedRefs?: ClearedRef[],
 ) {
   // get all the items that this item uses and save them off as usedByItItems
   // get all the items that reference this item as usesItItems.
@@ -241,7 +242,14 @@ export function DeleteItemAndRefsInSpecifiedModel(
     item.objType as MainItemType,
     item.name,
   )) {
-    for (const ref of jsonpath.paths(updatedEMRALDModel, jsonPathSet[0] as string)) {
+    // Iterate paths in reverse so splicing earlier indices doesn't invalidate later ones
+    // when the same parent array has multiple matching entries.
+    const refPaths = jsonpath.paths(updatedEMRALDModel, jsonPathSet[0] as string);
+    for (let i = refPaths.length - 1; i >= 0; i--) {
+      const ref = refPaths[i];
+      if (!ref) {
+        continue;
+      }
       // if there are possible types to delete get all the items that may need to be deleted because they reference this item being deleted
       if (referencingTheToDel_Types.size > 0) {
         let parentPath = [...ref].slice(0, -1);
@@ -269,14 +277,54 @@ export function DeleteItemAndRefsInSpecifiedModel(
 
       // Clear the reference value at that path if it isn't the item we are deleting
       if (item.objType != jsonPathSet[1] || jsonPathSet[1] == 'LogicNode') {
-        const path = ref.join('.');
-        jsonpath.value(updatedEMRALDModel, path, '');
+        const lastSeg = ref.at(-1);
+        if (typeof lastSeg === 'number') {
+          // Reference is an array element — splice it out rather than leaving a blank slot or stringifying an object.
+          const parentArr = jsonpath.value(
+            updatedEMRALDModel,
+            ref.slice(0, -1).join('.'),
+          ) as unknown[];
+          if (Array.isArray(parentArr)) {
+            parentArr.splice(lastSeg, 1);
+          }
+        } else {
+          jsonpath.value(updatedEMRALDModel, ref.join('.'), '');
+
+          // Record this scalar clear so the user can be told what's now broken.
+          // (Cascade-deleted items get pruned out at the top-level wrapper.)
+          if (clearedRefs) {
+            let scalarParentPath = ref.slice(0, -1);
+            let scalarParent = jsonpath.value(
+              updatedEMRALDModel,
+              scalarParentPath.join('.'),
+            ) as ModelItem | undefined;
+            while (
+              scalarParent
+              && scalarParent.id == null
+              && scalarParentPath.length > 0
+            ) {
+              scalarParentPath = scalarParentPath.slice(0, -1);
+              scalarParent = jsonpath.value(
+                updatedEMRALDModel,
+                scalarParentPath.join('.'),
+              ) as ModelItem | undefined;
+            }
+            if (scalarParent?.id != null) {
+              clearedRefs.push({
+                itemId: scalarParent.id,
+                itemName: scalarParent.name,
+                itemType: scalarParent.objType,
+                fieldPath: String(lastSeg),
+              });
+            }
+          }
+        }
 
         if (jsonPathSet[2] != null) {
           // remove linked item data if it exists
           const linkedItemPath = AdjustJsonPathRef(ref, jsonPathSet[2] as string[]);
 
-          // if the last item is a number then remove the array item
+          // if the last item is a number then remove the linked array entry at that index
           const lastItem = linkedItemPath.at(-1);
           if (typeof lastItem === 'number') {
             linkedItemPath.pop();
@@ -284,13 +332,9 @@ export function DeleteItemAndRefsInSpecifiedModel(
               updatedEMRALDModel,
               linkedItemPath.join('.'),
             ) as ModelItem[];
-            // remove array item
-            newArray.splice(lastItem, 1);
-            jsonpath.value(
-              updatedEMRALDModel,
-              linkedItemPath.join('.'),
-              newArray,
-            );
+            if (Array.isArray(newArray)) {
+              newArray.splice(lastItem, 1);
+            }
           } else {
             // remove everything
             jsonpath.value(updatedEMRALDModel, linkedItemPath.join('.'), '');
@@ -390,7 +434,12 @@ export function DeleteItemAndRefsInSpecifiedModel(
     }
 
     if (item) {
-      DeleteItemAndRefsInSpecifiedModel(item, updatedEMRALDModel, false);
+      DeleteItemAndRefsInSpecifiedModel(
+        item,
+        updatedEMRALDModel,
+        false,
+        clearedRefs,
+      );
     }
   }
 
@@ -412,9 +461,196 @@ export function DeleteItemAndRefs(
     | LogicNode
     | ExtSim
     | EMRALD_Model,
+  clearedRefs?: ClearedRef[],
 ) {
   const updatedEMRALDModel = structuredClone(appData.value);
-  DeleteItemAndRefsInSpecifiedModel(item, updatedEMRALDModel, false);
+  DeleteItemAndRefsInSpecifiedModel(
+    item,
+    updatedEMRALDModel,
+    false,
+    clearedRefs,
+  );
+  // Prune at the top-level wrapper only — recursive cascade calls share the same
+  // accumulator, and we want to drop entries pointing at items that ended up deleted.
+  if (clearedRefs) {
+    pruneClearedRefs(updatedEMRALDModel, clearedRefs);
+  }
 
   return updatedEMRALDModel;
+}
+
+/**
+ * Describes a single item that had a scalar reference field cleared to ''.
+ * Array-element references that were spliced are NOT reported here — they just disappear
+ * cleanly. Only scalar clears leave an item in a potentially-broken state the user may
+ * want to fix manually.
+ *
+ * `itemId` is kept so callers can prune entries that point at items which were themselves
+ * deleted later in the cascade (the user only cares about items still in the final model).
+ */
+export interface ClearedRef {
+  itemId: string;
+  itemName: string;
+  itemType: MainItemType;
+  fieldPath: string;
+}
+
+/**
+ * Returns the list-on-the-model for a given item type, or undefined if the type isn't list-backed.
+ */
+function getListForType(
+  model: EMRALD_Model,
+  type: MainItemType,
+): ModelItem[] | undefined {
+  switch (type) {
+    case 'Diagram': {
+      return model.DiagramList;
+    }
+    case 'State': {
+      return model.StateList;
+    }
+    case 'Action': {
+      return model.ActionList;
+    }
+    case 'Event': {
+      return model.EventList;
+    }
+    case 'ExtSim': {
+      return model.ExtSimList;
+    }
+    case 'Variable': {
+      return model.VariableList;
+    }
+    case 'LogicNode': {
+      return model.LogicNodeList;
+    }
+    default: {
+      return undefined;
+    }
+  }
+}
+
+/**
+ * Removes ClearedRef entries whose target item is no longer in the final model — those
+ * items were cascade-deleted, so a "broken reference" warning would be misleading.
+ * Mutates `clearedRefs` in place so callers that hold the same array see the pruned list.
+ */
+function pruneClearedRefs(
+  finalModel: EMRALD_Model,
+  clearedRefs: ClearedRef[],
+): void {
+  const surviving = clearedRefs.filter(ref => {
+    const list = getListForType(finalModel, ref.itemType);
+    return list?.some(it => it.id === ref.itemId) ?? false;
+  });
+  clearedRefs.length = 0;
+  clearedRefs.push(...surviving);
+}
+
+/**
+ * Builds a one-line user-facing warning describing every item that ended up with an
+ * empty reference field after the delete. Returns null when there's nothing to warn about.
+ */
+export function formatClearedRefsMessage(
+  deletedItemType: MainItemType,
+  deletedItemName: string,
+  clearedRefs: ClearedRef[],
+): string | null {
+  if (clearedRefs.length === 0) {
+    return null;
+  }
+  const detail = clearedRefs
+    .map(r => `${r.itemType} "${r.itemName}" (${r.fieldPath})`)
+    .join(', ');
+  return `Deleted ${deletedItemType} "${deletedItemName}". The following items now have an empty reference and may need to be fixed: ${detail}.`;
+}
+
+/**
+ * Clears incoming references to `item` from `model`, but only for reference-table rows whose
+ * target type is NOT in `skipTargetTypes`. Use this when some reference categories are managed
+ * by custom logic (e.g. LogicNode → LogicNode gateChildren are owned by the recursive cascade
+ * in useLogicTreeDiagram) and the remaining reference categories should still be cleared
+ * through the central reference table.
+ *
+ * Returns the (possibly cloned) model along with a list of items whose scalar reference field
+ * was cleared to '' — these are the ones a caller may want to surface to the user as
+ * "now-broken, needs fixing".
+ */
+export function ClearIncomingRefsExceptTypes(
+  item:
+    | Diagram
+    | State
+    | Action
+    | Event
+    | Variable
+    | LogicNode
+    | ExtSim,
+  skipTargetTypes: MainItemType[],
+  model: EMRALD_Model,
+  useCopy = true,
+): { model: EMRALD_Model; clearedRefs: ClearedRef[] } {
+  const updated = useCopy ? structuredClone(model) : model;
+  const skip = new Set<MainItemType>(skipTargetTypes);
+  const clearedRefs: ClearedRef[] = [];
+
+  for (const jsonPathSet of GetJSONPathUsingRefs(
+    item.objType as MainItemType,
+    item.name,
+  )) {
+    const targetType = jsonPathSet[1] as MainItemType;
+    if (skip.has(targetType)) {
+      continue;
+    }
+    // Skip the self-reference row (path resolves to the item itself, which the caller
+    // is responsible for removing from its own list).
+    if (targetType === item.objType) {
+      continue;
+    }
+
+    const refPaths = jsonpath.paths(updated, jsonPathSet[0] as string);
+    for (let i = refPaths.length - 1; i >= 0; i--) {
+      const ref = refPaths[i];
+      if (!ref) {
+        continue;
+      }
+      const lastSeg = ref.at(-1);
+      if (typeof lastSeg === 'number') {
+        // Array-element ref — splice it out, no user notification needed.
+        const parentArr = jsonpath.value(
+          updated,
+          ref.slice(0, -1).join('.'),
+        ) as unknown[];
+        if (Array.isArray(parentArr)) {
+          parentArr.splice(lastSeg, 1);
+        }
+      } else {
+        // Scalar field — clearing to '' may leave the owning item partially-valid;
+        // walk up to the nearest item with an id so the user can be told what to fix.
+        jsonpath.value(updated, ref.join('.'), '');
+
+        let parentPath = ref.slice(0, -1);
+        let parent = jsonpath.value(
+          updated,
+          parentPath.join('.'),
+        ) as ModelItem | undefined;
+        while (parent && parent.id == null && parentPath.length > 0) {
+          parentPath = parentPath.slice(0, -1);
+          parent = jsonpath.value(
+            updated,
+            parentPath.join('.'),
+          ) as ModelItem | undefined;
+        }
+        if (parent?.id != null) {
+          clearedRefs.push({
+            itemId: parent.id,
+            itemName: parent.name,
+            itemType: parent.objType,
+            fieldPath: String(lastSeg),
+          });
+        }
+      }
+    }
+  }
+
+  return { model: updated, clearedRefs };
 }

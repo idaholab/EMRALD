@@ -12,9 +12,12 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface ExtSimContextType {
   extSims: ExtSim[];
@@ -54,6 +57,7 @@ export const ExtSimContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const extSimList = useComputed(() => appData.value.ExtSimList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -87,7 +91,16 @@ export const ExtSimContextProvider: React.FC<PropsWithChildren> = ({
     }
     const extSimToDelete = extSims.find(extSim => extSim.id === extSimId);
     if (extSimToDelete) {
-      updateAppData(DeleteItemAndRefs(extSimToDelete));
+      const clearedRefs: ClearedRef[] = [];
+      updateAppData(DeleteItemAndRefs(extSimToDelete, clearedRefs));
+      const msg = formatClearedRefsMessage(
+        'ExtSim',
+        extSimToDelete.name,
+        clearedRefs,
+      );
+      if (msg) {
+        showAlert(msg, 'warning');
+      }
     }
     // todo else error, no event to delete
   };
