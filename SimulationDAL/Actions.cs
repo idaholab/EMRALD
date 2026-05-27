@@ -418,6 +418,13 @@ namespace SimulationDAL
     protected Type _retType = typeof(double);
     public string scriptCode = "";
 
+    // Names of engine vars actually referenced by scriptCode (populated at compile time).
+    // Used by EngineVarBinder.Bind to gate per-call SetVariable.
+    protected HashSet<string> engineVarsUsed = new HashSet<string>(StringComparer.Ordinal);
+
+    // Compile-time resolved user vars (see SimulationDAL.ResolvedUserVar).
+    protected List<ResolvedUserVar> resolvedUserVars = new List<ResolvedUserVar>();
+
     public ScriptAct(EnActionType actType)
       : base("", actType)
     {
@@ -569,9 +576,32 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
+        CacheScriptActUsedVars(allVars);
       }
 
       return this.compiled;
+    }
+
+    // Populates engineVarsUsed and resolvedUserVars after a successful compile so per-call
+    // SetVariable in derived classes can skip name lookup and skip variables the script doesn't use.
+    protected void CacheScriptActUsedVars(VariableList allVars)
+    {
+      engineVarsUsed = CommonFunctions.DetectUsedNames(scriptCode, EngineVarRegistry.AllNames);
+      resolvedUserVars.Clear();
+      if (codeVariables == null) return;
+      foreach (string varName in codeVariables)
+      {
+        // Engine vars are bound by EngineVarBinder, not resolved as user vars.
+        if (EngineVarRegistry.AllNames.Contains(varName)) continue;
+
+        SimVariable v = allVars.FindByName(varName);
+        if (v == null) continue; // CompileCode already validated; defensive only
+        resolvedUserVars.Add(new ResolvedUserVar
+        {
+          simVar = v,
+          isUsed = scriptCode.Contains(varName)
+        });
+      }
     }
 
     public override List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
@@ -624,6 +654,12 @@ namespace SimulationDAL
   public class VarValueAct : ScriptAct //atCngVarVal
   {
     private readonly object _executionLock = new object();
+
+    private static readonly EngineVar[] AvailableEngineVars =
+    {
+      EngineVar.CurTime, EngineVar.RunIdx, EngineVar.ExtSimStartTime,
+      EngineVar.RootPath, EngineVar.OrigRootPath, EngineVar.Rand
+    };
 
     public SimVariable? simVar = null;
     //public int varID { get { return simVar.id; } }
@@ -732,24 +768,22 @@ namespace SimulationDAL
             throw new Exception("Code failed compile, can not evaluate");
         }
 
-        scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
-        scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
-        scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
-        scriptRunner.SetVariable("RootPath", typeof(string), lists.rootPath);
-        scriptRunner.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
-        scriptRunner.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
-
-        if (codeVariables != null)
+        EngineVarBinder.Bind(scriptRunner, AvailableEngineVars, engineVarsUsed, new ScriptContext
         {
-          foreach (string varName in codeVariables)
-          {
-            SimVariable simVar = lists.allVariables.FindByName(varName);
-            if (simVar == null)
-              throw new Exception("Failed to find variable named " + varName);
-            scriptRunner.SetVariable(varName, simVar.dType, simVar.value);
-          }
+          CurTime = curSimTime.TotalHours,
+          RunIdx = runIdx,
+          ExtSimStartTime = start3DTime.TotalHours,
+          RootPath = lists.rootPath,
+          OrigRootPath = lists.origRootPath,
+          Rand = SingleRandom.Instance
+        });
+
+        foreach (var rv in resolvedUserVars)
+        {
+          if (rv.isUsed)
+            scriptRunner.SetVariable(rv.simVar.name, rv.simVar.dType, rv.simVar.value);
         }
-      
+
         toSetVar.SetValue(scriptRunner.EvaluateGeneric());
       }
       
@@ -940,6 +974,12 @@ namespace SimulationDAL
   {
     //TimeStateVariable savedTime = null;
 
+    private static readonly EngineVar[] AvailableEngineVars =
+    {
+      EngineVar.CurTime, EngineVar.RunIdx, EngineVar.ExtSimStartTime,
+      EngineVar.RootPath, EngineVar.Rand
+    };
+
     public JumpToTimeAct()
       : base()
     {
@@ -968,21 +1008,19 @@ namespace SimulationDAL
           throw new Exception("Code failed compile, can not evaluate");
       }
 
-      scriptRunner.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
-      scriptRunner.SetVariable("RunIdx", typeof(int), runIdx);
-      scriptRunner.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
-      scriptRunner.SetVariable("RootPath", typeof(string), lists.rootPath);
-      scriptRunner.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
-
-      if (codeVariables != null)
+      EngineVarBinder.Bind(scriptRunner, AvailableEngineVars, engineVarsUsed, new ScriptContext
       {
-        foreach (string varName in codeVariables)
-        {
-          SimVariable simVar = lists.allVariables.FindByName(varName);
-          if (simVar == null)
-            throw new Exception("Failed to find variable named " + varName);
-          scriptRunner.SetVariable(varName, typeof(double), simVar.value);
-        }
+        CurTime = curSimTime.TotalHours,
+        RunIdx = runIdx,
+        ExtSimStartTime = start3DTime.TotalHours,
+        RootPath = lists.rootPath,
+        Rand = SingleRandom.Instance
+      });
+
+      foreach (var rv in resolvedUserVars)
+      {
+        if (rv.isUsed)
+          scriptRunner.SetVariable(rv.simVar.name, typeof(double), rv.simVar.value);
       }
 
       toSet = (double)scriptRunner.EvaluateGeneric();
@@ -1019,8 +1057,7 @@ namespace SimulationDAL
       {
         foreach (string varName in codeVariables)
         {
-          if ((varName != "CurTime") &&
-              (varName != "ExeExitCode"))
+          if (!EngineVarRegistry.AllNames.Contains(varName))
           {
             scriptRunner.AddVariable(varName, typeof(double));
           }
@@ -1029,12 +1066,15 @@ namespace SimulationDAL
 
       scriptRunner.AddVariable("OutputFile", typeof(string));
 
-      //add all the states
+      // Only declare state-name booleans the script actually references — avoids
+      // bloating the synthesized assembly with one field per state per model.
       foreach (KeyValuePair<int, State> state in lists.allStates)
       {
-        //todo see if there are any variables with the name of the state
-        scriptRunner.AddVariable(state.Value.name, typeof(bool));
-        scriptRunner.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        if (scriptCode.Contains(state.Value.name) || scriptCode.Contains(state.Value.name + "_Time"))
+        {
+          scriptRunner.AddVariable(state.Value.name, typeof(bool));
+          scriptRunner.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
+        }
       }
 
 
@@ -1045,6 +1085,23 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
+        // Reuse the base-class user-var cache; engine-vars cache is unused here
+        // because this class doesn't SetVariable engine vars per call.
+        resolvedUserVars.Clear();
+        if (codeVariables != null)
+        {
+          foreach (string varName in codeVariables)
+          {
+            if (EngineVarRegistry.AllNames.Contains(varName)) continue;
+            SimVariable v = lists.allVariables.FindByName(varName);
+            if (v == null) continue;
+            resolvedUserVars.Add(new ResolvedUserVar
+            {
+              simVar = v,
+              isUsed = scriptCode.Contains(varName)
+            });
+          }
+        }
       }
 
       return this.compiled;
@@ -1058,17 +1115,11 @@ namespace SimulationDAL
           throw new Exception("Code for - " + this.name + " failed to compile, can not evaluate");
       }
 
-      //Set all the variable values
-      if (codeVariables != null)
+      //Set all the variable values — only those the script references
+      foreach (var rv in resolvedUserVars)
       {
-        foreach (string varName in codeVariables)
-        {
-          SimVariable curVar = lists.allVariables.FindByName(varName);
-          if (curVar == null)
-            throw new Exception("Failed to find variable named " + varName);
-
-          scriptRunner.SetVariable(curVar.name, typeof(double), curVar.value);
-        }
+        if (rv.isUsed)
+          scriptRunner.SetVariable(rv.simVar.name, typeof(double), rv.simVar.value);
       }
 
 
@@ -1120,15 +1171,24 @@ namespace SimulationDAL
     private string customFormName = ""; //custom form
     private bool useProjPathExeWorkingDir = false;
 
-    // Cached engine-var name lists for run-time SetVariable gating (see DetectUsedEngineVars).
-    // The Compile* methods scan the script text for these names so RunExtApp can skip
-    // marshaling values that the user's script doesn't reference.
-    private static readonly string[] PreEngineVarNames =
-      { "CurTime", "RunIdx", "ExePath", "RootPath", "OrigRootPath", "MultiThreaded", "Rand" };
-    private static readonly string[] PostEngineVarNames =
-      { "CurTime", "RunIdx", "ExeExitCode", "ExePath", "RootPath", "OrigRootPath", "MultiThreaded", "Rand" };
-    private HashSet<string>? preEngineVarsUsed;
-    private HashSet<string>? postEngineVarsUsed;
+    // Engine vars exposed to the make-input and process-output scripts. The binder gates
+    // per-call SetVariable on whether each name actually appears in the script source.
+    private static readonly EngineVar[] PreAvailableEngineVars =
+    {
+      EngineVar.CurTime, EngineVar.RunIdx, EngineVar.ExePath, EngineVar.RootPath,
+      EngineVar.OrigRootPath, EngineVar.MultiThreaded, EngineVar.Rand
+    };
+    private static readonly EngineVar[] PostAvailableEngineVars =
+    {
+      EngineVar.CurTime, EngineVar.RunIdx, EngineVar.ExeExitCode, EngineVar.ExePath,
+      EngineVar.RootPath, EngineVar.MultiThreaded, EngineVar.Rand
+    };
+    private HashSet<string> preEngineVarsUsed = new HashSet<string>(StringComparer.Ordinal);
+    private HashSet<string> postEngineVarsUsed = new HashSet<string>(StringComparer.Ordinal);
+
+    // Compile-time resolved user vars per script (see SimulationDAL.ResolvedUserVar).
+    private List<ResolvedUserVar> resolvedUserVarsPre = new List<ResolvedUserVar>();
+    private List<ResolvedUserVar> resolvedUserVarsPost = new List<ResolvedUserVar>();
 
     // Cached path resolutions — exePath and origRootPath don't change between calls,
     // so resolve once per compiled action instead of every RunExtApp invocation.
@@ -1136,19 +1196,6 @@ namespace SimulationDAL
 
     // Cached logger — NLog returns the same logger for a given name, no point looking up each call.
     private static readonly NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-
-    private static HashSet<string> DetectUsedEngineVars(string code, string[] candidates)
-    {
-      var set = new HashSet<string>(StringComparer.Ordinal);
-      if (string.IsNullOrEmpty(code))
-        return set;
-      foreach (var name in candidates)
-      {
-        if (code.Contains(name))
-          set.Add(name);
-      }
-      return set;
-    }
 
 
 
@@ -1387,11 +1434,27 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
-        preEngineVarsUsed = DetectUsedEngineVars(makeInputFileCode, PreEngineVarNames);
+        preEngineVarsUsed = CommonFunctions.DetectUsedNames(makeInputFileCode, EngineVarRegistry.AllNames);
         cachedFixedExePath = null; // invalidate; will be recomputed lazily in RunExtApp
+        ResolveUserVars(lists, makeInputFileCode, resolvedUserVarsPre);
       }
 
       return this.compiled;
+    }
+
+    // Resolve each codeVariable to a SimVariable once, with a flag for whether the script
+    // body references it — avoids per-iteration FindByName and gates per-iteration SetVariable.
+    private void ResolveUserVars(EmraldModel lists, string code, List<ResolvedUserVar> into)
+    {
+      into.Clear();
+      if (codeVariables == null) return;
+      foreach (string varName in codeVariables)
+      {
+        if (EngineVarRegistry.AllNames.Contains(varName)) continue;
+        SimVariable v = lists.allVariables.FindByName(varName);
+        if (v == null) continue;
+        into.Add(new ResolvedUserVar { simVar = v, isUsed = code.Contains(varName) });
+      }
     }
 
     public bool CompileProcessOutputFileCode(EmraldModel lists)
@@ -1475,7 +1538,8 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
-        postEngineVarsUsed = DetectUsedEngineVars(processOutputFileCode, PostEngineVarNames);
+        postEngineVarsUsed = CommonFunctions.DetectUsedNames(processOutputFileCode, EngineVarRegistry.AllNames);
+        ResolveUserVars(lists, processOutputFileCode, resolvedUserVarsPost);
       }
 
 
@@ -1532,44 +1596,31 @@ namespace SimulationDAL
         throw new Exception("Script engine not assigned should not happen.");
 
       //Set all the variable values
-      if (codeVariables != null)
+      foreach (var rv in resolvedUserVarsPre)
       {
-        foreach (string varName in codeVariables)
-        {
-          SimVariable curVar = lists.allVariables.FindByName(varName);
-          if (curVar == null)
-            throw new Exception("Failed to find variable named " + varName);
-
-          makeInputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
-        }
-
-        // Only marshal engine variables the script actually references (detected at compile time).
-        bool needsExePath = preEngineVarsUsed?.Contains("ExePath") == true;
-        if (needsExePath && cachedFixedExePath == null)
-        {
-          string fp = exePath;
-          if (!Path.IsPathRooted(fp))
-            fp = CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(lists.origRootPath, exePath));
-          cachedFixedExePath = fp;
-        }
-
-        if (preEngineVarsUsed?.Contains("CurTime") == true)
-          makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        if (preEngineVarsUsed?.Contains("RunIdx") == true)
-          makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
-        if (needsExePath)
-          makeInputFileCompEval.SetVariable("ExePath", typeof(string), cachedFixedExePath);
-        // RootPath is referenced unconditionally by the ScriptEngine wrapper (it chdir's to it
-        // before running user code), so it must always be set — independent of whether the
-        // user's script text mentions "RootPath".
-        makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
-        if (preEngineVarsUsed?.Contains("OrigRootPath") == true)
-          makeInputFileCompEval.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
-        if (preEngineVarsUsed?.Contains("MultiThreaded") == true)
-          makeInputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
-        if (preEngineVarsUsed?.Contains("Rand") == true)
-          makeInputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
+        if (rv.isUsed)
+          makeInputFileCompEval.SetVariable(rv.simVar.name, rv.simVar.dType, rv.simVar.value);
       }
+
+      // exePath rooting is computed once per compiled action (origRootPath doesn't change).
+      if (preEngineVarsUsed.Contains("ExePath") && cachedFixedExePath == null)
+      {
+        string fp = exePath;
+        if (!Path.IsPathRooted(fp))
+          fp = CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(lists.origRootPath, exePath));
+        cachedFixedExePath = fp;
+      }
+
+      EngineVarBinder.Bind(makeInputFileCompEval, PreAvailableEngineVars, preEngineVarsUsed, new ScriptContext
+      {
+        CurTime = curTime.TotalHours,
+        RunIdx = lists.curRunIdx,
+        ExePath = cachedFixedExePath,
+        RootPath = lists.rootPath,
+        OrigRootPath = lists.origRootPath,
+        MultiThreaded = multiThreaded,
+        Rand = SingleRandom.Instance
+      });
 
       // Iterate only the states the scripts reference (populated at compile time),
       // rather than scanning lists.allStates which can be O(allStates) per call.
@@ -1661,8 +1712,20 @@ namespace SimulationDAL
         {
           extApp = new ProcessStartInfo();
           extApp.UseShellExecute = false;
-          extApp.RedirectStandardOutput = false;
-          extApp.RedirectStandardError = false;
+
+          // In DEBUG builds or whenever the user enabled debug logging via the options JSON,
+          // let the child's stdout/stderr flow through (inherited handles in release with debug on;
+          // a separate console window in DEBUG builds via CreateNoWindow=false below).
+          // In a clean release run (debug == "off"), redirect both streams so we can drain them
+          // into a no-op and keep the EMRALD console clean — also avoids conhost cost.
+#if DEBUG
+          bool suppressChildOutput = false;
+#else
+          bool suppressChildOutput = ConfigData.debugLev == NLog.LogLevel.Off;
+#endif
+          extApp.RedirectStandardOutput = suppressChildOutput;
+          extApp.RedirectStandardError = suppressChildOutput;
+
 #if DEBUG
           // Show the child's console window in debug builds for easier troubleshooting.
           extApp.CreateNoWindow = false;
@@ -1682,6 +1745,16 @@ namespace SimulationDAL
           if (proc == null)
             return; //should never happen, declared at top for optimization.
 
+          // If we redirected the streams, we must drain them or the child will block once the
+          // pipe buffer fills. Discard the lines — the intent here is suppression, not capture.
+          if (extApp.RedirectStandardOutput)
+          {
+            proc.OutputDataReceived += (_, _) => { };
+            proc.ErrorDataReceived += (_, _) => { };
+            proc.BeginOutputReadLine();
+            proc.BeginErrorReadLine();
+          }
+
           proc.WaitForExit();
 
           // Retrieve the app's exit code
@@ -1700,35 +1773,21 @@ namespace SimulationDAL
       //Set all the variable values
       if (processOutputFileCompEval != null)
       {
-        // Only marshal engine variables the script actually references (detected at compile time).
-        if (postEngineVarsUsed?.Contains("CurTime") == true)
-          processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        if (postEngineVarsUsed?.Contains("RunIdx") == true)
-          processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
-        if (postEngineVarsUsed?.Contains("ExeExitCode") == true)
-          processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
-        if (postEngineVarsUsed?.Contains("ExePath") == true)
-          processOutputFileCompEval.SetVariable("ExePath", typeof(string), CommonFunctions.NormalizeGetDirectoryName(fullExePath));
-        // RootPath is referenced unconditionally by the ScriptEngine wrapper (it chdir's to it
-        // before running user code), so it must always be set — independent of whether the
-        // user's script text mentions "RootPath".
-        processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
-        if (postEngineVarsUsed?.Contains("MultiThreaded") == true)
-          processOutputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
-        if (postEngineVarsUsed?.Contains("Rand") == true)
-          processOutputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
-        //processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
-        //Set all the variable values
-        if (codeVariables != null)
+        EngineVarBinder.Bind(processOutputFileCompEval, PostAvailableEngineVars, postEngineVarsUsed, new ScriptContext
         {
-          foreach (string varName in codeVariables)
-          {
-            SimVariable curVar = lists.allVariables.FindByName(varName);
-            if (curVar == null)
-              throw new Exception("Failed to find variable named " + varName);
+          CurTime = curTime.TotalHours,
+          RunIdx = lists.curRunIdx,
+          ExeExitCode = exitCode,
+          ExePath = CommonFunctions.NormalizeGetDirectoryName(fullExePath),
+          RootPath = lists.rootPath,
+          MultiThreaded = multiThreaded,
+          Rand = SingleRandom.Instance
+        });
 
-            processOutputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
-          }
+        foreach (var rv in resolvedUserVarsPost)
+        {
+          if (rv.isUsed)
+            processOutputFileCompEval.SetVariable(rv.simVar.name, rv.simVar.dType, rv.simVar.value);
         }
       }
 
