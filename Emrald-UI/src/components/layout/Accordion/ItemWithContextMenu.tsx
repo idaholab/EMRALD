@@ -12,7 +12,8 @@ import type { ModelItem } from '../../../types/ModelUtils';
 import { Box } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { type MouseEvent, useState } from 'react';
+import { type DragEvent as ReactDragEvent, type MouseEvent, useState } from 'react';
+import { VARIABLE_DRAG_MIME } from '../../common/variableDrag';
 import { type Option, useOptionsMapping } from './OptionMapping';
 
 interface ItemWithContextMenuProps {
@@ -67,13 +68,23 @@ export const ItemWithContextMenu: React.FC<ItemWithContextMenuProps> = ({
     handleClose();
   };
 
+  const isVariable = optionType === 'Variables';
+
+  const handleDragStart = (event: ReactDragEvent<HTMLDivElement>) => {
+    event.dataTransfer.setData(VARIABLE_DRAG_MIME, itemData.name);
+    event.dataTransfer.setData('text/plain', itemData.name);
+    event.dataTransfer.effectAllowed = 'copy';
+  };
+
   return (
     <Box
       onContextMenu={handleContextMenu}
       onDoubleClick={() => {
         void handleRegularClick(itemData);
       }}
-      sx={{ width: '100%' }}
+      sx={{ width: '100%', cursor: isVariable ? 'grab' : undefined }}
+      draggable={isVariable}
+      onDragStart={isVariable ? handleDragStart : undefined}
     >
       <Box>{itemData.name}</Box>
 

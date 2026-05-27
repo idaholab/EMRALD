@@ -101,6 +101,7 @@ export const ExtSim: React.FC<EventFormProps> = ({ eventData }) => {
               heading={
                 <span>Evaluate Code (c#) - Must return a boolean value!</span>
               }
+              codeContext="event"
             />
           </>
         )}

@@ -48,6 +48,7 @@ export const ChangeVarValue: React.FC = () => {
             Must return same type as the specified variable
           </span>
         }
+        codeContext="changeVarValue"
       />
     </>
   );
