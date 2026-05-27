@@ -69,7 +69,10 @@ namespace EMRALD_Sim
       _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
 
 #if DEBUG
-      ConsoleHelper.Show();
+      // Don't allocate a private console when launched with CLI args — it would block AttachConsole below,
+      // and Console.WriteLine would write to a window that closes the instant Environment.Exit fires.
+      if (args.Length == 0)
+        ConsoleHelper.Show();
 #endif
 
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
@@ -385,6 +388,8 @@ namespace EMRALD_Sim
     // Print CLI help text and exit.
     private void ShowHelpAndExit()
     {
+      // Leading newline so output starts on a fresh line after the shell prompt that just returned.
+      Console.WriteLine();
       Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
       Console.WriteLine("-n \"run count\"");
       Console.WriteLine("-i \"input model path\"");
@@ -402,6 +407,7 @@ namespace EMRALD_Sim
       Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
       Console.WriteLine("Options JSON file - ");
       Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+      Console.Out.Flush();
       Environment.Exit(0);
     }
 
@@ -743,6 +749,7 @@ namespace EMRALD_Sim
       _running = false;
       ResetResults();
       _lastError = "";
+      ClearDebugLog();
 
       try
       {
@@ -1636,6 +1643,23 @@ namespace EMRALD_Sim
         BeginInvoke(new System.Action(() => SaveUISettingsToJson()));
       else
         SaveUISettingsToJson();
+    }
+
+    // Delete the NLog debug file so each Run starts with a fresh log.
+    // NLog's File target uses keepFileOpen=false by default, so the file isn't held between writes.
+    private void ClearDebugLog()
+    {
+      try
+      {
+        NLog.LogManager.Flush();
+        string logPath = Path.Combine(Application.StartupPath, "DebugLog.txt");
+        if (File.Exists(logPath))
+          File.Delete(logPath);
+      }
+      catch
+      {
+        // If the file is locked or missing, skip silently — the previous run's tail isn't worth blocking on.
+      }
     }
 
     private void btn_DebugOpen_Click(object sender, EventArgs e)
