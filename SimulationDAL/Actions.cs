@@ -1115,11 +1115,41 @@ namespace SimulationDAL
     public string processOutputFileCode = "";
     public ReturnType returnProcess = ReturnType.rtStateList;
     public SimVariable? assignVariable;
-    private Dictionary<string, bool> stateVarsAddedPre = new Dictionary<string, bool>();
-    private Dictionary<string, bool> stateVarsAddedPost = new Dictionary<string, bool>();
-    private string customFormName = ""; //custom form  
+    private Dictionary<string, int> stateVarsAddedPre = new Dictionary<string, int>();
+    private Dictionary<string, int> stateVarsAddedPost = new Dictionary<string, int>();
+    private string customFormName = ""; //custom form
     private bool useProjPathExeWorkingDir = false;
-    
+
+    // Cached engine-var name lists for run-time SetVariable gating (see DetectUsedEngineVars).
+    // The Compile* methods scan the script text for these names so RunExtApp can skip
+    // marshaling values that the user's script doesn't reference.
+    private static readonly string[] PreEngineVarNames =
+      { "CurTime", "RunIdx", "ExePath", "RootPath", "OrigRootPath", "MultiThreaded", "Rand" };
+    private static readonly string[] PostEngineVarNames =
+      { "CurTime", "RunIdx", "ExeExitCode", "ExePath", "RootPath", "OrigRootPath", "MultiThreaded", "Rand" };
+    private HashSet<string>? preEngineVarsUsed;
+    private HashSet<string>? postEngineVarsUsed;
+
+    // Cached path resolutions — exePath and origRootPath don't change between calls,
+    // so resolve once per compiled action instead of every RunExtApp invocation.
+    private string? cachedFixedExePath;
+
+    // Cached logger — NLog returns the same logger for a given name, no point looking up each call.
+    private static readonly NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+
+    private static HashSet<string> DetectUsedEngineVars(string code, string[] candidates)
+    {
+      var set = new HashSet<string>(StringComparer.Ordinal);
+      if (string.IsNullOrEmpty(code))
+        return set;
+      foreach (var name in candidates)
+      {
+        if (code.Contains(name))
+          set.Add(name);
+      }
+      return set;
+    }
+
 
 
     public RunExtAppAct()
@@ -1344,7 +1374,7 @@ namespace SimulationDAL
         {
           makeInputFileCompEval.AddVariable(state.Value.name, typeof(bool));
           makeInputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
-          stateVarsAddedPre.Add(state.Value.name, true);
+          stateVarsAddedPre.Add(state.Value.name, state.Value.id);
         }
       }
 
@@ -1357,6 +1387,8 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
+        preEngineVarsUsed = DetectUsedEngineVars(makeInputFileCode, PreEngineVarNames);
+        cachedFixedExePath = null; // invalidate; will be recomputed lazily in RunExtApp
       }
 
       return this.compiled;
@@ -1417,10 +1449,10 @@ namespace SimulationDAL
         {
           processOutputFileCompEval.AddVariable(state.Value.name, typeof(bool));
           processOutputFileCompEval.AddVariable(state.Value.name + "_Time", typeof(TimeSpan));
-          stateVarsAddedPost.Add(state.Value.name, true);
+          stateVarsAddedPost.Add(state.Value.name, state.Value.id);
         }
       }
-      
+
 
       Type retType = typeof(object);
       switch (returnProcess)
@@ -1443,8 +1475,9 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
+        postEngineVarsUsed = DetectUsedEngineVars(processOutputFileCode, PostEngineVarNames);
       }
-      
+
 
       return this.compiled;
     }
@@ -1510,50 +1543,61 @@ namespace SimulationDAL
           makeInputFileCompEval.SetVariable(curVar.name, curVar.dType, curVar.value);
         }
 
-        string fixedExePath = exePath;
-        if (!Path.IsPathRooted(fixedExePath))
-          fixedExePath = CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(lists.origRootPath, exePath));
-
-        makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
-        makeInputFileCompEval.SetVariable("ExePath", typeof(string), fixedExePath);
-        makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
-        makeInputFileCompEval.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
-        makeInputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
-        makeInputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
-
-      }
-
-      //add if in states
-      foreach (KeyValuePair<int, State> state in lists.allStates)
-      {
-        if (stateVarsAddedPre.ContainsKey(state.Value.name))
+        // Only marshal engine variables the script actually references (detected at compile time).
+        bool needsExePath = preEngineVarsUsed?.Contains("ExePath") == true;
+        if (needsExePath && cachedFixedExePath == null)
         {
-          TimeSpan stateTime;
-          if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
-          {
-            makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-            makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
-          }
-          else
-          {
-            makeInputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-            makeInputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
-          }
+          string fp = exePath;
+          if (!Path.IsPathRooted(fp))
+            fp = CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(lists.origRootPath, exePath));
+          cachedFixedExePath = fp;
         }
 
-        if ((processOutputFileCompEval != null) && (stateVarsAddedPost.ContainsKey(state.Value.name)))
+        if (preEngineVarsUsed?.Contains("CurTime") == true)
+          makeInputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
+        if (preEngineVarsUsed?.Contains("RunIdx") == true)
+          makeInputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
+        if (needsExePath)
+          makeInputFileCompEval.SetVariable("ExePath", typeof(string), cachedFixedExePath);
+        if (preEngineVarsUsed?.Contains("RootPath") == true)
+          makeInputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
+        if (preEngineVarsUsed?.Contains("OrigRootPath") == true)
+          makeInputFileCompEval.SetVariable("OrigRootPath", typeof(string), lists.origRootPath);
+        if (preEngineVarsUsed?.Contains("MultiThreaded") == true)
+          makeInputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
+        if (preEngineVarsUsed?.Contains("Rand") == true)
+          makeInputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
+      }
+
+      // Iterate only the states the scripts reference (populated at compile time),
+      // rather than scanning lists.allStates which can be O(allStates) per call.
+      foreach (var kv in stateVarsAddedPre)
+      {
+        if (curStatesTime.TryGetValue(kv.Value, out TimeSpan stateTime))
         {
-          TimeSpan stateTime;
-          if (curStatesTime.TryGetValue(state.Value.id, out stateTime))
+          makeInputFileCompEval.SetVariable(kv.Key, typeof(bool), true);
+          makeInputFileCompEval.SetVariable(kv.Key + "_Time", typeof(TimeSpan), stateTime);
+        }
+        else
+        {
+          makeInputFileCompEval.SetVariable(kv.Key, typeof(bool), false);
+          makeInputFileCompEval.SetVariable(kv.Key + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+        }
+      }
+
+      if (processOutputFileCompEval != null)
+      {
+        foreach (var kv in stateVarsAddedPost)
+        {
+          if (curStatesTime.TryGetValue(kv.Value, out TimeSpan stateTime))
           {
-            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), true);
-            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), stateTime);
+            processOutputFileCompEval.SetVariable(kv.Key, typeof(bool), true);
+            processOutputFileCompEval.SetVariable(kv.Key + "_Time", typeof(TimeSpan), stateTime);
           }
           else
           {
-            processOutputFileCompEval.SetVariable(state.Value.name, typeof(bool), false);
-            processOutputFileCompEval.SetVariable(state.Value.name + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
+            processOutputFileCompEval.SetVariable(kv.Key, typeof(bool), false);
+            processOutputFileCompEval.SetVariable(kv.Key + "_Time", typeof(TimeSpan), TimeSpan.FromMilliseconds(0));
           }
         }
       }
@@ -1593,10 +1637,10 @@ namespace SimulationDAL
         fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(fullExePath + locExePath));
       }
 
-      NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
       logger.Info("Executing - " + fullExePath + " " + runParams);
 
       int exitCode = 0;
+      string workingDir;
       if (runParams != null)
       {
         if (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe"))
@@ -1606,21 +1650,29 @@ namespace SimulationDAL
           runParams = "/C " + runParams;
         }
 
-        //Start the executable
-        extApp = new ProcessStartInfo();
-        extApp.Arguments = runParams;
-        extApp.FileName = fullExePath; // Path.GetFileName(exePath);
-        if(useProjPathExeWorkingDir)
-          extApp.WorkingDirectory = lists.rootPath;
-        else
-          extApp.WorkingDirectory = CommonFunctions.NormalizeGetDirectoryName(fullExePath);
-        extApp.UseShellExecute = false;
-        extApp.RedirectStandardOutput = false;
-        extApp.RedirectStandardError = false;
+        workingDir = useProjPathExeWorkingDir
+          ? lists.rootPath
+          : CommonFunctions.NormalizeGetDirectoryName(fullExePath);
 
-        // Do you want to show a console window?
-        // extApp.WindowStyle = Hidden.ProcessWindowStyle;
-        extApp.CreateNoWindow = false;
+        // Reuse the ProcessStartInfo across calls (the fields below are the only ones that change).
+        if (extApp == null)
+        {
+          extApp = new ProcessStartInfo();
+          extApp.UseShellExecute = false;
+          extApp.RedirectStandardOutput = false;
+          extApp.RedirectStandardError = false;
+#if DEBUG
+          // Show the child's console window in debug builds for easier troubleshooting.
+          extApp.CreateNoWindow = false;
+#else
+          // Release builds: skip console window creation — conhost allocation is a measurable
+          // per-launch cost when running thousands of Monte Carlo iterations.
+          extApp.CreateNoWindow = true;
+#endif
+        }
+        extApp.Arguments = runParams;
+        extApp.FileName = fullExePath;
+        extApp.WorkingDirectory = workingDir;
 
         // Run the external process & wait for it to finish
         using (proc = Process.Start(extApp))
@@ -1634,25 +1686,33 @@ namespace SimulationDAL
           exitCode = proc.ExitCode;
           proc.Close();
         }
-
-        //make sure file folder is released
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        System.Threading.Thread.Sleep(100);
       }
       else
+      {
         exitCode = -1;
+        workingDir = useProjPathExeWorkingDir
+          ? lists.rootPath
+          : CommonFunctions.NormalizeGetDirectoryName(fullExePath);
+      }
 
       //Set all the variable values
       if (processOutputFileCompEval != null)
       {
-        processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
-        processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
-        processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
-        processOutputFileCompEval.SetVariable("ExePath", typeof(string), CommonFunctions.NormalizeGetDirectoryName(fullExePath));
-        processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
-        processOutputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
-        processOutputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
+        // Only marshal engine variables the script actually references (detected at compile time).
+        if (postEngineVarsUsed?.Contains("CurTime") == true)
+          processOutputFileCompEval.SetVariable("CurTime", typeof(double), curTime.TotalHours);
+        if (postEngineVarsUsed?.Contains("RunIdx") == true)
+          processOutputFileCompEval.SetVariable("RunIdx", typeof(int), lists.curRunIdx);
+        if (postEngineVarsUsed?.Contains("ExeExitCode") == true)
+          processOutputFileCompEval.SetVariable("ExeExitCode", typeof(int), exitCode);
+        if (postEngineVarsUsed?.Contains("ExePath") == true)
+          processOutputFileCompEval.SetVariable("ExePath", typeof(string), CommonFunctions.NormalizeGetDirectoryName(fullExePath));
+        if (postEngineVarsUsed?.Contains("RootPath") == true)
+          processOutputFileCompEval.SetVariable("RootPath", typeof(string), lists.rootPath);
+        if (postEngineVarsUsed?.Contains("MultiThreaded") == true)
+          processOutputFileCompEval.SetVariable("MultiThreaded", typeof(bool), multiThreaded);
+        if (postEngineVarsUsed?.Contains("Rand") == true)
+          processOutputFileCompEval.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
         //processOutputFileCompEval.SetVariable("OutputFile", typeof(string), exeOutputPath + "\\_out.txt");
         //Set all the variable values
         if (codeVariables != null)
@@ -1680,14 +1740,18 @@ namespace SimulationDAL
             throw new Exception("Script engine not assigned should not happen.");
 
           List<String> retStates = processOutputFileCompEval.EvaluateStrList();
-          System.Threading.Thread.Sleep(10);
 
+          // _out.txt is written by the child exe into its working directory (set above as workingDir).
+          // Earlier code looked in dirname(exePath), which can mismatch when exePath is relative or
+          // when useProjPathExeWorkingDir redirects the child to lists.rootPath. Use workingDir to
+          // guarantee we target the same per-thread location the exe actually wrote to.
+          string outFilePath = Path.Combine(workingDir, "_out.txt");
           int delTries = 0;
-          while ((delTries < 30) && (File.Exists(CommonFunctions.NormalizeGetDirectoryName(exePath) + Path.AltDirectorySeparatorChar + "_out.txt")))
+          while ((delTries < 30) && File.Exists(outFilePath))
           {
             try
             {
-              System.IO.File.Delete(CommonFunctions.NormalizeGetDirectoryName(exePath) + Path.AltDirectorySeparatorChar + "_out.txt");
+              System.IO.File.Delete(outFilePath);
             }
             catch
             {
