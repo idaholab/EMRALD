@@ -366,9 +366,10 @@ namespace SimulationEngine
             optionsOut.resout = CommonFunctions.NormalizeGetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.resout));
           }
 
-          if (!Directory.Exists(Path.GetDirectoryName(optionsOut.resout)))
+          string resoutDir = Path.GetDirectoryName(optionsOut.resout);
+          if (!string.IsNullOrEmpty(resoutDir) && !Directory.Exists(resoutDir))
           {
-            return "Invalid output file path, directory does not exist.";
+            Directory.CreateDirectory(resoutDir);
           }
         }
       }
@@ -388,9 +389,10 @@ namespace SimulationEngine
             optionsOut.jsonRes = CommonFunctions.NormalizeGetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.jsonRes));
           }
 
-          if (!Directory.Exists(Path.GetDirectoryName(optionsOut.jsonRes)))
+          string jsonResDir = Path.GetDirectoryName(optionsOut.jsonRes);
+          if (!string.IsNullOrEmpty(jsonResDir) && !Directory.Exists(jsonResDir))
           {
-            return "Invalid json path results file path, directory does not exist.";
+            Directory.CreateDirectory(jsonResDir);
           }
         }
       }

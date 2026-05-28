@@ -279,23 +279,26 @@ namespace EMRALD_Sim
             break;
 
           case "-mergeresults":
+            // Need at least: -mergeResults src1 src2 dest  →  args.Length >= i + 4
             if (args.Length < (i + 4))
             {
-              Console.Write("Invalid option, must have two result file paths and a destination file path after -mergeresults.");
+              Console.Write("Invalid option, must have at least two result file paths and a destination file path after -mergeresults.");
               return false;
             }
-            string mergePath1 = args[i + 1];
-            string mergePath2 = args[i + 2];
-            string resPath = args[i + 3];
+            // All args after the flag are paths; the LAST is the destination, the rest are sources.
+            string resPath = args[args.Length - 1];
+            var mergeSources = new List<string>();
+            for (int j = i + 1; j < args.Length - 1; j++)
+              mergeSources.Add(args[j]);
 
             try
             {
-              if (SimulationEngine.OverallResults.CombineJsonResultFiles(mergePath1, mergePath2, resPath) == "")
+              if (SimulationEngine.OverallResults.CombineJsonResultFiles(mergeSources, resPath) == "")
               {
-                Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
+                Console.Write("Failed to load files, must have valid file paths after -mergeresults.");
                 return false;
               }
-              Console.WriteLine("Successfully merged results to: " + resPath);
+              Console.WriteLine("Successfully merged " + mergeSources.Count + " result files to: " + resPath);
               Environment.Exit(0);
             }
             catch
@@ -404,7 +407,9 @@ namespace EMRALD_Sim
       Console.WriteLine("    Basic - state movement only. Detailed - state movement, actions and events.");
       Console.WriteLine("    Example: -d basic [10 20]");
       Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
-      Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
+      Console.WriteLine("-mergeResults \"merge two or more json path result files into one. The LAST path is the destination; all preceding paths are sources. Estimates the 5th and 95th.");
+      Console.WriteLine("    Example (2 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Combined.json");
+      Console.WriteLine("    Example (3 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Batch3.json c:/temp/Combined.json\"");
       Console.WriteLine("Options JSON file - ");
       Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
       Console.Out.Flush();

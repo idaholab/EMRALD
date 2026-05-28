@@ -1872,14 +1872,20 @@ namespace SimulationDAL
         {
           return listItems;
         }
-        //get the reference to the exe, this must be first
+        //get the reference to the exe, this must be first.
+        // Auto-add the exe to the per-thread ToCopy list by default. Exclude shared system exes
+        // like cmd.exe where copying per-thread doesn't make sense.
+        bool copyExeByDefault = !string.Equals(
+          Path.GetFileName(this.exePath),
+          "cmd.exe",
+          StringComparison.OrdinalIgnoreCase);
         listItems.Add(new ScanForRefsItem(this.id,
                                         this.name,
                                         EnIDTypes.itAction,
                                         "Run Exe Action [" + this.name + "] has a file path reference to the exe to run: " + this.exePath + ". Assign this Exe and its needed files to be copied.",
                                         this.exePath,
                                         "",
-                                        false));
+                                        copyExeByDefault));
 
         //see if there are any file references in the code.  
         
@@ -1916,24 +1922,36 @@ namespace SimulationDAL
       bool inExe = false;
       if (this.exePath == oldRef)
       {
-        this.exePath = newRef;
-        inExe = true;
+        // Decide whether to relocate the exe to the per-thread workspace.
+        // If the exe was actually copied into modelPath (the thread's rootPath), use the new
+        // per-thread location. Otherwise leave the exe at its original location so all threads
+        // share a single install (e.g. a system exe like cmd.exe).
+        string perThreadCandidate = Path.IsPathRooted(newRef)
+          ? newRef
+          : CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath, newRef));
 
-        //make sure the exe path exists
-        string fullExePath = modelPath;
-        if (!fullExePath.EndsWith(@"\"))
-          fullExePath += @"\";
-        if (Path.IsPathRooted(exePath))
+        if (File.Exists(perThreadCandidate))
         {
-          fullExePath = exePath;
+          this.exePath = newRef;
+          inExe = true;
         }
         else
         {
-          fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(fullExePath + exePath));
+          // Not copied per-thread — pin to the original model location so the action still finds
+          // the exe at runtime from any thread.
+          inExe = true;
+          if (!Path.IsPathRooted(this.exePath))
+          {
+            string origExe = CommonFunctions.NormalizeGetFullPath(Path.Combine(lists.origRootPath, this.exePath));
+            if (!File.Exists(origExe))
+              throw new Exception("Executable path for the \"RunApplication\" action does not exist! - " + this.exePath);
+            this.exePath = origExe;
+          }
+          else if (!File.Exists(this.exePath))
+          {
+            throw new Exception("Executable path for the \"RunApplication\" action does not exist! - " + this.exePath);
+          }
         }
-
-        if (!Path.Exists(fullExePath))
-          throw new Exception("Executable path for the \"RunApplication\" action does not exist for the tread! - " + exePath);
       }
       //find the file references in the code and look for a match of the oldRef and replace.         
       var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode, oldRef, newRef);
