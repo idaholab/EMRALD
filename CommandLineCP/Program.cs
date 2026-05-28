@@ -1,6 +1,7 @@
 ﻿// Copyright 2026 Battelle Energy Alliance
 // Command-line multi-platform entry point for running EMRALD simulations and handling XMPP message output without a GUI.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
