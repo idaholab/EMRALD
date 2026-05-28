@@ -1,6 +1,6 @@
 'use strict';
 
-const EMRALD_SchemaVersion = 3.2;
+const EMRALD_SchemaVersion = 3.3;
 
 function UpgradeV1_x(modelTxt) {
     const newModel = JSON.parse(modelTxt);
@@ -581,6 +581,27 @@ function UpgradeV3_2_Recursive(oldModel) {
     };
 }
 
+function UpgradeV3_3(modelTxt) {
+    return {
+        newModel: JSON.stringify(UpgradeV3_3_Recursive(JSON.parse(modelTxt))),
+        errors: [],
+    };
+}
+function UpgradeV3_3_Recursive(oldModel) {
+    // v3.2 -> v3.3 adds optional distribution fields to atCngVarVal actions
+    // (useDistribution, distType, parameters, dfltTimeRate). Existing actions
+    // without these fields default to using scriptCode, so no transformation
+    // of existing data is needed.
+    const upgradeModel = (oldModel) => ({
+        ...oldModel,
+        emraldVersion: 3.3,
+    });
+    return {
+        ...upgradeModel(oldModel),
+        templates: oldModel.templates?.map(template => upgradeModel(template)),
+    };
+}
+
 class Upgrade {
     constructor(modelTxt) {
         this._emraldVersion = 0;
@@ -620,6 +641,7 @@ class Upgrade {
             { emraldVersion: 3, upgradeFunction: UpgradeV3_0 },
             { emraldVersion: 3.1, upgradeFunction: UpgradeV3_1 },
             { emraldVersion: 3.2, upgradeFunction: UpgradeV3_2 },
+            { emraldVersion: 3.3, upgradeFunction: UpgradeV3_3 },
         ];
         // Apply upgrades
         for (const upgrade of upgrades) {
