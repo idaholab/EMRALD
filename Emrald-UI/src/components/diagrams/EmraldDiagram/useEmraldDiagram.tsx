@@ -24,7 +24,7 @@ import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormCont
 import { StateForm } from '../../forms/StateForm/StateForm';
 import { getEventActionEdges } from './Edges/EventActionEdge';
 import { getImmediateActionEdges } from './Edges/ImmediateActionEdge';
-import { currentDiagram, EmraldDiagram } from './EmraldDiagram';
+import { EmraldDiagram } from './EmraldDiagram';
 
 export function useEmraldDiagram() {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -253,11 +253,12 @@ export function useEmraldDiagram() {
   const getActionNewStates = (action?: Action) =>
     action?.newStates?.map((state: { toState: string }) => state.toState) ?? [];
 
-  // Check if the new states are in the current diagram
+  // Check if the new states are in this diagram (the one this hook instance
+  // is bound to), not whichever diagram last rendered into the shared signal.
   const isStateInCurrentDiagram = (action?: Action) =>
     action
       ? getActionNewStates(action).every(newState =>
-          currentDiagram.value.states.includes(newState),
+          topDiagram.states.includes(newState),
         )
       : false;
 

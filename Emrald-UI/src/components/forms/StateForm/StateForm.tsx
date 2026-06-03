@@ -1,4 +1,5 @@
 import type {
+  Diagram,
   DiagramType,
   State,
   StateEvalValue,
@@ -19,19 +20,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { emptyState, useStateContext } from '../../../contexts/StateContext';
 import { useWindowContext } from '../../../contexts/WindowContext';
-import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import { MainDetailsForm } from '../../forms/MainDetailsForm';
 
 interface StateFormProps {
   stateData?: State;
+  diagram?: Diagram;
 }
 
 export const StateForm: React.FC<StateFormProps> = ({
   stateData,
+  diagram,
 }: StateFormProps) => {
   const { handleClose } = useWindowContext();
   const { statesList, updateState, createState } = useStateContext();
-  const { updateDiagram } = useDiagramContext();
+  const { updateDiagram, getDiagramByDiagramName } = useDiagramContext();
   const state = useSignal(stateData ?? emptyState);
   const [name, setName] = useState(stateData?.name ?? '');
   const [desc, setDesc] = useState(stateData?.desc ?? '');
@@ -43,6 +45,13 @@ export const StateForm: React.FC<StateFormProps> = ({
     = useState<StateEvalValue>(stateData?.defaultSingleStateValue ?? 'Ignore');
   const [hasError, setHasError] = useState(false);
   const [originalName] = useState(stateData?.name ?? '');
+
+  // The diagram a state belongs to is authoritative on the state itself
+  // (a state can only be in one diagram). For new states there is no
+  // diagramName yet, so use the diagram the form was opened from. We never
+  // rely on the shared `currentDiagram` signal here, which points at whichever
+  // diagram rendered last and is wrong when multiple diagrams are open.
+  const owningDiagramName = stateData?.diagramName ?? diagram?.name ?? '';
 
   const stateTypeOptions = [
     { value: 'stStart', label: 'Start' },
@@ -63,46 +72,46 @@ export const StateForm: React.FC<StateFormProps> = ({
   };
 
   const handleSave = () => {
+    const trimmedName = name.trim();
     if (stateData) {
+      // updateState renames the state and updates every reference to it,
+      // including the owning diagram's `states` list (see
+      // updateModelAndReferences in UpdateModel.ts). No manual diagram update
+      // is needed here, and doing one against the global currentDiagram could
+      // add the name to the wrong diagram when several are open.
       updateState({
         ...state.value,
         stateType,
-        name: name.trim(),
+        name: trimmedName,
         desc,
         defaultSingleStateValue,
       });
-      if (name !== originalName) {
-        currentDiagram.value.states = [
-          ...currentDiagram.value.states.filter(
-            state => state !== originalName,
-          ),
-          name,
-        ];
-        updateDiagram({
-          ...currentDiagram.value,
-        });
-      }
     } else {
       createState({
         ...state.value,
         id: uuidv4(),
-        name: name.trim(),
+        name: trimmedName,
         desc,
         stateType,
         defaultSingleStateValue,
-        diagramName: currentDiagram.value.name || '',
+        diagramName: owningDiagramName,
       });
-      const { states } = currentDiagram.value;
-      currentDiagram.value.states = [...states, name.trim()];
-      updateDiagram({
-        ...currentDiagram.value,
-      });
+      const owningDiagram = getDiagramByDiagramName(owningDiagramName);
+      if (owningDiagram) {
+        updateDiagram({
+          ...owningDiagram,
+          states: [...owningDiagram.states, trimmedName],
+        });
+      }
     }
     handleClose();
   };
 
   useEffect(() => {
-    setDiagramType(currentDiagram.value.diagramType);
+    const owningDiagram = getDiagramByDiagramName(owningDiagramName);
+    if (owningDiagram) {
+      setDiagramType(owningDiagram.diagramType);
+    }
   }, []);
   return (
     <Box mx={3} pb={3}>

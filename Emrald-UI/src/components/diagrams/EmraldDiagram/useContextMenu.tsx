@@ -1,6 +1,6 @@
 import type { Edge, Node } from 'reactflow';
 import type { Option } from '@/components/layout/ContextMenu/ContextMenu';
-import type { Action, Event, State } from '@/types/EMRALD_Model';
+import type { Action, Diagram, Event, State } from '@/types/EMRALD_Model';
 import type { ModelItem } from '@/types/ModelUtils';
 import { type MouseEvent, useState } from 'react';
 import { ActionForm } from '@/components/forms/ActionForm/ActionForm';
@@ -16,11 +16,11 @@ import { useStateContext } from '@/contexts/StateContext';
 import { useWindowContext } from '@/contexts/WindowContext';
 import { updateAppData } from '@/hooks/useAppData';
 import { updateModelAndReferences } from '@/utils/UpdateModel';
-import { currentDiagram } from './EmraldDiagram';
 
 export function useContextMenu(
   getStateNodes?: () => void,
   setEdges?: (edges: Edge[]) => void,
+  diagram?: Diagram,
 ) {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number } | null>(
@@ -33,7 +33,7 @@ export function useContextMenu(
   const [actionTypeToModify, setActionTypeToModify] = useState<string>();
   const { addWindow } = useWindowContext();
   const { updateState, deleteState, getStateByStateId } = useStateContext();
-  const { updateDiagram } = useDiagramContext();
+  const { updateDiagram, getDiagramByDiagramName } = useDiagramContext();
   const { deleteEvent } = useEventContext();
   const { updateAction, deleteAction, getActionByActionId }
     = useActionContext();
@@ -57,7 +57,7 @@ export function useContextMenu(
       {
         label: 'New State',
         action: () => {
-          addWindow('New State', <StateForm />);
+          addWindow('New State', <StateForm diagram={diagram} />);
           closeContextMenu();
         },
         isDivider: true,
@@ -65,10 +65,12 @@ export function useContextMenu(
       {
         label: 'Diagram Properties',
         action: () => {
-          addWindow(
-            `Edit Properties ${currentDiagram.value.name}`,
-            <DiagramForm diagramData={currentDiagram.value} />,
-          );
+          if (diagram) {
+            addWindow(
+              `Edit Properties ${diagram.name}`,
+              <DiagramForm diagramData={diagram} />,
+            );
+          }
           closeContextMenu();
         },
       },
@@ -644,10 +646,18 @@ export function useContextMenu(
     }
 
     if (itemToDelete.id && itemToDelete.objType === 'State' && getStateNodes) {
-      currentDiagram.value.states = currentDiagram.value.states.filter(
-        state => state !== itemToDelete.name,
-      );
-      updateDiagram(currentDiagram.value);
+      // Remove the state from the diagram that actually owns it (tracked on the
+      // state itself) rather than the shared currentDiagram signal, which may
+      // point at a different open diagram.
+      const owningDiagram = getDiagramByDiagramName(itemToDelete.diagramName);
+      if (owningDiagram) {
+        updateDiagram({
+          ...owningDiagram,
+          states: owningDiagram.states.filter(
+            state => state !== itemToDelete.name,
+          ),
+        });
+      }
       deleteState(itemToDelete.id);
       getStateNodes();
     } else if (
