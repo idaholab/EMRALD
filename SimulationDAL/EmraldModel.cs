@@ -269,8 +269,20 @@ namespace SimulationDAL
                     //if this is not directly reletive to the model location adjust it
                     if (item.AdjRelRoot != "")
                       root = CommonFunctions.NormalizeGetFullPath(Path.Combine(rootPath, item.AdjRelRoot));
-                    string copyTo = CommonFunctions.NormalizeGetFullPath(Path.Combine(root, item.RelPath));
-                    if (i > 0) //not the main copy/replace item, so use the path of the [0] item for this copy
+
+                    // Match by filename: if this ToCopy entry's filename matches RelPath's filename,
+                    // treat it as the ref file itself and copy to RelPath. Otherwise treat it as a
+                    // companion file and copy to RelPath's directory keeping the source filename.
+                    bool copyItemIsRef = string.Equals(
+                      Path.GetFileName(copyItem),
+                      Path.GetFileName(item.RelPath),
+                      StringComparison.OrdinalIgnoreCase);
+                    string copyTo;
+                    if (copyItemIsRef)
+                    {
+                      copyTo = CommonFunctions.NormalizeGetFullPath(Path.Combine(root, item.RelPath));
+                    }
+                    else
                     {
                       string subItemPath = CommonFunctions.NormalizeGetDirectoryName(item.RelPath);
                       if (subItemPath == ".")

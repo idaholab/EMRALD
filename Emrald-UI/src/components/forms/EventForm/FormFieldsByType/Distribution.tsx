@@ -59,7 +59,7 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
   const [persistent, setPersistent] = useState<boolean>(false);
 
   useEffect(() => {
-    setDfltTimeRate(eventData?.dfltTimeRate);
+    setDfltTimeRate(eventData?.dfltTimeRate ?? 'trHours');
     setParameters(eventData?.parameters);
     const rows: RowType = {};
     for (const param of eventData?.parameters ?? []) {
@@ -80,6 +80,7 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
     setAllRows(rows);
     setDistType(eventData?.distType ?? 'dtNormal');
     setPersistent(eventData?.persistent ?? false);
+    setOnVarChange(eventData?.onVarChange);
     setTypeProperties([
       'dfltTimeRate',
       'parameters',

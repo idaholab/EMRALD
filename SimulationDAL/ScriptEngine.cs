@@ -25,6 +25,10 @@ namespace ScriptEngineNS
     private string assemblyName = "TestClass";
     private object evaluator = null!;
     private Type evaluatorType = null!;
+    // Cached after successful compile so per-call SetVariable/Evaluate skip the
+    // name-based MethodInfo lookup that InvokeMember does every call.
+    private MethodInfo evalMethod = null!;
+    private readonly Dictionary<string, MethodInfo> setterCache = new(StringComparer.Ordinal);
     Assembly assembly = null!;
     CSharpCompilation compilation = null!;
     EmitResult compResult = null!;
@@ -96,15 +100,23 @@ namespace ScriptEngineNS
     {
       try
       {
-        object o = evaluatorType.InvokeMember(
-                    "Set" + VariableName,
-                    BindingFlags.InvokeMethod,
-                    null,
-                    evaluator,
-                    new object[] { Convert.ChangeType(Value, dType) }
-                 )!;
+        object[] args = new object[] { Convert.ChangeType(Value, dType) };
+        if (setterCache.TryGetValue("Set" + VariableName, out var mi))
+        {
+          mi.Invoke(evaluator, args);
+        }
+        else
+        {
+          evaluatorType.InvokeMember(
+                      "Set" + VariableName,
+                      BindingFlags.InvokeMethod,
+                      null,
+                      evaluator,
+                      args
+                   );
+        }
       }
-      catch 
+      catch
       {
         throw new Exception("Failed to assign \"" + Value.ToString() + "\" to Variable \"" + VariableName + "\", check the types are correct");
       }
@@ -207,6 +219,13 @@ namespace ScriptEngineNS
           assembly = Assembly.Load(memoryStream.ToArray());
           evaluatorType = assembly.GetType(domain + "." + assemblyName)!;
           evaluator = Activator.CreateInstance(evaluatorType)!;
+          evalMethod = evaluatorType.GetMethod("Eval")!;
+          setterCache.Clear();
+          foreach (var mi in evaluatorType.GetMethods())
+          {
+            if (mi.Name.StartsWith("Set", StringComparison.Ordinal))
+              setterCache[mi.Name] = mi;
+          }
           return true;
         }
         else
@@ -235,13 +254,15 @@ namespace ScriptEngineNS
     {
       try
       {
-        object o = evaluatorType.InvokeMember(
-                    "Eval",
-                    BindingFlags.InvokeMethod,
-                    null,
-                    evaluator,
-                    new object[] { }
-                 )!;
+        object o = evalMethod != null
+                    ? evalMethod.Invoke(evaluator, null)!
+                    : evaluatorType.InvokeMember(
+                        "Eval",
+                        BindingFlags.InvokeMethod,
+                        null,
+                        evaluator,
+                        new object[] { }
+                     )!;
         return o;
       }
       catch (Exception e)
