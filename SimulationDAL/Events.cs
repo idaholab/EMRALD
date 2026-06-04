@@ -1086,7 +1086,11 @@ namespace SimulationDAL
       }   
       else
       {
-        this.time = XmlConvert.ToTimeSpan((string)dynObj.time);
+        string timeStr = (string)dynObj.time;
+        if (string.IsNullOrWhiteSpace(timeStr))
+          this.time = TimeSpan.FromTicks(0); //no duration entered, trigger immediately
+        else
+          this.time = XmlConvert.ToTimeSpan(timeStr);
       }
 
       if (dynObj.fromSimStart != null)
