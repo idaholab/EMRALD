@@ -32,6 +32,7 @@ import { appData } from '../../../hooks/useAppData';
 import { upgradeModel } from '../../../utils/Upgrades/upgrade';
 import { FileUploadComponent, TabPanel } from '../../common';
 import { GroupListItems } from '../../common/GroupListItems';
+import { EmraldDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import { MainDetailsForm } from '../../forms/MainDetailsForm';
 import { ImportForm } from '../ImportForm/ImportForm';
 
@@ -58,9 +59,19 @@ export const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
     { value: 'dtSingle', label: 'Single State (Evaluation)' },
     { value: 'dtMulti', label: 'Multi State' },
   ];
+  // New diagrams default to Multi State, whose default group label is "Plant".
+  // Single State defaults to "Component". The default follows the type until
+  // the user sets the label manually (tracked by labelEdited).
   const [diagramLabel, setDiagramLabel] = useState(
-    diagramData?.diagramLabel ?? '',
+    diagramData?.diagramLabel ?? 'Plant',
   );
+  const [labelEdited, setLabelEdited] = useState(false);
+
+  const handleDiagramTypeChange = (newType: DiagramType) => {
+    if (!diagramData && !labelEdited) {
+      setDiagramLabel(newType === 'dtSingle' ? 'Component' : 'Plant');
+    }
+  };
   const diagrams = appData.value.DiagramList;
   const diagramLabelsSet = new Set(diagrams.map(d => d.diagramLabel));
   const diagramLabels = Array.from(diagramLabelsSet);
@@ -112,17 +123,26 @@ export const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
           diagramType,
           diagramLabel,
         });
+        handleClose();
       } else {
-        createDiagram({
+        const newDiagram = {
           ...diagram.value,
           id: uuidv4(),
           name: name.trim(),
           desc,
           diagramType,
           diagramLabel: diagramLabel || 'Component',
-        });
+        };
+        createDiagram(newDiagram);
+        // Open the newly created diagram, replacing this form window.
+        addWindow(
+          newDiagram.name,
+          <EmraldDiagram diagram={newDiagram} />,
+          { x: 75, y: 25, width: 1000, height: 500 },
+          null,
+          formWindowId ?? undefined,
+        );
       }
-      handleClose();
     }
   };
 
@@ -222,6 +242,7 @@ export const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
             itemType="Diagram"
             type={diagramType}
             setType={setDiagramType}
+            handleTypeChange={handleDiagramTypeChange}
             typeOptions={diagramTypeOptions}
             typeDisabled={
               !!selectedTemplate || !!importDiagram || !!diagramData
@@ -251,9 +272,15 @@ export const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
               )}
               onChange={(_event, newValue) => {
                 setDiagramLabel(newValue ?? '');
+                setLabelEdited(true);
               }}
-              onInputChange={(_event, newInputValue) => {
+              onInputChange={(_event, newInputValue, reason) => {
                 setDiagramLabel(newInputValue);
+                // Ignore MUI's programmatic 'reset' (fired when we set the
+                // label from a type change); only user input/clear counts.
+                if (reason === 'input' || reason === 'clear') {
+                  setLabelEdited(true);
+                }
               }}
               value={diagramLabel}
               fullWidth

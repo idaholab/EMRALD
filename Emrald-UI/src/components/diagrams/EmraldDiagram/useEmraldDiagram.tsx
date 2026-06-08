@@ -253,12 +253,19 @@ export function useEmraldDiagram() {
   const getActionNewStates = (action?: Action) =>
     action?.newStates?.map((state: { toState: string }) => state.toState) ?? [];
 
+  // topDiagram is a snapshot taken when the window opened, so its `states`
+  // array goes stale as states are added/removed. Resolve the current list
+  // from the live model by this window's diagram name (names are unique, so
+  // multiple open diagrams stay independent).
+  const getCurrentDiagramStates = () =>
+    getDiagramByDiagramName(topDiagram.name)?.states ?? topDiagram.states;
+
   // Check if the new states are in this diagram (the one this hook instance
   // is bound to), not whichever diagram last rendered into the shared signal.
   const isStateInCurrentDiagram = (action?: Action) =>
     action
       ? getActionNewStates(action).every(newState =>
-          topDiagram.states.includes(newState),
+          getCurrentDiagramStates().includes(newState),
         )
       : false;
 
@@ -283,7 +290,7 @@ export function useEmraldDiagram() {
 
   // Build the state nodes
   const getStateNodes = () => {
-    const stateNodes = topDiagram.states.map(state => {
+    const stateNodes = getCurrentDiagramStates().map(state => {
       const stateDetails = getStateByStateName(state);
       const { x, y } = {
         x: stateDetails?.geometryInfo?.x ?? 0,
