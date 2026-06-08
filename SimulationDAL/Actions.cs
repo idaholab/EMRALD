@@ -1658,8 +1658,11 @@ namespace SimulationDAL
       string runParams = makeInputFileCompEval.EvaluateString();
       var locExePath = exePath;
 
+      // Only infer the exe from runParams when no exePath was explicitly configured.
+      // Otherwise an argument value that merely contains ".exe" (e.g. "--model C:\...\foo.exe")
+      // would be mistaken for the executable and clobber the real exePath.
       // Check if runParams contains an exe path (look for .exe extension)
-      if (!string.IsNullOrEmpty(runParams))
+      if (string.IsNullOrEmpty(locExePath) && !string.IsNullOrEmpty(runParams))
       {
         int exeIdx = runParams.IndexOf(".exe", StringComparison.OrdinalIgnoreCase);
         if (exeIdx > 0)
