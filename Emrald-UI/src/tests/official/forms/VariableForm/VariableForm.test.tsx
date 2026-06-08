@@ -2,7 +2,14 @@ import { findByRole, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import { VariableForm } from '@/components/forms/VariableForm/VariableForm';
-import { drag, ensureState, getVariable, renderVariableForm, save } from '@/tests/test-utils';
+import {
+  drag,
+  ensureExtSim,
+  ensureState,
+  getVariable,
+  renderVariableForm,
+  save,
+} from '@/tests/test-utils';
 import expected from './VariableForm.expected.json';
 
 describe('Variable Form', () => {
@@ -93,6 +100,62 @@ describe('Variable Form', () => {
 
     await save();
     expect(getVariable(name)).toEqual(expected[name]);
+  });
+
+  // Issue #583: selecting an external sim must store its name, not its UUID.
+  test('ext sim variable links to external sim by name', async () => {
+    const name = 'ext_sim_link_variable';
+    ensureExtSim('MooseSim');
+    renderVariableForm(
+      <VariableForm
+        variableData={{
+          objType: 'Variable',
+          name,
+          desc: '',
+          varScope: 'gt3DSim',
+          value: '',
+          type: 'string',
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    // Enter values
+    await user.type(await screen.findByLabelText('Value'), 'Test');
+    await user.type(await screen.findByLabelText('3DSimID'), '1234');
+
+    // Select the external sim from the dropdown
+    await user.click(await findByRole(await screen.findByLabelText('External Sim'), 'combobox'));
+    await user.click(await screen.findByRole('option', { name: 'MooseSim' }));
+
+    await save();
+    const variable = getVariable(name);
+    // The stored value must be the sim's name, not its UUID.
+    expect(variable?.extSim).toBe('MooseSim');
+    expect(variable).toEqual(expected[name]);
+  });
+
+  // Issue #583: an existing variable whose extSim is a name must display that name.
+  test('ext sim variable displays linked external sim by name', async () => {
+    ensureExtSim('MooseSim');
+    renderVariableForm(
+      <VariableForm
+        variableData={{
+          objType: 'Variable',
+          name: 'ext_sim_display_variable',
+          desc: '',
+          varScope: 'gt3DSim',
+          value: 5.3125,
+          type: 'double',
+          sim3DId: 'Postprocessors/tritium_burn_rate/value',
+          extSim: 'MooseSim',
+        }}
+      />,
+    );
+
+    // The External Sim field should show the linked sim's name.
+    const combobox = await findByRole(await screen.findByLabelText('External Sim'), 'combobox');
+    expect(combobox).toHaveTextContent('MooseSim');
   });
 
   test('doc link variable', async () => {
