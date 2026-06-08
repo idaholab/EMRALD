@@ -1,0 +1,58 @@
+name: Notify linked issues on merge
+
+# When a PR that closes one or more issues is merged, GitHub already closes
+# those issues automatically (via "Fixes/Closes/Resolves #N" keywords or the
+# PR's "Development" links). This workflow adds a comment to each of those
+# issues noting that the fix will ship in the next release.
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  comment-next-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on closing-referenced issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const number = context.payload.pull_request.number;
+
+            // closingIssuesReferences captures both keyword-based closes
+            // (Fixes/Closes/Resolves #N) and issues manually linked via the
+            // PR's "Development" sidebar.
+            const result = await github.graphql(`
+              query($owner:String!, $repo:String!, $number:Int!) {
+                repository(owner:$owner, name:$repo) {
+                  pullRequest(number:$number) {
+                    closingIssuesReferences(first: 50) {
+                      nodes { number }
+                    }
+                  }
+                }
+              }`, { owner, repo, number });
+
+            const issues = result.repository.pullRequest
+              .closingIssuesReferences.nodes;
+
+            if (issues.length === 0) {
+              core.info('No closing issue references found; nothing to comment.');
+              return;
+            }
+
+            for (const issue of issues) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: `Resolved by #${number}. This fix will be included in the next release.`,
+              });
+              core.info(`Commented on issue #${issue.number}`);
+            }
