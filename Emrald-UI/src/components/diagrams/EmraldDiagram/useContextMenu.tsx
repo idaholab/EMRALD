@@ -10,12 +10,14 @@ import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import { StateForm } from '@/components/forms/StateForm/StateForm';
 import { useActionContext } from '@/contexts/ActionContext';
+import { useAlertContext } from '@/contexts/AlertContext';
 import { useDiagramContext } from '@/contexts/DiagramContext';
 import { useEventContext } from '@/contexts/EventContext';
 import { useStateContext } from '@/contexts/StateContext';
 import { useWindowContext } from '@/contexts/WindowContext';
 import { updateAppData } from '@/hooks/useAppData';
 import { updateModelAndReferences } from '@/utils/UpdateModel';
+import { SINGLE_STATE_EXIT_FLAG_MESSAGE } from '@/utils/util-functions';
 
 export function useContextMenu(
   getStateNodes?: () => void,
@@ -37,6 +39,12 @@ export function useContextMenu(
   const { deleteEvent } = useEventContext();
   const { updateAction, deleteAction, getActionByActionId }
     = useActionContext();
+  const { showAlert } = useAlertContext();
+
+  // A single-state diagram (dtSingle) can only be in one state at a time, so a
+  // transition action must always exit the current state.
+  const isSingleStateDiagram = (state: State) =>
+    getDiagramByDiagramName(state.diagramName)?.diagramType === 'dtSingle';
 
   const closeContextMenu = () => {
     setMenu(null);
@@ -210,7 +218,15 @@ export function useContextMenu(
           ) as ModelItem;
           if (pastedData.objType === 'Action') {
             const actionName = pastedData.name;
-            if (state.immediateActions.includes(actionName)) {
+            if (
+              pastedData.actType === 'atTransition'
+              && isSingleStateDiagram(state)
+            ) {
+              showAlert(
+                'Transition actions are not allowed in the immediate actions of a single state diagram.',
+                'warning',
+              );
+            } else if (state.immediateActions.includes(actionName)) {
               console.warn('Action already exists');
             } else {
               state.immediateActions.push(actionName);
@@ -322,10 +338,21 @@ export function useContextMenu(
           ) as ModelItem;
           if (pastedData.objType === 'Action') {
             const eventIndex = state.events.indexOf(event.name);
-            const eventActions = state.eventActions[eventIndex]?.actions;
+            const eventAction = state.eventActions[eventIndex];
 
-            if (!eventActions?.includes(pastedData.name)) {
-              eventActions?.push(pastedData.name);
+            if (!eventAction?.actions.includes(pastedData.name)) {
+              eventAction?.actions.push(pastedData.name);
+              // In a single-state diagram a transition must exit the state, so
+              // set the event's "exit state" flag if it isn't already set.
+              if (
+                eventAction
+                && pastedData.actType === 'atTransition'
+                && !eventAction.moveFromCurrent
+                && isSingleStateDiagram(state)
+              ) {
+                eventAction.moveFromCurrent = true;
+                showAlert(SINGLE_STATE_EXIT_FLAG_MESSAGE, 'info');
+              }
               updateState(state);
               updateAppData(updateModelAndReferences(state, 'State'));
             }

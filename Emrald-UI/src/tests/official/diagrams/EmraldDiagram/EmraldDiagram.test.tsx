@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { App } from '@/App';
@@ -69,5 +69,40 @@ describe('EmraldDiagram', () => {
     await click((await screen.findAllByText('Save'))[0]);
 
     expect(getState('StateFromDiagram')).not.toBeUndefined();
+  });
+
+  // Regression test: a state added to an already-open diagram must render on
+  // the canvas without closing and reopening the window. Previously the
+  // diagram built its nodes from a stale snapshot of the diagram's state list.
+  test('renders a newly created state on the canvas without reopening', async () => {
+    render(<App></App>);
+    const user = userEvent.setup();
+
+    // Open a diagram
+    await click((await screen.findAllByText('Diagrams'))[0]);
+    await click((await screen.findAllByText('Component'))[0]);
+    await user.dblClick(await screen.findByText('C-CKV-A'));
+
+    // Right-click on the diagram background and click "New State"
+    await rightClick(
+      (await screen.findByTestId('rf__wrapper')).children[0]?.children[0],
+    );
+    await user.click(await screen.findByText('New State'));
+
+    await waitFor(async () => {
+      expect(await screen.findByText('Create State')).not.toBeUndefined();
+    });
+
+    // Enter a name & create the state
+    await user.type(await screen.findByLabelText('Name'), 'LiveRenderedState');
+    await click((await screen.findAllByText('Save'))[0]);
+
+    // The new state's node shows up in the canvas without reopening it.
+    const canvas = await screen.findByTestId('rf__wrapper');
+    await waitFor(async () => {
+      expect(
+        await within(canvas).findByText('LiveRenderedState'),
+      ).toBeInTheDocument();
+    });
   });
 });
