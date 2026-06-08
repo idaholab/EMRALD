@@ -68,6 +68,14 @@ export function getEventActionEdges(
   ) => { toState: string; prob: number }[],
 ) {
   for (const [index, action] of eventActions.entries()) {
+    // events and eventActions are 1-to-1 parallel arrays. Older models can
+    // carry orphaned eventActions entries (an event was deleted without
+    // removing its matching eventActions slot). Skip any entry that has no
+    // corresponding event so the edges match what the node actually renders,
+    // which loops over events.
+    if (index >= events.length) {
+      continue;
+    }
     if (action.actions) {
       for (const actionName of action.actions) {
         const newStates = getNewStatesByActionName(actionName);
