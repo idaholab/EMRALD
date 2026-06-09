@@ -712,6 +712,26 @@ namespace SimulationDAL
   public class CommonFunctions
   {
     /// <summary>
+    /// Substring-scan a script body for which of the given names it references.
+    /// Used to gate per-iteration SetVariable calls so scripts only marshal
+    /// values they actually use. False positives are safe (just waste work);
+    /// false negatives aren't possible unless the script constructs names
+    /// dynamically, which isn't supported.
+    /// </summary>
+    public static HashSet<string> DetectUsedNames(string code, IEnumerable<string> candidates)
+    {
+      var set = new HashSet<string>(StringComparer.Ordinal);
+      if (string.IsNullOrEmpty(code))
+        return set;
+      foreach (var name in candidates)
+      {
+        if (!string.IsNullOrEmpty(name) && code.Contains(name))
+          set.Add(name);
+      }
+      return set;
+    }
+
+    /// <summary>
     /// Get the full path but always use / instead of \\
     /// </summary>
     /// <param name="path"></param>

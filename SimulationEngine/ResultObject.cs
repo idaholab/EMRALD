@@ -98,24 +98,36 @@ namespace SimulationEngine
         this.otherStatePaths.Add(item);
       }
 
+      this.numRuns = totRuns;
     }
 
     public static string CombineJsonResultFiles(string mergePath1, string mergePath2, string destPath = "")
     {
-      if (!File.Exists(mergePath1) || !File.Exists(mergePath2))
-      {
+      return CombineJsonResultFiles(new[] { mergePath1, mergePath2 }, destPath);
+    }
+
+    public static string CombineJsonResultFiles(IList<string> sourcePaths, string destPath = "")
+    {
+      if (sourcePaths == null || sourcePaths.Count < 2)
         return "";
+
+      foreach (var p in sourcePaths)
+      {
+        if (!File.Exists(p))
+          return "";
       }
 
+      OverallResults combined = JsonConvert.DeserializeObject<OverallResults>(File.ReadAllText(sourcePaths[0]));
+      combined.CalcStats();
 
-      OverallResults r1 = JsonConvert.DeserializeObject<OverallResults>(File.ReadAllText(mergePath1));
-      r1.CalcStats();
+      for (int i = 1; i < sourcePaths.Count; i++)
+      {
+        OverallResults next = JsonConvert.DeserializeObject<OverallResults>(File.ReadAllText(sourcePaths[i]));
+        next.CalcStats();
+        combined.MergeResults(next);
+      }
 
-      OverallResults r2 = JsonConvert.DeserializeObject<OverallResults>(File.ReadAllText(mergePath2));
-      r2.CalcStats();
-
-      r1.MergeResults(r2);
-      string combinedResStr = JsonConvert.SerializeObject(r1, Formatting.Indented);
+      string combinedResStr = JsonConvert.SerializeObject(combined, Formatting.Indented);
 
       if (destPath != "")
       {

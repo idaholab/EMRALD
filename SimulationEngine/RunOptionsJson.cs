@@ -85,6 +85,7 @@ namespace SimulationEngine
     "  \"debugStartIdx\": null, // Start index for debug if null then from beginning\n" +
     "  \"debugEndIdx\": null, // End index for debug if null then to end\n" +
     "  \"pathResultsInterval\": 1000, // how often to write the path results, every X runs (-1 to disable and write at end)\n" +
+    "  \"clearThreadTemps\": true, // delete per-thread temp files after a multi-threaded run completes; defaults to true if omitted\n" +
     "  \"couplingInfo\": { // External application coupling information\n" +
     "    \"couplingType\": \"XMPP\", // XMPP or WebSocket\n" +
     "    \"couplingPassword\": \"secret\", // Password for external application connection\n" +
@@ -128,7 +129,7 @@ namespace SimulationEngine
     
 
     public int? threads { get; set; } = null; //null is default no threading. Even 1 will use a tread and the temp folders so that you can run multiple instances using the same model, by just changing the name.
-    public bool clearThreadTemps { get; set; } = false; //clear temp thread files after run completes
+    public bool clearThreadTemps { get; set; } = true; //clear temp thread files after run completes; default true when not specified in options JSON
 
     /// <summary>
     /// Converts an old version options JSON string to the new version (1.02)

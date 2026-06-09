@@ -7,6 +7,7 @@ import type {
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { createElement, useEffect } from 'react';
+import { useDiagramContext } from '../../../contexts/DiagramContext';
 import { MainDetailsForm } from '../MainDetailsForm';
 import { useActionFormContext } from './ActionFormContext';
 import {
@@ -51,10 +52,30 @@ export const ActionForm: React.FC<ActionFormProps> = ({
     initializeForm,
     reset,
   } = useActionFormContext();
+  const { getDiagramByDiagramName } = useDiagramContext();
+
+  // Transition actions are not allowed as immediate actions in a single-state
+  // diagram. This only applies when creating a brand-new action under the
+  // Immediate Actions section (state, no event). Editing an existing action
+  // (only actionData) is unaffected.
+  const disallowTransition
+    = !!state
+      && !event
+      && getDiagramByDiagramName(state.diagramName)?.diagramType === 'dtSingle';
 
   useEffect(() => {
     initializeForm(actionData);
+    // The form defaults to the (now-disabled) Transition type, so move it off
+    // of that for a new immediate action in a single-state diagram.
+    if (disallowTransition && !actionData) {
+      setActType('atCngVarVal');
+    }
   }, []);
+
+  const typeOptions = actionTypeOptions.map(option => ({
+    ...option,
+    disabled: disallowTransition && option.value === 'atTransition',
+  }));
 
   // Map action types to their respective sub-components and props
   const actionTypeToComponent: Record<
@@ -77,7 +98,7 @@ export const ActionForm: React.FC<ActionFormProps> = ({
           itemType="Action"
           type={actType}
           setType={setActType}
-          typeOptions={actionTypeOptions}
+          typeOptions={typeOptions}
           name={name}
           handleNameChange={handleNameChange}
           desc={desc}

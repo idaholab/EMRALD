@@ -69,7 +69,10 @@ namespace EMRALD_Sim
       _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
 
 #if DEBUG
-      ConsoleHelper.Show();
+      // Don't allocate a private console when launched with CLI args — it would block AttachConsole below,
+      // and Console.WriteLine would write to a window that closes the instant Environment.Exit fires.
+      if (args.Length == 0)
+        ConsoleHelper.Show();
 #endif
 
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
@@ -276,23 +279,26 @@ namespace EMRALD_Sim
             break;
 
           case "-mergeresults":
+            // Need at least: -mergeResults src1 src2 dest  →  args.Length >= i + 4
             if (args.Length < (i + 4))
             {
-              Console.Write("Invalid option, must have two result file paths and a destination file path after -mergeresults.");
+              Console.Write("Invalid option, must have at least two result file paths and a destination file path after -mergeresults.");
               return false;
             }
-            string mergePath1 = args[i + 1];
-            string mergePath2 = args[i + 2];
-            string resPath = args[i + 3];
+            // All args after the flag are paths; the LAST is the destination, the rest are sources.
+            string resPath = args[args.Length - 1];
+            var mergeSources = new List<string>();
+            for (int j = i + 1; j < args.Length - 1; j++)
+              mergeSources.Add(args[j]);
 
             try
             {
-              if (SimulationEngine.OverallResults.CombineJsonResultFiles(mergePath1, mergePath2, resPath) == "")
+              if (SimulationEngine.OverallResults.CombineJsonResultFiles(mergeSources, resPath) == "")
               {
-                Console.Write("Failed to load files, must have two valid file paths after -mergeresults.");
+                Console.Write("Failed to load files, must have valid file paths after -mergeresults.");
                 return false;
               }
-              Console.WriteLine("Successfully merged results to: " + resPath);
+              Console.WriteLine("Successfully merged " + mergeSources.Count + " result files to: " + resPath);
               Environment.Exit(0);
             }
             catch
@@ -385,6 +391,8 @@ namespace EMRALD_Sim
     // Print CLI help text and exit.
     private void ShowHelpAndExit()
     {
+      // Leading newline so output starts on a fresh line after the shell prompt that just returned.
+      Console.WriteLine();
       Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
       Console.WriteLine("-n \"run count\"");
       Console.WriteLine("-i \"input model path\"");
@@ -399,9 +407,12 @@ namespace EMRALD_Sim
       Console.WriteLine("    Basic - state movement only. Detailed - state movement, actions and events.");
       Console.WriteLine("    Example: -d basic [10 20]");
       Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
-      Console.WriteLine("-mergeResults \"merge two json path result files into one. Estimates the 5th and 95th. Example: -mergeResults c:/temp/PathResultsBatch1.json c:/temp/PathResultsBatch2.json c:/temp/PathResultsCombined.json\"");
+      Console.WriteLine("-mergeResults \"merge two or more json path result files into one. The LAST path is the destination; all preceding paths are sources. Estimates the 5th and 95th.");
+      Console.WriteLine("    Example (2 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Combined.json");
+      Console.WriteLine("    Example (3 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Batch3.json c:/temp/Combined.json\"");
       Console.WriteLine("Options JSON file - ");
       Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+      Console.Out.Flush();
       Environment.Exit(0);
     }
 
@@ -410,7 +421,7 @@ namespace EMRALD_Sim
     {
       if (!File.Exists(jsonPath))
       {
-        Console.Write("Invalid path for JSON options load.");
+        Console.Write("Invalid path for JSON options load. " + jsonPath);
         return;
       }
       string optionsJsonStr = File.ReadAllText(jsonPath);
@@ -743,6 +754,7 @@ namespace EMRALD_Sim
       _running = false;
       ResetResults();
       _lastError = "";
+      ClearDebugLog();
 
       try
       {
@@ -1148,39 +1160,110 @@ namespace EMRALD_Sim
       rbXMPP.Checked = _curSimOptions.couplingInfo.couplingType != CouplingType.WebSocket;
       tbWebSocketURL.Text = _curSimOptions.couplingInfo.couplingURL ?? string.Empty;
 
-      if (_curSimOptions.debug == "BASIC")
+      // Detach chkLog handler so it doesn't reset radio buttons / start-end indexes / _curSimOptions while we apply.
+      chkLog.CheckedChanged -= chkLog_CheckedChanged;
+      try
       {
-        chkLog.Checked = true;
-        rbDebugBasic.Checked = true;
-        rbDebugDetailed.Checked = false;
-        ConfigData.debugLev = LogLevel.Info;
+        string debugLev = (_curSimOptions.debug ?? "").Trim().ToUpperInvariant();
+        if (debugLev == "BASIC")
+        {
+          chkLog.Checked = true;
+          rbDebugBasic.Checked = true;
+          rbDebugDetailed.Checked = false;
+          ConfigData.debugLev = LogLevel.Info;
+        }
+        else if (debugLev == "DETAILED")
+        {
+          chkLog.Checked = true;
+          rbDebugBasic.Checked = false;
+          rbDebugDetailed.Checked = true;
+          ConfigData.debugLev = LogLevel.Debug;
+        }
+        else
+        {
+          chkLog.Checked = false;
+          rbDebugBasic.Checked = false;
+          rbDebugDetailed.Checked = false;
+          ConfigData.debugLev = LogLevel.Off;
+        }
+        grpDebugOpts.Enabled = chkLog.Checked;
       }
-      else if (_curSimOptions.debug == "DETAILED")
+      finally
       {
-        chkLog.Checked = true;
-        rbDebugBasic.Checked = false;
-        rbDebugDetailed.Checked = true;
-        ConfigData.debugLev = LogLevel.Debug;
-      }
-      else
-      {
-        chkLog.Checked = false;
-        rbDebugBasic.Checked = false;
-        rbDebugDetailed.Checked = false;
-        ConfigData.debugLev = LogLevel.Off;
+        chkLog.CheckedChanged += chkLog_CheckedChanged;
       }
 
-      for (int i = 0; i < lbMonitorVars.Items.Count; i++)
+      lbMonitorVars.ItemCheck -= lbMonitorVars_ItemCheck; // avoid per-item save spam and BeginInvoke before handle exists
+      try
       {
-        string val = lbMonitorVars.Items[i].ToString();
-        bool monitoredByModel = _sim?.allVariables.FindByName(val, false)?.monitorInSim ?? false;
-        bool inOptions = _curSimOptions.variables?.Contains(val) ?? false;
-        lbMonitorVars.SetItemChecked(i, monitoredByModel || inOptions);
+        for (int i = 0; i < lbMonitorVars.Items.Count; i++)
+        {
+          string val = lbMonitorVars.Items[i].ToString();
+          bool monitoredByModel = _sim?.allVariables.FindByName(val, false)?.monitorInSim ?? false;
+          bool inOptions = _curSimOptions.variables?.Contains(val) ?? false;
+          lbMonitorVars.SetItemChecked(i, monitoredByModel || inOptions);
+        }
+      }
+      finally
+      {
+        lbMonitorVars.ItemCheck += lbMonitorVars_ItemCheck;
       }
 
       _pathResultsInterval = _curSimOptions.pathResultsInterval;
 
       SetCurThreadCB();
+
+      ValidateOptionsVariables();
+    }
+
+    // Verify that every name in _curSimOptions.variables and initVars exists in the loaded model.
+    // Reports any mismatches to the console and to txtMStatus.
+    private void ValidateOptionsVariables()
+    {
+      if (_sim == null || _curSimOptions == null || !_validSim)
+        return;
+
+      var missingMonitor = new List<string>();
+      var notMonitorable = new List<string>();
+      var missingInit = new List<string>();
+
+      if (_curSimOptions.variables != null)
+      {
+        foreach (var name in _curSimOptions.variables)
+        {
+          var v = _sim.allVariables.FindByName(name, false);
+          if (v == null)
+            missingMonitor.Add(name);
+          else if (!v.canMonitorSim)
+            notMonitorable.Add(name);
+        }
+      }
+
+      if (_curSimOptions.initVars != null)
+      {
+        foreach (var iv in _curSimOptions.initVars)
+        {
+          if (_sim.allVariables.FindByName(iv.varName, false) == null)
+            missingInit.Add(iv.varName);
+        }
+      }
+
+      if (missingMonitor.Count == 0 && notMonitorable.Count == 0 && missingInit.Count == 0)
+        return;
+
+      var sb = new StringBuilder();
+      sb.AppendLine("Options JSON variable check found issues:");
+      if (missingMonitor.Count > 0)
+        sb.AppendLine("  'variables' not found in model: " + string.Join(", ", missingMonitor));
+      if (notMonitorable.Count > 0)
+        sb.AppendLine("  'variables' exist but are not monitorable: " + string.Join(", ", notMonitorable));
+      if (missingInit.Count > 0)
+        sb.AppendLine("  'initVars' not found in model: " + string.Join(", ", missingInit));
+
+      string msg = sb.ToString().TrimEnd();
+      Console.WriteLine(msg);
+      txtMStatus.Text = msg;
+      txtMStatus.ForeColor = Color.Maroon;
     }
 
     private void btnValidateModel_Click(object sender, EventArgs e)
@@ -1561,7 +1644,27 @@ namespace EMRALD_Sim
       }
 
       _curSimOptions.variables = variables;
-      BeginInvoke(new System.Action(() => SaveUISettingsToJson()));
+      if (IsHandleCreated)
+        BeginInvoke(new System.Action(() => SaveUISettingsToJson()));
+      else
+        SaveUISettingsToJson();
+    }
+
+    // Delete the NLog debug file so each Run starts with a fresh log.
+    // NLog's File target uses keepFileOpen=false by default, so the file isn't held between writes.
+    private void ClearDebugLog()
+    {
+      try
+      {
+        NLog.LogManager.Flush();
+        string logPath = Path.Combine(Application.StartupPath, "DebugLog.txt");
+        if (File.Exists(logPath))
+          File.Delete(logPath);
+      }
+      catch
+      {
+        // If the file is locked or missing, skip silently — the previous run's tail isn't worth blocking on.
+      }
     }
 
     private void btn_DebugOpen_Click(object sender, EventArgs e)

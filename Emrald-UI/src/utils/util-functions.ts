@@ -1,6 +1,13 @@
 import moment from 'moment';
 
 /**
+ * Message shown when a transition action is added under an event in a
+ * single-state diagram and the event's "exit state" flag is auto-set.
+ */
+export const SINGLE_STATE_EXIT_FLAG_MESSAGE
+  = 'This is a single state diagram and the event property to exit the state is being set';
+
+/**
  * Converts a string in scientific notation to a numeric value rounded to 10 decimal places.
  * If the input is not in scientific notation, or if there is an error, this function will return undefined.
  * @param value - The string to convert to a numeric value

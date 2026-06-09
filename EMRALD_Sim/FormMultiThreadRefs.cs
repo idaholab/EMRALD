@@ -84,8 +84,14 @@ namespace EMRALD_Sim
         {
           var item = _multiThreadInfo.ToCopyForRefs[_currentItemIndex];
           if (item.ToCopy == null) item.ToCopy = new List<string>();
+          List<string> skippedNoExt = new List<string>();
           foreach (var file in ofd.FileNames)
           {
+            if (!Path.HasExtension(file))
+            {
+              skippedNoExt.Add(file);
+              continue;
+            }
             string filePath = CommonFunctions.NormalizeGetFullPath(file);
             if (!item.ToCopy.Contains(filePath))
             {
@@ -93,10 +99,22 @@ namespace EMRALD_Sim
               //get the relative path
               string relPath = CommonFunctions.GetRelativePath(_origModelPath, filePath);
               item.ToCopy.Add(relPath);
-              
+
             }
           }
           //UpdateRelPath();
+
+          if (skippedNoExt.Count > 0)
+          {
+            MessageBox.Show(
+              "The following item(s) were skipped because they do not have a file extension. " +
+              "Only files (not directories or extensionless files) can be added:" +
+              Environment.NewLine + Environment.NewLine +
+              string.Join(Environment.NewLine, skippedNoExt),
+              "Invalid Selection",
+              MessageBoxButtons.OK,
+              MessageBoxIcon.Warning);
+          }
         }
       }
       UpdateOKButtonState();
