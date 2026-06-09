@@ -122,8 +122,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = ev.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -162,8 +163,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = ev.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -193,8 +195,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = ev.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -223,8 +226,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = ev.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -253,8 +257,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = ev.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -288,8 +293,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = ev.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -323,8 +329,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = act.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -386,8 +393,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = act.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -434,8 +442,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = act.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -529,8 +538,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = act.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -563,8 +573,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -593,8 +604,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -623,8 +635,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -653,8 +666,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -683,8 +697,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -713,8 +728,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -743,8 +759,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -773,8 +790,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -836,8 +854,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 
@@ -891,8 +910,9 @@ namespace UnitAndIntegrationTesting
       string retJsonStr = var.GetJSON(true, mainModel);
 
       //Uncomment to update the validation files after they verified correct
-      //CopyToValidated(compRes, retJsonStr);
+      //CopyToValidated(fileLoc, retJsonStr);
 
+      jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
     }
 

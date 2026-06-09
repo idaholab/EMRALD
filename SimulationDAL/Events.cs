@@ -1433,6 +1433,15 @@ namespace SimulationDAL
         throw new Exception("No \"dfltTimeRate\" defined ");
       }
 
+      try //may not exist in earlier versions so use a default
+      {
+        onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+      }
+      catch
+      {
+        onVarChange = EnOnChangeTask.ocIgnore;
+      }
+
       try
       {
         //make sure the default values are set
@@ -1470,27 +1479,6 @@ namespace SimulationDAL
             this.AddRelatedItem(v.id);
         }
       }
-
-      if (_relatedIDs.Count > 0)
-      {
-        try
-        {
-          dynamic dynObj = (dynamic)obj;
-          if (wrapped)
-          {
-            if (dynObj.Event == null)
-              return false;
-
-            dynObj = ((dynamic)obj).Event;
-          }
-          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
-        }
-        catch
-        {
-          throw new Exception("parameter onVarChange missing and variables are used.");
-        }
-      }
-      
 
       return true;
     }
