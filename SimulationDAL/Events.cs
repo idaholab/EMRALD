@@ -942,24 +942,26 @@ namespace SimulationDAL
 
     /// <summary>
     /// RedoNextTime called if a variable is used and that variable has changed. Implement in derived class if ocAdjust is allowed for that type of event.
+    /// All implementations return the new ABSOLUTE occurrence time for the event.
     /// </summary>
-    /// <param name="sampledTime">Simulation time it was originally sampled.</param>
+    /// <param name="sampledTime">Simulation time it was originally sampled (the event creation time).</param>
     /// <param name="curTime">Current simulation time</param>
-    /// <param name="oldOccurTime">Original time for the event to occur before variable change</param>
-    /// <returns>returns the new time for the event</returns>
+    /// <param name="oldOccurTime">Original absolute time for the event to occur before variable change</param>
+    /// <returns>returns the new absolute occurrence time for the event</returns>
     public virtual TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
       switch (onVarChange)
       {
         case EnOnChangeTask.ocIgnore:
           return oldOccurTime;
-          
+
         case EnOnChangeTask.ocResample:
-          return NextTime(curTime) - (curTime - sampledTime);
-          
+          //resample anchored at the original creation time, returned as an absolute occurrence time.
+          return Globals.AddClamped(sampledTime, NextTime(curTime));
+
         case EnOnChangeTask.ocAdjust:
           throw new Exception("RedoNextTime function not implemented for " + this.evType.ToString());
-          
+
         default:
           throw new Exception("RedoNextTime not implemented for " + onVarChange.ToString());
       }
@@ -1114,14 +1116,15 @@ namespace SimulationDAL
 
     public override TimeSpan RedoNextTime(TimeSpan sampledTime, TimeSpan curTime, TimeSpan oldOccurTime)
     {
-      //A timer doesn't sample, but if a variable is used and we are to adjust then it is just the new variable time - what has already past
+      //A timer doesn't sample, but if a variable is used and we are to adjust then the new occurrence
+      //time is the new timer duration measured from when the timer was created (sampledTime).
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-        TimeSpan time = NextTime(curTime) - (curTime - sampledTime);
-        if (time < curTime)
+        TimeSpan occur = Globals.AddClamped(sampledTime, NextTime(curTime));
+        if (occur < curTime) //already past, so occur now.
           return curTime;
         else
-          return time;
+          return occur;
       }
 
       //if not "ocAdjust" call parent as they are all the same.
@@ -1463,7 +1466,8 @@ namespace SimulationDAL
           case EnDistType.dtWeibull:
           case EnDistType.dtLogNormal:
             //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
+            //resample anchored at the original creation time, returned as an absolute occurrence time.
+            return Globals.AddClamped(sampledTime, NextTime(curTime));
 
           default:
             throw new Exception("Distribution type not implemented for " + _dist.distType.ToString());

@@ -37,8 +37,8 @@ namespace SimulationTracking
 
   public class TimeMoveEvent : EventListData
   {
-    public TimeSpan time; //time for the event to occur
-    public TimeSpan whenCreated; //time the item was created
+    public TimeSpan time; //absolute simulation time the event will occur (also used as the queue key)
+    public TimeSpan whenCreated; //absolute simulation time the item was created
     public TimeMoveEvent(String name, EventStatesAndActions inStEvID, Event inEventData, TimeSpan inTime, TimeSpan curTime)
       : base(name, inStEvID, inEventData)
     {
@@ -288,6 +288,8 @@ namespace SimulationTracking
   /// </summary>
   class TimeEventList
   {
+    //Queue of timed events keyed by their ABSOLUTE occurrence time (sim time the event will fire).
+    //Because keys are absolute, advancing the clock never requires re-keying the queue.
     public BTreeDictionary<TimeSpan, TimeMoveEvent> timedEvQue = new BTreeDictionary<TimeSpan, TimeMoveEvent>();
     private Dictionary<int, List<TimeSpan>> stateRefLookup = new Dictionary<int, List<TimeSpan>>(); //lookup of state IDs to a key in TimedEvQue.
     private Dictionary<int, List<TimeSpan>> eventRefLookup = new Dictionary<int, List<TimeSpan>>(); //lookup of event IDs to a key in TimedEvQue.
@@ -363,22 +365,23 @@ namespace SimulationTracking
       List<TimeMoveEvent> retEvs = new List<TimeMoveEvent>();
       if (timedEvQue.Count > 0)
       {
-        //get the first item or all items with the same lowest time.
+        //get the first item or all items with the same lowest (absolute) occurrence time.
         timedEvQue.MoveFirst();
         TimeSpan firstKey = timedEvQue.CurrentKey;
         while ((timedEvQue.Count > 0) && (timedEvQue.CurrentKey == firstKey))
         {
           TimeMoveEvent tEv = (TimeMoveEvent)timedEvQue.CurrentValue;
-          //put the time back to original value in case time is shifted back.
-          tEv.time = (curTime - tEv.whenCreated);// + firstKey;
+          //tEv.time already holds the absolute occurrence time (== firstKey), no adjustment needed.
           retEvs.Add(tEv);
           poppedList.Add(tEv);
           timedEvQue.Remove();
           timedEvQue.MoveFirst();
         }
 
-        //shift the time for all the other items
-        ShiftEvTimes(firstKey);
+        //Rebuild the ID lookups from the remaining queue. The old design did this inside ShiftEvTimes
+        //on every pop; doing it here preserves that behavior (lookups are refreshed each pop and may be
+        //momentarily stale between a ChangeEventTime and the next pop) without re-keying the whole queue.
+        RebuildLookups();
       }
 
       return retEvs;
@@ -399,43 +402,18 @@ namespace SimulationTracking
         }
         EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, actList);
 
-        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime); //FromMilliseconds just in case the curTime is the same as the RevetToTime
+        //occurs "now" so the absolute occurrence time is the current sim time.
+        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime, simExtStartTime);
         poppedList.Add(extEv);
       }
       else
       {
         Event nowEv = new ExtSimEventPlaceholder("Now");
         EventStatesAndActions key = new EventStatesAndActions(nowEv.id, 0, new ActionList());
-        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime - simExtStartTime, simExtStartTime);
+        TimeMoveEvent extEv = new TimeMoveEvent(evDispName, key, nowEv, curTime, simExtStartTime);
         AddTimedEvent(extEv);
       }
 
-    }
-
-    public void ShiftEvTimes(TimeSpan adjTime)
-    {
-      BTreeDictionary<TimeSpan, TimeMoveEvent> newList = new BTreeDictionary<TimeSpan, TimeMoveEvent>();
-
-      stateRefLookup.Clear();
-      eventRefLookup.Clear();
-
-      if (timedEvQue.MoveFirst())
-      {
-        do
-        {
-          TimeSpan oldKey = timedEvQue.CurrentKey;
-          TimeMoveEvent item = (TimeMoveEvent)timedEvQue.CurrentValue;
-          TimeSpan newKey = oldKey.Subtract(adjTime);
-          item.time = item.time.Subtract(adjTime);
-          newList.Add(newKey, item);
-          AddIDLookups(item.eventStateActions, newKey);
-        }
-        while (timedEvQue.MoveNext());
-      }
-
-
-      timedEvQue.Clear();
-      timedEvQue = newList;
     }
 
     public TimeMoveEvent LookNextTimedEvent()
@@ -476,7 +454,10 @@ namespace SimulationTracking
 
     public void ChangeEventTime(TimeSpan newTime, int evID)
     {
-      //change the time for the event and move in que
+      //change the absolute occurrence time for the event and move it in the que.
+      //NOTE: the ID lookups are intentionally NOT updated here; they are refreshed on the next pop
+      //(see RebuildLookups in PopTimedEvent). This matches the original behavior where lookups could be
+      //momentarily stale between a time change and the next time event.
 
       List<TimeSpan> refs;
       if (eventRefLookup.TryGetValue(evID, out refs))
@@ -484,7 +465,7 @@ namespace SimulationTracking
         TimeMoveEvent cngItem = null;
         foreach (TimeSpan refTime in refs)
         {
-          //find the item in timedEvQue with the key of refTime and value that has the correct evID   
+          //find the item in timedEvQue with the key of refTime and value that has the correct evID
           if (timedEvQue.Search(refTime, true))
           {
             do
@@ -535,12 +516,11 @@ namespace SimulationTracking
 
     public void RevertToTime(TimeSpan curTime, TimeSpan revertTo)
     {
-      //TODO this is not correct because we are missing items that were not popped off but RemoveMatchingStateItems 
-      //  from the time we are reverting to, to the current time.  Need to somehow save all the removed items also 
-      TimeSpan diffTime = curTime.Subtract(revertTo);
+      //TODO this is not correct because we are missing items that were not popped off but RemoveMatchingStateItems
+      //  from the time we are reverting to, to the current time.  Need to somehow save all the removed items also
 
-      //remove items added during this duration
-      //add time to all the time items in the list
+      //Because keys are absolute occurrence times, queued events keep their key when time rewinds.
+      //We only drop events that were created at or after the revert-to time (they shouldn't exist yet).
       BTreeDictionary<TimeSpan, TimeMoveEvent> newList = new BTreeDictionary<TimeSpan, TimeMoveEvent>();
       stateRefLookup.Clear();
       eventRefLookup.Clear();
@@ -549,14 +529,12 @@ namespace SimulationTracking
       {
         do
         {
-          TimeSpan oldKey = timedEvQue.CurrentKey;
+          TimeSpan key = timedEvQue.CurrentKey;
           TimeMoveEvent item = (TimeMoveEvent)timedEvQue.CurrentValue;
           if (item.whenCreated < revertTo)
           {
-            TimeSpan newKey = oldKey.Add(diffTime);
-            item.time = item.time.Add(diffTime);
-            newList.Add(newKey, item);
-            AddIDLookups(item.eventStateActions, newKey);
+            newList.Add(key, item);
+            AddIDLookups(item.eventStateActions, key);
           }
         }
         while (timedEvQue.MoveNext());
@@ -566,28 +544,27 @@ namespace SimulationTracking
       timedEvQue.Clear();
       timedEvQue = newList;
 
-      //put back time events that have passed in this block of time.
+      //put back time events that were popped during this block of time but occur after the revert to time.
       if (poppedList.Count > 0)
       {
         int idx = poppedList.Count - 1;
         TimeMoveEvent emEv = poppedList[idx];
 
-        while ((emEv.whenCreated + emEv.time) > revertTo) //event will happen after the revert to time
+        while (emEv.time > revertTo) //event (absolute occurrence time) will happen after the revert to time
         {
           if (emEv.whenCreated <= revertTo) //event was created when or before the revert to time.
           {
-            //adjust the time of the event by the current time
-            emEv.time = emEv.time - (revertTo - emEv.whenCreated);
-            newList.Add(emEv.time, emEv);
-
+            //occurrence time is absolute so no adjustment is needed, just re-queue it.
+            timedEvQue.Add(emEv.time, emEv);
+            AddIDLookups(emEv.eventStateActions, emEv.time);
           }
 
           poppedList.Remove(emEv);
           --idx;
-          if (poppedList.Count() > idx)
+          if ((idx >= 0) && (poppedList.Count > idx))
             emEv = poppedList[idx];
           else
-            throw new Exception("Error in RevertToTime index out of range");
+            break;
         }
       }
     }
@@ -625,6 +602,26 @@ namespace SimulationTracking
         times2 = new List<TimeSpan>();
         times2.Add(timeKey);
         eventRefLookup.Add(stEv.eventID, times2);
+      }
+    }
+
+    /// <summary>
+    /// Rebuild the state/event ID lookups from the current contents of the queue. Called after popping
+    /// time events (the old design did this within ShiftEvTimes). With absolute-time keys the queue itself
+    /// never needs re-keying, but the lookups still need refreshing to match the current keys.
+    /// </summary>
+    public void RebuildLookups()
+    {
+      stateRefLookup.Clear();
+      eventRefLookup.Clear();
+
+      if (timedEvQue.MoveFirst())
+      {
+        do
+        {
+          AddIDLookups(timedEvQue.CurrentValue.eventStateActions, timedEvQue.CurrentKey);
+        }
+        while (timedEvQue.MoveNext());
       }
     }
   }
@@ -1025,10 +1022,10 @@ namespace SimulationTracking
 
       if (shiftTimeTo > Globals.NowTimeSpan)
       {
-        //shift the time of events and set current time.
-        this.timeEvList.ShiftEvTimes(shiftTimeTo - this.curTime);
-
+        //advance the current time. Event keys are absolute occurrence times so the queue needs no
+        //re-keying; refresh the ID lookups to match (the old design did this within ShiftEvTimes).
         this.curTime = shiftTimeTo;
+        this.timeEvList.RebuildLookups();
         allLists.allVariables.FindByName("CurTime").SetValue(curTime.TotalHours);
 
       }
@@ -1090,15 +1087,17 @@ namespace SimulationTracking
       {
         return false;
       }
+      //nextItem.time is the absolute occurrence time; compute the remaining time until it occurs.
+      TimeSpan timeToOccur = nextItem.time - curTime;
       //if item is greater then max time then done and clear out rest of the items
-      if (nextItem.time > maxTime)
+      if (timeToOccur > maxTime)
       {
         timeEvList.Clear();
         return false;
       }
 
-      curTime = curTime + nextItem.time;
-      maxTime = maxTime - nextItem.time;
+      curTime = nextItem.time;
+      maxTime = maxTime - timeToOccur;
 
       allLists.allVariables.FindByName("CurTime").SetValue(curTime.TotalHours);
 
@@ -1304,28 +1303,33 @@ namespace SimulationTracking
           else
           {
 
-            TimeSpan evTime;
+            TimeSpan evTime;     //relative time until the event occurs (used for the max time and "now" checks)
+            TimeSpan absOccur;   //absolute occurrence time stored as the queue key
             TimeSpan createTime;
 
-            //default get a new time if persistent and not expired then it will be fixed 
+            //default get a new time if persistent and not expired then it will be fixed
             bool savePersistent = true;
             evTime = timeEv.NextTime(curTime);
+            absOccur = Globals.AddClamped(curTime, evTime);
             createTime = curTime;
 
-            //if persistent and time not expired then reuse the saved TimeMoveEvent info
+            //if persistent and time not expired then reuse the saved TimeMoveEvent info.
+            //Persistent snapshots keep the legacy (whenCreated, relative-time) convention so they are
+            //independent of the absolute-time queue; the absolute occurrence is whenCreated + time.
             if (this.PersistentEvs.ContainsKey(curEv.name))
             {
               //get the added time if not over max
               bool overMaxTime = (PersistentEvs[curEv.name].whenCreated.TotalDays + PersistentEvs[curEv.name].time.TotalDays) > TimeSpan.MaxValue.TotalDays;
-              TimeSpan combiedTime = overMaxTime
+              TimeSpan persistOccur = overMaxTime
                 ? TimeSpan.MaxValue
                 : (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time);
 
-              if (combiedTime >= curTime)
+              if (persistOccur >= curTime)
               {
                 savePersistent = false; //saved here so dont do the save later.
+                absOccur = persistOccur;
                 if (!overMaxTime)
-                  evTime = (PersistentEvs[curEv.name].whenCreated + PersistentEvs[curEv.name].time) - curTime;
+                  evTime = persistOccur - curTime;
                 else //over max time so keep the max time.
                   evTime = TimeSpan.MaxValue;
 
@@ -1336,7 +1340,7 @@ namespace SimulationTracking
 
             if ((evTime < maxTime) || (timeEv.UsesVariables()))//if using variables we still need to add incase those variables change
             {
-              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, createTime);
+              TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, absOccur, createTime);
               if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
                                                                             //todo : how to handle if next event is before the first timestep of a simulation 
                                                                             //  if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
@@ -1350,13 +1354,20 @@ namespace SimulationTracking
 
               if (((TimeBasedEvent)curEv).persistent)
               {
+                //store the snapshot with time RELATIVE to whenCreated (legacy convention) so the saved
+                //sample isn't affected by the absolute-time queue; occurrence is whenCreated + time.
+                TimeMoveEvent persistCopy = new TimeMoveEvent(addTimeEv); //copy it so that the time doesn't get adjusted as the simulation progresses
+                persistCopy.time = (addTimeEv.time == TimeSpan.MaxValue)
+                  ? TimeSpan.MaxValue
+                  : addTimeEv.time - addTimeEv.whenCreated;
+
                 if (!this.PersistentEvs.ContainsKey(curEv.name))
                 {
-                  this.PersistentEvs.Add(curEv.name, new TimeMoveEvent(addTimeEv)); //copy it so that the time doesn't get adjusted as the simulation progresses
+                  this.PersistentEvs.Add(curEv.name, persistCopy);
                 }
                 else if (savePersistent) //new sample so replace it
                 {
-                  this.PersistentEvs[curEv.name] = new TimeMoveEvent(addTimeEv);
+                  this.PersistentEvs[curEv.name] = persistCopy;
                 }
               }
             }
@@ -1392,7 +1403,9 @@ namespace SimulationTracking
       //Look for events that now meet conditions and add them to the processEventList
       TimeMoveEvent nextItem = timeEvList.LookNextTimedEvent();
       if (nextItem != null)
-        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx, toStateIDsBS);
+        //nextItem.time is an absolute occurrence time; pass the RELATIVE time-to-occur so the user-facing
+        //NextEvTime variable (and coupled simulations) keep the same meaning as before.
+        matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, nextItem.time - curTime, this.allLists.curRunIdx, toStateIDsBS);
       //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, nextItem.time, this.allLists.curRunIdx);
       else
         matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx, toStateIDsBS);
@@ -1511,18 +1524,19 @@ namespace SimulationTracking
                 TimeBasedEvent curTimeEv = (TimeBasedEvent)ev.Value.eventData;
                 if (curTimeEv.relatedIDs.Contains(varItem.id))
                 {
-                  //get a new time for the event.
-                  TimeSpan lastSampledTime = ev.Key;
+                  //get a new absolute occurrence time for the event (ev.Key is the current absolute occurrence time).
+                  TimeSpan oldOccurTime = ev.Key;
 
-                  TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, lastSampledTime);
-                  if (regotTime < TimeSpan.Zero)
-                    regotTime = TimeSpan.Zero;
+                  TimeSpan regotTime = curTimeEv.RedoNextTime(ev.Value.whenCreated, curTime, oldOccurTime);
+                  if (regotTime < curTime) //cannot occur in the past, so make it occur now.
+                    regotTime = curTime;
 
                   timeEvList.ChangeEventTime(regotTime, ev.Value.eventStateActions.eventID);
 
-                  //adjust the saved persistent event time also if there is one
+                  //adjust the saved persistent event time also if there is one.
+                  //snapshots keep time relative to whenCreated, so store the relative remaining time.
                   if (this.PersistentEvs.ContainsKey(ev.Value.name))
-                    this.PersistentEvs[ev.Value.name].time = regotTime;
+                    this.PersistentEvs[ev.Value.name].time = regotTime - curTime;
                 }
               }
             }
@@ -1545,12 +1559,14 @@ namespace SimulationTracking
                     throw new Exception("Tried to adjust Persistent Event [" + curTimeEv.name + "], not currently in a state. Don't use Persistent events with events that can be adjusted for variable changes!");
                   }
 
-                  TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, persEvItem.time);
-                  if (regotTime < TimeSpan.Zero)
-                    regotTime = TimeSpan.Zero;
+                  //RedoNextTime works in absolute time; the snapshot stores time relative to whenCreated,
+                  //so pass the absolute occurrence (curTime + relative) in and store the relative remaining back.
+                  TimeSpan regotTime = curTimeEv.RedoNextTime(persEvItem.whenCreated, curTime, curTime + persEvItem.time);
+                  if (regotTime < curTime) //cannot occur in the past, so make it occur now.
+                    regotTime = curTime;
 
-                  //adjust the saved persistent event time 
-                  persEvItem.time = regotTime;
+                  //adjust the saved persistent event time (relative to whenCreated)
+                  persEvItem.time = regotTime - curTime;
                 }
               }
             }
@@ -1826,8 +1842,8 @@ namespace SimulationTracking
       {
         TimeMoveEvent nextTimeItem = timeEvList.LookNextTimedEvent();
 
-        //int nextItemTime = Convert.ToInt32(((nextTimeItem.time + this.curTime) - this.sim3DStartTime).TotalSeconds * sim3DFameRate);
-        TimeSpan nextItemTime = (nextTimeItem.time + this.curTime);
+        //nextTimeItem.time is already the absolute occurrence time (same value sent to the coupled sim before).
+        TimeSpan nextItemTime = nextTimeItem.time;
         msg.simAction = new SimAction(SimActionType.atTimer, nextItemTime, new ItemData(nextTimeItem.name, nextTimeItem.id.ToString()));
       }
       else
