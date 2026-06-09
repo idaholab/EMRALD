@@ -1274,10 +1274,10 @@ namespace SimulationDAL
     public TextRegExVariable()
       : base(DocType.dtTextRegEx) { }
 
-    private Regex GetCompiledRegex()
-    {
-      string currentPattern = linkStr();
+    private Regex GetCompiledRegex() => GetCompiledRegex(linkStr());
 
+    private Regex GetCompiledRegex(string currentPattern)
+    {
       if (_cachedRegex == null || _cachedPattern != currentPattern)
       {
         _cachedRegex = new Regex(currentPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -1413,7 +1413,10 @@ namespace SimulationDAL
 
     public override object GetValue(bool dfltOnError)
     {
-      Regex rx = GetCompiledRegex();
+      // Resolve linkStr() once and pass it through — it's used both as the regex pattern
+      // and as the cache-key comparison below.
+      string curLinkStr = linkStr();
+      Regex rx = GetCompiledRegex(curLinkStr);
       bool fileRead = false;
       int retryCount = 0;
       object result = null!;
@@ -1445,7 +1448,6 @@ namespace SimulationDAL
           }
 
           // If not changed, return the previous value
-          string curLinkStr = linkStr();
           if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
           {
             return this._value;
@@ -1455,10 +1457,11 @@ namespace SimulationDAL
           _timestamp = curTimestamp;
           _oldLinkStr = curLinkStr;
           string docTxt = File.ReadAllText(_docFullPath);
-          // Find matches.
-          MatchCollection matches = rx.Matches(docTxt);
+          // Find the first match only — Matches+.Count would force a full enumeration of every
+          // match in the file when we only ever use the first one.
+          Match firstMatch = rx.Match(docTxt);
 
-          if (matches.Count <= 0)
+          if (!firstMatch.Success)
           {
             if (dfltOnError && !this._pathMustExist)
             {
@@ -1471,15 +1474,17 @@ namespace SimulationDAL
           }
           else
           {
-            string foundTxt = matches[0].Value;
+            string foundTxt = firstMatch.Value;
             try
             {
               if (this._regExpLine >= 0)
               {
-                // Split text blob by that match.
-                string[] matchSplit = rx.Split(docTxt);
-                // Then count the number of line breaks before the match.
-                int lineMatch = _lineBreakRegex.Matches(matchSplit[0]).Count;
+                // Count line breaks in the prefix before the match. Earlier code re-ran the
+                // user regex over the whole file via rx.Split just to recover this prefix;
+                // firstMatch.Index gives us the same answer with no extra regex scan.
+                // Regex.Count on a ReadOnlySpan avoids allocating both the prefix substring
+                // and the MatchCollection that .Matches(...).Count used to create.
+                int lineMatch = _lineBreakRegex.Count(docTxt.AsSpan(0, firstMatch.Index));
                 string[] docLines = docTxt.Split(new[] { Environment.NewLine, "\r" }, StringSplitOptions.None);
                 foundTxt = docLines[lineMatch + _regExpLine];
 

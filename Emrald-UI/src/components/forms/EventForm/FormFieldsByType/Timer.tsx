@@ -26,8 +26,13 @@ export const Timer: React.FC<EventFormProps> = ({ eventData }) => {
     if (eventData?.time !== undefined) {
       setTime(eventData.time);
       setTimerMilliseconds(moment.duration(eventData.time).asMilliseconds());
+    } else if (!eventData?.useVariable) {
+      // Default to a valid zero-duration timespan so an untouched timer
+      // produces valid JSON (triggers immediately) instead of an empty value.
+      setTime(convertToISOString(0));
     }
     setUseVariable(eventData?.useVariable);
+    setOnVarChange(eventData?.onVarChange);
     setPersistent(eventData?.persistent);
     setTypeProperties([
       'fromSimStart',

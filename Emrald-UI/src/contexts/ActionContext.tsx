@@ -12,9 +12,13 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { SINGLE_STATE_EXIT_FLAG_MESSAGE } from '../utils/util-functions';
+import { useAlertContext } from './AlertContext';
 
 interface ActionContextType {
   actions: Action[];
@@ -61,6 +65,7 @@ export const ActionContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const actionsList = useComputed(() => appData.value.ActionList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -84,9 +89,20 @@ export const ActionContextProvider: React.FC<PropsWithChildren> = ({
   const createAction = (newAction: Action, event?: Event, state?: State) => {
     updateAppData(updateModelAndReferences(newAction, 'Action'));
     if (event && state) {
-      state.eventActions[state.events.indexOf(event.name)]?.actions.push(
-        newAction.name,
-      );
+      const eventAction = state.eventActions[state.events.indexOf(event.name)];
+      eventAction?.actions.push(newAction.name);
+      // In a single-state diagram a transition must exit the state, so set the
+      // event's "exit state" flag if it isn't already set.
+      if (
+        eventAction
+        && newAction.actType === 'atTransition'
+        && !eventAction.moveFromCurrent
+        && appData.value.DiagramList.find(d => d.name === state.diagramName)
+          ?.diagramType === 'dtSingle'
+      ) {
+        eventAction.moveFromCurrent = true;
+        showAlert(SINGLE_STATE_EXIT_FLAG_MESSAGE, 'info');
+      }
       updateAppData(updateModelAndReferences(state, 'State'));
     } else if (state) {
       state.immediateActions.push(newAction.name);
@@ -108,7 +124,16 @@ export const ActionContextProvider: React.FC<PropsWithChildren> = ({
       action => action.id === actionId,
     );
     if (actionToDelete) {
-      updateAppData(DeleteItemAndRefs(actionToDelete));
+      const clearedRefs: ClearedRef[] = [];
+      updateAppData(DeleteItemAndRefs(actionToDelete, clearedRefs));
+      const msg = formatClearedRefsMessage(
+        'Action',
+        actionToDelete.name,
+        clearedRefs,
+      );
+      if (msg) {
+        showAlert(msg, 'warning');
+      }
     }
     // todo else error, no action to delete
   };

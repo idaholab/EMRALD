@@ -1,6 +1,7 @@
 ﻿// Copyright 2026 Battelle Energy Alliance
 // Command-line multi-platform entry point for running EMRALD simulations and handling XMPP message output without a GUI.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -191,6 +192,9 @@ namespace CommandLineCP
                               "    Basic - state movement only. Detailed - state movement, actions and events. " + Environment.NewLine +
                               "    Example: -d basic [10 20]");
             Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
+            Console.WriteLine("-mergeResults \"merge two or more json path result files into one. The LAST path is the destination; all preceding paths are sources. Estimates the 5th and 95th." + Environment.NewLine +
+                              "    Example (2 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Combined.json" + Environment.NewLine +
+                              "    Example (3 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Batch3.json c:/temp/Combined.json\"");
             Console.WriteLine("Options JSON file - ");
             Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
             Environment.Exit(0);
@@ -311,6 +315,37 @@ namespace CommandLineCP
               Console.WriteLine("-rIntrv option must be a valid integer number");
             }
             ++i;
+            break;
+
+
+          case "-mergeresults":
+            // Need at least: -mergeResults src1 src2 dest  →  args.Length >= i + 4
+            if (args.Length < (i + 4))
+            {
+              Console.Write("Invalid option, must have at least two result file paths and a destination file path after -mergeresults.");
+              return;
+            }
+            // All args after the flag are paths; the LAST is the destination, the rest are sources.
+            string resPath = args[args.Length - 1];
+            var mergeSources = new List<string>();
+            for (int j = i + 1; j < args.Length - 1; j++)
+              mergeSources.Add(args[j]);
+
+            try
+            {
+              if (SimulationEngine.OverallResults.CombineJsonResultFiles(mergeSources, resPath) == "")
+              {
+                Console.Write("Failed to load files, must have valid file paths after -mergeresults.");
+                return;
+              }
+              Console.WriteLine("Successfully merged " + mergeSources.Count + " result files to: " + resPath);
+              Environment.Exit(0);
+            }
+            catch
+            {
+              Console.Write("Failed to merge result files, verify they are valid EMRALD path result JSON files.");
+              Environment.Exit(1);
+            }
             break;
 
           case "-m": // monitor

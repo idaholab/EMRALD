@@ -16,6 +16,7 @@ import { DownloadButton } from '@/components/diagrams/DownloadButton';
 import { StateNode } from '@/components/diagrams/EmraldDiagram/StateNodeComponent';
 import { ContextMenu } from '@/components/layout/ContextMenu/ContextMenu';
 import { emptyDiagram } from '@/contexts/DiagramContext';
+import { useWindowContext } from '@/contexts/WindowContext';
 import { CustomConnectionLine } from './Edges/ConnectionLineComponent';
 import { useContextMenu } from './useContextMenu';
 import { useEmraldDiagram } from './useEmraldDiagram';
@@ -25,12 +26,16 @@ interface EmraldDiagramProps {
   diagram: Diagram;
 }
 
+// The currently focused diagram. Driven by the active window (see the effect
+// below) rather than by render, so it stays correct when several diagrams are
+// open. Writing it on every render let a non-focused diagram's re-render
+// clobber it, which pointed edits at the wrong diagram.
 export const currentDiagram = signal(emptyDiagram);
 
 export const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
   const [showMap, setShowMap] = useState(true);
   const [showBackgroundDots, setShowBackgroundDots] = useState(true);
-  currentDiagram.value = diagram;
+  const { activeWindowId, getWindowTitleById } = useWindowContext();
   const {
     nodes,
     edges,
@@ -59,11 +64,20 @@ export const EmraldDiagram: React.FC<EmraldDiagramProps> = ({ diagram }) => {
     onPaneContextMenu,
     onNodeContextMenu,
     onEdgeContextMenu,
-  } = useContextMenu(getStateNodes, setEdges);
+  } = useContextMenu(getStateNodes, setEdges, diagram);
 
   useEffect(() => {
     setTopDiagram(diagram);
   }, []);
+
+  // Only the diagram whose window is active is the "current" one. A diagram
+  // window's title is its name, so when this instance's window is focused we
+  // publish it to the shared signal. Non-focused diagrams leave it untouched.
+  useEffect(() => {
+    if (getWindowTitleById(activeWindowId) === diagram.name) {
+      currentDiagram.value = diagram;
+    }
+  }, [activeWindowId, diagram]);
   const nodeTypes = useMemo(() => ({ custom: StateNode }), []);
   const ref = useRef<HTMLDivElement>(null);
 

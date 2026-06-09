@@ -229,7 +229,10 @@ export function useSidebarLogic() {
     }
     if (itemToDeleteType === 'LogicNode') {
       const nodeToDelete = itemToDelete as unknown as LogicNode;
-      recurseAndDeleteChildren(nodeToDelete);
+      // Pass nodeToDelete as the explicit deletion root so canDeleteNode lets the recursion
+      // enter an isRoot tree-top. Without this, the closure `rootNode` is null in the sidebar
+      // context and the entry-point gate would block any descendant cleanup, leaving orphans.
+      recurseAndDeleteChildren(nodeToDelete, nodeToDelete);
       deleteLogicNode(nodeToDelete.id);
     }
     if (itemToDeleteType === 'ExtSim') {

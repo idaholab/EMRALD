@@ -331,6 +331,21 @@ namespace SimulationEngine
         else
           trackSim = new SimulationTracking.StateTracker(_lists, _endTime, _msgServer, _numRuns);
 
+        // Pre-resolve logVarVals to (name, SimVariable) pairs once. The result loop below used to
+        // call _lists.allVariables.FindByName(varName) on every run, every key state, every name —
+        // a name-hash lookup that doesn't change between iterations.
+        var resolvedLogVars = new List<KeyValuePair<string, SimVariable>>(logVarVals.Count);
+        foreach (string varName in logVarVals)
+        {
+          SimVariable resolved = _lists.allVariables.FindByName(varName);
+          if (resolved == null)
+          {
+            this._error = "No variable found named - " + varName;
+            logger.Error(this.error);
+          }
+          resolvedLogVars.Add(new KeyValuePair<string, SimVariable>(varName, resolved));
+        }
+
         for (int i = 1; i <= _numRuns; ++i)
         {
           SetLog(i);
@@ -383,14 +398,10 @@ namespace SimulationEngine
 
                 Dictionary<string, string> varVals;
 
-                foreach (string varName in logVarVals)
+                foreach (var resolved in resolvedLogVars)
                 {
-                  SimVariable curVar = _lists.allVariables.FindByName(varName);
-                  if (curVar == null)
-                  {
-                    this._error = "No variable found named - " + varName;
-                    logger.Error(this.error);
-                  }
+                  string varName = resolved.Key;
+                  SimVariable curVar = resolved.Value;
 
                   if (!varDict.TryGetValue(varName, out varVals))
                   {

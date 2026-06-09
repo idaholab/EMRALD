@@ -51,24 +51,26 @@ namespace SimulationEngine
 
     public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
+      // Set model text first so LoadJson can skip the inpfile-on-disk check when the model is supplied in-memory.
+      _modelJsonStr = modelJsonStr;
       _optsJsonStr = optionsJsonStr;
-      //Load JSON options 
+      //Load JSON options
       if (_optsJsonStr != "")
         _error = LoadJson(_optsJsonStr, ref options);
       if (_error != "")
         throw new Exception("Error Loading JSON run options - " + error);
-      _modelJsonStr = modelJsonStr;
       _progressCallBack = progressCallBack;
     }
 
     public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
     {
+      // Set model text first so LoadJson can skip the inpfile-on-disk check when the model is supplied in-memory.
+      _modelJsonStr = modelJsonStr;
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _error = LoadJson(_optsJsonStr, ref options);
       if (_error != "")
         throw new Exception("Error Loading JSON run options - " + error);
-      _modelJsonStr = modelJsonStr;
       _progressCallBack = progressCallBack;
     }
 
@@ -114,6 +116,13 @@ namespace SimulationEngine
       if (!ValidateModel())
       {
         return _error;
+      }
+
+      //Warn if options reference variables that aren't in the loaded model
+      string varIssues = CheckOptionsVariablesAgainstModel();
+      if (!string.IsNullOrEmpty(varIssues))
+      {
+        Console.WriteLine(varIssues);
       }
 
       //setup debug options
@@ -333,7 +342,7 @@ namespace SimulationEngine
       // Save the inpfile_path string based on the "inpfile" json input
       try
       {
-        if (optionsOut.inpfile != null) //can be null then must be passed into the run command
+        if (!string.IsNullOrEmpty(optionsOut.inpfile)) //can be empty/null then must be passed into the run command
         {
           //see if it is a relative path.
           if (!Path.IsPathRooted(optionsOut.inpfile))
@@ -341,7 +350,8 @@ namespace SimulationEngine
             optionsOut.inpfile = CommonFunctions.NormalizeGetFullPath(Path.Combine(CommonFunctions.NormalizeGetCurrentDirectory(),  optionsOut.inpfile));
           }
 
-          if (!File.Exists(optionsOut.inpfile))
+          // Only require the file on disk when we don't already have the model text in memory.
+          if (string.IsNullOrEmpty(_modelJsonStr) && !File.Exists(optionsOut.inpfile))
           {
             return "Invalid input EMRALD file path, please fix.";
           }
@@ -363,9 +373,10 @@ namespace SimulationEngine
             optionsOut.resout = CommonFunctions.NormalizeGetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.resout));
           }
 
-          if (!Directory.Exists(Path.GetDirectoryName(optionsOut.resout)))
+          string resoutDir = Path.GetDirectoryName(optionsOut.resout);
+          if (!string.IsNullOrEmpty(resoutDir) && !Directory.Exists(resoutDir))
           {
-            return "Invalid output file path, directory does not exist.";
+            Directory.CreateDirectory(resoutDir);
           }
         }
       }
@@ -385,9 +396,10 @@ namespace SimulationEngine
             optionsOut.jsonRes = CommonFunctions.NormalizeGetFullPath(Path.Combine(System.IO.Directory.GetCurrentDirectory(), optionsOut.jsonRes));
           }
 
-          if (!Directory.Exists(Path.GetDirectoryName(optionsOut.jsonRes)))
+          string jsonResDir = Path.GetDirectoryName(optionsOut.jsonRes);
+          if (!string.IsNullOrEmpty(jsonResDir) && !Directory.Exists(jsonResDir))
           {
-            return "Invalid json path results file path, directory does not exist.";
+            Directory.CreateDirectory(jsonResDir);
           }
         }
       }
@@ -464,6 +476,53 @@ namespace SimulationEngine
     }
 
 
+    // Check that names in options.variables and options.initVars exist in the loaded model.
+    // Returns an empty string when everything checks out, or a multi-line message describing issues.
+    public string CheckOptionsVariablesAgainstModel()
+    {
+      if (_model == null || options == null)
+        return "";
+
+      var missingMonitor = new List<string>();
+      var notMonitorable = new List<string>();
+      var missingInit = new List<string>();
+
+      if (options.variables != null)
+      {
+        foreach (var name in options.variables)
+        {
+          var v = _model.allVariables.FindByName(name, false);
+          if (v == null)
+            missingMonitor.Add(name);
+          else if (!v.canMonitorSim)
+            notMonitorable.Add(name);
+        }
+      }
+
+      if (options.initVars != null)
+      {
+        foreach (var iv in options.initVars)
+        {
+          if (_model.allVariables.FindByName(iv.varName, false) == null)
+            missingInit.Add(iv.varName);
+        }
+      }
+
+      if (missingMonitor.Count == 0 && notMonitorable.Count == 0 && missingInit.Count == 0)
+        return "";
+
+      var sb = new StringBuilder();
+      sb.AppendLine("Options JSON variable check found issues:");
+      if (missingMonitor.Count > 0)
+        sb.AppendLine("  'variables' not found in model: " + string.Join(", ", missingMonitor));
+      if (notMonitorable.Count > 0)
+        sb.AppendLine("  'variables' exist but are not monitorable: " + string.Join(", ", notMonitorable));
+      if (missingInit.Count > 0)
+        sb.AppendLine("  'initVars' not found in model: " + string.Join(", ", missingInit));
+
+      return sb.ToString().TrimEnd();
+    }
+
     private bool ValidateModel()
     {
       // Attempt to deserialize the json string
@@ -477,7 +536,7 @@ namespace SimulationEngine
       // If there is an error in deserialization, create an error message
       catch (Exception error)
       {
-        _error = "Failed to load model :";
+        _error = "Failed to Deserialize EMRALD JSON model :" + options.inpfile;
         _error += error.Message;
         if (error.InnerException != null && error.InnerException.Message != "")
         {

@@ -12,9 +12,13 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
 } from '../utils/UpdateModel';
+import { SINGLE_STATE_EXIT_FLAG_MESSAGE } from '../utils/util-functions';
+import { useAlertContext } from './AlertContext';
 
 interface StateContextType {
   states: State[];
@@ -87,6 +91,7 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const statesList = useComputed(() => appData.value.StateList);
+  const { showAlert } = useAlertContext();
   const defaultGeometryInfo = { x: 0, y: 0, width: 0, height: 0 };
 
   effect(() => {
@@ -133,6 +138,13 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
     }
   };
 
+  // A single-state diagram (dtSingle) can only be in one state at a time, so a
+  // transition action must always exit the current state. Look the diagram up
+  // by the state's owning diagram name.
+  const isSingleStateDiagram = (state: State) =>
+    appData.value.DiagramList.find(d => d.name === state.diagramName)
+      ?.diagramType === 'dtSingle';
+
   const updateStateEventActions = (
     stateName: string,
     eventName: string,
@@ -148,6 +160,16 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
           return;
         }
         stateToUpdate.eventActions[eventIndex].actions.push(action.name);
+        // In a single-state diagram a transition must exit the state, so set
+        // the event's "exit state" flag if it isn't already set.
+        if (
+          action.actType === 'atTransition'
+          && isSingleStateDiagram(stateToUpdate)
+          && !stateToUpdate.eventActions[eventIndex].moveFromCurrent
+        ) {
+          stateToUpdate.eventActions[eventIndex].moveFromCurrent = true;
+          showAlert(SINGLE_STATE_EXIT_FLAG_MESSAGE, 'info');
+        }
       } else {
         stateToUpdate.eventActions.push({
           moveFromCurrent: false,
@@ -162,6 +184,19 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
   const updateStateImmediateActions = (stateName: string, action: Action) => {
     const stateToUpdate = getStateByStateName(stateName);
     if (stateToUpdate) {
+      // Transition actions are not allowed as immediate actions in a
+      // single-state diagram (there is no event/exit-state flag to make the
+      // transition valid).
+      if (
+        action.actType === 'atTransition'
+        && isSingleStateDiagram(stateToUpdate)
+      ) {
+        showAlert(
+          'Transition actions are not allowed in the immediate actions of a single state diagram.',
+          'warning',
+        );
+        return;
+      }
       if (stateToUpdate.immediateActions.includes(action.name)) {
         return;
       }
@@ -181,7 +216,16 @@ export const StateContextProvider: React.FC<PropsWithChildren> = ({
     if (!stateToDelete) {
       throw new Error('State not found');
     }
-    updateAppData(DeleteItemAndRefs(stateToDelete));
+    const clearedRefs: ClearedRef[] = [];
+    updateAppData(DeleteItemAndRefs(stateToDelete, clearedRefs));
+    const msg = formatClearedRefsMessage(
+      'State',
+      stateToDelete.name,
+      clearedRefs,
+    );
+    if (msg) {
+      showAlert(msg, 'warning');
+    }
   };
 
   const getStateByStateId = (stateId: string | null) =>

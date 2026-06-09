@@ -33,6 +33,7 @@ export const VarCondition: React.FC<EventFormProps> = ({ eventData }) => {
       codeVariables={codeVariables ?? []}
       addToUsedVariables={addToUsedVariables}
       heading={<span>Evaluate Code (c#) - Must return a boolean value!</span>}
+      codeContext="event"
     />
   );
 };

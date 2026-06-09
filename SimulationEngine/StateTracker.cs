@@ -81,6 +81,10 @@ namespace SimulationTracking
   /// </summary>
   public class ConditionEventLists
   {
+    // Cached once — Enum.GetValues allocates a new array on every call, and the hot paths
+    // (Clear, RemoveMatchingStateItems, GetMatchedCondMoveEvents prep) all iterate it.
+    private static readonly EnEventType[] AllEventTypes = Enum.GetValues<EnEventType>();
+
     private CurrentStates curStates;
     private Dictionary<EventStatesAndActions, ConditionMoveEvent>[] evLists; //lists to hold the different kind of condition, array by eventtype
     private Dictionary<int, List<EventStatesAndActions>>[] stateRefLookups; //lookup keys for all condition events from the same state.
@@ -92,11 +96,11 @@ namespace SimulationTracking
     public ConditionEventLists(CurrentStates curStates)
     {
       this.curStates = curStates;
-      int cnt = (int)Enum.GetValues(typeof(EnEventType)).Cast<EnEventType>().Last() + 1;
+      int cnt = (int)AllEventTypes[^1] + 1;
       evLists = new Dictionary<EventStatesAndActions, ConditionMoveEvent>[cnt];
       stateRefLookups = new Dictionary<int, List<EventStatesAndActions>>[cnt];
       initialCondEvalNotDone = new Dictionary<ConditionMoveEvent, bool>();
-      foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
+      foreach (EnEventType itemType in AllEventTypes)
       {
 
         if (Constants.CondEventTypes.Contains(itemType))
@@ -116,7 +120,7 @@ namespace SimulationTracking
     {
       this.curStates.Clear();
       initialCondEvalNotDone.Clear();
-      foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
+      foreach (EnEventType itemType in AllEventTypes)
       {
 
         if (evLists[(int)itemType] != null)
@@ -163,7 +167,7 @@ namespace SimulationTracking
       bool retBool = false;
       List<EventStatesAndActions> refs;
       //Go through all the lists for the enum types
-      foreach (EnEventType itemType in Enum.GetValues(typeof(EnEventType)))
+      foreach (EnEventType itemType in AllEventTypes)
       {
         //if the enum type is a Condition we need to see if there are items to remove
         if (Constants.CondEventTypes.Contains(itemType))
@@ -204,6 +208,10 @@ namespace SimulationTracking
           EnModifiableTypes curIDType;
           foreach (ConditionMoveEvent item in curList.Values)
           {
+            // Cache the cast once per item — the inner branches use it 1-2 times each
+            // and the cast isn't free (type check + reference assignment per call).
+            CondBasedEvent condEv = item.eventData as CondBasedEvent;
+
             switch (item.eventData.evType)
             {
               case EnEventType.et3dSimEv:
@@ -236,12 +244,12 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                 case EnModifiableTypes.mtVar: //don't check if there are related IDs for these
-                  if ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx)) //see if the code is triggered)
+                  if (condEv.EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx)) //see if the code is triggered)
                     retList.Add(item);
                   break;
                 case EnModifiableTypes.mtState:
                   if ((curStatesBS.HasCommonBits(item.eventData.relatedIDsBitSet) || ((item.eventData is StateCngEvent) && !(item.eventData as StateCngEvent).ifInState)) && //in cur states or not wanting in current states
-                      (item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx))
+                      condEv.EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, true, runIdx))
                     retList.Add(item);
                   break;
                 default:
@@ -256,7 +264,7 @@ namespace SimulationTracking
                 //only evaluate these event types when initially entering a state
                 case EnModifiableTypes.mtExtEv:
                   if ((changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-                     ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
+                     (condEv.EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                     retList.Add(item);
                   break;
 
@@ -265,7 +273,7 @@ namespace SimulationTracking
                   if ((item.eventData.evType != EnEventType.etComponentLogic) || (item.eventData.relatedIDsBitSet.And(toStates).BitCount() == 0))
                   {
                     if ((item.eventData.relatedIDsBitSet != null) && (changedItems.HasApplicableItems(curIDType, item.eventData.relatedIDsBitSet)) &&
-                          ((item.eventData as CondBasedEvent).EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
+                          (condEv.EventTriggered(curStatesBS, otherData, curTime, start3DTime, nextEvTime, false, runIdx)))
                       retList.Add(item);
                   }
 
@@ -646,11 +654,16 @@ namespace SimulationTracking
     /// <summary>
     /// list of events that have occurred but are awaiting processing.
     /// </summary>
-    private List<EventListData> processEventList = new List<EventListData>();
+    private Queue<EventListData> processEventList = new Queue<EventListData>();
     /// <summary>
     /// ids of states to process and add to current state list, second int is the ID of the from state, string is the name of the action that brought us to that state
     /// </summary>
-    private List<StateTransition> nextStateQue = new List<StateTransition>();
+    private Queue<StateTransition> nextStateQue = new Queue<StateTransition>();
+    /// <summary>
+    /// Shadow set of StateIds currently in nextStateQue, kept in sync with enqueue/dequeue.
+    /// Used for O(1) "is this state already queued?" checks that previously did a linear scan via LINQ.
+    /// </summary>
+    private HashSet<int> nextStateIds = new HashSet<int>();
     /// <summary>
     /// bitsets tracking items that have changed, used to determine what events need to be reevaluated.
     /// </summary>
@@ -709,6 +722,14 @@ namespace SimulationTracking
     /// </summary>
     private EmraldModel allLists;
 
+    // Cached subsets of allLists.allVariables. Each was previously found by re-scanning the full
+    // variable dictionary on every simulation run (resetOnRunsVars in StartTracker) or every time
+    // a RunExtApp action completed (docLinkVariables in ProcessActions).
+    private List<SimVariable> docLinkVariables;
+    private List<SimVariable> resetOnRunsVars;
+    // Cached reference to the CurTime SimVariable so PopNextTimeEvent doesn't FindByName per pop.
+    private SimVariable curTimeVar;
+
     public int keyStateCnt { get { return (from cs in curStates where cs.Value.state.stateType == EnStateType.stKeyState select cs).Count(); } }
 
 
@@ -726,6 +747,20 @@ namespace SimulationTracking
       condEvList = new ConditionEventLists(curStates);
 
       changedItems = new ChangedIDs(allLists.allVariables.maxID, allLists.allDiagrams.maxID, allLists.allStates.Keys.Max());
+
+      // Pre-compute the variable subsets used in the simulation hot paths so we don't have to
+      // scan allVariables on every run (resetOnRunsVars) or after every external-app launch
+      // (docLinkVariables).
+      docLinkVariables = new List<SimVariable>();
+      resetOnRunsVars = new List<SimVariable>();
+      foreach (SimVariable v in allLists.allVariables.Values)
+      {
+        if (v == null) continue;
+        if (v.varScope == EnVarScope.gtDocLink)
+          docLinkVariables.Add(v);
+        if (v.resetOnRuns)
+          resetOnRunsVars.Add(v);
+      }
     }
 
     public void Reset()
@@ -733,6 +768,7 @@ namespace SimulationTracking
       this.timeEvList.Clear();
       this.processEventList.Clear();
       this.nextStateQue.Clear();
+      this.nextStateIds.Clear();
       this.lastExtEvTypes.Clear();
       this.sim3DMissingCheckedClients.Clear();
       this.changedItems.Clear();
@@ -755,12 +791,14 @@ namespace SimulationTracking
       tempVar = allLists.allVariables.FindByName("CurTime", false);
       if (tempVar == null)
       {
-        allLists.allVariables.Add(new SimGlobVariable("CurTime", typeof(double), 0.0));
+        tempVar = new SimGlobVariable("CurTime", typeof(double), 0.0);
+        allLists.allVariables.Add(tempVar);
       }
       else
       {
         tempVar.SetValue(0.0);
       }
+      curTimeVar = tempVar; // cache for PopNextTimeEvent's per-event SetValue call
 
       tempVar = allLists.allVariables.FindByName("ExtSimStartTime", false);
       if (tempVar == null)
@@ -786,13 +824,10 @@ namespace SimulationTracking
       this.allLists.curRunIdx++;
       List<int> retResults = null;
 
-      //reset variables that are marked that way
-      foreach (var v in this.allLists.allVariables)
+      //reset variables that are marked that way (cached subset, avoids full-variable scan per run)
+      foreach (var v in resetOnRunsVars)
       {
-        if (v.Value.resetOnRuns)
-        {
-          v.Value.ReInit();
-        }
+        v.ReInit();
       }
 
       //process the Immediate Actions for initial states and load the TimeEventQue and CondEventList with initial data.
@@ -1123,7 +1158,7 @@ namespace SimulationTracking
         this.timeEvList.ShiftEvTimes(shiftTimeTo - this.curTime);
 
         this.curTime = shiftTimeTo;
-        allLists.allVariables.FindByName("CurTime").SetValue(curTime.TotalHours);
+        curTimeVar.SetValue(curTime.TotalHours);
 
       }
 
@@ -1196,7 +1231,7 @@ namespace SimulationTracking
       curTime = curTime + nextItem.time;
       maxTime = maxTime - nextItem.time;
 
-      allLists.allVariables.FindByName("CurTime").SetValue(curTime.TotalHours);
+      curTimeVar.SetValue(curTime.TotalHours);
 
       //debug - make sure none of the fail states are active
       //if (nextItem.name == "IE")
@@ -1221,7 +1256,8 @@ namespace SimulationTracking
       //  }
       //}
 
-      processEventList.AddRange(timeEvList.PopTimedEvent(curTime));
+      foreach (var ev in timeEvList.PopTimedEvent(curTime))
+        processEventList.Enqueue(ev);
       return true;
     }
 
@@ -1244,8 +1280,7 @@ namespace SimulationTracking
           //process the event list in batches
           while ((!terminated) && (processEventList.Count > 0))
           {
-            ProcessEvent(processEventList[0]);
-            processEventList.RemoveAt(0);
+            ProcessEvent(processEventList.Dequeue());
             change = change || changedItems.HasChange();
             //See if any new events occured because of this events actions.
           }
@@ -1257,13 +1292,15 @@ namespace SimulationTracking
         //while there are items in the Next State Queue, process them.
         while ((!terminated) && (nextStateQue.Count > 0))
         {
-          if (!ProcessState(nextStateQue[0])) //was a terminal state so quit;
+          StateTransition nextSt = nextStateQue.Peek();
+          if (!ProcessState(nextSt)) //was a terminal state so quit;
           {
             inProcessingLoop = false;
             return false;
           }
 
-          nextStateQue.RemoveAt(0);
+          nextStateQue.Dequeue();
+          nextStateIds.Remove(nextSt.StateId);
           change = true;
         }
 
@@ -1434,10 +1471,10 @@ namespace SimulationTracking
             {
               TimeMoveEvent addTimeEv = new TimeMoveEvent(curEv.name, new EventStatesAndActions(curEv.id, curState.id, curState.GetEvActionsIdx(idx)), curEv, evTime, createTime);
               if ((evTime == Globals.NowTimeSpan) && !this.emraldStopping3D)// || //add the event to be processed immediately
-                                                                            //todo : how to handle if next event is before the first timestep of a simulation 
+                                                                            //todo : how to handle if next event is before the first timestep of a simulation
                                                                             //  if only one simulation you just process the event as an immediate ((this.sim3DRunning || this.sim3DStarting) && ((evTime.TotalSeconds * sim3DFameRate) < 1)))
               {
-                processEventList.Add(addTimeEv);
+                processEventList.Enqueue(addTimeEv);
               }
               else //add it to the time list to occur in the correct order.
               {
@@ -1475,13 +1512,13 @@ namespace SimulationTracking
       MyBitArray toStateIDsBS = new MyBitArray(32);
       if (nextStateQue.Count > 0)
       {
-        int maxID = nextStateQue.Max(st => st.StateId);
+        // Plain loop, avoids the LINQ Max + delegate allocation that happened every call.
+        int maxID = 0;
+        foreach (var st in nextStateQue)
+          if (st.StateId > maxID) maxID = st.StateId;
         toStateIDsBS = new MyBitArray(maxID + 1); // store a bitset of the items that will be transitioned into
-      }
-
-      foreach (var nextState in nextStateQue)
-      {
-        toStateIDsBS.Set(nextState.StateId, true);
+        foreach (var st in nextStateQue)
+          toStateIDsBS.Set(st.StateId, true);
       }
 
       List<ConditionMoveEvent> matchedEvs = null;
@@ -1493,7 +1530,8 @@ namespace SimulationTracking
       else
         matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, this.lastExtEvTypes, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx, toStateIDsBS);
       //matchedEvs = condEvList.GetMatchedCondMoveEvents(this.changedItems, curTime, sim3DStartTime, TimeSpan.FromHours(0), this.allLists.curRunIdx);
-      this.processEventList.AddRange(matchedEvs);
+      foreach (var ev in matchedEvs)
+        this.processEventList.Enqueue(ev);
       changedItems.Clear();
     }
 
@@ -1526,8 +1564,8 @@ namespace SimulationTracking
                  (inStateAlready && (ownerStateID != cur.idx)))
                 // if(curStates.ContainsKey(cur.idx))
                 logger.Debug("No Transition, already in state: " + curState.name);
-              else if (nextStateQue.Where(t => t.StateId == cur.idx).FirstOrDefault() == null)
-                nextStateQue.Add(new StateTransition(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
+              else if (nextStateIds.Add(cur.idx))
+                nextStateQue.Enqueue(new StateTransition(cur.idx, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
             break;
 
@@ -1674,9 +1712,16 @@ namespace SimulationTracking
             this.timeEvList.RevertToTime(curTime, newTime);
             this.curStates.RevertToGivenTime(newTime, this.condEvList);
 
-            //make sure the processEventList and processStateQue is empty
-            processEventList.RemoveRange(1, processEventList.Count - 1);
-            nextStateQue.RemoveRange(0, nextStateQue.Count);
+            //make sure the processEventList has only the current event (the one being processed)
+            //and the nextStateQue is empty
+            if (processEventList.Count > 1)
+            {
+              EventListData currentEv = processEventList.Dequeue();
+              processEventList.Clear();
+              processEventList.Enqueue(currentEv);
+            }
+            nextStateQue.Clear();
+            nextStateIds.Clear();
 
             maxTime = maxTime + (curTime - newTime);
             this.curTime = newTime;
@@ -1724,22 +1769,19 @@ namespace SimulationTracking
 
             foreach (int id in addStates)
             {
-              var toAdd = Tuple.Create(id, ownerStateID, curAct.name);
-              if (nextStateQue.Where(t => t.StateId == id).FirstOrDefault() == null)
-                nextStateQue.Add(new StateTransition(id, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
+              if (nextStateIds.Add(id))
+                nextStateQue.Enqueue(new StateTransition(id, ownerStateID, causeEvent == null ? "immediate action" : causeEvent.name, curAct.name));
             }
 
 
             //update any doc variables now that code is executed so they try to update if needed.
-            foreach (SimVariable curVar in allLists.allVariables.Values)
+            //Iterate the cached doc-link subset rather than every variable in the model.
+            foreach (SimVariable curVar in docLinkVariables)
             {
-              if ((curVar != null) && (curVar.varScope == EnVarScope.gtDocLink))
-              {
-                object o1 = curVar.NoUpdateValue;
-                object o2 = curVar.GetValue(true);
-                if (!object.Equals(o1, o2))
-                  changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
-              }
+              object o1 = curVar.NoUpdateValue;
+              object o2 = curVar.GetValue(true);
+              if (!object.Equals(o1, o2))
+                changedItems.AddChangedID(EnModifiableTypes.mtVar, curVar.id);
             }
 
             //if it is modifying a variable then mark that as changed

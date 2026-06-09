@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { Variable } from '@/types/EMRALD_Model';
-import { Editor } from '@monaco-editor/react';
 import { Box, Typography } from '@mui/material';
-import { CodeVariables } from './CodeVariables';
+import { type CodeContext, CodeVariables } from './CodeVariables';
+import { DroppableEditor } from './DroppableEditor';
 
 interface CodeEditorWithVariablesProps {
   scriptCode?: string;
@@ -11,6 +11,7 @@ interface CodeEditorWithVariablesProps {
   codeVariables: string[];
   addToUsedVariables: (variableName: string) => void;
   heading?: ReactNode | string;
+  codeContext?: CodeContext;
 }
 
 export const CodeEditorWithVariables: React.FC<
@@ -22,6 +23,7 @@ export const CodeEditorWithVariables: React.FC<
   codeVariables,
   addToUsedVariables,
   heading,
+  codeContext,
 }) => (
   <Box
     sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', flex: 1 }}
@@ -30,7 +32,7 @@ export const CodeEditorWithVariables: React.FC<
       <Typography sx={{ mb: 1 }} fontWeight={600}>
         {heading ?? 'Code (c#)'}
       </Typography>
-      <Editor
+      <DroppableEditor
         height="300px"
         defaultLanguage="csharp"
         language="csharp"
@@ -42,6 +44,8 @@ export const CodeEditorWithVariables: React.FC<
           minimap: { enabled: false },
           snippetSuggestions: 'inline',
         }}
+        addToUsedVariables={addToUsedVariables}
+        codeVariables={codeVariables}
       />
     </Box>
 
@@ -49,6 +53,7 @@ export const CodeEditorWithVariables: React.FC<
       variableList={variableList}
       codeVariables={codeVariables}
       addToUsedVariables={addToUsedVariables}
+      codeContext={codeContext}
     />
   </Box>
 );

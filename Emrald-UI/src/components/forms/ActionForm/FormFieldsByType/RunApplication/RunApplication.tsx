@@ -1,5 +1,4 @@
 import type { CustomFormType } from '../../../../../types/EMRALD_Model';
-import { Editor } from '@monaco-editor/react';
 import {
   Box,
   FormControl,
@@ -16,6 +15,7 @@ import { createElement, type ReactElement, useEffect, useState } from 'react';
 import { useVariableContext } from '../../../../../contexts/VariableContext';
 import { TextFieldComponent } from '../../../../common';
 import { CodeVariables } from '../../../../common/CodeVariables';
+import { DroppableEditor } from '../../../../common/DroppableEditor';
 import { SelectComponent } from '../../../../common/SelectComponent';
 import {
   type ReturnProcessType,
@@ -112,7 +112,7 @@ export const RunApplication: React.FC = () => {
               <Typography sx={{ mb: 1 }} fontWeight={600}>
                 Preprocess Code (c#)
               </Typography>
-              <Editor
+              <DroppableEditor
                 height="300px"
                 defaultLanguage="csharp"
                 language="csharp"
@@ -124,6 +124,8 @@ export const RunApplication: React.FC = () => {
                   minimap: { enabled: false },
                   snippetSuggestions: 'inline',
                 }}
+                addToUsedVariables={addToUsedVariables}
+                codeVariables={codeVariables}
               />
 
               <TextFieldComponent
@@ -190,7 +192,7 @@ export const RunApplication: React.FC = () => {
                   <Typography sx={{ mt: 2, mb: 1 }} fontWeight={600}>
                     Postprocess Code (c#)
                   </Typography>
-                  <Editor
+                  <DroppableEditor
                     height="300px"
                     defaultLanguage="csharp"
                     language="csharp"
@@ -202,6 +204,8 @@ export const RunApplication: React.FC = () => {
                       minimap: { enabled: false },
                       snippetSuggestions: 'inline',
                     }}
+                    addToUsedVariables={addToUsedVariables}
+                    codeVariables={codeVariables}
                   />
                 </div>
               )}
@@ -213,6 +217,7 @@ export const RunApplication: React.FC = () => {
             codeVariables={codeVariables}
             addToUsedVariables={addToUsedVariables}
             height="540px"
+            codeContext="runApplication"
           />
         </Box>
       ) : (

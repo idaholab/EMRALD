@@ -12,10 +12,13 @@ import {
 } from 'react';
 import { appData, updateAppData } from '../hooks/useAppData';
 import {
+  type ClearedRef,
   DeleteItemAndRefs,
+  formatClearedRefsMessage,
   updateModelAndReferences,
   updateSpecifiedModel,
 } from '../utils/UpdateModel';
+import { useAlertContext } from './AlertContext';
 
 interface EventContextType {
   events: Event[];
@@ -59,6 +62,7 @@ export const EventContextProvider: React.FC<PropsWithChildren> = ({
     ),
   );
   const eventsList = useComputed(() => appData.value.EventList);
+  const { showAlert } = useAlertContext();
 
   effect(() => {
     if (
@@ -131,7 +135,16 @@ export const EventContextProvider: React.FC<PropsWithChildren> = ({
       eventItem => eventItem.id === eventId,
     );
     if (eventToDelete) {
-      updateAppData(DeleteItemAndRefs(eventToDelete));
+      const clearedRefs: ClearedRef[] = [];
+      updateAppData(DeleteItemAndRefs(eventToDelete, clearedRefs));
+      const msg = formatClearedRefsMessage(
+        'Event',
+        eventToDelete.name,
+        clearedRefs,
+      );
+      if (msg) {
+        showAlert(msg, 'warning');
+      }
     }
     // todo else error, no event to delete
   };
