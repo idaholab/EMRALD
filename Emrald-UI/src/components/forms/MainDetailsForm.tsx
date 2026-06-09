@@ -34,7 +34,7 @@ interface MainDetailsFormProps<T extends MainItemType> {
   itemType: T;
   typeLabel?: string;
   type: ValueTypes<T>;
-  typeOptions: { value: string; label: string }[];
+  typeOptions: { value: string; label: string; disabled?: boolean }[];
   typeDisabled?: boolean;
   nameDisabled?: boolean;
   descDisabled?: boolean;
@@ -98,7 +98,11 @@ export function MainDetailsForm<T extends MainItemType>({
           label={typeLabel ?? 'Type'}
         >
           {typeOptions.map(option => (
-            <MenuItem key={option.value} value={option.value}>
+            <MenuItem
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+            >
               {option.label}
             </MenuItem>
           ))}

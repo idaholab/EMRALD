@@ -23,10 +23,11 @@ export const Distribution: React.FC<EventFormProps> = ({ eventData }) => {
   const [variableChecked, setVariableChecked] = useState<boolean>(false);
 
   useEffect(() => {
-    setDfltTimeRate(eventData?.dfltTimeRate);
+    setDfltTimeRate(eventData?.dfltTimeRate ?? 'trHours');
     setParameters(eventData?.parameters);
     setDistType(eventData?.distType ?? 'dtNormal');
     setPersistent(eventData?.persistent ?? false);
+    setOnVarChange(eventData?.onVarChange);
     setTypeProperties([
       'dfltTimeRate',
       'parameters',

@@ -35,7 +35,7 @@ export const ExtSimFields: React.FC<VariableFormProps> = ({ variableData }) => {
         value={extSim}
       >
         {extSims.map(e => (
-          <MenuItem key={e.id} value={e.id}>
+          <MenuItem key={e.id} value={e.name}>
             {e.name}
           </MenuItem>
         ))}

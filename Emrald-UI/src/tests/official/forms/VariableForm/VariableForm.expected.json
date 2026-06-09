@@ -55,6 +55,20 @@
     "cumulativeStats": false,
     "monitorInSim": false
   },
+  "ext_sim_link_variable": {
+    "objType": "Variable",
+    "name": "ext_sim_link_variable",
+    "desc": "",
+    "resetOnRuns": true,
+    "type": "string",
+    "value": "Test",
+    "varScope": "gt3DSim",
+    "sim3DId": "1234",
+    "extSim": "MooseSim",
+    "canMonitor": false,
+    "cumulativeStats": false,
+    "monitorInSim": false
+  },
   "doc_link_variable": {
     "objType": "Variable",
     "name": "doc_link_variable",

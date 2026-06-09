@@ -1,6 +1,6 @@
 import type { Edge, Node } from 'reactflow';
 import type { Option } from '@/components/layout/ContextMenu/ContextMenu';
-import type { Action, Event, State } from '@/types/EMRALD_Model';
+import type { Action, Diagram, Event, State } from '@/types/EMRALD_Model';
 import type { ModelItem } from '@/types/ModelUtils';
 import { type MouseEvent, useState } from 'react';
 import { ActionForm } from '@/components/forms/ActionForm/ActionForm';
@@ -10,17 +10,19 @@ import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
 import { StateForm } from '@/components/forms/StateForm/StateForm';
 import { useActionContext } from '@/contexts/ActionContext';
+import { useAlertContext } from '@/contexts/AlertContext';
 import { useDiagramContext } from '@/contexts/DiagramContext';
 import { useEventContext } from '@/contexts/EventContext';
 import { useStateContext } from '@/contexts/StateContext';
 import { useWindowContext } from '@/contexts/WindowContext';
 import { updateAppData } from '@/hooks/useAppData';
 import { updateModelAndReferences } from '@/utils/UpdateModel';
-import { currentDiagram } from './EmraldDiagram';
+import { SINGLE_STATE_EXIT_FLAG_MESSAGE } from '@/utils/util-functions';
 
 export function useContextMenu(
   getStateNodes?: () => void,
   setEdges?: (edges: Edge[]) => void,
+  diagram?: Diagram,
 ) {
   // Get state nodes function is needed if deleting or removing a state, set edges function is needed if deleting or removing an edge
   const [menu, setMenu] = useState<{ mouseX: number; mouseY: number } | null>(
@@ -33,10 +35,16 @@ export function useContextMenu(
   const [actionTypeToModify, setActionTypeToModify] = useState<string>();
   const { addWindow } = useWindowContext();
   const { updateState, deleteState, getStateByStateId } = useStateContext();
-  const { updateDiagram } = useDiagramContext();
+  const { updateDiagram, getDiagramByDiagramName } = useDiagramContext();
   const { deleteEvent } = useEventContext();
   const { updateAction, deleteAction, getActionByActionId }
     = useActionContext();
+  const { showAlert } = useAlertContext();
+
+  // A single-state diagram (dtSingle) can only be in one state at a time, so a
+  // transition action must always exit the current state.
+  const isSingleStateDiagram = (state: State) =>
+    getDiagramByDiagramName(state.diagramName)?.diagramType === 'dtSingle';
 
   const closeContextMenu = () => {
     setMenu(null);
@@ -57,7 +65,7 @@ export function useContextMenu(
       {
         label: 'New State',
         action: () => {
-          addWindow('New State', <StateForm />);
+          addWindow('New State', <StateForm diagram={diagram} />);
           closeContextMenu();
         },
         isDivider: true,
@@ -65,10 +73,12 @@ export function useContextMenu(
       {
         label: 'Diagram Properties',
         action: () => {
-          addWindow(
-            `Edit Properties ${currentDiagram.value.name}`,
-            <DiagramForm diagramData={currentDiagram.value} />,
-          );
+          if (diagram) {
+            addWindow(
+              `Edit Properties ${diagram.name}`,
+              <DiagramForm diagramData={diagram} />,
+            );
+          }
           closeContextMenu();
         },
       },
@@ -208,7 +218,15 @@ export function useContextMenu(
           ) as ModelItem;
           if (pastedData.objType === 'Action') {
             const actionName = pastedData.name;
-            if (state.immediateActions.includes(actionName)) {
+            if (
+              pastedData.actType === 'atTransition'
+              && isSingleStateDiagram(state)
+            ) {
+              showAlert(
+                'Transition actions are not allowed in the immediate actions of a single state diagram.',
+                'warning',
+              );
+            } else if (state.immediateActions.includes(actionName)) {
               console.warn('Action already exists');
             } else {
               state.immediateActions.push(actionName);
@@ -320,10 +338,21 @@ export function useContextMenu(
           ) as ModelItem;
           if (pastedData.objType === 'Action') {
             const eventIndex = state.events.indexOf(event.name);
-            const eventActions = state.eventActions[eventIndex]?.actions;
+            const eventAction = state.eventActions[eventIndex];
 
-            if (!eventActions?.includes(pastedData.name)) {
-              eventActions?.push(pastedData.name);
+            if (!eventAction?.actions.includes(pastedData.name)) {
+              eventAction?.actions.push(pastedData.name);
+              // In a single-state diagram a transition must exit the state, so
+              // set the event's "exit state" flag if it isn't already set.
+              if (
+                eventAction
+                && pastedData.actType === 'atTransition'
+                && !eventAction.moveFromCurrent
+                && isSingleStateDiagram(state)
+              ) {
+                eventAction.moveFromCurrent = true;
+                showAlert(SINGLE_STATE_EXIT_FLAG_MESSAGE, 'info');
+              }
               updateState(state);
               updateAppData(updateModelAndReferences(state, 'State'));
             }
@@ -644,10 +673,18 @@ export function useContextMenu(
     }
 
     if (itemToDelete.id && itemToDelete.objType === 'State' && getStateNodes) {
-      currentDiagram.value.states = currentDiagram.value.states.filter(
-        state => state !== itemToDelete.name,
-      );
-      updateDiagram(currentDiagram.value);
+      // Remove the state from the diagram that actually owns it (tracked on the
+      // state itself) rather than the shared currentDiagram signal, which may
+      // point at a different open diagram.
+      const owningDiagram = getDiagramByDiagramName(itemToDelete.diagramName);
+      if (owningDiagram) {
+        updateDiagram({
+          ...owningDiagram,
+          states: owningDiagram.states.filter(
+            state => state !== itemToDelete.name,
+          ),
+        });
+      }
       deleteState(itemToDelete.id);
       getStateNodes();
     } else if (

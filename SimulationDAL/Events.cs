@@ -493,12 +493,24 @@ namespace SimulationDAL
   }
 
   public class EvalVarEvent : CondBasedEvent //etVarCond
-  {    
+  {
     public string compCode = "";
     protected bool compiled;
     protected ScriptEngine compiledComp;
     protected VariableList varList = null!;
-    protected string modelPath = ""; //save here because we cant get it from EventTriggered. 
+    protected string modelPath = ""; //save here because we cant get it from EventTriggered.
+
+    // EnVars exposed to EvalVarEvent scripts. The binder gates per-call SetVariable on
+    // whether each name actually appears in the script source (compCode).
+    private static readonly EngineVar[] AvailableEngineVars =
+    {
+      EngineVar.CurTime, EngineVar.RunIdx, EngineVar.ExtSimStartTime,
+      EngineVar.NextEvTime, EngineVar.RootPath, EngineVar.Rand
+    };
+    private HashSet<string> engineVarsUsed = new HashSet<string>(StringComparer.Ordinal);
+
+    // Compile-time resolved user vars (see SimulationDAL.ResolvedUserVar).
+    private List<ResolvedUserVar> resolvedUserVars = new List<ResolvedUserVar>();
     
     public EvalVarEvent() : base("")
     {
@@ -651,6 +663,25 @@ namespace SimulationDAL
       else
       {
         this.compiled = true;
+        // Cache which engine vars / user vars the script references so EventTriggered
+        // can skip per-call SetVariable for ones it doesn't use.
+        engineVarsUsed = CommonFunctions.DetectUsedNames(compCode, EngineVarRegistry.AllNames);
+        resolvedUserVars.Clear();
+        if (varList != null)
+        {
+          foreach (var varItem in varList)
+          {
+            string name = varItem.Value.name;
+            // Engine vars are bound by EngineVarBinder; Seed is reserved.
+            if (EngineVarRegistry.AllNames.Contains(name) || name == "Seed")
+              continue;
+            resolvedUserVars.Add(new ResolvedUserVar
+            {
+              simVar = varItem.Value,
+              isUsed = compCode.Contains(name)
+            });
+          }
+        }
       }
 
       return this.compiled;
@@ -664,19 +695,20 @@ namespace SimulationDAL
           throw new Exception("Code failed compile, can not evaluate");
       }
 
-      compiledComp.SetVariable("CurTime", typeof(double), curSimTime.TotalHours);
-      compiledComp.SetVariable("RunIdx", typeof(int), runIdx);
-      compiledComp.SetVariable("ExtSimStartTime", typeof(double), start3DTime.TotalHours);
-      compiledComp.SetVariable("NextEvTime", typeof(double), nextEvTime.TotalHours);//NextEvTime
-      compiledComp.SetVariable("RootPath", typeof(string), rootPath);
-      compiledComp.SetVariable("Rand", typeof(Random), SingleRandom.Instance);
-
-      if (varList != null) //assign the values to the variables if assigned
+      EngineVarBinder.Bind(compiledComp, AvailableEngineVars, engineVarsUsed, new ScriptContext
       {
-        foreach (var varItem in varList)
-        {
-          compiledComp.SetVariable(varItem.Value.name, varItem.Value.dType, varItem.Value.value);
-        }
+        CurTime = curSimTime.TotalHours,
+        RunIdx = runIdx,
+        ExtSimStartTime = start3DTime.TotalHours,
+        NextEvTime = nextEvTime.TotalHours,
+        RootPath = rootPath,
+        Rand = SingleRandom.Instance
+      });
+
+      foreach (var rv in resolvedUserVars)
+      {
+        if (rv.isUsed)
+          compiledComp.SetVariable(rv.simVar.name, rv.simVar.dType, rv.simVar.value);
       }
       bool result = false;
 
@@ -1054,7 +1086,11 @@ namespace SimulationDAL
       }   
       else
       {
-        this.time = XmlConvert.ToTimeSpan((string)dynObj.time);
+        string timeStr = (string)dynObj.time;
+        if (string.IsNullOrWhiteSpace(timeStr))
+          this.time = TimeSpan.FromTicks(0); //no duration entered, trigger immediately
+        else
+          this.time = XmlConvert.ToTimeSpan(timeStr);
       }
 
       if (dynObj.fromSimStart != null)
@@ -1371,34 +1407,25 @@ namespace SimulationDAL
         throw new Exception("Failed to convert Distribution Event from JSON could be missing a required field");
       }
 
+      try //may not exist in earlier versions so use a default
+      {
+        onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
+      }
+      catch
+      {
+        onVarChange = EnOnChangeTask.ocIgnore;
+      }
+
       processed = true;
       return true;
     }
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
-      // Resolve any variable references inside the distribution parameters
+      // Resolve any variable references inside the distribution parameters.
+      // onVarChange is read tolerantly in DeserializeDerived (defaulted to ocIgnore if missing),
+      // so we no longer need to re-parse it here.
       _dist.LoadVariableReferences(this.vars, v => this.AddRelatedItem(v.id));
-
-      if (_relatedIDs.Count > 0)
-      {
-        try
-        {
-          dynamic dynObj = (dynamic)obj;
-          if (wrapped)
-          {
-            if (dynObj.Event == null)
-              return false;
-
-            dynObj = ((dynamic)obj).Event;
-          }
-          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
-        }
-        catch
-        {
-          throw new Exception("parameter onVarChange missing and variables are used.");
-        }
-      }
 
       return true;
     }
