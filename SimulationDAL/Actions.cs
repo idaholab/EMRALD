@@ -664,7 +664,13 @@ namespace SimulationDAL
     public SimVariable? simVar = null;
     //public int varID { get { return simVar.id; } }
     public int varID { get { return (simVar != null) ? simVar.id : 0; } }
-    //public bool isTimeStateVar { get { return this.simVar is TimeStateVariable; } }  
+    //public bool isTimeStateVar { get { return this.simVar is TimeStateVariable; } }
+
+    // When useDistribution is true, the new value is sampled from _dist instead of running scriptCode.
+    // The Min/Max parameters are applied as raw doubles for VarValueAct (no time-rate conversion),
+    // matching the UI choice "keep time-rate fields, ignore at runtime."
+    public bool useDistribution = false;
+    private DistribInfo? _dist;
 
     public VarValueAct()
       : base(EnActionType.atCngVarVal) { }
@@ -687,9 +693,18 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-      string newValStr = scriptCode.Replace("\n", "\\n").Replace("\r", "\\r");
+      string retStr;
+      if (useDistribution && _dist != null)
+      {
+        // Distribution-mode: emit the distribution fields instead of scriptCode/codeVariables.
+        retStr = _dist.GetJSON();
+        retStr += "," + Environment.NewLine + "\"useDistribution\": true";
+      }
+      else
+      {
+        retStr = base.GetDerivedJSON(lists);
+      }
 
-      string retStr = base.GetDerivedJSON(lists);
       if (simVar != null)
         retStr = retStr + "," + Environment.NewLine + "\"variableName\":" + "\"" + simVar.name + "\"";
 
@@ -707,8 +722,25 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Action;
       }
 
+      useDistribution = dynObj.useDistribution != null && (bool)dynObj.useDistribution;
+
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
+
+      if (useDistribution)
+      {
+        // Variable values are unitless raw numbers, so the distribution is constructed in
+        // value-only mode (no time-rate conversions, dfltTimeRate is not required in JSON).
+        _dist = new DistribInfo(useTimeRates: false);
+        try
+        {
+          _dist.Deserialize(dynObj);
+        }
+        catch (Exception err)
+        {
+          throw new Exception("Failed to read distribution for Change Var Value action " + this.name + ": " + err.Message);
+        }
+      }
 
       processed = true;
       return true;
@@ -737,12 +769,20 @@ namespace SimulationDAL
         this._retType = simVar.dType;
       }
 
-      base.LoadObjLinks(obj, wrapped, lists);
-      if (simVar != null)
+      if (useDistribution && _dist != null)
       {
-        if (!codeVariables.Contains(simVar.name))
+        // Resolve any variable references inside the distribution parameters
+        _dist.LoadVariableReferences(lists.allVariables);
+      }
+      else
+      {
+        base.LoadObjLinks(obj, wrapped, lists);
+        if (simVar != null)
         {
-          codeVariables.Add(simVar.name);
+          if (!codeVariables.Contains(simVar.name))
+          {
+            codeVariables.Add(simVar.name);
+          }
         }
       }
 
@@ -757,6 +797,22 @@ namespace SimulationDAL
       //}
       lock (_executionLock)
       {
+        if (useDistribution && _dist != null)
+        {
+          double sampled = _dist.Sample(out _);
+
+          // VarValueAct ignores time-rate conversion: the sampled value is used as a raw double.
+          // Min/Max constraints are also applied as raw doubles (their timeRate field is preserved
+          // in the schema for parity with events but not interpreted here).
+          if (_dist.TryGetParameter("Minimum", out double minVal, out _) && sampled < minVal)
+            sampled = minVal;
+          if (_dist.TryGetParameter("Maximum", out double maxVal, out _) && sampled > maxVal)
+            sampled = maxVal;
+
+          toSetVar.SetValue(Convert.ChangeType(sampled, toSetVar.dType));
+          return;
+        }
+
         if (!this.compiled)
         {
           if (scriptCode == "")
@@ -786,7 +842,7 @@ namespace SimulationDAL
 
         toSetVar.SetValue(scriptRunner.EvaluateGeneric());
       }
-      
+
     }
   }
 
@@ -2447,6 +2503,10 @@ namespace SimulationDAL
       {
         if ((item.Value is VarValueAct) || (item.Value is VarValueDLLAct))
         {
+          // In distribution mode the action has no scriptCode to compile.
+          if (item.Value is VarValueAct vva && vva.useDistribution)
+            continue;
+
           try
           {
             ((VarValueAct)item.Value).CompileCode(lists.allVariables);
@@ -2455,7 +2515,7 @@ namespace SimulationDAL
           {
             throw new Exception("Action \"" + item.Value.name + " \" - " + e.Message);
           }
-          
+
         }
 
         if (item.Value is RunExtAppAct)

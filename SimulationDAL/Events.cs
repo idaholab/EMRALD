@@ -1365,23 +1365,8 @@ namespace SimulationDAL
 
   public class DistEvent : TimeBasedEvent //etDistribution
   {
-    public class DistribParams
-    {
-      public string name { get; set; } = "";
-      public string? variable { get; set; }
-      public double? value { get; set; }
-      public bool? useVariable { get; set; }
-      public EnTimeRate timeRate { get; set; }
-
-      public static explicit operator double(DistribParams v)
-      {
-        throw new NotImplementedException();
-      }
-    }
-    protected List<DistribParams> _dParams = new List<DistribParams>();
-    protected EnDistType _distType = EnDistType.dtNormal;
-    protected EnTimeRate dfltTimeRate = EnTimeRate.trHours;
-    //protected Object _mathFuncs = null;
+    // Distribution definition (type, parameters, time rate). Shared with VarValueAct via DistribInfo.
+    protected DistribInfo _dist = new DistribInfo();
     protected VariableList vars = null!;
 
     protected override EnEventType GetEvType() { return EnEventType.etDistribution; }
@@ -1390,13 +1375,8 @@ namespace SimulationDAL
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
-
-      string retStr = "\"distType\": \"" + this._distType.ToString() + "\"";
-      retStr += "," + Environment.NewLine + "\"dfltTimeRate\": \"" + dfltTimeRate.ToString() + "\"";
+      string retStr = _dist.GetJSON();
       retStr += "," + Environment.NewLine + "\"onVarChange\": \"" + onVarChange.ToString() + "\"";
-      retStr += "," + Environment.NewLine + "\"parameters\":" + JsonConvert.SerializeObject(_dParams);
-
-
       return retStr;
     }
 
@@ -1420,256 +1400,41 @@ namespace SimulationDAL
 
         lists.allEvents.Add(this, false);
 
-        _distType = (EnDistType)Enum.Parse(typeof(EnDistType), (string)dynObj.distType, true);
-               
+        _dist.Deserialize(dynObj);
       }
       catch
       {
         throw new Exception("Failed to convert Distribution Event from JSON could be missing a required field");
       }
 
-      try
+      try //may not exist in earlier versions so use a default
       {
-        dfltTimeRate = (EnTimeRate)Enum.Parse(typeof(EnTimeRate), (string)dynObj.dfltTimeRate, true);
+        onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
       }
       catch
       {
-        throw new Exception("No \"dfltTimeRate\" defined ");
+        onVarChange = EnOnChangeTask.ocIgnore;
       }
 
-      try
-      {
-        //make sure the default values are set
-        foreach (var p in dynObj.parameters)
-        {
-          if (p.timeRate == null)
-          {
-            p.timeRate = dfltTimeRate.ToString();
-          }
-        }
-
-        string paramsStr = Convert.ToString(dynObj.parameters);
-        _dParams = JsonConvert.DeserializeObject<List<DistribParams>>(paramsStr)!;
-      }
-      catch
-      {
-        throw new Exception("parameters data missing or formatted incorrectly");
-      }
-      
       processed = true;
       return true;
     }
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
-      //make sure all the variables referenced are in the variable list
-      foreach (var p in this._dParams)
-      {
-        if ((p.useVariable == null ? false : (bool)p.useVariable) && (p.variable != null))
-        {
-          SimVariable v = this.vars.FindByName(p.variable);
-          if (v == null)
-            throw new Exception("Failed to find variable - " + p.variable);
-          else
-            this.AddRelatedItem(v.id);
-        }
-      }
-
-      if (_relatedIDs.Count > 0)
-      {
-        try
-        {
-          dynamic dynObj = (dynamic)obj;
-          if (wrapped)
-          {
-            if (dynObj.Event == null)
-              return false;
-
-            dynObj = ((dynamic)obj).Event;
-          }
-          onVarChange = (EnOnChangeTask)Enum.Parse(typeof(EnOnChangeTask), (string)dynObj.onVarChange, true);
-        }
-        catch
-        {
-          throw new Exception("parameter onVarChange missing and variables are used.");
-        }
-      }
-      
+      // Resolve any variable references inside the distribution parameters.
+      // onVarChange is read tolerantly in DeserializeDerived (defaulted to ocIgnore if missing),
+      // so we no longer need to re-parse it here.
+      _dist.LoadVariableReferences(this.vars, v => this.AddRelatedItem(v.id));
 
       return true;
     }
 
     public override TimeSpan NextTime(TimeSpan curTime)
     {
-      double sampled = 0.0;
-      Dictionary<string, DistribParams> distParams = [];
-      try
-      {
-        foreach (DistribParams p in this._dParams)
-        {
-          double? val = null;
-          if (((p.useVariable == null) || (bool)p.useVariable) && p.variable != null)
-          {
-            var v = vars.FindByName(p.variable);
-            val = Convert.ToDouble(v.value);
-          }
-          else if (p.value != null)
-          {
-            val = Convert.ToDouble(p.value);
-          }
-          distParams[p.name] = new DistribParams {
-            name = p.name,
-            value = val,
-            timeRate = p.timeRate,
-          };
-        }
-      }
-      catch
-      {
-        throw new Exception("Failed to load parameter values for event " + this.name);
-      }
+      double sampled = _dist.Sample(out EnTimeRate distTimeRate);
 
-      EnTimeRate distTimeRate = dfltTimeRate;
-      try
-      {
-
-        switch (this._distType)
-        {
-          case EnDistType.dtExponential:
-            if (distParams.TryGetValue("Rate", out DistribParams? rate))
-            {
-              sampled = new Exponential((double)rate.value!, SingleRandom.Instance).Sample();
-              distTimeRate = rate.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing required parameter rate for exponential distribution");
-            }
-            break;
-          case EnDistType.dtNormal: //mean and standard deviation
-            if (
-              distParams.TryGetValue("Mean", out DistribParams? mean)
-              && distParams.TryGetValue("Standard Deviation", out DistribParams? std)
-            )
-            {
-              sampled = new Normal((double)mean.value!,
-                                      Globals.ConvertToNewTimeSpan(std.timeRate, (double)std.value!, mean.timeRate),
-                                      SingleRandom.Instance).Sample();
-              distTimeRate = mean.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or both required parameters mean and standard deviation for normal distribution");
-            }
-            break;
-          case EnDistType.dtWeibull:
-            if (
-              distParams.TryGetValue("Shape", out DistribParams? shape)
-              && distParams.TryGetValue("Scale", out DistribParams? scale)
-            )
-            {
-              sampled = new Weibull((double)shape.value!, (double)scale.value!, SingleRandom.Instance).Sample();
-              distTimeRate = _dParams[1].timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or both required parameters shape and scale for Weibull distribution");
-            }
-            break;
-          case EnDistType.dtLogNormal:
-            if (
-              distParams.TryGetValue("Mean", out DistribParams? mu)
-              && distParams.TryGetValue("Standard Deviation", out DistribParams? sigma)
-            )
-            {
-              sampled = new LogNormal((double)mu.value!,
-                                      Globals.ConvertToNewTimeSpan(sigma.timeRate, (double)sigma.value!, mu.timeRate),
-                                      SingleRandom.Instance).Sample();
-              distTimeRate = mu.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or both required parameters mean and standard deviation for lognormal distribution");
-            }
-            break;
-          case EnDistType.dtUniform:
-            if (
-              distParams.TryGetValue("Minimum", out DistribParams? lower)
-              && distParams.TryGetValue("Maximum", out DistribParams? upper)
-            )
-            {
-              sampled = new ContinuousUniform((double)lower.value!,
-                                      Globals.ConvertToNewTimeSpan(upper.timeRate, (double)upper.value!, lower.timeRate),
-                                      SingleRandom.Instance).Sample();
-              distTimeRate = lower.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or both required parameters minimum and maximum for uniform distribution");
-            }
-            break;
-          case EnDistType.dtTriangular:
-            if (
-              distParams.TryGetValue("Minimum", out DistribParams? lowerT)
-              && distParams.TryGetValue("Maximum", out DistribParams? upperT)
-              && distParams.TryGetValue("Peak", out DistribParams? peak)
-            )
-            {
-              sampled = new Triangular(Globals.ConvertToNewTimeSpan(lowerT.timeRate, (double)lowerT.value!, peak.timeRate), //min
-                                      Globals.ConvertToNewTimeSpan(upperT.timeRate, (double)upperT.value!, peak.timeRate),   //max
-                                      (double)peak.value!, //mode or peak
-                                      SingleRandom.Instance).Sample();
-              distTimeRate = peak.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or more required parameters minimum, maximum, and peak for triangular distribution");
-            }
-            break;
-          case EnDistType.dtGamma:
-            if (
-              distParams.TryGetValue("Shape", out DistribParams? shapeG)
-              && distParams.TryGetValue("Rate", out DistribParams? rateG)
-            )
-            {
-              sampled = new Gamma((double)shapeG.value!, (double)rateG!, SingleRandom.Instance).Sample();
-              distTimeRate = rateG.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or both required parameters shape and rate for gamma distribution");
-            }
-            break;
-          case EnDistType.dtGompertz:
-            //Shape*scale*Math.Exp((Shape+(scale*x)) - (Shape*Math.Exp(scale*x)))
-            if (
-              distParams.TryGetValue("Shape", out DistribParams? shapeO)
-              && distParams.TryGetValue("Scale", out DistribParams? scaleO)
-            )
-            {
-              double r = SingleRandom.Instance.NextDouble();
-              sampled = 1 / (double)scaleO.value! * Math.Log(Math.Log(1 - r) / -(double)shapeO.value! + 1);
-
-              distTimeRate = scaleO.timeRate;
-            }
-            else
-            {
-              throw new Exception("Missing one or both required parameters shape and scale for Gompertz distribution");
-            }
-            break;
-
-          default:
-            throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-            
-        }
-      }
-      catch (Exception err)
-      {
-        throw new Exception("Invalid parameters for distribution: " + err);
-      }
-
-
-      TimeSpan sampledTime = TimeSpan.Zero;
+      TimeSpan sampledTime;
       try
       {
         sampledTime = Globals.NumberToTimeSpan(sampled, distTimeRate);
@@ -1680,27 +1445,29 @@ namespace SimulationDAL
       }
       catch
       {
-        throw new Exception("Failed to set time for " + this._distType.ToString() + " - " + sampled);
+        throw new Exception("Failed to set time for " + _dist.distType.ToString() + " - " + sampled);
       }
-      
+
       try
       {
-        TimeSpan minTime = TimeSpan.Zero;
-        if (distParams.TryGetValue("Minimum", out DistribParams? min))
-          minTime = Globals.NumberToTimeSpan((double)min.value!, min.timeRate);
-        if (sampledTime < minTime)
-          return minTime;
+        if (_dist.TryGetParameter("Minimum", out double minVal, out EnTimeRate minRate))
+        {
+          TimeSpan minTime = Globals.NumberToTimeSpan(minVal, minRate);
+          if (sampledTime < minTime)
+            return minTime;
+        }
 
-        TimeSpan maxTime = TimeSpan.MaxValue;
-        if (distParams.TryGetValue("Maximum", out DistribParams? max))
-          maxTime = Globals.NumberToTimeSpan((double)max.value!, max.timeRate);
-        if (sampledTime > maxTime)
-          return maxTime;
+        if (_dist.TryGetParameter("Maximum", out double maxVal, out EnTimeRate maxRate))
+        {
+          TimeSpan maxTime = Globals.NumberToTimeSpan(maxVal, maxRate);
+          if (sampledTime > maxTime)
+            return maxTime;
+        }
       }
       catch
       {
         throw new Exception("Failed to get Min or Max time for the distribution");
-      }      
+      }
 
       return sampledTime;
     }
@@ -1716,28 +1483,17 @@ namespace SimulationDAL
     {
       if (onVarChange == EnOnChangeTask.ocAdjust)
       {
-
-        switch (this._distType)
+        switch (_dist.distType)
         {
           case EnDistType.dtExponential:
-            //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
-            
-          case EnDistType.dtNormal: //mean and standard deviation
-            //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
-            
+          case EnDistType.dtNormal:
           case EnDistType.dtWeibull:
-            //todo: not correct
-            return NextTime(curTime) - (curTime - sampledTime);
-            
           case EnDistType.dtLogNormal:
             //todo: not correct
             return NextTime(curTime) - (curTime - sampledTime);
-            
+
           default:
-            throw new Exception("Distribution type not implemented for " + this._distType.ToString());
-            
+            throw new Exception("Distribution type not implemented for " + _dist.distType.ToString());
         }
       }
 

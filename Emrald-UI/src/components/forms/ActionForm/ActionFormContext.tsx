@@ -2,7 +2,9 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 import type {
   Action,
   ActionType,
+  DistributionType,
   Event,
+  EventDistributionParameter,
   MAAPFormData,
   NewState,
   State,
@@ -51,6 +53,9 @@ interface ActionFormContextType {
   variableName?: string;
   codeVariables: string[];
   scriptCode?: string;
+  useDistribution?: boolean;
+  distType?: DistributionType;
+  distParameters?: EventDistributionParameter[];
   sim3DMessage?: sim3DMessageType;
   extSim?: string;
   sim3DId: string;
@@ -76,6 +81,11 @@ interface ActionFormContextType {
   setMutuallyExclusive: Dispatch<SetStateAction<boolean | undefined>>;
   setVariableName: Dispatch<SetStateAction<string | undefined>>;
   setScriptCode: Dispatch<SetStateAction<string | undefined>>;
+  setUseDistribution: Dispatch<SetStateAction<boolean | undefined>>;
+  setDistType: Dispatch<SetStateAction<DistributionType | undefined>>;
+  setDistParameters: Dispatch<
+    SetStateAction<EventDistributionParameter[] | undefined>
+  >;
   setSim3DMessage: Dispatch<SetStateAction<sim3DMessageType | undefined>>;
   setExtSim: Dispatch<SetStateAction<string | undefined>>;
   setSim3DId: Dispatch<SetStateAction<string>>;
@@ -152,6 +162,11 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   const [codeVariables, setCodeVariables] = useState<string[]>([]);
   const [variableName, setVariableName] = useState<string | undefined>();
   const [scriptCode, setScriptCode] = useState<string | undefined>();
+  const [useDistribution, setUseDistribution] = useState<boolean | undefined>();
+  const [distType, setDistType] = useState<DistributionType | undefined>();
+  const [distParameters, setDistParameters] = useState<
+    EventDistributionParameter[] | undefined
+  >();
   // extSimMsg items
   const [sim3DMessage, setSim3DMessage] = useState<
     sim3DMessageType | undefined
@@ -319,7 +334,22 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         ? codeVariables
         : undefined,
       variableName,
-      scriptCode,
+      scriptCode:
+        actType === 'atCngVarVal' && useDistribution ? undefined : scriptCode,
+      useDistribution:
+        actType === 'atCngVarVal' && useDistribution ? true : undefined,
+      distType:
+        actType === 'atCngVarVal' && useDistribution ? distType : undefined,
+      parameters:
+        actType === 'atCngVarVal' && useDistribution
+          ? distParameters?.map(p => {
+              // atCngVarVal distribution mode treats variable values as raw numbers,
+              // so strip any timeRate that may have been left over from the schema's
+              // shared EventDistributionParameter shape.
+              const { timeRate: _ignored, ...rest } = p;
+              return rest;
+            })
+          : undefined,
       sim3DMessage,
       extSim,
       sim3DConfigData,
@@ -528,6 +558,9 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setCodeVariables([]);
     setVariableName(undefined);
     setScriptCode(undefined);
+    setUseDistribution(undefined);
+    setDistType(undefined);
+    setDistParameters(undefined);
     setSim3DMessage(undefined);
     setExtSim(undefined);
     setSim3DId('');
@@ -580,6 +613,9 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setCodeVariables(actionData?.codeVariables ?? []);
     setVariableName(actionData?.variableName);
     setScriptCode(actionData?.scriptCode);
+    setUseDistribution(actionData?.useDistribution);
+    setDistType(actionData?.distType);
+    setDistParameters(actionData?.parameters);
 
     // ExtSim items
     setSim3DMessage(actionData?.sim3DMessage as sim3DMessageType);
@@ -610,6 +646,9 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         variableName,
         codeVariables,
         scriptCode,
+        useDistribution,
+        distType,
+        distParameters,
         sim3DMessage,
         extSim,
         sim3DId,
@@ -637,6 +676,9 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         setVariableName,
         setCodeVariables,
         setScriptCode,
+        setUseDistribution,
+        setDistType,
+        setDistParameters,
         setSim3DMessage,
         setExtSim,
         setSim3DId,

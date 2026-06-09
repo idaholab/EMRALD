@@ -36,7 +36,7 @@ namespace SimulationDAL
     private MultiThreadInfo _MultiThreadInfo = null!;
     private string _origRootPath = ""; //origional root path before being changed by multithreading 
     private string _rootPath = ""; //emrald model root path
-    public const double SCHEMA_VERSION = 3.2;
+    public const double SCHEMA_VERSION = 3.3;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();
