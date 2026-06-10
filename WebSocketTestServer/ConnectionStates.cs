@@ -263,14 +263,21 @@ namespace WebSocketTestServer
             var simTime = Machine.GlobalSimTime;
             var next = Machine.NextCallbackTime;
 
-            // Detect changes to T_FW and send event when it changes.
+            // Detect changes to T_FW and send event when it changes - but only call back if the
+            // watch item's WatchEventCriteria rule (if any) is satisfied. When EMRALD attaches no rule this
+            // reports on every change as before; a rule lets the sim keep running silently until it
+            // becomes true, reducing callback chatter.
             var sim = Machine.Simulation;
             if (sim.T_FW != _lastTFW)
             {
                 _lastTFW = sim.T_FW;
-                await SendEventAsync(SimEventType.etCompEv, new ItemData("T_FW", sim.T_FW.ToString()), "T_FW Changed");
-                await Machine.RequestTransitionAsync(SimulationState.Waiting, requireDrain: false);
-                return; // pause on value change; timer will be evaluated on the next pass
+                if (Machine.ShouldReport("T_FW"))
+                {
+                    await SendEventAsync(SimEventType.etCompEv, new ItemData("T_FW", sim.T_FW.ToString()), "T_FW Changed");
+                    await Machine.RequestTransitionAsync(SimulationState.Waiting, requireDrain: false);
+                    return; // pause on value change; timer will be evaluated on the next pass
+                }
+                // rule not satisfied - keep running without notifying EMRALD
             }
 
             // If we've reached or will pass the next EMRALD callback time, emit the timer event and pause.

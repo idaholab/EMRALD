@@ -931,6 +931,10 @@ export interface Variable {
    * Optional. For variables of varScope gt3DSim, this is the external simulation the variable is linked to.
    */
   extSim?: string;
+  /**
+   * Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g. "(valve_12 > 5) & (valve_12 < 10)") the external simulation must satisfy before reporting this variable. Sent in the initial coupling message. When omitted the variable is reported on every change.
+   */
+  WatchEventCriteria?: string;
   changeLog?: ChangeLog;
   /**
    * Flag to indicate the user want to do cumulative statistics in the results.

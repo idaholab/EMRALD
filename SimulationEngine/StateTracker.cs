@@ -692,6 +692,15 @@ namespace SimulationTracking
     private volatile bool firstInitDone = false; //Upon start of sim All start states, immediate actions, and conditional events have been processed  
     private TimeSpan sim3DStartTime;
     private volatile bool terminated = false;
+    //set by Sim3DProcessingError (on the messaging thread) when EMRALD fails to process an
+    //incoming external-sim message during a debug run; the main run thread throws it to abort.
+    private volatile string extProcessingError = null;
+    //Backstop against a runaway stale-message loop: count consecutive stale messages from a client
+    //whose globalRunTime is NOT advancing (a clock desync the protocol re-arm below would spin on).
+    //Reset on a fresh (non-stale) or time-advancing message.
+    private Dictionary<string, int> consecutiveStaleMsgs = new Dictionary<string, int>();
+    private Dictionary<string, TimeSpan> lastStaleMsgTime = new Dictionary<string, TimeSpan>();
+    private const int MaxConsecutiveStaleMsgs = 100;
     private TimeSpan settingsMaxTime;
     /// <summary>
     /// max time left
@@ -785,6 +794,9 @@ namespace SimulationTracking
       this.inProcessingLoop = false;
       this.firstInitDone = false;
       this.terminated = false;
+      this.extProcessingError = null;
+      this.consecutiveStaleMsgs.Clear();
+      this.lastStaleMsgTime.Clear();
       this.maxTime = settingsMaxTime;
 
       SimVariable tempVar;
@@ -871,6 +883,10 @@ namespace SimulationTracking
         }
       }
 
+      //A debug-run message-processing error (set by Sim3DProcessingError) aborts the run with the error.
+      if (extProcessingError != null)
+        throw new Exception(extProcessingError);
+
       if (!terminated)
         curTime = settingsMaxTime;
 
@@ -922,6 +938,45 @@ namespace SimulationTracking
     }
 
     /// <summary>
+    /// Called by the messaging layer when EMRALD fails to process an incoming message from an
+    /// external simulation - either the message could not be deserialized, or an error was thrown
+    /// while applying it (e.g. a failed variable assignment such as
+    /// 'Failed to assign "1.0" to Variable "valve_12"').
+    /// In a production run this keeps the existing behavior (the messaging layer already logged it).
+    /// In a debug run it tells the connected external sim to terminate so it isn't left running
+    /// orphaned, then aborts this EMRALD run so the error surfaces instead of being swallowed.
+    /// Runs on the messaging receive thread.
+    /// </summary>
+    /// <param name="fromClient">name of the external simulation the message came from</param>
+    /// <param name="errorMsg">description of the processing error</param>
+    /// <param name="rawMsg">the raw message that could not be processed</param>
+    void Sim3DProcessingError(string fromClient, string errorMsg, string rawMsg)
+    {
+      //Production runs keep the existing behavior: the message was already logged by the
+      //messaging layer, so just let the simulation continue.
+      if (ConfigData.debugLev == NLog.LogLevel.Off)
+        return;
+
+      string fullMsg = "EMRALD error processing message from '" + fromClient + "': " + errorMsg;
+      logger.Error(fullMsg + " Raw message: " + rawMsg);
+
+      //Tell the connected external sim to shut down so it isn't left running orphaned.
+      TMsgWrapper termMsg = new TMsgWrapper(MessageType.mtSimAction, "Error", curTime, "EMRALD error - terminating: " + errorMsg);
+      termMsg.simAction = new SimAction(SimActionType.atTerminate);
+      termMsg.simAction.status = StatusType.stError;
+      sim3DServer.SendMessage(termMsg, fromClient);
+
+      //Record the error and release the main run thread's waits so the run aborts with this error.
+      extProcessingError = fullMsg;
+      terminated = true;
+      extSimRunning = false;
+      extSimStarting = false;
+      emraldStopping3D = false;
+      extSimWaitingForIdle = false;
+      inProcessingLoop = false;
+    }
+
+    /// <summary>
     /// An external simulation event occurred so process the event
     /// </summary>
     /// <param name="fromClient">the name of the external simulation where the event came from</param>
@@ -942,6 +997,47 @@ namespace SimulationTracking
                           "Full message: " + JsonConvert.SerializeObject(evData);
         Console.WriteLine(staleMsg);
         logger.Debug(staleMsg);
+
+        //Backstop: only "stuck" stale messages (globalRunTime not advancing) count toward the loop
+        //guard, so a client that is merely behind and catching up isn't falsely tripped.
+        bool advancing = !lastStaleMsgTime.TryGetValue(fromClient, out var lastT) || evData.globalRunTime > lastT;
+        lastStaleMsgTime[fromClient] = evData.globalRunTime;
+        int staleCnt = advancing ? 1 : ((consecutiveStaleMsgs.TryGetValue(fromClient, out var prevCnt) ? prevCnt : 0) + 1);
+        consecutiveStaleMsgs[fromClient] = staleCnt;
+
+        if (staleCnt > MaxConsecutiveStaleMsgs)
+        {
+          //The client's clock is desynced from the solve engine and the protocol-response/re-arm
+          //below would loop forever. Tell it to terminate and abort the run with a clear error.
+          string loopMsg = "External sim '" + fromClient + "' sent " + staleCnt +
+            " consecutive stale messages without advancing its globalRunTime (stuck at " +
+            evData.globalRunTime.ToString(@"d\.hh\:mm\:ss\.f") +
+            ", solve engine at " + this.curTime.ToString(@"d\.hh\:mm\:ss\.f") +
+            "). Aborting to avoid an infinite loop - verify the external sim stamps SimEvent.time with its LOCAL elapsed time (not global).";
+          logger.Error(loopMsg);
+          Console.WriteLine(loopMsg);
+
+          TMsgWrapper termMsg = new TMsgWrapper(MessageType.mtSimAction, "StaleLoop", curTime, loopMsg);
+          termMsg.simAction = new SimAction(SimActionType.atTerminate);
+          termMsg.simAction.status = StatusType.stError;
+          sim3DServer.SendMessage(termMsg, fromClient);
+
+          //release the run thread's waits and surface the error (mirrors Sim3DProcessingError).
+          extProcessingError = loopMsg;
+          terminated = true;
+          extSimRunning = false;
+          extSimStarting = false;
+          emraldStopping3D = false;
+          extSimWaitingForIdle = false;
+          inProcessingLoop = false;
+          return;
+        }
+      }
+      else
+      {
+        //fresh, in-time message: clear the stale-loop tracking for this client.
+        consecutiveStaleMsgs.Remove(fromClient);
+        lastStaleMsgTime.Remove(fromClient);
       }
 
       TimeSpan shiftTimeTo = new TimeSpan();
@@ -1083,7 +1179,12 @@ namespace SimulationTracking
               if (shiftTimeTo == Globals.NowTimeSpan)
                 shiftTimeTo = TimeSpan.FromMilliseconds(1) + sim3DStartTime;
               else
-                shiftTimeTo = shiftTimeTo + sim3DStartTime;
+                //Use the message's globalRunTime - the authoritative global time EMRALD already trusts
+                //for stale detection - instead of re-globalizing SimEvent.time with sim3DStartTime. This
+                //keeps EMRALD correct even if an external sim mis-stamps SimEvent.time with global time
+                //rather than its local elapsed time. (A coupling message carries one event, so the
+                //wrapper's globalRunTime is this event's global time.)
+                shiftTimeTo = evData.globalRunTime;
 
               seenSim3DIdsInMessage.Add(ev.itemData.nameId);
               SimVariable curVar = allLists.allVariables.FindBySim3dId(ev.itemData.nameId);
@@ -1855,10 +1956,11 @@ namespace SimulationTracking
 
                 allLists.allVariables.FindByName("ExtSimStartTime").SetValue(curTime.TotalHours);
                 sim3DServer.evCallBackFunc = Sim3DEventOccurred;
+                sim3DServer.errCallBackFunc = Sim3DProcessingError;
 
                 // For subsequent runs: wait until the ext sim has confirmed it is back in Idle
                 // (stIdle received after the atContinue sent in response to stDone).
-                while (this.extSimWaitingForIdle)
+                while (this.extSimWaitingForIdle && !terminated)
                 {
                   System.Threading.Thread.Sleep(10);
                 }
@@ -1867,7 +1969,7 @@ namespace SimulationTracking
                 {
                   extSimStarting = true;
                   emraldStopping3D = false;
-                  while (!this.extSimRunning)
+                  while (!this.extSimRunning && !terminated)
                   {
                     //Application.DoEvents();
                     System.Threading.Thread.Sleep(10);

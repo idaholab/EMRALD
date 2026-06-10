@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 //using SimulationTracking;
+using MessageDefLib;
 using MyStuff.Collections;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -287,6 +288,10 @@ namespace SimulationDAL
     public string sim3DNameId = "";
     public ExternalSim extSim = null!;
 
+    //Optional fParser boolean expression sent to the external sim so it only reports this variable
+    //while the expression is true, e.g. "(valve_12 > 5) & (valve_12 < 10)". Empty = report on every change.
+    public string WatchEventCriteria = "";
+
     public string resourceName { get { return extSim.resourceName; } }
 
     public Sim3DVariable()
@@ -305,6 +310,12 @@ namespace SimulationDAL
       //add derived items
       retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() + "\"";
 
+      if (!string.IsNullOrEmpty(this.WatchEventCriteria))
+      {
+        //SerializeObject quotes/escapes the fParser expression as a JSON string.
+        retStr = retStr + "," + Environment.NewLine + "\"WatchEventCriteria\": " + JsonConvert.SerializeObject(this.WatchEventCriteria);
+      }
+
       return retStr;
     }
 
@@ -320,6 +331,12 @@ namespace SimulationDAL
       }
 
       sim3DNameId = Convert.ToString(dynObj.sim3DId);
+
+      if (dynObj.WatchEventCriteria != null)
+      {
+        //Optional fParser expression string.
+        this.WatchEventCriteria = Convert.ToString(dynObj.WatchEventCriteria);
+      }
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
@@ -352,6 +369,22 @@ namespace SimulationDAL
         else
         {
           extSim =  lists.allExtSims.FindByName((string)dynObj.extSim);
+        }
+
+        //Validate the optional WatchEventCriteria fParser expression. It may only reference the
+        //sim3D ids of external sim (gt3DSim) variables - this one or others - and no other variables.
+        if (!string.IsNullOrEmpty(this.WatchEventCriteria))
+        {
+          HashSet<string> allowedIds = new HashSet<string>();
+          foreach (var v in lists.allVariables.Values)
+          {
+            if (v is Sim3DVariable s3d && !string.IsNullOrEmpty(s3d.sim3DNameId))
+              allowedIds.Add(s3d.sim3DNameId);
+          }
+
+          string fpErr;
+          if (!FParser.TryValidate(this.WatchEventCriteria, allowedIds, out fpErr))
+            throw new Exception("Invalid WatchEventCriteria expression \"" + this.WatchEventCriteria + "\" - " + fpErr);
         }
       }
       catch (Exception e)

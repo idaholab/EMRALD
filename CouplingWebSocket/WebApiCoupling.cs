@@ -17,6 +17,7 @@ namespace CouplingWebSocket
     private static readonly NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
     private WebSocketClient _client;
     private TEventCallBack? _evCallBackFunc = null;
+    private TErrorCallBack? _errCallBackFunc = null;
     private IMessageDispHandling? _form = null;
     private List<string> _resourceOptions = new List<string>();
     private Dictionary<Guid, string> _connectedApps = new Dictionary<Guid, string>(); //connectionID to current connected app name in EMRALD
@@ -94,11 +95,41 @@ namespace CouplingWebSocket
     }
 
     /// <summary>
+    /// Set the callback invoked when an incoming message cannot be processed
+    /// </summary>
+    public TErrorCallBack errCallBackFunc
+    {
+      set { _errCallBackFunc = value; }
+    }
+
+    /// <summary>
+    /// Notify the consumer that a message from a connected app could not be processed.
+    /// Exceptions from the callback are swallowed so the receive loop is never torn down.
+    /// </summary>
+    private void RaiseProcessingError(Guid conID, string errorMsg, string rawMessage)
+    {
+      if (_errCallBackFunc == null)
+      {
+        return;
+      }
+
+      string appName = _connectedApps.TryGetValue(conID, out var name) ? name : "";
+      try
+      {
+        _errCallBackFunc(appName, errorMsg, rawMessage);
+      }
+      catch (Exception cbEx)
+      {
+        logger.Debug($"Error in processing-error callback for '{appName}': {cbEx.Message}");
+      }
+    }
+
+    /// <summary>
     /// Start up a specific application by name
     /// </summary>
     /// <param name="appName">Name of the application to start</param>
     /// <returns>GUID of the created connection</returns>
-    public async Task<Guid> StartupApp(string appName, List<string> watchItems)
+    public async Task<Guid> StartupApp(string appName, List<WatchItem> watchItems)
     {
       // Verify the app is available
       if (!_resourceOptions.Contains(appName))
@@ -249,6 +280,7 @@ namespace CouplingWebSocket
             {
               _form.IncomingOtherMsg(_connectedApps[e.conID], e.message);
             }
+            RaiseProcessingError(e.conID, "Message could not be deserialized (null TMsgWrapper).", e.message);
           }
         }
         else
@@ -271,6 +303,7 @@ namespace CouplingWebSocket
         {
           _form.IncomingOtherMsg(_connectedApps[e.conID], e.message);
         }
+        RaiseProcessingError(e.conID, jsonEx.Message, e.message);
       }
       catch (Exception ex)
       {
@@ -282,6 +315,7 @@ namespace CouplingWebSocket
         {
           _form.IncomingOtherMsg(_connectedApps[e.conID], $"Error processing message: {ex.Message}");
         }
+        RaiseProcessingError(e.conID, ex.Message, e.message);
       }
     }
 
