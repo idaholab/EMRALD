@@ -761,6 +761,14 @@
           "type": "boolean",
           "description": "Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true."
         },
+        "inVariable": {
+          "type": "boolean",
+          "description": "Optional. Flag marking this variable as a simulation input - its value is supplied into a run (for example set by a coupled/external application or used as a run parameter)."
+        },
+        "outVariable": {
+          "type": "boolean",
+          "description": "Optional. Flag marking this variable as a simulation output - its value is produced during a run and exposed to results or a coupled/external application."
+        },
         "required": {
           "type": "boolean",
           "description": "If this is a template then it indicates the item must exist in the current model before using the template."

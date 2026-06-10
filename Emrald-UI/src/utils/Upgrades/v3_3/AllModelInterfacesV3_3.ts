@@ -949,6 +949,14 @@ export interface Variable {
    */
   canMonitor?: boolean;
   /**
+   * Optional. Flag marking this variable as a simulation input - its value is supplied into a run (for example set by a coupled/external application or used as a run parameter).
+   */
+  inVariable?: boolean;
+  /**
+   * Optional. Flag marking this variable as a simulation output - its value is produced during a run and exposed to results or a coupled/external application.
+   */
+  outVariable?: boolean;
+  /**
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */
   required?: boolean;

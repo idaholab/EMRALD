@@ -61,6 +61,8 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
         'canMonitor',
         'monitorInSim',
         'cumulativeStats',
+        'inVariable',
+        'outVariable',
       ]);
     }
     if (varScope === 'gtAccrual') {

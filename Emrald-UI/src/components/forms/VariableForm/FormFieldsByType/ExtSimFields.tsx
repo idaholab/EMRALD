@@ -62,7 +62,7 @@ export const ExtSimFields: React.FC<VariableFormProps> = ({ variableData }) => {
 
   return (
     <>
-      <GlobalFields />
+      <GlobalFields variableData={variableData} defaultInOutChecked />
       <SelectComponent
         fullWidth
         label="External Sim"
