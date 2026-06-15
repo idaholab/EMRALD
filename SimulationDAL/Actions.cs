@@ -722,7 +722,17 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Action;
       }
 
-      useDistribution = dynObj.useDistribution != null && (bool)dynObj.useDistribution;
+      // Read tolerantly: missing/null becomes false. Convert.ToBoolean handles JValue, primitive
+      // bool, "true"/"false" strings, etc. without the dynamic-dispatch edge cases that a
+      // direct (bool) cast on a Newtonsoft JValue can hit.
+      try
+      {
+        useDistribution = dynObj.useDistribution != null && Convert.ToBoolean((object)dynObj.useDistribution);
+      }
+      catch
+      {
+        useDistribution = false;
+      }
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
@@ -2504,8 +2514,13 @@ namespace SimulationDAL
         if ((item.Value is VarValueAct) || (item.Value is VarValueDLLAct))
         {
           // In distribution mode the action has no scriptCode to compile.
-          if (item.Value is VarValueAct vva && vva.useDistribution)
-            continue;
+          // Also skip when there's literally no script content to compile (defensive: covers
+          // any path where useDistribution might not be set yet but the JSON had no scriptCode).
+          if (item.Value is VarValueAct vva)
+          {
+            if (vva.useDistribution || string.IsNullOrWhiteSpace(vva.scriptCode))
+              continue;
+          }
 
           try
           {
