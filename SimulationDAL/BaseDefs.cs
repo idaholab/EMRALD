@@ -771,6 +771,36 @@ namespace SimulationDAL
           : combined;
     }
 
+    /// <summary>
+    /// Resolve a possibly-relative input file path. Absolute (rooted) paths are returned unchanged.
+    /// A relative path is resolved against the current/run directory (the SimEngine.exe location)
+    /// first; if the file isn't found there and an options-file location is supplied, the path is
+    /// resolved relative to that options JSON file's directory instead. Falls back to the
+    /// current-directory result when neither location contains the file.
+    /// </summary>
+    /// <param name="inpfile">The input file path from the options JSON (may be relative).</param>
+    /// <param name="optionsFilePath">Path to the options JSON file, used as a fallback anchor.</param>
+    public static string ResolveInputPath(string inpfile, string optionsFilePath)
+    {
+      if (string.IsNullOrEmpty(inpfile) || Path.IsPathRooted(inpfile))
+        return inpfile;
+
+      string fromCurDir = NormalizeGetFullPath(Path.Combine(NormalizeGetCurrentDirectory(), inpfile));
+
+      if (!File.Exists(fromCurDir) && !string.IsNullOrEmpty(optionsFilePath))
+      {
+        string optionsDir = NormalizeGetDirectoryName(NormalizeGetFullPath(optionsFilePath));
+        if (!string.IsNullOrEmpty(optionsDir))
+        {
+          string fromOptionsDir = NormalizeGetFullPath(Path.Combine(optionsDir, inpfile));
+          if (File.Exists(fromOptionsDir))
+            return fromOptionsDir;
+        }
+      }
+
+      return fromCurDir;
+    }
+
 
     public static List<string> FindFilePathReferences(ref string code, string? oldPath = null, string? newPath = null)
     {

@@ -30,6 +30,7 @@ namespace SimulationEngine
   {
     private string _optsJsonStr = "";
     private string _modelJsonStr = "";
+    private string _optionsFilePath = ""; // path to the options JSON file, used to resolve relative inpfile paths
     TProgressCallBack _progressCallBack = null;
     private string _error = "";
     public Options_cur options = new Options_cur();
@@ -49,11 +50,12 @@ namespace SimulationEngine
     public EmraldModel model { get { return _model; } }
 
 
-    public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
+    public JSONRun(string optionsJsonStr, string modelJsonStr = "", TProgressCallBack progressCallBack = null, string optionsFilePath = "")
     {
       // Set model text first so LoadJson can skip the inpfile-on-disk check when the model is supplied in-memory.
       _modelJsonStr = modelJsonStr;
       _optsJsonStr = optionsJsonStr;
+      _optionsFilePath = optionsFilePath;
       //Load JSON options
       if (_optsJsonStr != "")
         _error = LoadJson(_optsJsonStr, ref options);
@@ -62,10 +64,11 @@ namespace SimulationEngine
       _progressCallBack = progressCallBack;
     }
 
-    public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null)
+    public JSONRun(Options_cur ops, string modelJsonStr = "", TProgressCallBack progressCallBack = null, string optionsFilePath = "")
     {
       // Set model text first so LoadJson can skip the inpfile-on-disk check when the model is supplied in-memory.
       _modelJsonStr = modelJsonStr;
+      _optionsFilePath = optionsFilePath;
       this.options = ops;
       _optsJsonStr = JsonConvert.SerializeObject(ops);
       _error = LoadJson(_optsJsonStr, ref options);
@@ -337,11 +340,9 @@ namespace SimulationEngine
       {
         if (!string.IsNullOrEmpty(optionsOut.inpfile)) //can be empty/null then must be passed into the run command
         {
-          //see if it is a relative path.
-          if (!Path.IsPathRooted(optionsOut.inpfile))
-          {
-            optionsOut.inpfile = CommonFunctions.NormalizeGetFullPath(Path.Combine(CommonFunctions.NormalizeGetCurrentDirectory(),  optionsOut.inpfile));
-          }
+          //A relative path resolves against the current/run directory first, then falls back to the
+          //options JSON file's directory when the model isn't found there.
+          optionsOut.inpfile = CommonFunctions.ResolveInputPath(optionsOut.inpfile, _optionsFilePath);
 
           // Only require the file on disk when we don't already have the model text in memory.
           if (string.IsNullOrEmpty(_modelJsonStr) && !File.Exists(optionsOut.inpfile))

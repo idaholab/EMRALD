@@ -108,7 +108,8 @@ namespace CommandLineCP
           }
 
           string optionsJsonStr = File.ReadAllText(firstArg);
-          JSONRun simRun = new JSONRun(optionsJsonStr, "", DispResults); //will read the model from the json param
+          //Pass the options file path so a relative inpfile can fall back to resolving against its location.
+          JSONRun simRun = new JSONRun(optionsJsonStr, "", DispResults, firstArg); //will read the model from the json param
           if (simRun.error != "")
           {
             Console.Write(simRun.error);

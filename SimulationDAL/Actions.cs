@@ -1582,6 +1582,14 @@ namespace SimulationDAL
       }
     }
 
+
+    [DllImport("libc", SetLastError = true)]
+    private static extern int access(string pathname, int mode);
+    private const int X_OK = 1; // POSIX execute-permission bit
+
+    /// <summary>Checks whether the file at <paramref name="path"/> has the execute bit set.</summary>
+    private static bool IsUnixExecutable(string path) => access(path, X_OK) == 0;
+
     public void RunExtApp(Dictionary<int, TimeSpan> curStatesTime, TimeSpan curTime, EmraldModel lists, ref List<int> addStates, ref List<int> removeStates, bool multiThreaded)
     {
       if (!this.compiled)
@@ -1658,31 +1666,38 @@ namespace SimulationDAL
         }
       }
 
+
       string runParams = makeInputFileCompEval.EvaluateString();
       var locExePath = exePath;
 
-      // Only infer the exe from runParams when no exePath was explicitly configured.
-      // Otherwise an argument value that merely contains ".exe" (e.g. "--model C:\...\foo.exe")
-      // would be mistaken for the executable and clobber the real exePath.
-      // Check if runParams contains an exe path (look for .exe extension)
-      if (string.IsNullOrEmpty(locExePath) && !string.IsNullOrEmpty(runParams))
+      // If the first token of runParams looks like an executable, use it as the exe
+      // and treat the remainder as the argument string. This overrides exePath when set,
+      // supporting the pattern where makeInputFileCode returns "path/to/exe arg1 arg2".
+      //
+      // Windows : first token ends with ".exe" (case-insensitive).
+      // Linux   : first token starts with '/', "./" or "../" (absolute or relative path),
+      //           or exists as a file on disk — executables have no standard extension.
+      if (!string.IsNullOrEmpty(runParams))
       {
-        int exeIdx = runParams.IndexOf(".exe", StringComparison.OrdinalIgnoreCase);
-        if (exeIdx > 0)
-        {
-          // Found .exe, extract everything up to and including .exe
-          int exeEndIdx = exeIdx + 4; // Length of ".exe"
-          locExePath = runParams.Substring(0, exeEndIdx).Trim();
+        // Split only on the first whitespace so quoted-path support is straightforward.
+        string[] parts = runParams.Split(new char[] { ' ', '\t' }, 2);
+        string firstToken = parts[0].Trim();
 
-          // Get the remaining parameters after the exe path
-          if (exeEndIdx < runParams.Length)
-          {
-            runParams = runParams.Substring(exeEndIdx).Trim();
-          }
-          else
-          {
-            runParams = "";
-          }
+        bool firstTokenIsExe;
+        if (Environment.OSVersion.Platform == PlatformID.Unix)
+        {
+          firstTokenIsExe = File.Exists(firstToken) && IsUnixExecutable(firstToken);
+        }
+        else
+        {
+          firstTokenIsExe = firstToken.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
+                         && File.Exists(firstToken);
+        }
+
+        if (firstTokenIsExe)
+        {
+          locExePath = firstToken;
+          runParams = parts.Length > 1 ? parts[1].Trim() : "";
         }
       }
 
