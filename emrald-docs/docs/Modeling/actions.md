@@ -123,15 +123,29 @@ clicking the variable you want to define the probability. The variable allows yo
 changes after entering the state, a new sample will not be made.
 
 <h3>Change Variable Value <img src="/images/Modeling/actions/varCond.png" alt="Change Variable Value" width="25"/></h3>  
-Listed as "Change Var Value" in the drop-down menu. This action changes the value of a variable according to a user-defined script.
+Listed as "Change Var Value" in the drop-down menu. This action changes the value of a variable when triggered. The new value can come from either a user-defined script or a sampled distribution.
 
 <img src="/images/Modeling/actions/ChangeVarValueOptions.png" alt="Change Variable Value Options" width="500"/>
 
 - **Variable:** Click the field to expand the drop down menu of variables you created in the model. Click on the variable to be updated. 
-The value returned by the script is assigned to the variable, so one must be selected to create the event. 
+The new value (from the script or the sampled distribution) is assigned to this variable, so one must be selected to create the action. 
+- **New Value Source:** Choose between **Code** and **Distribution** to determine how the new value is produced.
+
+#### Code
+Selecting **Code** keeps the original script-based behavior:
+
 - **New Value Code (c#):** Type or copy and paste into this text field. The script must have a return value, and that value must be the
 same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section.
 - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" drop-down menu.
+
+#### Distribution
+Selecting **Distribution** replaces the script with a sampled value. Each time the action fires, EMRALD draws a sample from the chosen distribution and assigns it to the variable.
+
+- **Distribution Type:** Choose the distribution family (Normal, Exponential, Weibull, Log-Normal, Uniform, Triangular, Gamma, or Gompertz). See the [Distribution event](./events.md#distribution-) section for the parameter list of each family.
+- **Parameters:** Enter a constant value for each required parameter, or check **Use Variable** on that row and pick a variable to source the parameter dynamically.
+- **Minimum / Maximum:** Optional clamps applied to the sampled value. If the sample falls outside the range, it is replaced with the bound.
+
+Unlike the Distribution event, this action does **not** show a Default Rate selector or per-parameter Time Rate columns: a variable value is a unitless number, not a duration, so time-rate fields do not apply. If you need to assign a sampled time value, sample it in raw units that match the variable's intended unit (e.g. hours) and convert in your model as needed.
 
 ### External Simulation Message
 <img src="/images/Modeling/actions/extSim.png" alt="External Simulation Message" width="25"/>  
