@@ -39,6 +39,7 @@ export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
 
   const events = state.events.map((event, index) => ({
     event: getEventByEventName(event),
+    eventActionIndex: index,
     actions: state.eventActions[index]
       ? state.eventActions[index].actions
           .map(action => getActionByActionName(action))
@@ -137,7 +138,13 @@ export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                     onActionDoubleClick(e, action);
                   }}
                   onContextMenu={e => {
-                    onActionContextMenu(e, state, action, 'event');
+                    onActionContextMenu(
+                      e,
+                      state,
+                      action,
+                      'event',
+                      item.eventActionIndex,
+                    );
                   }}
                   key={action.id}
                   sx={{
