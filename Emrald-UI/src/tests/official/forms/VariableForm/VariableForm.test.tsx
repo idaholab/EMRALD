@@ -31,6 +31,47 @@ describe('Variable Form', () => {
     expect(getVariable(name)).toEqual(expected[name]);
   });
 
+  test('requires an initial value', async () => {
+    renderVariableForm(<VariableForm />);
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Name'), 'requires_initial_value');
+
+    expect(await screen.findByRole('button', { name: 'Save' })).toBeDisabled();
+  });
+
+  test('allows zero as an initial value', async () => {
+    const name = 'allows_zero_initial_value';
+    renderVariableForm(<VariableForm />);
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Name'), name);
+    await user.type(await screen.findByLabelText('Value'), '0');
+
+    expect(await screen.findByRole('button', { name: 'Save' })).toBeEnabled();
+
+    await save();
+    expect(getVariable(name)?.value).toBe(0);
+  });
+
+  test('allows false as an initial value', async () => {
+    const name = 'allows_false_initial_value';
+    renderVariableForm(<VariableForm />);
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole('combobox', { name: 'Type' }));
+    await user.click(await screen.findByRole('option', { name: 'Boolean' }));
+    await user.type(await screen.findByLabelText('Name'), name);
+    const valueSelect = (await screen.findAllByRole('combobox')).at(-1);
+    await user.click(valueSelect!);
+    await user.click(await screen.findByRole('option', { name: 'False' }));
+
+    expect(await screen.findByRole('button', { name: 'Save' })).toBeEnabled();
+
+    await save();
+    expect(getVariable(name)?.value).toBe(false);
+  });
+
   test('accrual variable', async () => {
     const name = 'accrual_variable';
     renderVariableForm(

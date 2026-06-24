@@ -145,7 +145,7 @@ export function MainDetailsForm<T extends MainItemType>({
           onClick={() => {
             handleSave();
           }}
-          disabled={error ?? !reqPropsFilled}
+          disabled={Boolean(error) || !reqPropsFilled}
         >
           Save
         </Button>
