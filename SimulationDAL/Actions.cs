@@ -387,7 +387,10 @@ namespace SimulationDAL
         }
       }
 
-      if (retStateIDs.Count == 0) //no probability items were selected we must use the default state
+      //Only mutually exclusive transitions require a guaranteed default path (probabilities partition 1.0).
+      //For non-mutually-exclusive transitions an empty result is valid - it means no new state was selected
+      //(e.g. a single 0.5 target should transition only ~50% of the time, not fall through to a default).
+      if (mutExcl && retStateIDs.Count == 0) //no probability items were selected we must use the default state
         retStateIDs.Add(new IdxAndStr(_newStateIDs[_toStateProb.Count - 1].id, _failDesc[_toStateProb.Count - 1]));
 
       return retStateIDs;
@@ -722,8 +725,17 @@ namespace SimulationDAL
         dynObj = ((dynamic)obj).Action;
       }
 
-      useDistribution = dynObj.useDistribution != null && (bool)dynObj.useDistribution;
-
+      // Read tolerantly: missing/null becomes false. Convert.ToBoolean handles JValue, primitive
+      // bool, "true"/"false" strings, etc. without the dynamic-dispatch edge cases that a
+      // direct (bool) cast on a Newtonsoft JValue can hit.
+      try
+      {
+        useDistribution = dynObj.useDistribution != null && Convert.ToBoolean((object)dynObj.useDistribution);
+      }
+      catch
+      {
+        useDistribution = false;
+      }
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
@@ -2504,9 +2516,13 @@ namespace SimulationDAL
         if ((item.Value is VarValueAct) || (item.Value is VarValueDLLAct))
         {
           // In distribution mode the action has no scriptCode to compile.
-          if (item.Value is VarValueAct vva && vva.useDistribution)
-            continue;
-
+          // Also skip when there's literally no script content to compile (defensive: covers
+          // any path where useDistribution might not be set yet but the JSON had no scriptCode).
+          if (item.Value is VarValueAct vva)
+          {
+            if (vva.useDistribution || string.IsNullOrWhiteSpace(vva.scriptCode))
+              continue;
+          }
           try
           {
             ((VarValueAct)item.Value).CompileCode(lists.allVariables);
