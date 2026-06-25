@@ -31,7 +31,9 @@ export const ChangeVarValue: React.FC = () => {
   const { variableList } = useVariableContext();
   const [invalidValues, setInvalidValues] = useState<Set<string>>(new Set());
 
-  const mode: 'code' | 'distribution' = useDistribution ? 'distribution' : 'code';
+  const mode: 'code' | 'distribution' = useDistribution
+    ? 'distribution'
+    : 'code';
 
   useEffect(() => {
     if (variableName === undefined || variableName.length === 0) {
