@@ -195,6 +195,23 @@ namespace SimulationEngine
       if ((runIdx != 1) && ((ConfigData.debugRunStart == null) || (ConfigData.debugRunEnd == null)))
         return;
 
+      // No NLog.config was discovered next to the host binary (e.g. CommandLineCP without
+      // its NLog.config copied). Build a minimal default so debug logging still works
+      // instead of NRE'ing on LogManager.Configuration.LoggingRules below.
+      if (LogManager.Configuration == null)
+      {
+        var cfg = new NLog.Config.LoggingConfiguration();
+        var fileTarget = new NLog.Targets.FileTarget("logfile")
+        {
+          FileName = "DebugLog.txt",
+          Layout = "${message}",
+          DeleteOldFileOnStartup = true
+        };
+        cfg.AddTarget(fileTarget);
+        cfg.AddRule(LogLevel.Off, LogLevel.Fatal, fileTarget, "logfile");
+        LogManager.Configuration = cfg;
+      }
+
       if (((runIdx == 1) && (ConfigData.debugRunStart == null)) || (runIdx == ConfigData.debugRunStart))
       {
         foreach (var rule in LogManager.Configuration.LoggingRules)

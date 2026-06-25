@@ -48,6 +48,8 @@ namespace EMRALD_Sim
     private bool _pendingAutoRun = false; // command-line run is deferred to FormMain_Load so the window handle exists before the sim marshals UI updates
     private Options_cur _curSimOptions = new Options_cur();
     private ContextMenuStrip _monitorVarsContextMenu = null;
+    private static FormMain _rtbLogInstance;
+    private TextWriter _origConsoleOut;
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -60,6 +62,8 @@ namespace EMRALD_Sim
       _optionsAccessor = optionsAccessor;
       InitializeComponent();
 
+      _rtbLogInstance = this;
+      AttachRtbLogToNLog();
 
       teModel.SetHighlighting("JSON");
       tcCouplingTypeInfo.SelectedIndex = 1;
@@ -1868,6 +1872,114 @@ namespace EMRALD_Sim
 
       _curSimOptions.couplingInfo.couplingURL = string.IsNullOrWhiteSpace(tbWebSocketURL.Text) ? null : tbWebSocketURL.Text;
       SaveUISettingsToJson();
+    }
+
+    // Register a MethodCall NLog target on the existing "logfile" rule so debug log
+    // entries are mirrored to rtbLog whenever NLog actually writes (i.e. when the
+    // user enables debug via chkLog and SetLog raises the rule's level).
+    private void AttachRtbLogToNLog()
+    {
+      var config = NLog.LogManager.Configuration;
+      if (config == null) return;
+
+      var uiTarget = new NLog.Targets.MethodCallTarget("logUI");
+      uiTarget.ClassName = typeof(FormMain).AssemblyQualifiedName;
+      uiTarget.MethodName = nameof(AppendDebugLogToRtb);
+      uiTarget.Parameters.Add(new NLog.Targets.MethodCallParameter("msg", "${message}"));
+      config.AddTarget(uiTarget);
+
+      foreach (var rule in config.LoggingRules)
+      {
+        if (rule.LoggerNamePattern == "logfile" && !rule.Targets.Contains(uiTarget))
+          rule.Targets.Add(uiTarget);
+      }
+      NLog.LogManager.Configuration = config;
+    }
+
+    // Static entry point invoked by NLog's MethodCallTarget; marshals to UI thread.
+    public static void AppendDebugLogToRtb(string msg)
+    {
+      var inst = _rtbLogInstance;
+      if (inst == null || inst.IsDisposed) return;
+      var rtb = inst.rtbLog;
+      if (rtb == null || rtb.IsDisposed || !rtb.IsHandleCreated) return;
+
+      try
+      {
+        if (rtb.InvokeRequired)
+          rtb.BeginInvoke((System.Action)(() => SafeAppend(rtb, msg + Environment.NewLine)));
+        else
+          SafeAppend(rtb, msg + Environment.NewLine);
+      }
+      catch (ObjectDisposedException) { }
+      catch (InvalidOperationException) { }
+    }
+
+    private static void SafeAppend(RichTextBox rtb, string text)
+    {
+      if (rtb.IsDisposed) return;
+      rtb.AppendText(text);
+    }
+
+    // Toggles tee-ing Console.Out to rtbLog. Original Console.Out (terminal/debug
+    // console) keeps receiving everything; rtbLog is added as a second sink.
+    private void chkLogConsole_CheckedChanged(object sender, EventArgs e)
+    {
+      if (chkLogConsole.Checked)
+      {
+        if (_origConsoleOut == null)
+        {
+          _origConsoleOut = Console.Out;
+          Console.SetOut(new TeeTextWriter(_origConsoleOut, new RtbTextWriter(rtbLog)));
+        }
+      }
+      else
+      {
+        if (_origConsoleOut != null)
+        {
+          Console.SetOut(_origConsoleOut);
+          _origConsoleOut = null;
+        }
+      }
+    }
+
+    // TextWriter that forwards every write to two underlying writers.
+    private sealed class TeeTextWriter : TextWriter
+    {
+      private readonly TextWriter _a;
+      private readonly TextWriter _b;
+      public TeeTextWriter(TextWriter a, TextWriter b) { _a = a; _b = b; }
+      public override Encoding Encoding => _a?.Encoding ?? Encoding.UTF8;
+      public override void Write(char value) { _a?.Write(value); _b?.Write(value); }
+      public override void Write(string value) { _a?.Write(value); _b?.Write(value); }
+      public override void Write(char[] buffer, int index, int count) { _a?.Write(buffer, index, count); _b?.Write(buffer, index, count); }
+      public override void WriteLine(string value) { _a?.WriteLine(value); _b?.WriteLine(value); }
+      public override void Flush() { _a?.Flush(); _b?.Flush(); }
+    }
+
+    // TextWriter that appends to a RichTextBox, marshaling to its UI thread.
+    private sealed class RtbTextWriter : TextWriter
+    {
+      private readonly RichTextBox _rtb;
+      public RtbTextWriter(RichTextBox rtb) { _rtb = rtb; }
+      public override Encoding Encoding => Encoding.UTF8;
+      public override void Write(char value) => Append(value.ToString());
+      public override void Write(string value) { if (value != null) Append(value); }
+      public override void Write(char[] buffer, int index, int count) => Append(new string(buffer, index, count));
+      public override void WriteLine(string value) => Append((value ?? string.Empty) + Environment.NewLine);
+      private void Append(string text)
+      {
+        if (_rtb == null || _rtb.IsDisposed || !_rtb.IsHandleCreated) return;
+        try
+        {
+          if (_rtb.InvokeRequired)
+            _rtb.BeginInvoke((System.Action)(() => SafeAppend(_rtb, text)));
+          else
+            SafeAppend(_rtb, text);
+        }
+        catch (ObjectDisposedException) { }
+        catch (InvalidOperationException) { }
+      }
     }
   }
 }

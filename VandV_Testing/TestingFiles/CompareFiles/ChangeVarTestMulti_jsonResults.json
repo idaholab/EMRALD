@@ -1,0 +1,238 @@
+{
+  "name": "ChangeVarTest",
+  "numRuns": 100,
+  "keyStates": [
+    {
+      "name": "Restofit",
+      "contributionRate": 0.95,
+      "cRate5th": 0.90728279,
+      "cRate95th": 0.99271721,
+      "count": 95,
+      "timeMean": "00:00:05",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:05",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 95,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - GoDistribute",
+              "name": "Immediate Action & GoDistribute",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Distribute",
+              "cnt": 95
+            }
+          ]
+        },
+        {
+          "name": "Distribute",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 95,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - GoDistribute",
+              "name": "Immediate Action & GoDistribute",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 95
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - Go2Stdev",
+              "name": "Wait5 & Go2Stdev",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Restofit",
+              "cnt": 95
+            }
+          ]
+        },
+        {
+          "name": "Restofit",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 95,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - Go2Stdev",
+              "name": "Wait5 & Go2Stdev",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Distribute",
+              "cnt": 141
+            }
+          ],
+          "exits": []
+        }
+      ]
+    },
+    {
+      "name": "2StDevAway",
+      "contributionRate": 0.05,
+      "cRate5th": 0.00728279,
+      "cRate95th": 0.09271721,
+      "count": 5,
+      "timeMean": "00:00:05",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:05",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - GoDistribute",
+              "name": "Immediate Action & GoDistribute",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Distribute",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "Distribute",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Immediate Action] occured and caused the action - GoDistribute",
+              "name": "Immediate Action & GoDistribute",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 5
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - Go2Stdev",
+              "name": "Wait5 & Go2Stdev",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "2StDevAway",
+              "cnt": 5
+            }
+          ]
+        },
+        {
+          "name": "2StDevAway",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 5,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - Go2Stdev",
+              "name": "Wait5 & Go2Stdev",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Distribute",
+              "cnt": 9
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": [
+    {
+      "name": "Start",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 51,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [],
+      "exits": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - GoDistribute",
+          "name": "Immediate Action & GoDistribute",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Distribute",
+          "cnt": 100
+        }
+      ]
+    },
+    {
+      "name": "Distribute",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 51,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Immediate Action] occured and caused the action - GoDistribute",
+          "name": "Immediate Action & GoDistribute",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Start",
+          "cnt": 100
+        }
+      ],
+      "exits": []
+    }
+  ]
+}

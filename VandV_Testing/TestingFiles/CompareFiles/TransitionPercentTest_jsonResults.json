@@ -1,0 +1,426 @@
+{
+  "name": "TransitionPercentTest",
+  "numRuns": 100,
+  "keyStates": [
+    {
+      "name": "S6",
+      "contributionRate": 0.44,
+      "cRate5th": 0.34270816,
+      "cRate95th": 0.53729184,
+      "count": 44,
+      "timeMean": "00:00:15",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:15",
+      "timeMax": "00:00:15",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 44,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 44
+            }
+          ]
+        },
+        {
+          "name": "S2",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 44,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 44
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+              "name": "FiveSec & Goto_S3 or S4",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 44
+            }
+          ]
+        },
+        {
+          "name": "S3",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 44,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+              "name": "FiveSec & Goto_S3 or S4",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 44
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Go S5 or S6",
+              "name": "FiveSec & Go S5 or S6",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S6",
+              "cnt": 44
+            }
+          ]
+        },
+        {
+          "name": "S6",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 44,
+          "timeMean": "00:00:15",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:15",
+          "timeMax": "00:00:15",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Go S5 or S6",
+              "name": "FiveSec & Go S5 or S6",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 44
+            }
+          ],
+          "exits": []
+        }
+      ]
+    },
+    {
+      "name": "S4",
+      "contributionRate": 0.42,
+      "cRate5th": 0.32326253,
+      "cRate95th": 0.51673747,
+      "count": 42,
+      "timeMean": "00:00:10",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 42,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 42
+            }
+          ]
+        },
+        {
+          "name": "S2",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 42,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 42
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+              "name": "FiveSec & Goto_S3 or S4",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S4",
+              "cnt": 42
+            }
+          ]
+        },
+        {
+          "name": "S4",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 42,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+              "name": "FiveSec & Goto_S3 or S4",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 42
+            }
+          ],
+          "exits": []
+        }
+      ]
+    },
+    {
+      "name": "S5",
+      "contributionRate": 0.14,
+      "cRate5th": 0.07199054,
+      "cRate95th": 0.20800946,
+      "count": 14,
+      "timeMean": "00:00:15",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:15",
+      "timeMax": "00:00:15",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 14,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 14
+            }
+          ]
+        },
+        {
+          "name": "S2",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 14,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+              "name": "FiveSec & Goto_S2",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 14
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+              "name": "FiveSec & Goto_S3 or S4",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 14
+            }
+          ]
+        },
+        {
+          "name": "S3",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 14,
+          "timeMean": "00:00:10",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:10",
+          "timeMax": "00:00:10",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+              "name": "FiveSec & Goto_S3 or S4",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S2",
+              "cnt": 14
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Go S5 or S6",
+              "name": "FiveSec & Go S5 or S6",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S5",
+              "cnt": 14
+            }
+          ]
+        },
+        {
+          "name": "S5",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 14,
+          "timeMean": "00:00:15",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:15",
+          "timeMax": "00:00:15",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [FiveSec] occured and caused the action - Go S5 or S6",
+              "name": "FiveSec & Go S5 or S6",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "S3",
+              "cnt": 14
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": [
+    {
+      "name": "Start",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 58,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [],
+      "exits": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+          "name": "FiveSec & Goto_S2",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S2",
+          "cnt": 58
+        }
+      ]
+    },
+    {
+      "name": "S2",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 58,
+      "timeMean": "00:00:05",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:05",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S2",
+          "name": "FiveSec & Goto_S2",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Start",
+          "cnt": 58
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+          "name": "FiveSec & Goto_S3 or S4",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S3",
+          "cnt": 58
+        }
+      ]
+    },
+    {
+      "name": "S3",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 58,
+      "timeMean": "00:00:10",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:10",
+      "timeMax": "00:00:10",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [FiveSec] occured and caused the action - Goto_S3 or S4",
+          "name": "FiveSec & Goto_S3 or S4",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "S2",
+          "cnt": 58
+        }
+      ],
+      "exits": []
+    }
+  ]
+}

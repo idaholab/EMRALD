@@ -931,6 +931,10 @@ export interface Variable {
    * Optional. For variables of varScope gt3DSim, this is the external simulation the variable is linked to.
    */
   extSim?: string;
+  /**
+   * Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g. "(valve_12 > 5) & (valve_12 < 10)") the external simulation must satisfy before reporting this variable. Sent in the initial coupling message. When omitted the variable is reported on every change.
+   */
+  WatchEventCriteria?: string;
   changeLog?: ChangeLog;
   /**
    * Flag to indicate the user want to do cumulative statistics in the results.
@@ -944,6 +948,14 @@ export interface Variable {
    * Flag to indicate if the variable can be monitored in the solver. This removes it from the solver UI if false. Must be true if monitorInSim is true.
    */
   canMonitor?: boolean;
+  /**
+   * Optional. Flag marking this variable as a simulation input - its value is supplied into a run (for example set by a coupled/external application or used as a run parameter).
+   */
+  inVariable?: boolean;
+  /**
+   * Optional. Flag marking this variable as a simulation output - its value is produced during a run and exposed to results or a coupled/external application.
+   */
+  outVariable?: boolean;
   /**
    * If this is a template then it indicates the item must exist in the current model before using the template.
    */

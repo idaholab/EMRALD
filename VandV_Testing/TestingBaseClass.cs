@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Config;
@@ -41,6 +42,12 @@ namespace Testing
     const string resName = "_res.txt";
     const string jsonResultsName = "_jsonResults.json";
     const string debugLogger = "uTestLog";
+
+    // JSON fields excluded from comparison in JSONComp — add field names here to skip them.
+    static readonly string[] jsonCompareIgnoreFields = new[]
+    {
+      "otherStatePaths"
+    };
 
     protected bool ConfirmManualTest(string testName, string textDesc)
     {
@@ -177,6 +184,59 @@ namespace Testing
     {
       var logger = NLog.LogManager.GetLogger(debugLogger);
 
+      void JSONComp(string newPath, string origPath, int[] ignoreLines = null)
+      {
+        if (!File.Exists(origPath))
+        {
+          logger.Debug("Missing validation file - " + origPath);
+          Assert.True(false);
+          return;
+        }
+
+        // Normalize a JToken: sort object properties alphabetically and sort
+        // arrays of objects by their compact JSON string for order-independent comparison.
+        JToken NormalizeToken(JToken token)
+        {
+          if (token is JObject obj)
+          {
+            var normalized = new JObject();
+            foreach (var prop in obj.Properties().OrderBy(p => p.Name))
+            {
+              if (!jsonCompareIgnoreFields.Contains(prop.Name))
+                normalized[prop.Name] = NormalizeToken(prop.Value);
+            }
+            return normalized;
+          }
+          if (token is JArray arr)
+          {
+            var items = arr.Select(NormalizeToken).ToList();
+            if (items.Count > 0 && items.All(t => t is JObject))
+              items = items.OrderBy(t => t.ToString(Formatting.None)).ToList();
+            return new JArray(items);
+          }
+          return token;
+        }
+
+        JToken newNorm = NormalizeToken(JToken.Parse(File.ReadAllText(newPath)));
+        JToken origNorm = NormalizeToken(JToken.Parse(File.ReadAllText(origPath)));
+
+        List<string> newLines = newNorm.ToString(Formatting.Indented).Split('\n').ToList();
+        List<string> origLines = origNorm.ToString(Formatting.Indented).Split('\n').ToList();
+
+        List<string> inOrigNotInNew = origLines.Except(newLines).ToList();
+        List<string> inNewNotInOrig = newLines.Except(origLines).ToList();
+
+        if ((inOrigNotInNew.Count > 0) || (inNewNotInOrig.Count > 0))
+        {
+          logger.Debug("JSON results - lines in orig not in new:");
+          logger.Debug(String.Join(Environment.NewLine, inOrigNotInNew));
+          logger.Debug("------");
+          logger.Debug("JSON results - lines in new not in orig:");
+          logger.Debug(String.Join(Environment.NewLine, inNewNotInOrig));
+          Assert.True(false);
+        }
+      }
+
       void SingleComp(string newPath, string origPath, int[] ignoreLines = null)
       {
         List<string> newFile = File.ReadLines(newPath).ToList();
@@ -213,9 +273,15 @@ namespace Testing
       if ((string)jsonSettings["pathout"] != null)
         SingleComp((string)jsonSettings["pathout"], CompareFilesDir() + testName + pathsName);
       //Json Results file
-      if ((string)jsonSettings["jsonRes"] != null)
-        if (Directory.Exists((string)jsonSettings["jsonRes"]))
-          SingleComp((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName);
+      var jsonResPath = (string)jsonSettings["jsonRes"];
+      if (!string.IsNullOrEmpty(jsonResPath))
+      {
+        if (File.Exists(jsonResPath))
+        {
+          JSONComp(jsonResPath, CompareFilesDir() + testName + jsonResultsName);
+        }
+      }
+
     }
 
     protected void CopyToValidated(string loc, string testName, JObject jsonSettings)
@@ -229,7 +295,7 @@ namespace Testing
 
       if ((string)jsonSettings["jsonRes"] != null)
       {
-        if (Directory.Exists((string)jsonSettings["jsonRes"]))
+        if (File.Exists((string)jsonSettings["jsonRes"]))
           File.Copy((string)jsonSettings["jsonRes"], CompareFilesDir() + testName + jsonResultsName, true);
       }
     }

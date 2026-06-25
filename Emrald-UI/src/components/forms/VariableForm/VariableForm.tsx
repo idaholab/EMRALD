@@ -38,6 +38,7 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
     variable,
     hasError,
+    extSimError,
     type,
     value,
     typeProperties,
@@ -76,6 +77,8 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
         'canMonitor',
         'monitorInSim',
         'cumulativeStats',
+        'inVariable',
+        'outVariable',
       ]);
     }
     if (varScope === 'gtAccrual') {
@@ -148,7 +151,7 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           }}
           handleNameChange={handleNameChange}
           nameError={hasError}
-          error={hasError}
+          error={hasError || extSimError}
           errorMessage="A variable with this name already exists, or the name contains an invalid character."
           reqPropsFilled={name.trim() !== '' && hasInitialValue(value)}
         >

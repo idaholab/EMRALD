@@ -736,7 +736,6 @@ namespace SimulationDAL
       {
         useDistribution = false;
       }
-
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
         return false;
 
@@ -2524,7 +2523,6 @@ namespace SimulationDAL
             if (vva.useDistribution || string.IsNullOrWhiteSpace(vva.scriptCode))
               continue;
           }
-
           try
           {
             ((VarValueAct)item.Value).CompileCode(lists.allVariables);
