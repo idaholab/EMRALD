@@ -809,15 +809,6 @@ namespace SimulationEngine
         if (!this.keyPaths.ContainsKey(keyPath.Key))
         {
           this.keyPaths.Add(keyPath.Value.name, keyPath.Value);
-          foreach (var variableCategory in toAddBatch._variableVals)
-          {
-            if (!_variableVals.ContainsKey(variableCategory.Key))
-              _variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
-#if DEBUG
-            else
-              throw new Exception($"Duplicate variable category key '{variableCategory.Key}' when merging batch results in AddOtherBatchResults.");
-#endif
-          }
         }
         else
         {
@@ -827,6 +818,8 @@ namespace SimulationEngine
 
         this.keyPaths[keyPath.Key].AssignResults();
       }
+
+      MergeVariableValues(toAddBatch._variableVals);
 
       //add in the other paths
       //public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
@@ -852,6 +845,44 @@ namespace SimulationEngine
 
       this._totRunTime += toAddBatch._totRunTime;
       this._numRuns += toAddBatch._numRuns;
+    }
+
+    private void MergeVariableValues(Dictionary<string, Dictionary<string, Dictionary<string, string>>> addVariableVals)
+    {
+      foreach (var variableCategory in addVariableVals)
+      {
+        Dictionary<string, Dictionary<string, string>> curVariableCategory;
+        if (!_variableVals.TryGetValue(variableCategory.Key, out curVariableCategory))
+        {
+          curVariableCategory = new Dictionary<string, Dictionary<string, string>>();
+          _variableVals.Add(variableCategory.Key, curVariableCategory);
+        }
+
+        foreach (var variable in variableCategory.Value)
+        {
+          Dictionary<string, string> curVariableVals;
+          if (!curVariableCategory.TryGetValue(variable.Key, out curVariableVals))
+          {
+            curVariableVals = new Dictionary<string, string>();
+            curVariableCategory.Add(variable.Key, curVariableVals);
+          }
+
+          foreach (var variableValue in variable.Value)
+          {
+            string runIdKey = variableValue.Key;
+            if (curVariableVals.ContainsKey(runIdKey))
+            {
+              int sub = 1;
+              while (curVariableVals.ContainsKey(runIdKey + "." + sub.ToString()))
+                sub++;
+
+              runIdKey += "." + sub.ToString();
+            }
+
+            curVariableVals.Add(runIdKey, variableValue.Value);
+          }
+        }
+      }
     }
 
     public void ClearTempThreadData()

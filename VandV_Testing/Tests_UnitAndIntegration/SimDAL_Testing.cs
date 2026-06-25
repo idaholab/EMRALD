@@ -2,6 +2,8 @@
 // Unit and integration tests for the simulation data access layer, verifying JSON round-trip serialization of model objects.
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using SimulationDAL;
 using Xunit;
 using System.IO;
@@ -944,6 +946,60 @@ namespace UnitAndIntegrationTesting
         throw new Exception("Failed to find comparison file for " + testName);
 
       Assert.True(CompareJSON(compResStr, combinedResStr));
+    }
+
+    [Fact]
+    public void AddOtherBatchResultsMergesRootWatchVariablesForExistingKeyState()
+    {
+      const string keyStateName = "KeyState";
+      const string varName = "WatchVar";
+
+      ProcessSimBatch batch = MakeBatchWithVariableVals(2, keyStateName, varName, new Dictionary<string, string>
+      {
+        { "1", "first-1" },
+        { "2", "first-2" }
+      });
+      ProcessSimBatch secondBatch = MakeBatchWithVariableVals(2, keyStateName, varName, new Dictionary<string, string>
+      {
+        { "1", "second-1" },
+        { "2", "second-2" }
+      });
+      ProcessSimBatch thirdBatch = MakeBatchWithVariableVals(2, keyStateName, varName, new Dictionary<string, string>
+      {
+        { "1", "third-1" },
+        { "2", "third-2" }
+      });
+
+      batch.AddOtherBatchResults(secondBatch);
+      batch.AddOtherBatchResults(thirdBatch);
+
+      Dictionary<string, string> watchValues = GetBatchVariableVals(batch)[keyStateName][varName];
+      Assert.Equal(6, watchValues.Count);
+      Assert.Equal("first-1", watchValues["1"]);
+      Assert.Equal("first-2", watchValues["2"]);
+      Assert.Equal("second-1", watchValues["1.1"]);
+      Assert.Equal("second-2", watchValues["2.1"]);
+      Assert.Equal("third-1", watchValues["1.2"]);
+      Assert.Equal("third-2", watchValues["2.2"]);
+    }
+
+    private static ProcessSimBatch MakeBatchWithVariableVals(int numRuns, string keyStateName, string varName, Dictionary<string, string> values)
+    {
+      ProcessSimBatch batch = new ProcessSimBatch(new EmraldModel(), TimeSpan.Zero, "", "", -1);
+      batch.SetupBatch(numRuns);
+      batch.keyPaths.Add(keyStateName, new KeyStateResult(keyStateName));
+      GetBatchVariableVals(batch).Add(keyStateName, new Dictionary<string, Dictionary<string, string>>
+      {
+        { varName, new Dictionary<string, string>(values) }
+      });
+
+      return batch;
+    }
+
+    private static Dictionary<string, Dictionary<string, Dictionary<string, string>>> GetBatchVariableVals(ProcessSimBatch batch)
+    {
+      FieldInfo variableValsField = typeof(ProcessSimBatch).GetField("_variableVals", BindingFlags.NonPublic | BindingFlags.Instance);
+      return (Dictionary<string, Dictionary<string, Dictionary<string, string>>>)variableValsField.GetValue(batch);
     }
 
     [Fact]
