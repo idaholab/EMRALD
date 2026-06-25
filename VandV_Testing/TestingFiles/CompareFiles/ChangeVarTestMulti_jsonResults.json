@@ -4,10 +4,10 @@
   "keyStates": [
     {
       "name": "Restofit",
-      "contributionRate": 0.92,
-      "cRate5th": 0.86682653,
-      "cRate95th": 0.97317347,
-      "count": 92,
+      "contributionRate": 0.95,
+      "cRate5th": 0.90728279,
+      "cRate95th": 0.99271721,
+      "count": 95,
       "timeMean": "00:00:05",
       "timeStdDeviation": "00:00:00",
       "timeMin": "00:00:05",
@@ -19,7 +19,7 @@
           "contributionRate": 1.0,
           "cRate5th": 1.0,
           "cRate95th": 1.0,
-          "count": 92,
+          "count": 95,
           "timeMean": "00:00:00",
           "timeStdDeviation": "00:00:00",
           "timeMin": "00:00:00",
@@ -33,7 +33,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Distribute",
-              "cnt": 92
+              "cnt": 95
             }
           ]
         },
@@ -42,7 +42,7 @@
           "contributionRate": 1.0,
           "cRate5th": 1.0,
           "cRate95th": 1.0,
-          "count": 92,
+          "count": 95,
           "timeMean": "00:00:00",
           "timeStdDeviation": "00:00:00",
           "timeMin": "00:00:00",
@@ -55,7 +55,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Start",
-              "cnt": 92
+              "cnt": 95
             }
           ],
           "exits": [
@@ -65,7 +65,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Restofit",
-              "cnt": 92
+              "cnt": 95
             }
           ]
         },
@@ -74,7 +74,7 @@
           "contributionRate": 1.0,
           "cRate5th": 1.0,
           "cRate95th": 1.0,
-          "count": 92,
+          "count": 95,
           "timeMean": "00:00:05",
           "timeStdDeviation": "00:00:00",
           "timeMin": "00:00:05",
@@ -87,7 +87,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Distribute",
-              "cnt": 140
+              "cnt": 141
             }
           ],
           "exits": []
@@ -96,10 +96,10 @@
     },
     {
       "name": "2StDevAway",
-      "contributionRate": 0.08,
-      "cRate5th": 0.02682653,
-      "cRate95th": 0.13317347,
-      "count": 8,
+      "contributionRate": 0.05,
+      "cRate5th": 0.00728279,
+      "cRate95th": 0.09271721,
+      "count": 5,
       "timeMean": "00:00:05",
       "timeStdDeviation": "00:00:00",
       "timeMin": "00:00:05",
@@ -111,7 +111,7 @@
           "contributionRate": 1.0,
           "cRate5th": 1.0,
           "cRate95th": 1.0,
-          "count": 8,
+          "count": 5,
           "timeMean": "00:00:00",
           "timeStdDeviation": "00:00:00",
           "timeMin": "00:00:00",
@@ -125,7 +125,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Distribute",
-              "cnt": 8
+              "cnt": 5
             }
           ]
         },
@@ -134,7 +134,7 @@
           "contributionRate": 1.0,
           "cRate5th": 1.0,
           "cRate95th": 1.0,
-          "count": 8,
+          "count": 5,
           "timeMean": "00:00:00",
           "timeStdDeviation": "00:00:00",
           "timeMin": "00:00:00",
@@ -147,7 +147,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Start",
-              "cnt": 8
+              "cnt": 5
             }
           ],
           "exits": [
@@ -157,7 +157,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "2StDevAway",
-              "cnt": 8
+              "cnt": 5
             }
           ]
         },
@@ -166,7 +166,7 @@
           "contributionRate": 1.0,
           "cRate5th": 1.0,
           "cRate95th": 1.0,
-          "count": 8,
+          "count": 5,
           "timeMean": "00:00:05",
           "timeStdDeviation": "00:00:00",
           "timeMin": "00:00:05",
@@ -179,7 +179,7 @@
               "evDesc": "",
               "actDesc": "",
               "otherState": "Distribute",
-              "cnt": 10
+              "cnt": 9
             }
           ],
           "exits": []
