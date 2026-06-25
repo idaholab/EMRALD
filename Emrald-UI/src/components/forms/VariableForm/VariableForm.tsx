@@ -22,7 +22,7 @@ export interface VariableFormProps {
   variableData?: Variable;
 }
 
-const hasInitialValue = (value: Variable['value']): boolean => {
+function hasInitialValue(value: Variable['value']): boolean {
   if (typeof value === 'number') {
     return Number.isFinite(value);
   }
@@ -32,7 +32,7 @@ const hasInitialValue = (value: Variable['value']): boolean => {
   }
 
   return typeof value === 'boolean';
-};
+}
 
 export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
