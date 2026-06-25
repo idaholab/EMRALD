@@ -4,7 +4,11 @@ import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, clearCacheData } from '../../../hooks/useAppData';
 import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
-import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
+import {
+  type ModelValidationResult,
+  upgradeModel,
+  validateModel,
+} from '../../../utils/Upgrades/upgrade';
 import {
   SankeyTimelineDiagram,
   type TimelineOptions,
@@ -130,21 +134,29 @@ export const projectOptions = {
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
   },
-  Save: async () => {
-    // validate the model
-    const errors: string[] = await validateModel(appData.value);
-
-    // if error TODO
-    if (errors.length > 0) {
-      // todo let the user know the errors and report a bug to developers, provide the model if possible
-      console.error('Model validation errors:', errors);
-    }
-    // Convert JSON data to a string
+  Save: async (
+    confirmInvalidModelSave?: (
+      validationResult: ModelValidationResult,
+    ) => boolean | Promise<boolean>,
+  ) => {
     const data = structuredClone(appData.value);
-    data.desc = data.desc ?? ''; // Ensure desc is a string
-    const jsonString = JSON.stringify(data, null, 2);
+    data.desc = data.desc ?? ''; // Ensure desc is a string before validating and saving.
 
-    // todo validate the appData from the latest emrald schema version in types
+    const validationResult = validateModel(data);
+    if (!validationResult.valid) {
+      console.error('Model validation errors:', validationResult.errors);
+      const shouldSave = confirmInvalidModelSave
+        ? await confirmInvalidModelSave(validationResult)
+        : window.confirm(
+            `This model does not match EMRALD schema ${validationResult.schemaVersion.toString()}. Save anyway?`,
+          );
+
+      if (!shouldSave) {
+        return;
+      }
+    }
+
+    const jsonString = JSON.stringify(data, null, 2);
 
     // Create a Blob (Binary Large Object) with the JSON string
     const blob = new Blob([jsonString], { type: 'application/json' });
