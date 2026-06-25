@@ -45,6 +45,7 @@ namespace EMRALD_Sim
     private List<string> _recentFiles = new List<string>();
     private bool _skipApplyOptionsOnce = false;
     private bool _isCommandLineRun = false;
+    private bool _pendingAutoRun = false; // command-line run is deferred to FormMain_Load so the window handle exists before the sim marshals UI updates
     private Options_cur _curSimOptions = new Options_cur();
     private ContextMenuStrip _monitorVarsContextMenu = null;
 
@@ -128,10 +129,11 @@ namespace EMRALD_Sim
 
       ApplyOptionsToUI();
 
-      if (execute && _validSim)
-      {
-        btnStartSims_Click(this, null);
-      }
+      // Defer the auto-run to FormMain_Load. Starting the sim here (before Application.Run
+      // shows the form) means the window handle isn't created yet, so the background sim
+      // thread's UI marshaling (InvokeUIUpdate) throws "Invoke or BeginInvoke cannot be
+      // called on a control until the window handle has been created."
+      _pendingAutoRun = execute && _validSim;
     }
 
     // Create right-click menu for monitor vars to select/unselect all.
@@ -485,7 +487,10 @@ namespace EMRALD_Sim
     // Ensure delegate executes on UI thread.
     private void InvokeUIUpdate(MethodInvoker methodInvokerDelegate)
     {
-      if (this.InvokeRequired)
+      // Only marshal when the window handle exists; otherwise Invoke throws "Invoke or BeginInvoke
+      // cannot be called on a control until the window handle has been created." Running inline is
+      // safe before the handle exists because there's no UI thread message pump to marshal onto yet.
+      if (this.IsHandleCreated && this.InvokeRequired)
       {
         this.Invoke(methodInvokerDelegate);
       }
@@ -614,6 +619,13 @@ namespace EMRALD_Sim
         cbMsgType.Items.Add(actT.ToString().Substring(2));
       }
       cbMsgType.SelectedIndex = 0;
+
+      // Run the command-line/JSON sim now that the form is loaded and its window handle exists.
+      if (_pendingAutoRun)
+      {
+        _pendingAutoRun = false;
+        btnStartSims_Click(this, null);
+      }
     }
 
     private void cbMsgType_SelectedIndexChanged(object sender, EventArgs e)

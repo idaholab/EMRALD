@@ -387,7 +387,10 @@ namespace SimulationDAL
         }
       }
 
-      if (retStateIDs.Count == 0) //no probability items were selected we must use the default state
+      //Only mutually exclusive transitions require a guaranteed default path (probabilities partition 1.0).
+      //For non-mutually-exclusive transitions an empty result is valid - it means no new state was selected
+      //(e.g. a single 0.5 target should transition only ~50% of the time, not fall through to a default).
+      if (mutExcl && retStateIDs.Count == 0) //no probability items were selected we must use the default state
         retStateIDs.Add(new IdxAndStr(_newStateIDs[_toStateProb.Count - 1].id, _failDesc[_toStateProb.Count - 1]));
 
       return retStateIDs;
