@@ -536,7 +536,10 @@ namespace SimulationEngine
       GetVarValues(logVarVals, true);
 
       if (progressCallback != null)
-        progressCallback(_totRunTime, _numRuns, _logFailedComps, _lists.threadNum);
+      {
+        int? callbackThreadNum = ignoreThreadPath ? null : _lists.threadNum;
+        progressCallback(_totRunTime, _numRuns, _logFailedComps, callbackThreadNum);
+      }
     }
 
     private bool MakePathResults(int curIdx, bool makeSankey)
