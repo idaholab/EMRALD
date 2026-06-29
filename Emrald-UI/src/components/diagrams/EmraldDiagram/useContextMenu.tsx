@@ -37,8 +37,8 @@ export function useContextMenu(
   const { updateState, deleteState, getStateByStateId } = useStateContext();
   const { updateDiagram, getDiagramByDiagramName } = useDiagramContext();
   const { deleteEvent } = useEventContext();
-  const { updateAction, deleteAction, getActionByActionId }
-    = useActionContext();
+  const { updateAction, deleteAction, getActionByActionId } =
+    useActionContext();
   const { showAlert } = useAlertContext();
 
   // A single-state diagram (dtSingle) can only be in one state at a time, so a
@@ -127,11 +127,7 @@ export function useContextMenu(
   };
 
   // * Context menu for edge
-  const onEdgeContextMenu = (
-    event: MouseEvent,
-    edge: Edge,
-    edges: Edge[],
-  ) => {
+  const onEdgeContextMenu = (event: MouseEvent, edge: Edge, edges: Edge[]) => {
     event.preventDefault(); // Prevent native context menu from showing
     setMenu({
       mouseX: event.clientX,
@@ -253,8 +249,8 @@ export function useContextMenu(
 
     let menuOptions = [...defaultOptions];
 
-    menuOptions
-      = type === 'event'
+    menuOptions =
+      type === 'event'
         ? menuOptions.filter(
             option =>
               option.label !== 'New Action' && option.label !== 'Paste Action',
@@ -488,8 +484,7 @@ export function useContextMenu(
 
       if (eventActions.length <= 1) {
         menuOptions = menuOptions.filter(
-          option =>
-            option.label !== 'Move Up' && option.label !== 'Move Down',
+          option => option.label !== 'Move Up' && option.label !== 'Move Down',
         );
       } else if (eventActions[0] === action.name) {
         // Remove 'Move Up' action if the item is in the first spot
@@ -759,12 +754,13 @@ export function useContextMenu(
       actionToUpdate.newStates = actionToUpdate.newStates.filter(
         state => state.toState !== targetState?.name,
       );
-      // If only one newState remains make it so it is set to -1
+      // If only one newState remains, keep a default only for mutually exclusive transitions.
       if (
         actionToUpdate.newStates.length === 1
         && actionToUpdate.newStates[0]
       ) {
-        actionToUpdate.newStates[0].prob = -1;
+        actionToUpdate.newStates[0].prob =
+          actionToUpdate.mutExcl === false ? 1.0 : -1;
       }
       updateAction(actionToUpdate);
       const newEdges = edges.filter(
