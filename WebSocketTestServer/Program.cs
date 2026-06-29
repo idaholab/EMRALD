@@ -166,7 +166,7 @@ namespace WebSocketTestServer
 
                     case "CreateConnection":
                         string appName = jsonObj["appName"]?.ToString()!;
-                        var watchItems = jsonObj["watchItems"]?.ToObject<List<string>>();
+                        var watchItems = jsonObj["watchItems"]?.ToObject<List<WatchItem>>();
                         return await HandleCreateConnection(appName!, watchItems!, socket);
 
                     case "SendActionMsg":
@@ -198,27 +198,27 @@ namespace WebSocketTestServer
 
         // Creates a new connection record and associated state machine.
         private static Task<string> HandleCreateConnection(
-            string appName, 
-            List<string> watchItems, 
+            string appName,
+            List<WatchItem> watchItems,
             WebSocket socket)
         {
             Guid conID = Guid.NewGuid();
-            
+
             var connInfo = new ConnectionInfo
             {
                 ConID = conID,
                 AppName = appName,
-                WatchItems = watchItems ?? new List<string>(), // Customize: pre-process/validate watch items if needed.
+                WatchItems = watchItems ?? new List<WatchItem>(), // Customize: pre-process/validate watch items if needed.
                 Socket = socket
             };
 
             connInfo.StateMachine = new ConnectionStateMachine(connInfo); // Customize: extend the state machine for your sim.
-            
+
             activeConnections[conID] = connInfo;
-            
+
 #if DEBUG
             if (LogMessages) Console.WriteLine($"Created connection {conID} for app '{appName}'");
-            if (LogMessages) Console.WriteLine($"Watch items: {string.Join(", ", watchItems ?? new List<string>())}");
+            if (LogMessages) Console.WriteLine($"Watch items: {string.Join(", ", (watchItems ?? new List<WatchItem>()).Select(w => w.name))}");
 #endif
 
             var response = new { conID = conID };
@@ -298,7 +298,7 @@ namespace WebSocketTestServer
     {
         public Guid ConID { get; set; }
         public string AppName { get; set; } = string.Empty;
-        public List<string> WatchItems { get; set; } = new List<string>();
+        public List<WatchItem> WatchItems { get; set; } = new List<WatchItem>();
         public WebSocket Socket { get; set; } = null!;
         public ConnectionStateMachine StateMachine { get; set; } = null!;
     }

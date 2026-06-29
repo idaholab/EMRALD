@@ -8,10 +8,10 @@ interface UseEditorVariableDropOptions {
   codeVariables: string[];
 }
 
-export function useEditorVariableDrop({
+export const useEditorVariableDrop = ({
   addToUsedVariables,
   codeVariables,
-}: UseEditorVariableDropOptions) {
+}: UseEditorVariableDropOptions) => {
   const editorRef = useRef<monacoEditor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -33,17 +33,13 @@ export function useEditorVariableDrop({
 
   useEffect(() => {
     const wrapper = wrapperRef.current;
-    if (!wrapper) {
-      return;
-    }
+    if (!wrapper) return;
 
     const hasVariablePayload = (event: DragEvent) =>
       !!event.dataTransfer?.types.includes(VARIABLE_DRAG_MIME);
 
     const handleDragOver = (event: DragEvent) => {
-      if (!hasVariablePayload(event)) {
-        return;
-      }
+      if (!hasVariablePayload(event)) return;
       event.preventDefault();
       event.stopPropagation();
       if (event.dataTransfer) {
@@ -52,30 +48,19 @@ export function useEditorVariableDrop({
     };
 
     const handleDrop = (event: DragEvent) => {
-      if (!hasVariablePayload(event)) {
-        return;
-      }
+      if (!hasVariablePayload(event)) return;
       const name = event.dataTransfer?.getData(VARIABLE_DRAG_MIME) ?? '';
-      if (!name) {
-        return;
-      }
+      if (!name) return;
       event.preventDefault();
       event.stopPropagation();
 
       const editor = editorRef.current;
       const monaco = monacoRef.current;
-      if (!editor || !monaco) {
-        return;
-      }
+      if (!editor || !monaco) return;
 
-      const target = editor.getTargetAtClientPoint(
-        event.clientX,
-        event.clientY,
-      );
+      const target = editor.getTargetAtClientPoint(event.clientX, event.clientY);
       const position = target?.position ?? editor.getPosition();
-      if (!position) {
-        return;
-      }
+      if (!position) return;
 
       editor.executeEdits('emrald-variable-drop', [
         {
@@ -109,4 +94,4 @@ export function useEditorVariableDrop({
   }, []);
 
   return { handleMount, wrapperRef };
-}
+};

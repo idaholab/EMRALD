@@ -25,6 +25,7 @@ interface VariableFormContextType {
   variable: Variable;
   accrualStatesData?: AccrualStateItem[];
   hasError: boolean;
+  extSimError: boolean;
   type: VariableType;
   value: number | string | boolean;
   typeProperties: (keyof Variable)[];
@@ -32,6 +33,7 @@ interface VariableFormContextType {
   setVariable: Dispatch<SetStateAction<Variable>>;
   setAccrualStatesData: Dispatch<SetStateAction<AccrualStateItem[] | undefined>>;
   setHasError: Dispatch<SetStateAction<boolean>>;
+  setExtSimError: Dispatch<SetStateAction<boolean>>;
   sortNewStates: (accrualStatesData: AccrualStateItem[]) => AccrualStateItem[];
   setValue: Dispatch<SetStateAction<number | string | boolean>>;
   setType: Dispatch<SetStateAction<VariableType>>;
@@ -60,6 +62,7 @@ export const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
   const [type, setType] = useState<VariableType>('int');
   const [value, setValue] = useState<number | string | boolean>('');
   const [hasError, setHasError] = useState(false);
+  const [extSimError, setExtSimError] = useState(false);
   const [typeProperties, setTypeProperties] = useState<(keyof Variable)[]>([]);
 
   const sync = (values: Partial<Variable>) => {
@@ -83,6 +86,7 @@ export const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
         variable,
         accrualStatesData,
         hasError,
+        extSimError,
         type,
         value,
         typeProperties,
@@ -90,6 +94,7 @@ export const VariableFormContextProvider: React.FC<PropsWithChildren> = ({
         setVariable,
         setAccrualStatesData,
         setHasError,
+        setExtSimError,
         sortNewStates,
         setValue,
         setType,

@@ -1,16 +1,13 @@
 import type { Variable } from '@/types/EMRALD_Model';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Tooltip,
-} from '@mui/material';
+import { Box, Checkbox, FormControlLabel, FormGroup, Tooltip } from '@mui/material';
 import { appData } from '@/hooks/useAppData';
 
 const extSimOnlyBuiltIns = new Set(['ExtSimStartTime', 'NextEvTime']);
 
-export type CodeContext = 'event' | 'changeVarValue' | 'runApplication';
+export type CodeContext
+  = | 'event'
+    | 'changeVarValue'
+    | 'runApplication';
 
 interface BuiltInVariable {
   name: string;
@@ -21,8 +18,7 @@ interface BuiltInVariable {
 const commonRand: BuiltInVariable = {
   name: 'Rand',
   type: 'Random',
-  description:
-    'Shared random number generator (System.Random) used by the simulator.',
+  description: 'Shared random number generator (System.Random) used by the simulator.',
 };
 
 const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
@@ -35,8 +31,7 @@ const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
     {
       name: 'RunIdx',
       type: 'int',
-      description:
-        'Index of the current Monte Carlo simulation run (zero-based).',
+      description: 'Index of the current Monte Carlo simulation run (zero-based).',
     },
     {
       name: 'ExtSimStartTime',
@@ -64,8 +59,7 @@ const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
     {
       name: 'RunIdx',
       type: 'int',
-      description:
-        'Index of the current Monte Carlo simulation run (zero-based).',
+      description: 'Index of the current Monte Carlo simulation run (zero-based).',
     },
     {
       name: 'ExtSimStartTime',
@@ -80,8 +74,7 @@ const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
     {
       name: 'OrigRootPath',
       type: 'string',
-      description:
-        'Original root path of the model as it was loaded (before any path remapping).',
+      description: 'Original root path of the model as it was loaded (before any path remapping).',
     },
     commonRand,
   ],
@@ -94,8 +87,7 @@ const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
     {
       name: 'RunIdx',
       type: 'int',
-      description:
-        'Index of the current Monte Carlo simulation run (zero-based).',
+      description: 'Index of the current Monte Carlo simulation run (zero-based).',
     },
     {
       name: 'ExePath',
@@ -110,26 +102,27 @@ const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
     {
       name: 'OrigRootPath',
       type: 'string',
-      description:
-        'Original root path of the model as it was loaded. Available in the preprocess code only.',
+      description: 'Original root path of the model as it was loaded. Available in the preprocess code only.',
     },
     {
       name: 'MultiThreaded',
       type: 'bool',
-      description:
-        'True when the simulation is running in multi-threaded mode.',
+      description: 'True when the simulation is running in multi-threaded mode.',
     },
     {
       name: 'ExeExitCode',
       type: 'int',
-      description:
-        'Exit code returned by the executable. Available in the postprocess code only.',
+      description: 'Exit code returned by the executable. Available in the postprocess code only.',
     },
     commonRand,
   ],
 };
 
-function formatTooltip(name: string, type: string, description: string) {
+function formatTooltip(
+  name: string,
+  type: string,
+  description: string,
+): string {
   return `${name} (${type})\n${description}`;
 }
 
@@ -161,20 +154,14 @@ export const CodeVariables: React.FC<CodeVariablesProps> = ({
               key={builtIn.name}
               title={
                 <span style={{ whiteSpace: 'pre-line' }}>
-                  {formatTooltip(
-                    builtIn.name,
-                    builtIn.type,
-                    builtIn.description,
-                  )}
+                  {formatTooltip(builtIn.name, builtIn.type, builtIn.description)}
                 </span>
               }
               placement="left"
               arrow
             >
               <FormControlLabel
-                control={
-                  <Checkbox sx={{ p: '0 9px' }} checked={true} disabled />
-                }
+                control={<Checkbox sx={{ p: '0 9px' }} checked={true} disabled />}
                 label={builtIn.name}
               />
             </Tooltip>

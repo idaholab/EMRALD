@@ -1,3 +1,4 @@
+import type { ModelValidationResult } from '../../../utils/Upgrades/upgrade';
 import { Alert, Table } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -6,7 +7,7 @@ import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Logo from '../../../assets/EMRALD-logo.png';
 import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
 import { appData, updateAppData } from '../../../hooks/useAppData';
@@ -51,6 +52,13 @@ export const Header: React.FC = () => {
   const [changeDesc, setChangeDesc] = useState<string>();
   const [modelErrorDialog, setModelErrorDialog] = useState(false);
   const [modelErrorMessage, setModelErrorMessage] = useState('');
+  const [saveValidationDialog, setSaveValidationDialog] = useState(false);
+  const [saveValidationResult, setSaveValidationResult] = useState<
+    ModelValidationResult | undefined
+  >();
+  const saveValidationResolver = useRef<
+    ((shouldSave: boolean) => void) | undefined
+  >(undefined);
 
   useEffect(() => {
     setUpdatedName(name);
@@ -81,6 +89,20 @@ export const Header: React.FC = () => {
     if (value === '' || /^[0-9]+(\.[0-9]*)?$/.test(value)) {
       setUpdatedVersion(value);
     }
+  };
+
+  const confirmInvalidModelSave = (validationResult: ModelValidationResult) =>
+    new Promise<boolean>(resolve => {
+      saveValidationResolver.current = resolve;
+      setSaveValidationResult(validationResult);
+      setSaveValidationDialog(true);
+    });
+
+  const closeSaveValidationDialog = (shouldSave: boolean) => {
+    saveValidationResolver.current?.(shouldSave);
+    saveValidationResolver.current = undefined;
+    setSaveValidationDialog(false);
+    setSaveValidationResult(undefined);
   };
 
   return (
@@ -125,6 +147,7 @@ export const Header: React.FC = () => {
               setModelErrorDialog(true);
               setModelErrorMessage(message);
             }}
+            confirmInvalidModelSave={confirmInvalidModelSave}
           />
           <MenuButton id={2} title="Download" options={downloadOptions} />
           <MenuButton
@@ -270,8 +293,8 @@ export const Header: React.FC = () => {
             version: newVersion,
             versionHistory,
           });
-          void projectOptions.Save();
           setVersionDialog(false);
+          void projectOptions.Save(confirmInvalidModelSave);
         }}
       >
         <TextField
@@ -334,6 +357,44 @@ export const Header: React.FC = () => {
         An error occurred opening the selected file. Please check the error
         message below.
         <Alert severity="error">{modelErrorMessage}</Alert>
+      </DialogComponent>
+
+      <DialogComponent
+        open={saveValidationDialog}
+        title="Model Schema Warning"
+        submitText="Save Anyway"
+        cancelText="Cancel"
+        onSubmit={() => {
+          closeSaveValidationDialog(true);
+        }}
+        onClose={() => {
+          closeSaveValidationDialog(false);
+        }}
+      >
+        <Typography sx={{ mb: 2 }}>
+          This model does not match EMRALD schema{' '}
+          {saveValidationResult?.schemaVersion.toString()}. The file can still
+          be saved, but it may not load or run correctly until the issues below
+          are fixed.
+        </Typography>
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Review the validation errors before choosing whether to save anyway.
+        </Alert>
+        <Box
+          component="ul"
+          sx={{
+            m: 0,
+            maxHeight: 240,
+            overflow: 'auto',
+            pl: 3,
+          }}
+        >
+          {(saveValidationResult?.errors ?? []).map((error, index) => (
+            <li key={index}>
+              <Typography variant="body2">{error}</Typography>
+            </li>
+          ))}
+        </Box>
       </DialogComponent>
     </AppBar>
   );

@@ -155,16 +155,30 @@ namespace SimulationEngine
 
         if (options.couplingInfo.couplingType == CouplingType.WebSocket)
         {
-          Dictionary<string, List<String>> appVars = new Dictionary<string, List<String>>();
+          //Map an EMRALD variable's CLR type to the type name sent in the watch item.
+          static string WatchItemTypeName(Type t)
+          {
+            if (t == typeof(bool)) return "bool";
+            if (t == typeof(int)) return "int";
+            if (t == typeof(double)) return "double";
+            if (t == typeof(string)) return "string";
+            if (t == typeof(TimeSpan)) return "TimeSpan";
+            return t?.Name ?? "";
+          }
+
+          Dictionary<string, List<WatchItem>> appVars = new Dictionary<string, List<WatchItem>>();
           foreach (var v in _model.allVariables.Values)
           {
-            if (v is Sim3DVariable)
+            if (v is Sim3DVariable s3dVar)
             {
-              string appName = (v as Sim3DVariable).resourceName;
+              string appName = s3dVar.resourceName;
               if (!appVars.ContainsKey(appName))
-                appVars[appName] = new List<string>();
+                appVars[appName] = new List<WatchItem>();
 
-              appVars[appName].Add((v as Sim3DVariable).sim3DNameId);
+              //Send the variable's optional WatchEventCriteria fParser expression (empty -> omitted,
+              //so the external sim reports on every change).
+              string watchCriteria = string.IsNullOrEmpty(s3dVar.WatchEventCriteria) ? null : s3dVar.WatchEventCriteria;
+              appVars[appName].Add(new WatchItem(s3dVar.sim3DNameId, WatchItemTypeName(s3dVar.dType), watchCriteria));
             }
           }
           foreach (var extSim in _model.allExtSims.Values)
@@ -173,7 +187,7 @@ namespace SimulationEngine
             if (appVars.ContainsKey(extSim.resourceName))
               conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, appVars[extSim.resourceName]).Result;
             else
-              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, new List<string>()).Result;
+              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, new List<WatchItem>()).Result;
 
             extSim.connectionID = conID.ToString();
           }
@@ -270,6 +284,13 @@ namespace SimulationEngine
 
       // Wait for all tasks to complete asynchronously
       await Task.WhenAll(tasks);
+
+      // Send WebSocket close frame before tearing down the connection.
+      // WebApiCoupling.Dispose() calls DisconnectAsync, but is never invoked explicitly —
+      // without this the underlying socket is abandoned and the ext sim sees an abrupt TCP close
+      // instead of a proper WebSocket close handshake.
+      if (_msgCoupler is WebApiCoupling wsCouple)
+        await wsCouple.DisconnectAsync();
 
       //compile results if needed
       for (int i = 1; i < _simRuns.Count; i++)

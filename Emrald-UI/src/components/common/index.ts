@@ -1,6 +1,7 @@
 export { CodeEditorWithVariables } from './CodeEditorWithVariables';
 export { CodeVariables } from './CodeVariables';
 export { DialogComponent } from './DialogComponent/DialogComponent';
+export { DistributionFields } from './DistributionFields';
 export { DroppableEditor } from './DroppableEditor';
 export { DurationComponent } from './DurationComponent';
 export { FileUploadComponent } from './FileUploadComponent';

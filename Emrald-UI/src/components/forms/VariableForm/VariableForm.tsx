@@ -22,10 +22,23 @@ export interface VariableFormProps {
   variableData?: Variable;
 }
 
+function hasInitialValue(value: Variable['value']): boolean {
+  if (typeof value === 'number') {
+    return Number.isFinite(value);
+  }
+
+  if (typeof value === 'string') {
+    return value.trim() !== '';
+  }
+
+  return typeof value === 'boolean';
+}
+
 export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   const {
     variable,
     hasError,
+    extSimError,
     type,
     value,
     typeProperties,
@@ -44,7 +57,7 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   useEffect(() => {
     setName(variableData?.name ?? '');
     setType(variableData?.type ?? 'int');
-    setValue(String(variableData?.value));
+    setValue(variableData?.value === undefined ? '' : String(variableData.value));
     if (variableData?.name) {
       setOriginalName(variableData.name);
     }
@@ -53,6 +66,10 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   }, []);
 
   const handleSave = (variableData?: Variable) => {
+    if (!name.trim() || !hasInitialValue(value)) {
+      return;
+    }
+
     let _typeProperties = [...typeProperties];
     if (varScope !== 'gtDocLink') {
       _typeProperties = _typeProperties.concat([
@@ -60,6 +77,8 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
         'canMonitor',
         'monitorInSim',
         'cumulativeStats',
+        'inVariable',
+        'outVariable',
       ]);
     }
     if (varScope === 'gtAccrual') {
@@ -132,9 +151,9 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
           }}
           handleNameChange={handleNameChange}
           nameError={hasError}
-          error={hasError}
+          error={hasError || extSimError}
           errorMessage="A variable with this name already exists, or the name contains an invalid character."
-          reqPropsFilled={name && value !== '' ? true : false}
+          reqPropsFilled={name.trim() !== '' && hasInitialValue(value)}
         >
           <FormControl
             variant="outlined"

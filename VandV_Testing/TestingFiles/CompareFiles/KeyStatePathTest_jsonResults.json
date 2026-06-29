@@ -1,0 +1,694 @@
+{
+  "name": "KeyStatePathTest",
+  "numRuns": 100,
+  "keyStates": [
+    {
+      "name": "Key25",
+      "contributionRate": 0.29,
+      "cRate5th": 0.20106264,
+      "cRate95th": 0.37893736,
+      "count": 29,
+      "timeMean": "00:00:11",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:11",
+      "timeMax": "00:00:11",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 29,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 29
+            }
+          ]
+        },
+        {
+          "name": "50",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 29,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 29
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key25",
+              "cnt": 29
+            }
+          ]
+        },
+        {
+          "name": "Key25",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 29,
+          "timeMean": "00:00:11",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:11",
+          "timeMax": "00:00:11",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 29
+            }
+          ],
+          "exits": []
+        }
+      ]
+    },
+    {
+      "name": "Key62andaHalf",
+      "contributionRate": 0.57,
+      "cRate5th": 0.47296515,
+      "cRate95th": 0.66703485,
+      "count": 57,
+      "timeMean": "00:00:14.6666667",
+      "timeStdDeviation": "00:00:02.1821789",
+      "timeMin": "00:00:13",
+      "timeMax": "00:00:19",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 57,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 40
+            },
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 17
+            }
+          ]
+        },
+        {
+          "name": "50",
+          "contributionRate": 0.7017543859649122,
+          "cRate5th": 0.58298671,
+          "cRate95th": 0.82052206,
+          "count": 40,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 40
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key25",
+              "cnt": 29
+            },
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 11
+            }
+          ]
+        },
+        {
+          "name": "Key25",
+          "contributionRate": 0.5087719298245614,
+          "cRate5th": 0.37898774,
+          "cRate95th": 0.63855612,
+          "count": 29,
+          "timeMean": "00:00:11",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:11",
+          "timeMax": "00:00:11",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 29
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait3] occured and caused the action - SecondLastPath",
+              "name": "Wait3 & SecondLastPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key62andaHalf",
+              "cnt": 29
+            }
+          ]
+        },
+        {
+          "name": "Key62andaHalf",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 57,
+          "timeMean": "00:00:14.6666667",
+          "timeStdDeviation": "00:00:02.1821789",
+          "timeMin": "00:00:13",
+          "timeMax": "00:00:19",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait3] occured and caused the action - SecondLastPath",
+              "name": "Wait3 & SecondLastPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key25",
+              "cnt": 29
+            },
+            {
+              "desc": "Event [Wait1] occured and caused the action - Path",
+              "name": "Wait1 & Path",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key37andahalf",
+              "cnt": 28
+            }
+          ],
+          "exits": []
+        },
+        {
+          "name": "Key75",
+          "contributionRate": 0.49122807017543857,
+          "cRate5th": 0.36144388,
+          "cRate95th": 0.62101226,
+          "count": 28,
+          "timeMean": "00:00:07.3571429",
+          "timeStdDeviation": "00:00:02.9840847",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:11",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 17
+            },
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 11
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait7] occured and caused the action - Split",
+              "name": "Wait7 & Split",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key37andahalf",
+              "cnt": 28
+            }
+          ]
+        },
+        {
+          "name": "Key37andahalf",
+          "contributionRate": 0.49122807017543857,
+          "cRate5th": 0.36144388,
+          "cRate95th": 0.62101226,
+          "count": 28,
+          "timeMean": "00:00:14.3571429",
+          "timeStdDeviation": "00:00:02.9840847",
+          "timeMin": "00:00:12",
+          "timeMax": "00:00:18",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait7] occured and caused the action - Split",
+              "name": "Wait7 & Split",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 28
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait1] occured and caused the action - Path",
+              "name": "Wait1 & Path",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key62andaHalf",
+              "cnt": 28
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Key75",
+      "contributionRate": 0.71,
+      "cRate5th": 0.62106264,
+      "cRate95th": 0.79893736,
+      "count": 71,
+      "timeMean": "00:00:07.0281690",
+      "timeStdDeviation": "00:00:02.8584302",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:11",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 71,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 47
+            },
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 24
+            }
+          ]
+        },
+        {
+          "name": "Key75",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 71,
+          "timeMean": "00:00:07.0281690",
+          "timeStdDeviation": "00:00:02.8584302",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:11",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 47
+            },
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 24
+            }
+          ],
+          "exits": []
+        },
+        {
+          "name": "50",
+          "contributionRate": 0.3380281690140845,
+          "cRate5th": 0.22799513,
+          "cRate95th": 0.44806121,
+          "count": 24,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 24
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 24
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Key37andahalf",
+      "contributionRate": 0.28,
+      "cRate5th": 0.19199622,
+      "cRate95th": 0.36800378,
+      "count": 28,
+      "timeMean": "00:00:14.3571429",
+      "timeStdDeviation": "00:00:02.9840847",
+      "timeMin": "00:00:12",
+      "timeMax": "00:00:18",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 28,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 17
+            },
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 11
+            }
+          ]
+        },
+        {
+          "name": "Key75",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 28,
+          "timeMean": "00:00:07.3571429",
+          "timeStdDeviation": "00:00:02.9840847",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:11",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 17
+            },
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "50",
+              "cnt": 11
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait7] occured and caused the action - Split",
+              "name": "Wait7 & Split",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key37andahalf",
+              "cnt": 28
+            }
+          ]
+        },
+        {
+          "name": "Key37andahalf",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 28,
+          "timeMean": "00:00:14.3571429",
+          "timeStdDeviation": "00:00:02.9840847",
+          "timeMin": "00:00:12",
+          "timeMax": "00:00:18",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait7] occured and caused the action - Split",
+              "name": "Wait7 & Split",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 28
+            }
+          ],
+          "exits": []
+        },
+        {
+          "name": "50",
+          "contributionRate": 0.39285714285714285,
+          "cRate5th": 0.21195662,
+          "cRate95th": 0.57375767,
+          "count": 11,
+          "timeMean": "00:00:05",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:05",
+          "timeMax": "00:00:05",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [Wait5] occured and caused the action - FirstPath",
+              "name": "Wait5 & FirstPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 11
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [Wait6] occured and caused the action - SecondPath",
+              "name": "Wait6 & SecondPath",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Key75",
+              "cnt": 11
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": [
+    {
+      "name": "Start",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 96,
+      "timeMean": "00:00:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:00",
+      "timeMax": "00:00:00",
+      "watchVariables": {},
+      "entries": [],
+      "exits": [
+        {
+          "desc": "Event [Wait5] occured and caused the action - FirstPath",
+          "name": "Wait5 & FirstPath",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "50",
+          "cnt": 66
+        },
+        {
+          "desc": "Event [Wait5] occured and caused the action - FirstPath",
+          "name": "Wait5 & FirstPath",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Key75",
+          "cnt": 30
+        }
+      ]
+    },
+    {
+      "name": "50",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 66,
+      "timeMean": "00:00:05",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:05",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Wait5] occured and caused the action - FirstPath",
+          "name": "Wait5 & FirstPath",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Start",
+          "cnt": 66
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [Wait6] occured and caused the action - SecondPath",
+          "name": "Wait6 & SecondPath",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Key75",
+          "cnt": 13
+        }
+      ]
+    },
+    {
+      "name": "Key75",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 43,
+      "timeMean": "00:00:06.8139535",
+      "timeStdDeviation": "00:00:02.7882048",
+      "timeMin": "00:00:05",
+      "timeMax": "00:00:11",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Wait5] occured and caused the action - FirstPath",
+          "name": "Wait5 & FirstPath",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Start",
+          "cnt": 30
+        },
+        {
+          "desc": "Event [Wait6] occured and caused the action - SecondPath",
+          "name": "Wait6 & SecondPath",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "50",
+          "cnt": 13
+        }
+      ],
+      "exits": [
+        {
+          "desc": "Event [Wait7] occured and caused the action - Split",
+          "name": "Wait7 & Split",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "37andahalf",
+          "cnt": 43
+        }
+      ]
+    },
+    {
+      "name": "37andahalf",
+      "contributionRate": 0.0,
+      "cRate5th": 0.0,
+      "cRate95th": 0.0,
+      "count": 43,
+      "timeMean": "00:00:13.8139535",
+      "timeStdDeviation": "00:00:02.7882048",
+      "timeMin": "00:00:12",
+      "timeMax": "00:00:18",
+      "watchVariables": {},
+      "entries": [
+        {
+          "desc": "Event [Wait7] occured and caused the action - Split",
+          "name": "Wait7 & Split",
+          "evDesc": "",
+          "actDesc": "",
+          "otherState": "Key75",
+          "cnt": 43
+        }
+      ],
+      "exits": []
+    }
+  ]
+}
