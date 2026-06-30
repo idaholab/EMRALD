@@ -42,6 +42,34 @@ export type ActionType
     | 'atCngVarVal'
     | 'at3DSimMsg'
     | 'atRunExtApp';
+/**
+ * For event type of etDistribution this is the name of the distribution parameter.
+ */
+export type EventDistributionParameterName
+  = | 'Mean'
+    | 'Standard Deviation'
+    | 'Minimum'
+    | 'Maximum'
+    | 'Rate'
+    | 'Shape'
+    | 'Scale'
+    | 'Peak'
+    | 'Alpha'
+    | 'Beta';
+/**
+ * Optional, For events of type etTimer. This is a time unit if a variable is used for the time. Example X min.
+ */
+export type TimeVariableUnit
+  = | ''
+    | 'trYears'
+    | 'trDays'
+    | 'trHours'
+    | 'trMinutes'
+    | 'trSeconds';
+/**
+ * Optional. For action type atCngVarVal when useDistribution is true, this is the array of distribution parameters. The shape is shared with etDistribution events for convenience, but the timeRate field on each parameter is ignored for atCngVarVal (variable values are unitless raw numbers, not durations).
+ */
+export type Parameters = EventDistributionParameter[];
 export type MAAPSourceElement
   = | MAAPSensitivityStatement
     | MAAPTitleStatement
@@ -109,16 +137,6 @@ export type EventType
  */
 export type VarChangeOptions = 'ocIgnore' | 'ocResample' | 'ocAdjust';
 /**
- * Optional, For events of type etTimer. This is a time unit if a variable is used for the time. Example X min.
- */
-export type TimeVariableUnit
-  = | ''
-    | 'trYears'
-    | 'trDays'
-    | 'trHours'
-    | 'trMinutes'
-    | 'trSeconds';
-/**
  * Optional. For events of type et3dSimEv. This the type of message being sent to the external simulation. See the external messeage JSON schema.
  */
 export type ExtEventMsgType = 'etCompEv' | 'etEndSim' | 'etStatus';
@@ -136,23 +154,9 @@ export type DistributionType
     | 'dtUniform'
     | 'dtBeta';
 /**
- * For event type of etDistribution this is the name of the distribution parameter.
+ * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
  */
-export type EventDistributionParameterName
-  = | 'Mean'
-    | 'Standard Deviation'
-    | 'Minimum'
-    | 'Maximum'
-    | 'Rate'
-    | 'Shape'
-    | 'Scale'
-    | 'Peak'
-    | 'Alpha'
-    | 'Beta';
-/**
- * Optional. For event type of etDistribution or atCngVarVal actions in distribution mode, this is an array of properties for the distribution calculation.
- */
-export type Parameters = EventDistributionParameter[];
+export type Parameters1 = EventDistributionParameter1[];
 /**
  * Gate type for the logic node
  */
@@ -418,10 +422,16 @@ export interface Action {
   /**
    * Optional. For action type atCngVarVal when useDistribution is true, this is the type of distribution used to sample the new variable value.
    */
-  distType?: DistributionType;
-  /**
-   * Optional. For action type atCngVarVal when useDistribution is true, this is the array of distribution parameters. The shape is shared with etDistribution events for convenience, but the timeRate field on each parameter is ignored for atCngVarVal (variable values are unitless raw numbers, not durations).
-   */
+  distType?:
+    | 'dtNormal'
+    | 'dtExponential'
+    | 'dtWeibull'
+    | 'dtLogNormal'
+    | 'dtTriangular'
+    | 'dtGamma'
+    | 'dtGompertz'
+    | 'dtUniform'
+    | 'dtBeta';
   parameters?: Parameters;
   /**
    * Optional. For action type at3DSimMsg, this is the message to be sent to the coupled external simulation.
@@ -505,6 +515,22 @@ export interface NewState {
    * Optional, if used  then the a variable is used for the probability. This is the name of that variable
    */
   varProb?: null | string;
+}
+export interface EventDistributionParameter {
+  name?: EventDistributionParameterName;
+  /**
+   * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
+   */
+  value?: number | string;
+  timeRate?: TimeVariableUnit;
+  /**
+   * Flag to use the variable string vs the value item for the property
+   */
+  useVariable?: boolean;
+  /**
+   * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
+   */
+  variable?: string;
 }
 /**
  * Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats.
@@ -797,7 +823,7 @@ export interface Event {
    */
   code?: string;
   distType?: DistributionType;
-  parameters?: Parameters;
+  parameters?: Parameters1;
   /**
    * Optional. For event type of etFailRate, etDistribution, and etTimer. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs.
    */
@@ -809,7 +835,7 @@ export interface Event {
    */
   required?: boolean;
 }
-export interface EventDistributionParameter {
+export interface EventDistributionParameter1 {
   name?: EventDistributionParameterName;
   /**
    * Optional. The value of the parameter if the useVariable flag is false. Can be a number or a string if in scientific notation.
@@ -916,6 +942,10 @@ export interface Variable {
    */
   numChars?: number;
   /**
+   * Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, if this is defined, the value will be read from the given group within the user's regex expression
+   */
+  regExpGroup?: number;
+  /**
    * Optional, this specifies if the value of the variable is to be reset to the default value on each run or retain the value from the last run.
    */
   resetOnRuns?: boolean;
@@ -932,7 +962,7 @@ export interface Variable {
    */
   extSim?: string;
   /**
-   * Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g. "(valve_12 > 5) & (valve_12 < 10)") the external simulation must satisfy before reporting this variable. Sent in the initial coupling message. When omitted the variable is reported on every change.
+   * Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g. '(valve_12 > 5) & (valve_12 < 10)') the external simulation must satisfy before reporting this variable. Sent in the initial coupling message. When omitted the variable is reported on every change.
    */
   WatchEventCriteria?: string;
   changeLog?: ChangeLog;

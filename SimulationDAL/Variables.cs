@@ -1240,6 +1240,7 @@ namespace SimulationDAL
     private int _regExpLine = -1;//-1 means just the regular expression, box unchecked
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
+    private int _regExpGroup = -1; // Regex group to find. -1 means not set.
 
     private Regex _cachedRegex = null!;
     private string _cachedPattern = null!;
@@ -1266,10 +1267,10 @@ namespace SimulationDAL
     public override string GetDerivedJSON()
     {
       string retStr = base.GetDerivedJSON();
-      retStr += $",{Environment.NewLine}\"regExpLine\": \"{_regExpLine}\"";
+      retStr += $",{Environment.NewLine}\"regExpLine\": {_regExpLine}";
       retStr += $",{Environment.NewLine}\"begPosition\": {_begPosition}";
       retStr += $",{Environment.NewLine}\"numChars\": {_numChars}";
-      //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
+      retStr += $",{Environment.NewLine}\"regExpGroup\": {_regExpGroup}";
       return retStr;
     }
 
@@ -1292,6 +1293,9 @@ namespace SimulationDAL
 
       if (dynObj.numChars != null)
         _numChars = Convert.ToInt32(dynObj.numChars);
+
+      if (dynObj.regExpGroup != null)
+        _regExpGroup = Convert.ToInt32(dynObj.regExpGroup);
 
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
@@ -1324,7 +1328,25 @@ namespace SimulationDAL
 
           if (_regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
           {
-            docTxt = rx.Replace(docTxt, newValue.ToString()!, 1);
+            if (_regExpGroup >= 0)
+            {
+              // Replace only the nth capture group within the first match.
+              Match m = matches[0];
+              Group g = m.Groups[_regExpGroup];
+              if (g.Success)
+              {
+                // Build replacement: text before group + newValue + text after group (still within the match).
+                docTxt = $"{docTxt[..(m.Index + g.Index)]}{newValue}{docTxt[(m.Index + g.Index + g.Length)..]}";
+              }
+              else
+              {
+                throw new Exception($"RegExp group {_regExpGroup} did not capture in match for - {linkStr()}");
+              }
+            }
+            else
+            {
+              docTxt = rx.Replace(docTxt, newValue.ToString()!, 1);
+            }
             File.WriteAllText(_docFullPath, docTxt);
           }
           else
@@ -1453,7 +1475,17 @@ namespace SimulationDAL
             string foundTxt = firstMatch.Value;
             try
             {
-              if (_regExpLine >= 0)
+              if (_regExpGroup >= 0)
+              {
+                // Extract from the specified capture group instead of the full match.
+                Group g = firstMatch.Groups[_regExpGroup];
+                if (!g.Success)
+                {
+                  throw new Exception($"RegExp group {_regExpGroup} did not capture in match for - {curLinkStr}");
+                }
+                foundTxt = g.Value;
+              }
+              else if (_regExpLine >= 0)
               {
                 // Count line breaks in the prefix before the match. Earlier code re-ran the
                 // user regex over the whole file via rx.Split just to recover this prefix;
