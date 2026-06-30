@@ -1959,28 +1959,33 @@ namespace SimulationDAL
                                         copyExeByDefault));
 
         //see if there are any file references in the code.  
-        
-        var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode);
-        foreach (var path in paths)
-        {
-          listItems.Add(new ScanForRefsItem(this.id,
-                                          this.name,
-                                          EnIDTypes.itAction,
-                                          "Run Exe Action[" + this.name + "] has a file path reference in the pre - process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
-                                          path,
-                                          fullExePath));
-        }
-        
 
-        paths = CommonFunctions.FindFilePathReferences(ref processOutputFileCode);
-        foreach (var path in paths)
+        if (makeInputFileCode != null)
         {
-          listItems.Add(new ScanForRefsItem(this.id,
-                                          this.name,
-                                          EnIDTypes.itAction,
-                                          "Run Exe Action [" + this.name + "] has a file path reference in the post-process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
-                                          path,
-                                          fullExePath));
+          var paths = CommonFunctions.FindFilePathReferences(ref makeInputFileCode);
+          foreach (var path in paths)
+          {
+            listItems.Add(new ScanForRefsItem(this.id,
+                                            this.name,
+                                            EnIDTypes.itAction,
+                                            "Run Exe Action[" + this.name + "] has a file path reference in the pre - process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
+                                            path,
+                                            fullExePath));
+          }
+        }
+
+        if (processOutputFileCode != null)
+        {
+          var paths = CommonFunctions.FindFilePathReferences(ref processOutputFileCode);
+          foreach (var path in paths)
+          {
+            listItems.Add(new ScanForRefsItem(this.id,
+                                            this.name,
+                                            EnIDTypes.itAction,
+                                            "Run Exe Action [" + this.name + "] has a file path reference in the post-process code: " + path + ". If there could be a multi thread issue, assign files to copy.",
+                                            path,
+                                            fullExePath));
+          }
         }
         
       }
