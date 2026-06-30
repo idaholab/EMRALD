@@ -124,7 +124,15 @@ namespace SimulationDAL
     private bool hasVarProbs = false;
     public List<string> failDesc { get { return _failDesc; } set { _failDesc = value; } }
 
-    public bool mutuallyExclusive { get { return this.mutExcl; } set { this.mutExcl = value; } }
+    public bool mutuallyExclusive
+    {
+      get { return this.mutExcl; }
+      set
+      {
+        this.mutExcl = value;
+        NormalizeSingleNonMutExclRemainder();
+      }
+    }
 
     public TransitionAct()
       : base("", EnActionType.atTransition)
@@ -133,6 +141,17 @@ namespace SimulationDAL
     public TransitionAct(string name)
       : base(name, EnActionType.atTransition)
     { }
+
+    private void NormalizeSingleNonMutExclRemainder()
+    {
+      if (!mutExcl
+          && _toStateProb.Count == 1
+          && _toStateProb[0] == -1
+          && ((_toStateVarProb.Count == 0) || (_toStateVarProb[0] == null)))
+      {
+        _toStateProb[0] = 1.0;
+      }
+    }
 
     public override string GetDerivedJSON(EmraldModel lists)
     {
@@ -177,7 +196,7 @@ namespace SimulationDAL
         return false;
 
       if(dynObj.mutExcl != null)
-        mutExcl = Convert.ToBoolean(dynObj.mutExcl);
+        mutuallyExclusive = Convert.ToBoolean(dynObj.mutExcl);
 
       lists.allActions.Add(this, false);
 
@@ -227,6 +246,8 @@ namespace SimulationDAL
 
           _failDesc.Add((string)curToObj.failDesc);
         }
+
+        NormalizeSingleNonMutExclRemainder();
 
         if ((_newStateIDs.Count < 1) || (_newStateIDs.Count != _toStateProb.Count))
         {
@@ -295,6 +316,8 @@ namespace SimulationDAL
         this._failDesc.Insert(0, failDesc);
       }
 
+      NormalizeSingleNonMutExclRemainder();
+
       //RecalcBoundBoxes();
     }
 
@@ -334,6 +357,8 @@ namespace SimulationDAL
         }
 
       }
+
+      NormalizeSingleNonMutExclRemainder();
 
       List<IdxAndStr> retStateIDs = new List<IdxAndStr> { };
       double probSum = _toStateProb.Sum();

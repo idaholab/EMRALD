@@ -49,6 +49,9 @@ export function useEmraldDiagram() {
   } = useStateContext();
   const { addWindow } = useWindowContext();
 
+  const defaultTransitionProbability = (action?: Action) =>
+    action?.mutExcl === false ? 1.0 : -1;
+
   // Get the edges for the state nodes
   const getEdges = (stateNodes: Node<{ state: State }>[]) => {
     setEdges([]);
@@ -183,7 +186,7 @@ export function useEmraldDiagram() {
         prob:
           currentAction?.newStates && currentAction.newStates.length > 0
             ? 0
-            : -1, // If only a single newState default to -1
+            : defaultTransitionProbability(currentAction),
         varProb: null,
         failDesc: '',
       });
@@ -233,7 +236,7 @@ export function useEmraldDiagram() {
         );
         addNewStateToAction(currentAction, {
           toState: targetState?.name ?? '',
-          prob: -1,
+          prob: defaultTransitionProbability(currentAction),
           varProb: null,
           failDesc: '',
         });

@@ -402,6 +402,35 @@ namespace UnitAndIntegrationTesting
     }
 
     [Fact]
+    [Description("Non-mutually exclusive transition with one remainder state is normalized to probability 1")]
+    public void TransitionActSingleNonMutExclRemainderTest()
+    {
+      string testName = GetCurrentMethodName();
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
+
+      Diagram diagram = new Diagram(EnDiagramType2.dtMulti);
+      State toState = new State("ToState", EnStateType.stStandard, diagram, -1);
+      mainModel.allStates.Add(toState, false);
+
+      TransitionAct act = new TransitionAct("NonMutExclSingleRemainder");
+      act.mutuallyExclusive = false;
+      dynamic jsonObj = JsonConvert.DeserializeObject(@"{
+        ""newStates"": [
+          { ""toState"": ""ToState"", ""prob"": -1, ""varProb"": null, ""failDesc"": """" }
+        ]
+      }");
+
+      act.LoadObjLinks(jsonObj, false, mainModel);
+
+      var selectedStates = act.WhichToState();
+      Assert.Single(selectedStates);
+      Assert.Equal(toState.id, selectedStates[0].idx);
+      Assert.Contains("\"prob\":1", act.GetDerivedJSON(mainModel));
+    }
+
+
+    [Fact]
     [Description("Test to verify that the Run exe action loads from the model correctly")]
     public void RunAppActTest()
     {

@@ -39,7 +39,12 @@
     "mainItem": true,
     "actType": "atTransition",
     "newStates": [
-      { "toState": "Test State 1", "prob": 0, "failDesc": "", "varProb": "Test Variable" }
+      {
+        "toState": "Test State 1",
+        "prob": 0,
+        "failDesc": "",
+        "varProb": "Test Variable"
+      }
     ]
   },
   "unchecks mutually exclusive": {
@@ -50,8 +55,17 @@
     "actType": "atTransition",
     "newStates": [
       { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
-      { "toState": "Test State 2", "prob": 0, "failDesc": "" }
+      { "toState": "Test State 2", "prob": 1, "failDesc": "" }
     ],
+    "mutExcl": false
+  },
+  "normalizes non-mutually-exclusive remaining probability": {
+    "objType": "Action",
+    "name": "normalizes non-mutually-exclusive remaining probability",
+    "desc": "",
+    "mainItem": true,
+    "actType": "atTransition",
+    "newStates": [{ "toState": "Test State 1", "prob": 1, "failDesc": "" }],
     "mutExcl": false
   },
   "removes a state": {
@@ -60,8 +74,6 @@
     "desc": "",
     "mainItem": true,
     "actType": "atTransition",
-    "newStates": [
-      { "toState": "Test State 2", "prob": 0, "failDesc": "" }
-    ]
+    "newStates": [{ "toState": "Test State 2", "prob": 0, "failDesc": "" }]
   }
 }
