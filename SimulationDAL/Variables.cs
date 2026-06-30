@@ -2,23 +2,16 @@
 // Defines the SimVariable hierarchy (local, global, accrual, doc-link) for storing and updating simulation variable values.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-//using SimulationTracking;
 using MessageDefLib;
-using MyStuff.Collections;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using NLog;
-using Sop.Collections.Generic.BTree;
-using static SimulationDAL.AccrualVariable;
 
 namespace SimulationDAL
 {
@@ -35,7 +28,7 @@ namespace SimulationDAL
     protected object _value = null!;
     public bool resetOnRuns = false;
     protected object initValue = null!;
-    NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
+    readonly NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
 
     public double dblValue { get { return Convert.ToDouble(GetValue(false)); } }
     public string strValue { get { return Convert.ToString(GetValue(false))!; } }
@@ -51,7 +44,7 @@ namespace SimulationDAL
     public virtual void SetValue(object newValue)
     {
 
-      logger.Debug("Set variable Value : " + this.name + " = " + newValue.ToString());
+      logger.Debug($"Set variable Value : {name} = {newValue}");
       _value = newValue;
     }
 
@@ -64,11 +57,11 @@ namespace SimulationDAL
       try
       {
         _value = Convert.ChangeType(dynObj, dType);
-        logger.Debug("Init variable Value : " + this.name + " = " + _value.ToString());
+        logger.Debug($"Init variable Value : {name} = {_value}");
       }
       catch (Exception e)
       {
-        throw new Exception("Failed to initialize variable, not the correct type. " + e.Message);
+        throw new Exception($"Failed to initialize variable, not the correct type. {e.Message}");
       }
 
       //save initial value for initValue if resetting
@@ -76,24 +69,24 @@ namespace SimulationDAL
     }
     public virtual void ReInit()
     {
-      this._value = this.initValue;
-      logger.Debug("Init variable Value : " + this.name + " = " + _value.ToString());
+      _value = initValue;
+      logger.Debug($"Init variable Value : {name} = {_value}");
     }
 
     protected SimVariable()
     {
-      this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itVar);
+      _id = SingleNextIDs.Instance.NextID(EnIDTypes.itVar);
     }
 
     protected SimVariable(string inName, EnVarScope inType, Type inDType, object inVal = null!)
     {
-      this._id = SingleNextIDs.Instance.NextID(EnIDTypes.itVar);
+      _id = SingleNextIDs.Instance.NextID(EnIDTypes.itVar);
 
-      this.name = inName;
-      this.varScope = inType;
-      this._value = inVal;
-      this.initValue = inVal;
-      this.dType = inDType;
+      name = inName;
+      varScope = inType;
+      _value = inVal;
+      initValue = inVal;
+      dType = inDType;
     }
 
     /// <summary>
@@ -110,55 +103,43 @@ namespace SimulationDAL
       {
         retStr = "{";
       }
-      retStr = retStr + "\"Variable\": {" + Environment.NewLine + base.GetJSON(false, lists) + "," + Environment.NewLine;
+      retStr += $"\"Variable\": {{{Environment.NewLine + base.GetJSON(false, lists)},{Environment.NewLine}";
 
       //add derived items
-      retStr = retStr + "\"varScope\": \"" + this.varScope.ToString() + "\"," + Environment.NewLine;
+      retStr += $"\"varScope\": \"{varScope}\",{Environment.NewLine}";
 
-      if (this.varScope == EnVarScope.gtDocLink)//wait until GetDerivedJSON for doc variables to put in default value since default value not read until then
+      if (varScope == EnVarScope.gtDocLink)//wait until GetDerivedJSON for doc variables to put in default value since default value not read until then
       { }
-      else if (this.dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
+      else if (dType.Name.ToString() == "String")//need quotes around the string and string should be as is (not all lower case), no quotes around other variable types
       {
-        retStr = retStr + "\"value\": \"" + this._value.ToString() + "\"," + Environment.NewLine;
+        retStr += $"\"value\": \"{_value}\",{Environment.NewLine}";
       }
       else
       {
-        retStr = retStr + "\"value\": " + this._value.ToString()!.ToLower() + "," + Environment.NewLine;
+        retStr += $"\"value\": {_value.ToString()!.ToLower()},{Environment.NewLine}";
       }
 
-      if (this.varScope != EnVarScope.gtDocLink)//should not have resetOnRuns for doc variables
+      if (varScope != EnVarScope.gtDocLink)//should not have resetOnRuns for doc variables
       {
-        retStr = retStr + "\"resetOnRuns\": " + this.resetOnRuns.ToString().ToLower() + "," + Environment.NewLine;//removed quotes
+        retStr += $"\"resetOnRuns\": {resetOnRuns.ToString().ToLower()},{Environment.NewLine}";//removed quotes
       }
 
-      string t = "";
-      switch (this.dType.Name.ToLower())
+      string t = dType.Name.ToLower() switch
       {
-        case "int32":
-          t = "int";
-          break;
-        case "boolean":
-          t = "bool";
-          break;
-        case "string":
-          t = "string";
-          break;
-        case "double":
-          t = "double";
-          break;
-        default:
-          t = "string";
-          break;
-      }
+        "int32" => "int",
+        "boolean" => "bool",
+        "string" => "string",
+        "double" => "double",
+        _ => "string",
+      };
+      retStr += $"\"type\": \"{t}\"";
+      retStr += GetDerivedJSON();
 
-      retStr = retStr + "\"type\": \"" + t + "\"";
-      retStr = retStr + GetDerivedJSON();
-
-      retStr = retStr + Environment.NewLine + "}";
+      retStr += $"{Environment.NewLine}}}";
 
       if (incBrackets)
       {
-        retStr = retStr + Environment.NewLine + "}";
+        retStr += $"{Environment.NewLine}}}";
       }
 
       return retStr;
@@ -166,7 +147,7 @@ namespace SimulationDAL
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
 
       if (wrapped)
       {
@@ -179,38 +160,24 @@ namespace SimulationDAL
       try
       {
         //string dType = ((String)dynObj.type);
-        string t = ((string)dynObj.type).ToUpper().Substring(0, 3);
-        switch (t)
+        string t = ((string)dynObj.type).ToUpper()[..3];
+        dType = t switch
         {
-          case "INT":
-            dType = typeof(int);
-            //_value = Convert.ToInt32(dynObj.value);
-            break;
-          case "DOU":
-          case "TIM":
-            dType = typeof(double);
-            //_value = Convert.ToDouble(dynObj.value);
-            break;
+          "INT" => typeof(int),
+          "DOU" or "TIM" => typeof(double),
           //todo
           //case "TIM":
           //  dType = typeof(TimeSpan);
           //  value = XMLConvert.toTimeSpan(dynObj.value);
           //  break;
-          case "STR":
-            dType = typeof(string);
-            //_value = Convert.ToString(dynObj.value);
-            break;
-          case "BOO":
-            dType = typeof(bool);
-            //_value = Convert.ToBoolean(dynObj.value);
-            break;
-          default:
-            throw new Exception("Value not matching Variable type - " + (string)dynObj.value + " -to- " + (string)dynObj.type);
-        }
+          "STR" => typeof(string),
+          "BOO" => typeof(bool),
+          _ => throw new Exception($"Value not matching Variable type - {(string)dynObj.value} -to- {(string)dynObj.type}"),
+        };
       }
       catch
       {
-        throw new Exception("Variable \"" + this.name + "\"  missing type.");
+        throw new Exception($"Variable \"{name}\"  missing type.");
       }
 
       if (dynObj.monitorInSim != null)
@@ -268,14 +235,14 @@ namespace SimulationDAL
     public virtual List<ScanForReturnItem> ScanFor(ScanForTypes scanType, string modelRootPath)
     {
       //override in the different types if it is possible that the item has something for the scanType 
-      return new List<ScanForReturnItem>();
+      return [];
     }
   }
 
   public class SimGlobVariable : SimVariable
   {
     public SimGlobVariable()
-      : base() { this.varScope = EnVarScope.gtGlobal; }
+      : base() { varScope = EnVarScope.gtGlobal; }
 
     public SimGlobVariable(string inName, Type inDType, object inVal = null!)
       : base(inName, EnVarScope.gtGlobal, inDType, inVal) { }
@@ -295,25 +262,23 @@ namespace SimulationDAL
     public string resourceName { get { return extSim.resourceName; } }
 
     public Sim3DVariable()
-      : base() { this.varScope = EnVarScope.gt3DSim; }
+      : base() { varScope = EnVarScope.gt3DSim; }
 
     public Sim3DVariable(string inName, string inSim3DNameId, Type inDType, object inVal = null!)
       : base(inName, EnVarScope.gt3DSim, inDType, inVal)
     {
-      this.sim3DNameId = inSim3DNameId;
+      sim3DNameId = inSim3DNameId;
     }
 
     public override string GetDerivedJSON()
     {
-      string retStr = "";
-
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"sim3DId\": \"" + this.sim3DNameId.ToString() + "\"";
+      string retStr = $",{Environment.NewLine}\"sim3DId\": \"{sim3DNameId}\"";
 
-      if (!string.IsNullOrEmpty(this.WatchEventCriteria))
+      if (!string.IsNullOrEmpty(WatchEventCriteria))
       {
         //SerializeObject quotes/escapes the fParser expression as a JSON string.
-        retStr = retStr + "," + Environment.NewLine + "\"WatchEventCriteria\": " + JsonConvert.SerializeObject(this.WatchEventCriteria);
+        retStr += $",{Environment.NewLine}\"WatchEventCriteria\": {JsonConvert.SerializeObject(WatchEventCriteria)}";
       }
 
       return retStr;
@@ -321,7 +286,7 @@ namespace SimulationDAL
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       if (wrapped)
       {
         if (dynObj.Variable == null)
@@ -335,7 +300,7 @@ namespace SimulationDAL
       if (dynObj.WatchEventCriteria != null)
       {
         //Optional fParser expression string.
-        this.WatchEventCriteria = Convert.ToString(dynObj.WatchEventCriteria);
+        WatchEventCriteria = Convert.ToString(dynObj.WatchEventCriteria);
       }
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
@@ -349,7 +314,7 @@ namespace SimulationDAL
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       try
       {
         if (wrapped)
@@ -368,28 +333,27 @@ namespace SimulationDAL
         }
         else
         {
-          extSim =  lists.allExtSims.FindByName((string)dynObj.extSim);
+          extSim = lists.allExtSims.FindByName((string)dynObj.extSim);
         }
 
         //Validate the optional WatchEventCriteria fParser expression. It may only reference the
         //sim3D ids of external sim (gt3DSim) variables - this one or others - and no other variables.
-        if (!string.IsNullOrEmpty(this.WatchEventCriteria))
+        if (!string.IsNullOrEmpty(WatchEventCriteria))
         {
-          HashSet<string> allowedIds = new HashSet<string>();
+          HashSet<string> allowedIds = [];
           foreach (var v in lists.allVariables.Values)
           {
             if (v is Sim3DVariable s3d && !string.IsNullOrEmpty(s3d.sim3DNameId))
               allowedIds.Add(s3d.sim3DNameId);
           }
 
-          string fpErr;
-          if (!FParser.TryValidate(this.WatchEventCriteria, allowedIds, out fpErr))
-            throw new Exception("Invalid WatchEventCriteria expression \"" + this.WatchEventCriteria + "\" - " + fpErr);
+          if (!FParser.TryValidate(WatchEventCriteria, allowedIds, out string fpErr))
+            throw new Exception($"Invalid WatchEventCriteria expression \"{WatchEventCriteria}\" - {fpErr}");
         }
       }
       catch (Exception e)
       {
-        throw new Exception("Failed to load object links for Sim3DVariable named - " + this.name + " error - " + e.Message);
+        throw new Exception($"Failed to load object links for Sim3DVariable named - {name} error - {e.Message}");
       }
 
       return true;
@@ -401,27 +365,23 @@ namespace SimulationDAL
     protected EvalDiagram simCompOwner = null!;
 
     public SimCompVariable()
-      : base() { this.varScope = EnVarScope.gtLocal; }
+      : base() { varScope = EnVarScope.gtLocal; }
 
     public SimCompVariable(string inName, EvalDiagram inCompOwner, Type inDType, object inVal = null!)
       : base(inName, EnVarScope.gtLocal, inDType, inVal)
     {
-      this.simCompOwner = inCompOwner;
+      simCompOwner = inCompOwner;
     }
 
     public override string GetDerivedJSON()
     {
-      string retStr = "";
-
       //add derived items
-      retStr = retStr + "," + Environment.NewLine + "\"simCompOwner\": \"" + this.simCompOwner.name + "\"";
-
-      return retStr;
+      return $",{Environment.NewLine}\"simCompOwner\": \"{simCompOwner.name}\"";
     }
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       if (wrapped)
       {
         if (dynObj.Variable == null)
@@ -448,7 +408,7 @@ namespace SimulationDAL
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       if (wrapped)
       {
         if (dynObj.Variable == null)
@@ -461,10 +421,7 @@ namespace SimulationDAL
       {
         lists.allVariables.Add(this, false);
 
-        simCompOwner = (EvalDiagram)lists.allDiagrams.FindByName((string)dynObj.simCompOwner);
-
-        if (simCompOwner == null)
-          throw new Exception("Failed to find Diagram named - " + (string)dynObj.simCompOwner);
+        simCompOwner = (EvalDiagram)lists.allDiagrams.FindByName((string)dynObj.simCompOwner) ?? throw new Exception($"Failed to find Diagram named - {(string)dynObj.simCompOwner}");
       }
 
       return true;
@@ -482,7 +439,7 @@ namespace SimulationDAL
       public EnCumultiveType type = EnCumultiveType.ctTime;
       public double accrualMult = 0.0;
       public EnTimeRate multRate = EnTimeRate.trHours; //for ctTable or ctMultiplier type, rate of accrual in table
-      public List<List<double>> accrualTable = new List<List<double>>();
+      public List<List<double>> accrualTable = [];
 
       //todo for custScript if added
       //public string compCode = "";
@@ -491,33 +448,30 @@ namespace SimulationDAL
       //protected List<Variable> varList = null;
     }
 
-    protected AllStates _StateList = new AllStates();
-    protected Dictionary<int, AccrualVarData> _CumulativeParams = new Dictionary<int, AccrualVarData>();
+    protected AllStates _StateList = [];
+    protected Dictionary<int, AccrualVarData> _CumulativeParams = [];
 
     public AccrualVariable()
       : base()
     {
-      this.varScope = EnVarScope.gtAccrual;
-      this.dType = typeof(double);
-      this.resetOnRuns = true;
+      varScope = EnVarScope.gtAccrual;
+      dType = typeof(double);
+      resetOnRuns = true;
     }
 
     public override string GetDerivedJSON()
     {
-      string retStr = "";
-
       //add derived items
-
-      retStr = retStr + "," + Environment.NewLine + "\"accrualStatesData\": [" + Environment.NewLine;
+      string retStr = $",{Environment.NewLine}\"accrualStatesData\": [{Environment.NewLine}";
       foreach (var state in _StateList)
       {
 
         AccrualVarData varData = _CumulativeParams[state.Key];
-        retStr += JsonConvert.SerializeObject(varData, Newtonsoft.Json.Formatting.Indented) + ",";
+        retStr += $"{JsonConvert.SerializeObject(varData, Newtonsoft.Json.Formatting.Indented)},";
 
       }
-      retStr = retStr.TrimEnd(new Char[] { ',' });
-      retStr += "]" + Environment.NewLine;
+      retStr = retStr.TrimEnd([',']);
+      retStr += $"]{Environment.NewLine}";
 
 
       return retStr;
@@ -525,7 +479,7 @@ namespace SimulationDAL
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       if (wrapped)
       {
         if (dynObj.Variable == null)
@@ -551,7 +505,7 @@ namespace SimulationDAL
 
     public override bool LoadObjLinks(object obj, bool wrapped, EmraldModel lists)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       try
       {
         if (wrapped)
@@ -570,8 +524,8 @@ namespace SimulationDAL
         {
           string error = VerifyDataObj(toStateItem);
           if (error != "")
-            throw new Exception("\"accrualStatesData\"[" + i.ToString() + "], " + error);
-          State curState = (State)lists.allStates.FindByName((string)toStateItem.stateName);
+            throw new Exception($"\"accrualStatesData\"[{i}], {error}");
+          State curState = lists.allStates.FindByName((string)toStateItem.stateName);
           _StateList.Add(curState.id, curState);
           string s = JsonConvert.SerializeObject(toStateItem);
           AccrualVarData data = JsonConvert.DeserializeObject<AccrualVarData>(s)!;
@@ -583,7 +537,7 @@ namespace SimulationDAL
           }
           else
           {
-            lists.AccrualVars.Add(curState.id, new List<AccrualVariable>() { this });
+            lists.AccrualVars.Add(curState.id, [this]);
           }
 
           i++;
@@ -591,7 +545,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("Missing accrualStatesData for accrualVariable named - " + this.name + " error - " + e.Message);
+        throw new Exception($"Missing accrualStatesData for accrualVariable named - {name} error - {e.Message}");
       }
 
       return true;
@@ -643,22 +597,17 @@ namespace SimulationDAL
     /// <returns>returns if changes or not</returns>
     public bool Accrue(TimeSpan tInState, int inStateID)
     {
-      object compValue = this._value;
+      object compValue = _value;
       State inState = _StateList[inStateID];
       if (inState == null)
         return false;
-      AccrualVarData aData = _CumulativeParams[inStateID];
-      if (aData == null)
-      {
-        throw new Exception("Missing AccrualVarData for State - " + inState.name);
-      }
-
+      AccrualVarData aData = _CumulativeParams[inStateID] ?? throw new Exception("Missing AccrualVarData for State - " + inState.name);
       switch (aData.type)
       {
         case EnCumultiveType.ctTime:
           throw new Exception("not implemented time type placeholder");
-          //_value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
-          
+        //_value = (double)_value + Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, this.varRate);
+
 
         case EnCumultiveType.ctMultiplier:
           double addVal = aData.accrualMult * Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, tInState.TotalHours, aData.multRate);
@@ -672,7 +621,7 @@ namespace SimulationDAL
           for (i = 1; i < aData.accrualTable.Count; i++)
           {
 
-            double tblTimeConverted = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, (aData.accrualTable[i][0] - aData.accrualTable[i - 1][0]), aData.multRate);
+            double tblTimeConverted = Globals.ConvertToNewTimeSpan(EnTimeRate.trHours, aData.accrualTable[i][0] - aData.accrualTable[i - 1][0], aData.multRate);
             totalTblTime += tblTimeConverted;
             if (tInState.TotalHours > totalTblTime) //full time used
             {
@@ -688,10 +637,10 @@ namespace SimulationDAL
           break;
 
         default:
-          throw new Exception("Accrual data type" + aData.type.ToString() + " not implemented.");
+          throw new Exception($"Accrual data type{aData.type} not implemented.");
       }
 
-      return compValue != this._value;
+      return compValue != _value;
     }
   }
 
@@ -704,7 +653,7 @@ namespace SimulationDAL
     protected object _dfltValue = null!;
     protected string _docFullPath = "";
     private VariableList _vars = null!;
-    
+
     protected string linkStr()
     {
       if (_vars == null)
@@ -719,20 +668,17 @@ namespace SimulationDAL
         index = _linkStr.IndexOf('%', index);
         if (index == -1)
         {
-          newStr += _linkStr.Substring(lastIdx, (_linkStr.Length - lastIdx));
+          newStr += _linkStr[lastIdx..];
           break;
         }
         int end = 1;
-        while (((end + index) <= _linkStr.Count()) && ((Char.IsDigit(_linkStr[end + index]) || Char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_'))))
+        while (((end + index) <= _linkStr.Length) && (char.IsDigit(_linkStr[end + index]) || char.IsLetter(_linkStr[end + index]) || (_linkStr[end + index] == '_')))
           end++;
         string varName = _linkStr.Substring(index, end).Trim('%');
-        SimVariable replVar = _vars.FindByName(varName, false);
-        if (replVar == null)
-          throw new Exception("Failed to find variable " + varName + " for document variable in " + this.name);
-
-        newStr += _linkStr.Substring(lastIdx, (index - lastIdx));
+        SimVariable replVar = _vars.FindByName(varName, false) ?? throw new Exception($"Failed to find variable {varName} for document variable in {name}");
+        newStr += _linkStr[lastIdx..index];
         newStr += replVar.value.ToString();
-        index = index + end;
+        index += end;
         lastIdx = index;
       }
 
@@ -743,11 +689,11 @@ namespace SimulationDAL
     {
       if (initValue == null)
       {
-        this.InitValue(GetValue(true));
+        InitValue(GetValue(true));
       }
-      
-      this._value = this.initValue!;
-      this._oldLinkStr = ""; //reset so it tires to load as needed
+
+      _value = initValue!;
+      _oldLinkStr = ""; //reset so it tires to load as needed
     }
 
     //params to see if we need to update the value or not on reading data
@@ -757,27 +703,25 @@ namespace SimulationDAL
     public DocVariable(DocType subType)
       : base()
     {
-      this.varScope = EnVarScope.gtDocLink;
-      this.dType = typeof(string);
-      this._docType = subType;
+      varScope = EnVarScope.gtDocLink;
+      dType = typeof(string);
+      _docType = subType;
     }
 
     public override string GetDerivedJSON()
     {
-      string retStr = "";
-
-      retStr += "," + Environment.NewLine + "\"value\": " + _dfltValue;
-      retStr = retStr + "," + Environment.NewLine + "\"docLink\": \"" + _linkStr.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"docType\": \"" + _docType.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"docPath\": \"" + _docPath.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"pathMustExist\": " + _pathMustExist.ToString().ToLower();
+      string retStr = $",{Environment.NewLine}\"value\": {_dfltValue}";
+      retStr += $",{Environment.NewLine}\"docLink\": \"{_linkStr}\"";
+      retStr += $",{Environment.NewLine}\"docType\": \"{_docType}\"";
+      retStr += $",{Environment.NewLine}\"docPath\": \"{_docPath}\"";
+      retStr += $",{Environment.NewLine}\"pathMustExist\": {_pathMustExist.ToString().ToLower()}";
 
       return retStr;
     }
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       if (wrapped)
       {
         if (dynObj.Variable == null)
@@ -794,11 +738,11 @@ namespace SimulationDAL
         throw new Exception("Missing docPath for document variable");
 
       if (dynObj.pathMustExist != null)
-        this._pathMustExist = Convert.ToBoolean(dynObj.pathMustExist);
+        _pathMustExist = Convert.ToBoolean(dynObj.pathMustExist);
 
 
-      this._docType = (DocType)dynObj.docType;
-      this._docPath = Convert.ToString(dynObj.docPath);
+      _docType = (DocType)dynObj.docType;
+      _docPath = Convert.ToString(dynObj.docPath);
 
       if (_docPath.Trim() == "")
         throw new Exception("No doc path assigned for document variable.");
@@ -806,29 +750,29 @@ namespace SimulationDAL
       if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
       {
         _docFullPath = lists.rootPath;
-        if (!_docFullPath.EndsWith(@"\"))
+        if (!_docFullPath.EndsWith('\\'))
           _docFullPath += @"\";
 
-        _docFullPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(_docFullPath, this._docPath));
+        _docFullPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(_docFullPath, _docPath));
       }
       else
       {
-        _docFullPath = this._docPath;
+        _docFullPath = _docPath;
       }
 
       if (_pathMustExist && !File.Exists(_docFullPath) &&
           !_docFullPath.Contains("AppData")) //If this is a multithread path then don't check!
       {
-        throw new Exception("No file located at - " + _docFullPath + " for Document variable ");
+        throw new Exception($"No file located at - {_docFullPath} for Document variable ");
       }
 
       if (dynObj.docLink == null)
         throw new Exception("Missing docLink for document variable");
 
-      this._linkStr = Convert.ToString(dynObj.docLink);
+      _linkStr = Convert.ToString(dynObj.docLink);
 
       bool retVal = base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs);
-      this._vars = lists.allVariables;
+      _vars = lists.allVariables;
 
       //must load everything in LoadObjLinks because the states must be loaded first so we have the IDs. 
       processed = true;
@@ -843,12 +787,12 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("Failed to initialize default value, not the correct type. " + e.Message);
+        throw new Exception($"Failed to initialize default value, not the correct type. {e.Message}");
       }
 
       try
       {
-        if (_pathMustExist && (File.Exists(_docFullPath) && _docFullPath.Contains("AppData"))) //if the file doesn't exist yet, load on reInit 
+        if (_pathMustExist && File.Exists(_docFullPath) && _docFullPath.Contains("AppData")) //if the file doesn't exist yet, load on reInit 
         {
           //do this different for document items as the value is not set by the user data
           base.InitValue(GetValue(true));
@@ -858,7 +802,7 @@ namespace SimulationDAL
       }
       catch (Exception e)
       {
-        throw new Exception("Failed to initialize variable, not the correct type. " + e.Message);
+        throw new Exception($"Failed to initialize variable, not the correct type. {e.Message}");
       }
     }
 
@@ -869,10 +813,10 @@ namespace SimulationDAL
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
         //the docPath is a file references so return it.  
-        itemList.Add(new ScanForRefsItem(this.id,
-                                        this.name,
+        itemList.Add(new ScanForRefsItem(id,
+                                        name,
                                         EnIDTypes.itVar,
-                                        "Document Variable[" + this.name + "] has a file path reference: " + _docPath,
+                                        $"Document Variable[{name}] has a file path reference: {_docPath}",
                                         _docPath));
       }
 
@@ -888,14 +832,14 @@ namespace SimulationDAL
         if (!Path.IsPathRooted(_docPath) && (_docPath[0] == '.'))
         {
           _docFullPath = modelPath;
-          if (!_docFullPath.EndsWith(@"\"))
+          if (!_docFullPath.EndsWith('\\'))
             _docFullPath += @"\";
 
-          _docFullPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(_docFullPath, this._docPath));
+          _docFullPath = CommonFunctions.NormalizeGetFullPath(Path.Combine(_docFullPath, _docPath));
         }
         else
         {
-          _docFullPath = this._docPath;
+          _docFullPath = _docPath;
         }
       }
       else
@@ -921,8 +865,10 @@ namespace SimulationDAL
       {
         try
         {
-          XmlDocument xDoc = new XmlDocument();
-          xDoc.PreserveWhitespace = true;
+          XmlDocument xDoc = new()
+          {
+            PreserveWhitespace = true
+          };
           using (XmlReader reader = XmlReader.Create(_docFullPath))
           {
             xDoc.Load(reader);
@@ -945,13 +891,11 @@ namespace SimulationDAL
               default:
                 if (replNode == null)
                 {
-                  XmlDocument repl = new XmlDocument();
-                  repl.LoadXml(this.strValue);
+                  XmlDocument repl = new();
+                  repl.LoadXml(strValue);
                   replNode = xDoc.ImportNode(repl.DocumentElement!, true);
                 }
-                var p = i.ParentNode;
-                if (p == null)
-                  throw new Exception("Variable SetValue - parent node is null, this should not happen.");
+                var p = i.ParentNode ?? throw new Exception("Variable SetValue - parent node is null, this should not happen.");
                 var ret = p.ReplaceChild(replNode, i);
                 break;
             }
@@ -979,7 +923,7 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          throw new Exception("Failed to set the value for XML variable " + this.name + " check the XML syntax. " + this.linkStr(), ex);
+          throw new Exception($"Failed to set the value for XML variable {name} check the XML syntax. {linkStr()}", ex);
         }
       }
 
@@ -1009,23 +953,23 @@ namespace SimulationDAL
             if (curTimestamp.Year == 1601)
             {
               if (!_pathMustExist)
-                return this._dfltValue;
+                return _dfltValue;
               else
-                throw new FileNotFoundException("Required file not found: " + _docFullPath);
+                throw new FileNotFoundException($"Required file not found: {_docFullPath}");
             }
           }
           catch (Exception ex)
           {
             if (!_pathMustExist)
-              return this._dfltValue;
-            throw new Exception("Error accessing file: " + _docFullPath, ex);
+              return _dfltValue;
+            throw new Exception($"Error accessing file: {_docFullPath}", ex);
           }
 
           // If not changed, return the previous value
           string curLinkStr = linkStr();
           if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
           {
-            return this._value;
+            return _value;
           }
 
           // Value is new, so save the timestamp and look up the new value
@@ -1034,7 +978,7 @@ namespace SimulationDAL
 
           using (Stream s = File.OpenRead(_docFullPath))
           {
-            XmlDocument xDoc = new XmlDocument();
+            XmlDocument xDoc = new();
             xDoc.Load(s);
             XmlElement pRoot = xDoc.DocumentElement!;
             XmlNodeList nodes = pRoot.SelectNodes(curLinkStr)!;
@@ -1061,7 +1005,7 @@ namespace SimulationDAL
                   base.SetValue(Convert.ChangeType(nodes[0]!.InnerText, dType));
                   break;
                 default:
-                  if (this.dType != typeof(string))
+                  if (dType != typeof(string))
                   {
                     throw new Exception("Variable type to match to a XML object must be a String");
                   }
@@ -1072,7 +1016,7 @@ namespace SimulationDAL
             }
             else // More than one, only allow text
             {
-              if (this.dType != typeof(string))
+              if (dType != typeof(string))
               {
                 throw new Exception("Variable type to match to a XML object list must be a String");
               }
@@ -1080,7 +1024,7 @@ namespace SimulationDAL
 
               if (nodes.Count < 1)
               {
-                throw new Exception("Missing match for or data for XPath - " + _linkStr);
+                throw new Exception($"Missing match for or data for XPath - {_linkStr}");
               }
 
               foreach (XmlNode i in nodes)
@@ -1114,10 +1058,10 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          if (dfltOnError && !this._pathMustExist)
-            return this._dfltValue;
+          if (dfltOnError && !_pathMustExist)
+            return _dfltValue;
           else
-            throw new Exception("Failed to get the value for XML variable " + this.name + ". Check the XML syntax. " + this.linkStr(), ex);
+            throw new Exception($"Failed to get the value for XML variable {name}. Check the XML syntax. {linkStr()}", ex);
         }
       }
 
@@ -1140,7 +1084,7 @@ namespace SimulationDAL
       // Update the base value
       base.SetValue(newValue);
       NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
-      logger.Info("Assign Doc Var: " + this.name + "  = " + newValue.ToString());
+      logger.Info($"Assign Doc Var: {name}  = {newValue}");
 
       bool fileUpdated = false;
       int retryCount = 0;
@@ -1150,24 +1094,21 @@ namespace SimulationDAL
         try
         {
           JObject fullObj = null!;
-          using (StreamReader sr = new StreamReader(_docFullPath))
+          using (StreamReader sr = new(_docFullPath))
           {
             string test = sr.ReadToEnd();
             // Update the document
             fullObj = JObject.Parse(test);
-            var modItems = fullObj.SelectTokens(linkStr());
-            if (modItems == null)
-              throw new Exception("Failed to locate document reference - " + linkStr());
-
+            var modItems = fullObj.SelectTokens(linkStr()) ?? throw new Exception($"Failed to locate document reference - {linkStr()}");
             modItems = JsonExtensions.ReplacePath(fullObj, linkStr(), newValue);
           }
           // Update the JSON file with the change
           using (StreamWriter file = File.CreateText(_docFullPath))
-          using (JsonTextWriter writer = new JsonTextWriter(file))
+          using (JsonTextWriter writer = new(file))
           {
             fullObj.WriteTo(writer);
           }
-            
+
 
           fileUpdated = true;
         }
@@ -1179,7 +1120,7 @@ namespace SimulationDAL
         }
         catch (Exception e)
         {
-          logger.Error("Assign Doc Var failed: " + this.name + "  = " + newValue.ToString() + " Error - " + e.Message);
+          logger.Error($"Assign Doc Var failed: {name}  = {newValue} Error - {e.Message}");
           throw new Exception("Failed to update the JSON document.", e);
         }
       }
@@ -1188,7 +1129,7 @@ namespace SimulationDAL
       {
         throw new IOException("Unable to update the file after multiple attempts.");
       }
-      
+
     }
 
     public override object GetValue(bool dfltOnError)
@@ -1213,23 +1154,23 @@ namespace SimulationDAL
             if (curTimestamp.Year == 1601)
             {
               if (!_pathMustExist)
-                return this._dfltValue;
+                return _dfltValue;
               else
-                throw new FileNotFoundException("Required file not found: " + _docFullPath);
+                throw new FileNotFoundException($"Required file not found: {_docFullPath}");
             }
           }
           catch (Exception ex)
           {
             if (!_pathMustExist)
-              return this._dfltValue;
-            throw new Exception("Error accessing file: " + _docFullPath, ex);
+              return _dfltValue;
+            throw new Exception($"Error accessing file: {_docFullPath}", ex);
           }
 
           // If not changed, return the previous value
           string curLinkStr = linkStr();
           if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
           {
-            return this._value;
+            return _value;
           }
 
           // Value is new, so save the timestamp and look up the new value
@@ -1254,7 +1195,7 @@ namespace SimulationDAL
           }
           else if (modItem.Type == JTokenType.Object)
           {
-            if (this.dType != typeof(string))
+            if (dType != typeof(string))
             {
               throw new Exception("Variable type to match to a JSON object must be a String");
             }
@@ -1278,10 +1219,10 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          if (dfltOnError && !this._pathMustExist)
-            return this._dfltValue;
+          if (dfltOnError && !_pathMustExist)
+            return _dfltValue;
           else
-            throw new Exception("Failed to get the value for JSON variable " + this.name + ". Check the JSON syntax. " + this.linkStr(), ex);
+            throw new Exception($"Failed to get the value for JSON variable {name}. Check the JSON syntax. {linkStr()}", ex);
         }
       }
 
@@ -1294,7 +1235,7 @@ namespace SimulationDAL
     }
   }
 
-  public class TextRegExVariable : DocVariable
+  public partial class TextRegExVariable : DocVariable
   {
     private int _regExpLine = -1;//-1 means just the regular expression, box unchecked
     private int _begPosition = 0;
@@ -1302,7 +1243,9 @@ namespace SimulationDAL
 
     private Regex _cachedRegex = null!;
     private string _cachedPattern = null!;
-    private static readonly Regex _lineBreakRegex = new Regex(@"(\n(?!\r)|\r(?!\n)|\r\n?)", RegexOptions.Compiled);
+    [GeneratedRegex(@"(\n(?!\r)|\r(?!\n)|\r\n?)", RegexOptions.Compiled)]
+    private static partial Regex LineBreakRegex();
+    private static readonly Regex _lineBreakRegex = LineBreakRegex();
 
     public TextRegExVariable()
       : base(DocType.dtTextRegEx) { }
@@ -1323,16 +1266,16 @@ namespace SimulationDAL
     public override string GetDerivedJSON()
     {
       string retStr = base.GetDerivedJSON();
-      retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
-      retStr = retStr + "," + Environment.NewLine + "\"begPosition\": " + _begPosition;
-      retStr = retStr + "," + Environment.NewLine + "\"numChars\": " + _numChars;
+      retStr += $",{Environment.NewLine}\"regExpLine\": \"{_regExpLine}\"";
+      retStr += $",{Environment.NewLine}\"begPosition\": {_begPosition}";
+      retStr += $",{Environment.NewLine}\"numChars\": {_numChars}";
       //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
       return retStr;
     }
 
     public override bool DeserializeDerived(object obj, bool wrapped, EmraldModel lists, bool useGivenIDs)
     {
-      dynamic dynObj = (dynamic)obj;
+      dynamic dynObj = obj;
       if (wrapped)
       {
         if (dynObj.Variable == null)
@@ -1342,13 +1285,13 @@ namespace SimulationDAL
       }
 
       if (dynObj.regExpLine != null)
-        this._regExpLine = Convert.ToInt32(dynObj.regExpLine);
+        _regExpLine = Convert.ToInt32(dynObj.regExpLine);
 
       if (dynObj.begPosition != null)
-        this._begPosition = Convert.ToInt32(dynObj.begPosition);
+        _begPosition = Convert.ToInt32(dynObj.begPosition);
 
       if (dynObj.numChars != null)
-        this._numChars = Convert.ToInt32(dynObj.numChars);
+        _numChars = Convert.ToInt32(dynObj.numChars);
 
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
@@ -1376,10 +1319,10 @@ namespace SimulationDAL
 
           if (matches.Count < 1)
           {
-            throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
+            throw new Exception($"Failed to find RegEx - {linkStr()} in file - {_docFullPath}");
           }
 
-          if (this._regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
+          if (_regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
           {
             docTxt = rx.Replace(docTxt, newValue.ToString()!, 1);
             File.WriteAllText(_docFullPath, docTxt);
@@ -1389,29 +1332,29 @@ namespace SimulationDAL
             // Split text blob by that match.
             string[] matchSplit = rx.Split(docTxt);
             // Then count the number of line breaks before the match.
-            int lineMatch = _lineBreakRegex.Matches(matchSplit[0]).Count;
-            string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            int lineMatch = _lineBreakRegex.Count(matchSplit[0]);
+            string[] docLines = docTxt.Split([Environment.NewLine], StringSplitOptions.None);
 
             if (_regExpLine >= 0)
-              lineMatch = lineMatch + _regExpLine;
+              lineMatch += _regExpLine;
             string line = docLines[lineMatch];
 
             if (_begPosition >= 0)
             {
               // Cut the correct section from the line
-              int cnt = this._numChars;
+              int cnt = _numChars;
               if (cnt == 0) // Go to the next space
-                cnt = line.IndexOf(" ", _begPosition) - _begPosition;
+                cnt = line.IndexOf(' ', _begPosition) - _begPosition;
               if (cnt < 0)
                 cnt = line.Length - _begPosition;
 
               string begLine = "";
               if (_begPosition > 0)
-                begLine = line.Substring(0, _begPosition);
+                begLine = line[.._begPosition];
 
               string endLine = "";
               if ((_begPosition + cnt) < line.Length)
-                endLine = line.Substring(_begPosition + cnt, (line.Length - (_begPosition + cnt)));
+                endLine = line[(_begPosition + cnt)..];
 
               string newLine = begLine + newValue.ToString() + endLine;
               docLines[lineMatch] = newLine;
@@ -1433,7 +1376,7 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          throw new Exception("Failed to write new value in document - " + _docFullPath, ex);
+          throw new Exception($"Failed to write new value in document - {_docFullPath}", ex);
         }
       }
 
@@ -1441,7 +1384,7 @@ namespace SimulationDAL
       {
         throw new IOException("Unable to update the file after multiple attempts.");
       }
-      
+
     }
 
     public override object GetValue(bool dfltOnError)
@@ -1468,22 +1411,22 @@ namespace SimulationDAL
             if (curTimestamp.Year == 1601)
             {
               if (!_pathMustExist)
-                return this._dfltValue;
+                return _dfltValue;
               else
-                throw new FileNotFoundException("Required file not found: " + _docFullPath);
+                throw new FileNotFoundException($"Required file not found: {_docFullPath}");
             }
           }
           catch (Exception ex)
           {
             if (!_pathMustExist)
-              return this._dfltValue;
-            throw new Exception("Error accessing file: " + _docFullPath, ex);
+              return _dfltValue;
+            throw new Exception($"Error accessing file: {_docFullPath}", ex);
           }
 
           // If not changed, return the previous value
           if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
           {
-            return this._value;
+            return _value;
           }
 
           // Value is new, so save the timestamp and look up the new value
@@ -1496,13 +1439,13 @@ namespace SimulationDAL
 
           if (!firstMatch.Success)
           {
-            if (dfltOnError && !this._pathMustExist)
+            if (dfltOnError && !_pathMustExist)
             {
               result = _dfltValue;
             }
             else
             {
-              throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
+              throw new Exception($"Failed to find RegEx - {curLinkStr} in file - {_docFullPath}");
             }
           }
           else
@@ -1510,7 +1453,7 @@ namespace SimulationDAL
             string foundTxt = firstMatch.Value;
             try
             {
-              if (this._regExpLine >= 0)
+              if (_regExpLine >= 0)
               {
                 // Count line breaks in the prefix before the match. Earlier code re-ran the
                 // user regex over the whole file via rx.Split just to recover this prefix;
@@ -1518,15 +1461,15 @@ namespace SimulationDAL
                 // Regex.Count on a ReadOnlySpan avoids allocating both the prefix substring
                 // and the MatchCollection that .Matches(...).Count used to create.
                 int lineMatch = _lineBreakRegex.Count(docTxt.AsSpan(0, firstMatch.Index));
-                string[] docLines = docTxt.Split(new[] { Environment.NewLine, "\r" }, StringSplitOptions.None);
+                string[] docLines = docTxt.Split([Environment.NewLine, "\r"], StringSplitOptions.None);
                 foundTxt = docLines[lineMatch + _regExpLine];
 
                 if (_begPosition >= 0)
                 {
                   // Cut the correct section from the line
-                  int cnt = this._numChars;
+                  int cnt = _numChars;
                   if (cnt == 0) // Go to the next space
-                    cnt = foundTxt.IndexOf(" ", _begPosition) - _begPosition;
+                    cnt = foundTxt.IndexOf(' ', _begPosition) - _begPosition;
                   if (cnt < 0)
                     cnt = foundTxt.Length - _begPosition;
                   foundTxt = foundTxt.Substring(_begPosition, cnt);
@@ -1538,7 +1481,7 @@ namespace SimulationDAL
             }
             catch (Exception ex)
             {
-              throw new Exception("Failed to convert - " + foundTxt + " into a " + this.dType.ToString(), ex);
+              throw new Exception($"Failed to convert - {foundTxt} into a {dType}", ex);
             }
           }
 
@@ -1552,13 +1495,13 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          if (dfltOnError && !this._pathMustExist)
+          if (dfltOnError && !_pathMustExist)
           {
-            return this._dfltValue;
+            return _dfltValue;
           }
           else
           {
-            throw new Exception("Failed to get the value for RegEx variable " + this.name + ". Check the RegEx syntax. " + this.linkStr(), ex);
+            throw new Exception($"Failed to get the value for RegEx variable {name}. Check the RegEx syntax. {linkStr()}", ex);
           }
         }
       }
@@ -1574,9 +1517,9 @@ namespace SimulationDAL
 
   public class VariableList : Dictionary<int, SimVariable>, ModelItemLists
   {
-    private List<SimVariable> deleted = new List<SimVariable>();
-    private Dictionary<string, int> nameToID = new Dictionary<string, int>();
-    private Dictionary<string, int> sim3dNameIDToID = new Dictionary<string, int>();
+    private readonly List<SimVariable> deleted = [];
+    private readonly Dictionary<string, int> nameToID = [];
+    private readonly Dictionary<string, int> sim3dNameIDToID = [];
 
     public bool loaded = false;
 
@@ -1585,24 +1528,24 @@ namespace SimulationDAL
       if (nameToID.ContainsKey(var.name))
       {
         if (errorOnDup)
-          throw new Exception("Variable already exists " + var.name);
+          throw new Exception($"Variable already exists {var.name}");
         return;
       }
 
       nameToID.Add(var.name, var.id);
 
-      if (var is Sim3DVariable)
+      if (var is Sim3DVariable variable)
       {
-        string simName = ((Sim3DVariable)var).sim3DNameId;
+        string simName = variable.sim3DNameId;
         if (sim3dNameIDToID.ContainsKey(simName))
-          throw new Exception("External Sim variable \"" + simName + " is already attached to an EMRALD variable and can't be used again.");
+          throw new Exception($"External Sim variable \"{simName}\" is already attached to an EMRALD variable and can't be used again.");
 
-        sim3dNameIDToID.Add(((Sim3DVariable)var).sim3DNameId, var.id);
+        sim3dNameIDToID.Add(variable.sim3DNameId, var.id);
       }
 
-      if (this.ContainsKey(var.id))
-        throw new Exception("Variable " + var.name + " has already been added to the variable list.");
-      this.Add(var.id, var);
+      if (ContainsKey(var.id))
+        throw new Exception($"Variable {var.name} has already been added to the variable list.");
+      Add(var.id, var);
     }
 
     public void SetProcessed(bool value)
@@ -1619,7 +1562,7 @@ namespace SimulationDAL
       foreach (var item in this)
       {
         if (item.Value.processed != true)
-          retStr = retStr + ((BaseObjInfo)item.Value).name + " Variable not processed" + Environment.NewLine;
+          retStr += $"{item.Value.name} Variable not processed{Environment.NewLine}";
       }
 
       return retStr;
@@ -1635,7 +1578,7 @@ namespace SimulationDAL
 
     public void DeleteAll()
     {
-      foreach (SimVariable curVar in this.Values)
+      foreach (SimVariable curVar in Values)
       {
         deleted.Add(curVar);
       }
@@ -1655,7 +1598,7 @@ namespace SimulationDAL
 
     new public void Remove(int key)
     {
-      if (this.ContainsKey(key))
+      if (ContainsKey(key))
       {
         SimVariable temp = this[key];
 
@@ -1670,18 +1613,18 @@ namespace SimulationDAL
       }
     }
 
-    public int maxID { get { if (this.Count > 0) { return this.Keys.Max(); } else { return 0; } } }
+    public int maxID { get { if (Count > 0) { return Keys.Max(); } else { return 0; } } }
 
     public SimVariable FindByName(string name, bool exception = true)
     {
       try
       {
-        if (nameToID.ContainsKey(name))
-          return this[nameToID[name]];
+        if (nameToID.TryGetValue(name, out int value))
+          return this[value];
         else
         {
           if (exception)
-            throw new Exception("Failed to find Variable - " + name);
+            throw new Exception($"Failed to find Variable - {name}");
           else
             return null!;
         }
@@ -1689,7 +1632,7 @@ namespace SimulationDAL
       catch
       {
         if (exception)
-          throw new Exception("Failed to find Variable - " + name);
+          throw new Exception($"Failed to find Variable - {name}");
         else
           return null!;
       }
@@ -1697,12 +1640,12 @@ namespace SimulationDAL
 
     public SimVariable FindBySim3dId(string findSim3dNameId)
     {
-      if (!sim3dNameIDToID.ContainsKey(findSim3dNameId))
+      if (!sim3dNameIDToID.TryGetValue(findSim3dNameId, out int value))
       {
         return null!;
       }
 
-      return this[sim3dNameIDToID[findSim3dNameId]];
+      return this[value];
     }
 
     public static SimVariable CreateNewSimVariable(EnVarScope scope, dynamic item)
@@ -1715,16 +1658,13 @@ namespace SimulationDAL
         case EnVarScope.gtAccrual: return new AccrualVariable();
         case EnVarScope.gtDocLink:
           DocType docVarType = (DocType)Enum.Parse(typeof(DocType), (string)item.docType, true);
-          switch (docVarType)
+          return docVarType switch
           {
-            case DocType.dtJSON:
-              return new JSONDocVariable();
-            case DocType.dtXML:
-              return new XmlDocVariable();
-            case DocType.dtTextRegEx:
-              return new TextRegExVariable();
-            default: throw new Exception("Invalid document variable type.");
-          }
+            DocType.dtJSON => new JSONDocVariable(),
+            DocType.dtXML => new XmlDocVariable(),
+            DocType.dtTextRegEx => new TextRegExVariable(),
+            _ => throw new Exception("Invalid document variable type."),
+          };
         default: throw new Exception("Invalid Sim variable type.");
       }
     }
@@ -1736,25 +1676,25 @@ namespace SimulationDAL
       {
         retStr = "{";
       }
-      retStr = retStr + "\"VariableList\": [";
+      retStr += "\"VariableList\": [";
 
       int i = 1;
-      foreach (SimVariable curItem in this.Values)
+      foreach (SimVariable curItem in Values)
       {
-        retStr = retStr + Environment.NewLine;
+        retStr += Environment.NewLine;
         retStr += curItem.GetJSON(true, lists);
-        if (i < this.Count)
+        if (i < Count)
         {
-          retStr = retStr + "," + Environment.NewLine;
+          retStr += $",{Environment.NewLine}";
         }
         ++i;
       }
 
-      retStr = retStr + "]";
+      retStr += "]";
 
       if (incBrackets)
       {
-        retStr = retStr + Environment.NewLine + "}";
+        retStr += $"{Environment.NewLine}}}";
       }
 
       return retStr;
@@ -1773,15 +1713,13 @@ namespace SimulationDAL
 
           if (loaded && (item.id != null) && ((int)item.id > 0))
           {
-            curItem = this[(int)item.id];
-            if (curItem == null)
-              throw new Exception("Failed to find Variable with id of " + (int)item.id);
+            curItem = this[(int)item.id] ?? throw new Exception($"Failed to find Variable with id of {(int)item.id}");
           }
           else
           {
-            curItem = this.FindByName((string)item.name, false);
+            curItem = FindByName((string)item.name, false);
             if (curItem != null)
-              throw new Exception("Variable with the name of " + (string)item.name + " already exists");
+              throw new Exception($"Variable with the name of {(string)item.name} already exists");
           }
 
           if (curItem == null)
@@ -1795,7 +1733,7 @@ namespace SimulationDAL
         }
         catch (Exception e)
         {
-          throw new Exception("(Variable - " + item["name"] + ") " + e.Message);
+          throw new Exception($"(Variable - {item["name"]}) {e.Message}");
         }
       }
     }
@@ -1812,12 +1750,12 @@ namespace SimulationDAL
         if ((scope == EnVarScope.gtLocal) || (scope == EnVarScope.gtAccrual) || (scope == EnVarScope.gt3DSim))
         {
 
-          SimVariable curItem = this.FindByName((string)item.name, false);
+          SimVariable curItem = FindByName((string)item.name, false);
           try
           {
             if (curItem == null)
             {
-              throw new Exception("Failed to find Action with the name of " + (string)item.name);
+              throw new Exception($"Failed to find Action with the name of {(string)item.name}");
             }
 
             if (!curItem.LoadObjLinks((object)item, false, lists))
@@ -1826,7 +1764,7 @@ namespace SimulationDAL
 
           catch (Exception e)
           {
-            throw new Exception("On variable named " + curItem.name + ". " + e.Message);
+            throw new Exception($"On variable named {curItem.name}. {e.Message}");
           }
         }
       }
@@ -1838,7 +1776,7 @@ namespace SimulationDAL
     {
       var foundList = new List<ScanForReturnItem>();
 
-      foreach (var curItem in this.Values)
+      foreach (var curItem in Values)
       {
         foundList.AddRange(curItem.ScanFor(scanType, lists.rootPath));
       }
