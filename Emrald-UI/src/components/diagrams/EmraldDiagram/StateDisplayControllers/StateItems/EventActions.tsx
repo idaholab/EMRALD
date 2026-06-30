@@ -180,10 +180,11 @@ export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                         &nbsp;
                         {action.name}
                       </Typography>
-                      {isStateInCurrentDiagram(action) ? (
+                      {isStateInCurrentDiagram(action, state.diagramName) ? (
                         <></>
                       ) : (
                         <FaLink
+                          data-testid="diagram-link-icon"
                           onClick={() => {
                             openDiagramFromNewState(action);
                           }}
