@@ -283,6 +283,29 @@ describe('Transition Actions', () => {
     expect(getAction(name)).toEqual(expected[name]);
   });
 
+  test('normalizes non-mutually-exclusive remaining probability', async () => {
+    const name = 'normalizes non-mutually-exclusive remaining probability';
+    renderActionForm(
+      <ActionForm
+        actionData={{
+          objType: 'Action',
+          name,
+          desc: '',
+          actType: 'atTransition',
+          mainItem: true,
+          mutExcl: false,
+          newStates: [{ toState: 'Test State 1', prob: -1, failDesc: '' }],
+        }}
+      />,
+    );
+
+    expect(screen.queryByLabelText('Remaining')).not.toBeInTheDocument();
+    expect(await screen.findByLabelText('Probability')).toHaveValue('1.0');
+
+    await save();
+    expect(getAction(name)).toEqual(expected[name]);
+  });
+
   test('removes a state', async () => {
     const name = 'removes a state';
     renderActionForm(
