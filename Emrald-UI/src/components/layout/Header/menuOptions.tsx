@@ -14,6 +14,14 @@ import {
   type TimelineOptions,
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
 
+function normalizeModelObjType(model: EMRALD_Model): EMRALD_Model {
+  return {
+    ...model,
+    objType: 'EMRALD_Model',
+    templates: model.templates?.map(template => normalizeModelObjType(template)),
+  };
+}
+
 export const projectOptions = {
   New(newProject: () => void) {
     newProject();
@@ -52,10 +60,10 @@ export const projectOptions = {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            populateNewData(upgradedModel);
+            populateNewData(normalizeModelObjType(upgradedModel));
           }
         } else {
-          populateNewData(parsedContent);
+          populateNewData(normalizeModelObjType(parsedContent));
         }
       } catch (error) {
         console.error('Invalid JSON format');
@@ -105,12 +113,12 @@ export const projectOptions = {
         if (
           Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
         ) {
-          mergeNewData(parsedContent);
+          mergeNewData(normalizeModelObjType(parsedContent));
         } else {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            mergeNewData(upgradedModel);
+            mergeNewData(normalizeModelObjType(upgradedModel));
           }
         }
       } catch (error) {
@@ -139,7 +147,7 @@ export const projectOptions = {
       validationResult: ModelValidationResult,
     ) => boolean | Promise<boolean>,
   ) => {
-    const data = structuredClone(appData.value);
+    const data = normalizeModelObjType(structuredClone(appData.value));
     data.desc = data.desc ?? ''; // Ensure desc is a string before validating and saving.
 
     const validationResult = validateModel(data);
@@ -274,12 +282,12 @@ export const projectOptions = {
         if (
           Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
         ) {
-          compareData(parsedContent);
+          compareData(normalizeModelObjType(parsedContent));
         } else {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            compareData(upgradedModel);
+            compareData(normalizeModelObjType(upgradedModel));
           }
         }
       } catch (error) {
@@ -333,12 +341,12 @@ export const templateSubMenuOptions = {
         const parsedContent = JSON.parse(content) as EMRALD_Model[];
         for (const model of parsedContent) {
           if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
-            mergeTemplateToList(model);
+            mergeTemplateToList(normalizeModelObjType(model));
           } else {
             const upgradedModel = upgradeModel(JSON.stringify(model));
             if (upgradedModel) {
               upgradedModel.id = uuidv4();
-              mergeTemplateToList(upgradedModel);
+              mergeTemplateToList(normalizeModelObjType(upgradedModel));
             }
           }
         }
@@ -368,7 +376,11 @@ export const templateSubMenuOptions = {
       return 'error';
     }
     // Convert JSON data to a string
-    const jsonString = JSON.stringify(templates, null, 2);
+    const jsonString = JSON.stringify(
+      templates.map(template => normalizeModelObjType(template)),
+      null,
+      2,
+    );
 
     // Create a Blob (Binary Large Object) with the JSON string
     const blob = new Blob([jsonString], { type: 'application/json' });
