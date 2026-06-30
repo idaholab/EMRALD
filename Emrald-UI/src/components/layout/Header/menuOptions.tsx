@@ -15,9 +15,36 @@ import {
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
 
 function normalizeModelObjType(model: EMRALD_Model): EMRALD_Model {
+  type StateWithLegacyGeometry = EMRALD_Model['StateList'][number] & {
+    geometry?: unknown;
+  };
+
+  type LogicNodeWithLegacyRootName = EMRALD_Model['LogicNodeList'][number] & {
+    rootName?: string;
+  };
+
+  const normalizeState = (state: EMRALD_Model['StateList'][number]) => {
+    const { geometry: _geometry, ...stateWithoutGeometry }
+      = state as StateWithLegacyGeometry;
+    return stateWithoutGeometry;
+  };
+
+  const normalizeLogicNode = (
+    logicNode: EMRALD_Model['LogicNodeList'][number],
+  ) => {
+    const { rootName, isRoot, ...logicNodeWithoutRootName }
+      = logicNode as LogicNodeWithLegacyRootName;
+    return {
+      ...logicNodeWithoutRootName,
+      isRoot: isRoot || rootName === logicNode.name,
+    };
+  };
+
   return {
     ...model,
     objType: 'EMRALD_Model',
+    StateList: model.StateList.map(state => normalizeState(state)),
+    LogicNodeList: model.LogicNodeList.map(logicNode => normalizeLogicNode(logicNode)),
     templates: model.templates?.map(template => normalizeModelObjType(template)),
   };
 }
