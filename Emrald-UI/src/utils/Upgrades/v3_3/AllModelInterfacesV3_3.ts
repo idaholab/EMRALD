@@ -470,6 +470,10 @@ export interface Action {
    */
   exePath?: string;
   /**
+   * Optional. For action type atRunExtApp. When true, the preprocessor code return string determines the executable to run instead of exePath.
+   */
+  ExeFromPreCode?: boolean;
+  /**
    * Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results..
    */
   processOutputFileCode?: string;

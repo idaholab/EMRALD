@@ -1262,6 +1262,7 @@ namespace SimulationDAL
     private Dictionary<string, int> stateVarsAddedPre = new Dictionary<string, int>();
     private Dictionary<string, int> stateVarsAddedPost = new Dictionary<string, int>();
     private string customFormName = ""; //custom form
+    private bool exeFromPreCode = false;
     private bool useProjPathExeWorkingDir = false;
 
     // Engine vars exposed to the make-input and process-output scripts. The binder gates
@@ -1332,6 +1333,7 @@ namespace SimulationDAL
       string retStr = Environment.NewLine + "\"makeInputFileCode\":" + "\"" + code1Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"processOutputFileCode\":" + "\"" + code2Str + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"exePath\":" + "\"" + exePathStr + "\"";
+      retStr = retStr + "," + Environment.NewLine + "\"ExeFromPreCode\": " + exeFromPreCode.ToString().ToLower();
       //retStr = retStr + "," + Environment.NewLine + "\"exeOutputPath\":" + "\"" + exeOutputPath + "\"";
       //retStr = retStr + "," + Environment.NewLine + "\"returnProcess\":" + "\"" + returnProcess.ToString() + "\"";
       if (assignVariable != null)
@@ -1381,6 +1383,7 @@ namespace SimulationDAL
       makeInputFileCode = (string)dynObj.makeInputFileCode;
       processOutputFileCode = (string)dynObj.processOutputFileCode;
       exePath = (string)dynObj.exePath;
+      exeFromPreCode = dynObj.ExeFromPreCode != null && Convert.ToBoolean((object)dynObj.ExeFromPreCode);
 
       if (dynObj.returnProcess != null)
       {
@@ -1749,9 +1752,10 @@ namespace SimulationDAL
       }
 
       string runParams = makeInputFileCompEval.EvaluateString();
-      var locExePath = exePath;
+      var locExePath = exeFromPreCode ? "" : exePath;
 
-      // Only infer the exe from runParams when no exePath was explicitly configured.
+      // Only infer the exe from runParams when no exePath was explicitly configured,
+      // or when ExeFromPreCode explicitly says the preprocessor return string includes it.
       // Otherwise an argument value that merely contains ".exe" (e.g. "--model C:\...\foo.exe")
       // would be mistaken for the executable and clobber the real exePath.
       // Check if runParams contains an exe path (look for .exe extension)
@@ -1777,7 +1781,7 @@ namespace SimulationDAL
       }
 
       string fullExePath = locExePath;
-      if ((locExePath[0] == '.') && (!Path.IsPathRooted(locExePath)))
+      if (!string.IsNullOrEmpty(locExePath) && (locExePath[0] == '.') && (!Path.IsPathRooted(locExePath)))
       {
         fullExePath = lists.rootPath;
         if (!fullExePath.EndsWith(@"\"))
@@ -1790,80 +1794,89 @@ namespace SimulationDAL
 
       int exitCode = 0;
       string workingDir;
-      if (runParams != null)
+      try
       {
-        if (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe"))
-          throw new Exception("No executable specified for RunExtApp - " + this.name);
-        if (locExePath.Contains("cmd.exe"))
+        if (runParams != null)
         {
-          runParams = "/C " + runParams;
-        }
-
-        workingDir = useProjPathExeWorkingDir
-          ? lists.rootPath
-          : CommonFunctions.NormalizeGetDirectoryName(fullExePath);
-
-        // Reuse the ProcessStartInfo across calls (the fields below are the only ones that change).
-        if (extApp == null)
-        {
-          extApp = new ProcessStartInfo();
-          extApp.UseShellExecute = false;
-
-          // In DEBUG builds or whenever the user enabled debug logging via the options JSON,
-          // let the child's stdout/stderr flow through (inherited handles in release with debug on;
-          // a separate console window in DEBUG builds via CreateNoWindow=false below).
-          // In a clean release run (debug == "off"), redirect both streams so we can drain them
-          // into a no-op and keep the EMRALD console clean — also avoids conhost cost.
-#if DEBUG
-          bool suppressChildOutput = false;
-#else
-          bool suppressChildOutput = ConfigData.debugLev == NLog.LogLevel.Off;
-#endif
-          extApp.RedirectStandardOutput = suppressChildOutput;
-          extApp.RedirectStandardError = suppressChildOutput;
-
-#if DEBUG
-          // Show the child's console window in debug builds for easier troubleshooting.
-          extApp.CreateNoWindow = false;
-#else
-          // Release builds: skip console window creation — conhost allocation is a measurable
-          // per-launch cost when running thousands of Monte Carlo iterations.
-          extApp.CreateNoWindow = true;
-#endif
-        }
-        extApp.Arguments = runParams;
-        extApp.FileName = fullExePath;
-        extApp.WorkingDirectory = workingDir;
-
-        // Run the external process & wait for it to finish
-        using (proc = Process.Start(extApp))
-        {
-          if (proc == null)
-            return; //should never happen, declared at top for optimization.
-
-          // If we redirected the streams, we must drain them or the child will block once the
-          // pipe buffer fills. Discard the lines — the intent here is suppression, not capture.
-          if (extApp.RedirectStandardOutput)
+          if (string.IsNullOrWhiteSpace(fullExePath) ||
+              (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe")))
+            throw new Exception("No executable specified for RunExtApp - " + this.name);
+          if (locExePath.Contains("cmd.exe"))
           {
-            proc.OutputDataReceived += (_, _) => { };
-            proc.ErrorDataReceived += (_, _) => { };
-            proc.BeginOutputReadLine();
-            proc.BeginErrorReadLine();
+            runParams = "/C " + runParams;
           }
 
-          proc.WaitForExit();
+          workingDir = useProjPathExeWorkingDir
+            ? lists.rootPath
+            : CommonFunctions.NormalizeGetDirectoryName(fullExePath);
 
-          // Retrieve the app's exit code
-          exitCode = proc.ExitCode;
-          proc.Close();
+          // Reuse the ProcessStartInfo across calls (the fields below are the only ones that change).
+          if (extApp == null)
+          {
+            extApp = new ProcessStartInfo();
+            extApp.UseShellExecute = false;
+
+            // In DEBUG builds or whenever the user enabled debug logging via the options JSON,
+            // let the child's stdout/stderr flow through (inherited handles in release with debug on;
+            // a separate console window in DEBUG builds via CreateNoWindow=false below).
+            // In a clean release run (debug == "off"), redirect both streams so we can drain them
+            // into a no-op and keep the EMRALD console clean — also avoids conhost cost.
+#if DEBUG
+            bool suppressChildOutput = false;
+#else
+            bool suppressChildOutput = ConfigData.debugLev == NLog.LogLevel.Off;
+#endif
+            extApp.RedirectStandardOutput = suppressChildOutput;
+            extApp.RedirectStandardError = suppressChildOutput;
+
+#if DEBUG
+            // Show the child's console window in debug builds for easier troubleshooting.
+            extApp.CreateNoWindow = false;
+#else
+            // Release builds: skip console window creation — conhost allocation is a measurable
+            // per-launch cost when running thousands of Monte Carlo iterations.
+            extApp.CreateNoWindow = true;
+#endif
+          }
+          extApp.Arguments = runParams;
+          extApp.FileName = fullExePath;
+          extApp.WorkingDirectory = workingDir;
+
+          // Run the external process & wait for it to finish
+          using (proc = Process.Start(extApp))
+          {
+            if (proc == null)
+              return; //should never happen, declared at top for optimization.
+
+            // If we redirected the streams, we must drain them or the child will block once the
+            // pipe buffer fills. Discard the lines — the intent here is suppression, not capture.
+            if (extApp.RedirectStandardOutput)
+            {
+              proc.OutputDataReceived += (_, _) => { };
+              proc.ErrorDataReceived += (_, _) => { };
+              proc.BeginOutputReadLine();
+              proc.BeginErrorReadLine();
+            }
+
+            proc.WaitForExit();
+
+            // Retrieve the app's exit code
+            exitCode = proc.ExitCode;
+            proc.Close();
+          }
+        }
+        else
+        {
+          exitCode = -1;
+          workingDir = useProjPathExeWorkingDir
+            ? lists.rootPath
+            : CommonFunctions.NormalizeGetDirectoryName(fullExePath);
         }
       }
-      else
+      catch (Exception ex)
       {
-        exitCode = -1;
-        workingDir = useProjPathExeWorkingDir
-          ? lists.rootPath
-          : CommonFunctions.NormalizeGetDirectoryName(fullExePath);
+        logger.Error("Failed executing RunExtApp action [" + this.name + "] Executable: " + fullExePath + " Parameters: " + runParams + " Error - " + ex.Message);
+        throw;
       }
 
       //Set all the variable values

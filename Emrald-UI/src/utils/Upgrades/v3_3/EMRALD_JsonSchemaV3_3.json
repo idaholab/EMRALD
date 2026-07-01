@@ -443,6 +443,11 @@
           "type": "string",
           "description": "Optional. For action type atRunExtApp. It is the path of the exe to be run. It can be relative to the location of the EMRALD model."
         },
+        "ExeFromPreCode": {
+          "type": "boolean",
+          "description": "Optional. For action type atRunExtApp. When true, the preprocessor code return string determines the executable to run instead of exePath.",
+          "default": false
+        },
         "processOutputFileCode": {
           "type": "string",
           "description": "Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results.."
