@@ -1395,24 +1395,27 @@ namespace SimulationDAL
         throw new Exception("missing assign variable definition.");
       }
 
-      if ((exePath != "") && Path.IsPathRooted(exePath))
+      if (!exeFromPreCode)
       {
-        if (!exePath.StartsWith("cmd.exe") && !File.Exists(exePath))
-          throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
-      }
-      else
-      {
-        if ((exePath != "") && !exePath.StartsWith("cmd.exe"))
+        if ((exePath != "") && Path.IsPathRooted(exePath))
         {
-          string fullExePath = exePath;
-          fullExePath = lists.rootPath;
-          if (!fullExePath.EndsWith(@"\"))
-            fullExePath += @"\";
-
-          fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(fullExePath + exePath));
-          if (!fullExePath.Contains("AppData") &&  //If this is a multithread path then don't check!
-              !File.Exists(fullExePath))
+          if (!exePath.StartsWith("cmd.exe") && !File.Exists(exePath))
             throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
+        }
+        else
+        {
+          if ((exePath != "") && !exePath.StartsWith("cmd.exe"))
+          {
+            string fullExePath = exePath;
+            fullExePath = lists.rootPath;
+            if (!fullExePath.EndsWith(@"\"))
+              fullExePath += @"\";
+
+            fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(fullExePath + exePath));
+            if (!fullExePath.Contains("AppData") &&  //If this is a multithread path then don't check!
+                !File.Exists(fullExePath))
+              throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
+          }
         }
       }
 

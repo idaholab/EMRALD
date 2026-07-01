@@ -132,11 +132,6 @@ export const RunApplication: React.FC = () => {
                 codeVariables={codeVariables}
               />
 
-              <TextFieldComponent
-                label="Executable Location"
-                value={exePath ?? ''}
-                setValue={setExePath}
-              />
               <Tooltip title="Check this box if the preprocessor code determines the executable and is art of the return string">
                 <FormControlLabel
                   control={
@@ -150,6 +145,11 @@ export const RunApplication: React.FC = () => {
                   label="Exe in Preprocessor code"
                 />
               </Tooltip>
+              <TextFieldComponent
+                label="Executable Location"
+                value={exePath ?? ''}
+                setValue={setExePath}
+              />
               <br />
               <FormControl>
                 <InputLabel>Return Type</InputLabel>
