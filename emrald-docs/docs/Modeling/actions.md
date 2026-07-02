@@ -135,7 +135,7 @@ The new value (from the script or the sampled distribution) is assigned to this 
 Selecting **Code** keeps the original script-based behavior:
 
 - **New Value Code (c#):** Type or copy and paste into this text field. The script must have a return value, and that value must be the
-same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section.
+same type as the assigned variable or an error will occur. Other variables from the code can be used in the script if marked in the Variables section. If the script uses file paths, relative paths are from the saved EMRALD model folder for single-thread runs. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. Use `RootPath` or `OrigRootPath` when building paths dynamically or for complex multi-thread scripts.
 - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code. Do not click the check box for the variable that is being updated even if it is used in the code. It only needs to be selected from the "Variable" drop-down menu.
 
 #### Distribution
@@ -163,7 +163,7 @@ Runs user-defined scripts to both execute an external piece of code and process 
 
 - **Preprocess Code (C#):** Type or copy and paste into this text field the C# code you would like to be executed before the executable is started when this action is triggered. This code must return a string, and this string is passed as parameters on end of executable being run. For example, if you are running Notepad, you could return "c:/somepath/file.txt" to open a specific file.
 - **Exe in Preprocessor code:** Select this option if the preprocessor code determines the executable and includes it as part of the returned string.
-- **Use model file as root folder:** Select this option if passing in parameters that are path relative to the saved EMRALD model. When selected, the executable is run with the saved model folder as the working directory.
+- **Use model file as root folder:** Select this option if passing in parameters that are path relative to the saved EMRALD model. When selected, the executable is run with the current EMRALD model folder as the working directory; in multi-thread mode, that is the thread-specific model copy.
 - **Executable Location:** Type or copy and paste into this text field the path to the executable.
 - **Return Type:** The type of process for returning data from the executable. Options are "None", "State List", and "Variable". If a value other than "None" is selected, the Postprocess Code section will be shown (see below).
 - **Target Variable:** If the "Variable" return type is selected, a drop down menu will be shown where you can select the variable to store the results of the external code. The postprocess code (see below) returns the value that is written to this variable.
@@ -172,6 +172,9 @@ If the "State List" return type is selected, this code typically processes the r
 It is recommened that you use a C# compiler to test and debug code before entering it. See the video [Coupling an Executable](https://www.youtube.com/watch?v=SZzNcougc9k&list=PLX2nBoWRisnXWhC2LD9j4jV0iFzQbRcFX&index=6) for detailed instructions and an example.
 - **Variables Used in Code:**  A list of variables available in the model. Click the check box to identify which variables are used in the code.
 Pre-existing variables such as "CurTime", are auto checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the "All" Tab of the Left Navigation Frame. 
+
+
+Run Application pre- and postprocess scripts follow the same script path rules as other EMRALD scripts. For single-thread runs, relative script paths are from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. For complex scripting scenarios, use path variables such as `RootPath`, `OrigRootPath`, and `ExePath` to build explicit paths.
 
 ## Summary of Icons
 Below is a table of icons that either identify the type of action (left-hand side of action item) or identify the status of an action (right-hand side of action item).
