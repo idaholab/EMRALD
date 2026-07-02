@@ -7,6 +7,7 @@ using System.Reflection;
 using SimulationDAL;
 using Xunit;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SimulationEngine;
@@ -477,6 +478,71 @@ namespace UnitAndIntegrationTesting
 
       jsonModel = File.ReadAllText(fileLoc);
       Assert.True(CompareJSON(retJsonStr, jsonModel));
+    }
+
+    [Fact]
+    [Description("Test that pathless system executables do not create multithread executable path references")]
+    public void RunAppPathlessSystemExeMultiThreadScanTest()
+    {
+      string testName = GetCurrentMethodName();
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
+
+      string pathlessSystemExe = "EMRALD_PathOnlyTool.exe";
+      RunExtAppAct systemAct = new RunExtAppAct("RunSystem", "", "", new List<string>(), pathlessSystemExe);
+      List<ScanForRefsItem> systemRefs = systemAct
+        .ScanFor(ScanForTypes.sfMultiThreadIssues, mainModel.rootPath)
+        .OfType<ScanForRefsItem>()
+        .ToList();
+
+      Assert.Empty(systemRefs);
+
+      dynamic pathlessSystemObj = JObject.FromObject(new
+      {
+        Action = new
+        {
+          id = 0,
+          name = "RunDeserializeSystem",
+          desc = "",
+          actType = "atRunExtApp",
+          mainItem = false,
+          makeInputFileCode = "return \"\";",
+          exePath = pathlessSystemExe,
+          processOutputFileCode = "",
+          codeVariables = Array.Empty<string>(),
+        },
+      });
+      RunExtAppAct deserializeAct = new RunExtAppAct();
+      Exception deserializePathlessSystem = Record.Exception(() => deserializeAct.DeserializeDerived(pathlessSystemObj, true, mainModel, false));
+      Assert.Null(deserializePathlessSystem);
+
+      Exception staleSystemUpdate = Record.Exception(() => systemAct.UpdatePathRefs(pathlessSystemExe, "", mainModel.rootPath, mainModel));
+      Assert.Null(staleSystemUpdate);
+
+      mainModel.modelTxt = "{}";
+      mainModel.multiThreadInfo.ToCopyForRefs.Add(new ToCopyForRef(systemAct.name, EnIDTypes.itAction, pathlessSystemExe, new List<string>(), ""));
+      mainModel.allActions.Add(systemAct, false);
+
+      Assert.Empty(mainModel.CanMutiThread());
+      Assert.DoesNotContain(mainModel.multiThreadInfo.ToCopyForRefs, item => item.RefPath == pathlessSystemExe);
+
+      RunExtAppAct localAct = new RunExtAppAct("RunLocalExe", "", "", new List<string>(), "THmodel.exe");
+      List<ScanForRefsItem> localRefs = localAct
+        .ScanFor(ScanForTypes.sfMultiThreadIssues, mainModel.rootPath)
+        .OfType<ScanForRefsItem>()
+        .ToList();
+
+      ScanForRefsItem localRef = Assert.Single(localRefs);
+      Assert.Equal("THmodel.exe", localRef.Path);
+
+      RunExtAppAct relativeAct = new RunExtAppAct("RunRelativeExe", "", "", new List<string>(), @".\THmodel.exe");
+      List<ScanForRefsItem> relativeRefs = relativeAct
+        .ScanFor(ScanForTypes.sfMultiThreadIssues, mainModel.rootPath)
+        .OfType<ScanForRefsItem>()
+        .ToList();
+
+      ScanForRefsItem relativeRef = Assert.Single(relativeRefs);
+      Assert.Equal(@".\THmodel.exe", relativeRef.Path);
     }
 
     [Fact]

@@ -1288,6 +1288,43 @@ namespace SimulationDAL
     // so resolve once per compiled action instead of every RunExtApp invocation.
     private string? cachedFixedExePath;
 
+    private static string CleanExePath(string? path)
+    {
+      return path?.Trim().Trim('"') ?? "";
+    }
+
+    private static bool HasExplicitExePath(string exePath)
+    {
+      return Path.IsPathRooted(exePath) || !string.IsNullOrEmpty(Path.GetDirectoryName(exePath));
+    }
+
+    private static bool IsCmdExePath(string? path)
+    {
+      return string.Equals(Path.GetFileName(CleanExePath(path)), "cmd.exe", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsPathlessSystemExe(string? path, string modelRootPath)
+    {
+      string exePath = CleanExePath(path);
+      if (string.IsNullOrWhiteSpace(exePath) || HasExplicitExePath(exePath))
+        return false;
+
+      if (string.IsNullOrWhiteSpace(modelRootPath))
+        return true;
+
+      string modelExePath = CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(modelRootPath, exePath));
+      return !File.Exists(modelExePath);
+    }
+
+    private static string ResolveExePath(string? path, string modelRootPath)
+    {
+      string exePath = CleanExePath(path);
+      if (string.IsNullOrWhiteSpace(exePath) || Path.IsPathRooted(exePath) || IsPathlessSystemExe(exePath, modelRootPath))
+        return exePath;
+
+      return CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(modelRootPath, exePath));
+    }
+
     // Cached logger — NLog returns the same logger for a given name, no point looking up each call.
     private static readonly NLog.Logger logger = NLog.LogManager.GetLogger("logfile");
 
@@ -1395,28 +1432,12 @@ namespace SimulationDAL
         throw new Exception("missing assign variable definition.");
       }
 
-      if (!exeFromPreCode)
+      if (!exeFromPreCode && !string.IsNullOrWhiteSpace(exePath) && !IsPathlessSystemExe(exePath, lists.rootPath))
       {
-        if ((exePath != "") && Path.IsPathRooted(exePath))
-        {
-          if (!exePath.StartsWith("cmd.exe") && !File.Exists(exePath))
-            throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
-        }
-        else
-        {
-          if ((exePath != "") && !exePath.StartsWith("cmd.exe"))
-          {
-            string fullExePath = exePath;
-            fullExePath = lists.rootPath;
-            if (!fullExePath.EndsWith(@"\"))
-              fullExePath += @"\";
-
-            fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(fullExePath + exePath));
-            if (!fullExePath.Contains("AppData") &&  //If this is a multithread path then don't check!
-                !File.Exists(fullExePath))
-              throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
-          }
-        }
+        string fullExePath = ResolveExePath(exePath, lists.rootPath);
+        if (!fullExePath.Contains("AppData") &&  //If this is a multithread path then don't check!
+            !File.Exists(fullExePath))
+          throw new Exception("Executable path for the \"RunApplication\" action does not exist ! - " + exePath);
       }
 
       if (dynObj.exeOutputPath == null)
@@ -1704,17 +1725,14 @@ namespace SimulationDAL
       // exePath rooting is computed once per compiled action (origRootPath doesn't change).
       if (preEngineVarsUsed.Contains("ExePath") && cachedFixedExePath == null)
       {
-        string fp = exePath;
-        if (!Path.IsPathRooted(fp))
-          fp = CommonFunctions.NormalizeGetFullPath(CommonFunctions.NormalizeCombine(lists.origRootPath, exePath));
-        cachedFixedExePath = fp;
+        cachedFixedExePath = ResolveExePath(exePath, lists.origRootPath);
       }
 
       EngineVarBinder.Bind(makeInputFileCompEval, PreAvailableEngineVars, preEngineVarsUsed, new ScriptContext
       {
         CurTime = curTime.TotalHours,
         RunIdx = lists.curRunIdx,
-        ExePath = cachedFixedExePath,
+        ExePath = cachedFixedExePath ?? "",
         RootPath = lists.rootPath,
         OrigRootPath = lists.origRootPath,
         MultiThreaded = multiThreaded,
@@ -1783,15 +1801,7 @@ namespace SimulationDAL
         }
       }
 
-      string fullExePath = locExePath;
-      if (!string.IsNullOrEmpty(locExePath) && (locExePath[0] == '.') && (!Path.IsPathRooted(locExePath)))
-      {
-        fullExePath = lists.rootPath;
-        if (!fullExePath.EndsWith(@"\"))
-          fullExePath += @"\";
-
-        fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(fullExePath + locExePath));
-      }
+      string fullExePath = ResolveExePath(locExePath, lists.rootPath);
 
       logger.Info("Executing - " + fullExePath + " " + runParams);
 
@@ -1801,10 +1811,11 @@ namespace SimulationDAL
       {
         if (runParams != null)
         {
+          bool pathlessSystemExe = IsPathlessSystemExe(locExePath, lists.rootPath);
           if (string.IsNullOrWhiteSpace(fullExePath) ||
-              (!File.Exists(fullExePath) && !locExePath.Contains("cmd.exe")))
+              (!pathlessSystemExe && !File.Exists(fullExePath)))
             throw new Exception("No executable specified for RunExtApp - " + this.name);
-          if (locExePath.Contains("cmd.exe"))
+          if (IsCmdExePath(locExePath))
           {
             runParams = "/C " + runParams;
           }
@@ -1975,8 +1986,12 @@ namespace SimulationDAL
     {
       var listItems = new List<ScanForReturnItem>();
 
-      //get the full path of the exe if it is reletive
-      string fullExePath = CommonFunctions.NormalizeGetFullPath(Path.Combine(modelRootPath, this.exePath)); 
+      bool exeIsPathlessSystem = IsPathlessSystemExe(this.exePath, modelRootPath);
+      string fullExePath = string.IsNullOrWhiteSpace(this.exePath)
+        ? CommonFunctions.NormalizeGetFullPath(modelRootPath)
+        : exeIsPathlessSystem
+          ? ""
+          : ResolveExePath(this.exePath, modelRootPath);
 
       if (scanType == ScanForTypes.sfMultiThreadIssues)
       {
@@ -1985,19 +2000,15 @@ namespace SimulationDAL
           return listItems;
         }
         //get the reference to the exe, this must be first.
-        // Auto-add the exe to the per-thread ToCopy list by default. Exclude shared system exes
-        // like cmd.exe where copying per-thread doesn't make sense.
-        bool copyExeByDefault = !string.Equals(
-          Path.GetFileName(this.exePath),
-          "cmd.exe",
-          StringComparison.OrdinalIgnoreCase);
-        listItems.Add(new ScanForRefsItem(this.id,
-                                        this.name,
-                                        EnIDTypes.itAction,
-                                        "Run Exe Action [" + this.name + "] has a file path reference to the exe to run: " + this.exePath + ". Assign this Exe and its needed files to be copied.",
-                                        this.exePath,
-                                        "",
-                                        copyExeByDefault));
+        // Ignore pathless system exes; they are not copied or repathed per thread.
+        if (!exeIsPathlessSystem)
+        {
+          listItems.Add(new ScanForRefsItem(this.id,
+                                          this.name,
+                                          EnIDTypes.itAction,
+                                          "Run Exe Action [" + this.name + "] has a file path reference to the exe to run: " + this.exePath + ". Assign this Exe and its needed files to be copied.",
+                                          this.exePath));
+        }
 
         //see if there are any file references in the code.  
 
@@ -2037,12 +2048,16 @@ namespace SimulationDAL
     public void UpdatePathRefs(string oldRef, string newRef, string modelPath, EmraldModel lists)
     {
       bool inExe = false;
-      if (this.exePath == oldRef)
+      if (this.exePath == oldRef && IsPathlessSystemExe(this.exePath, lists.origRootPath))
+      {
+        inExe = true;
+      }
+      else if (this.exePath == oldRef)
       {
         // Decide whether to relocate the exe to the per-thread workspace.
         // If the exe was actually copied into modelPath (the thread's rootPath), use the new
         // per-thread location. Otherwise leave the exe at its original location so all threads
-        // share a single install (e.g. a system exe like cmd.exe).
+        // share a single install.
         string perThreadCandidate = Path.IsPathRooted(newRef)
           ? newRef
           : CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath, newRef));
