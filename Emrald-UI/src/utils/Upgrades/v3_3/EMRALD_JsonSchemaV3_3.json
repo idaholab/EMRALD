@@ -6,23 +6,71 @@
   "description": "EMRALD model schema version 3.3",
   "allOf": [
     {
-      "$ref": "#/definitions/MainModel"
+      "$ref": "#/definitions/Model"
+    }
+  ],
+  "definitions": {
+    "Model": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/MainModel"
+        },
+        {
+          "$ref": "#/definitions/Templates"
+        },
+        {
+          "$ref": "#/definitions/MultiThreadInfoContainer"
+        },
+        {
+          "$ref": "#/definitions/AllowedTopLevelProperties"
+        }
+      ]
     },
-    {
+    "Templates": {
+      "type": "object",
       "title": "Templates",
       "properties": {
         "templates": {
           "type": "array",
           "description": "Templates available to make new diagrams in the model. These are basically small models all on their own.",
           "items": {
-            "$ref": "#/definitions/MainModel"
+            "$ref": "#/definitions/Model"
           }
         }
+      }
+    },
+    "MultiThreadInfoContainer": {
+      "type": "object",
+      "properties": {
+        "multiThreadInfo": {
+          "$ref": "#/definitions/MultiThreadInfo"
+        }
+      }
+    },
+    "AllowedTopLevelProperties": {
+      "type": "object",
+      "properties": {
+        "id": true,
+        "objType": true,
+        "name": true,
+        "desc": true,
+        "emraldVersion": true,
+        "version": true,
+        "versionHistory": true,
+        "DiagramList": true,
+        "ExtSimList": true,
+        "StateList": true,
+        "ActionList": true,
+        "EventList": true,
+        "LogicNodeList": true,
+        "VariableList": true,
+        "changeLog": true,
+        "group": true,
+        "templates": true,
+        "multiThreadInfo": true
       },
       "additionalProperties": false
-    }
-  ],
-  "definitions": {
+    },
     "MainModel": {
       "type": "object",
       "title": "Main_Model",
@@ -33,7 +81,7 @@
           "description": "Temporary, only used internally for some identification or uniqueness needs"
         },
         "objType": {
-          "$ref": "#/definitions/MainItemType"
+          "const": "EMRALD_Model"
         },
         "name": {
           "type": "string",
@@ -114,7 +162,6 @@
           "$ref": "#/definitions/Group"
         }
       },
-      "additionalProperties": false,
       "required": [
         "objType",
         "version",
@@ -357,9 +404,7 @@
           "title": "parameters",
           "description": "Optional. For action type atCngVarVal when useDistribution is true, this is the array of distribution parameters. The shape is shared with etDistribution events for convenience, but the timeRate field on each parameter is ignored for atCngVarVal (variable values are unitless raw numbers, not durations).",
           "items": {
-            "$ref": "#/definitions/EventDistributionParameter",
-            "additionalProperties": false,
-            "required": []
+            "$ref": "#/definitions/EventDistributionParameter"
           }
         },
         "sim3DMessage": {
@@ -398,6 +443,11 @@
           "type": "string",
           "description": "Optional. For action type atRunExtApp. It is the path of the exe to be run. It can be relative to the location of the EMRALD model."
         },
+        "ExeFromPreCode": {
+          "type": "boolean",
+          "description": "Optional. For action type atRunExtApp. When true, the preprocessor code return string determines the executable to run instead of exePath.",
+          "default": false
+        },
         "processOutputFileCode": {
           "type": "string",
           "description": "Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results.."
@@ -431,7 +481,25 @@
         }
       },
       "additionalProperties": false,
-      "required": ["name", "objType", "desc", "actType", "mainItem"]
+      "required": ["name", "objType", "desc", "actType", "mainItem"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "actType": {
+                "const": "atCngVarVal"
+              },
+              "useDistribution": {
+                "const": true
+              }
+            },
+            "required": ["actType", "useDistribution"]
+          },
+          "then": {
+            "required": ["distType", "parameters"]
+          }
+        }
+      ]
     },
     "Event": {
       "type": "object",
@@ -549,9 +617,7 @@
           "title": "parameters",
           "description": "Optional. For event type of etDistribution this is an array of properties for the distribution calculation.",
           "items": {
-            "$ref": "#/definitions/EventDistributionParameter",
-            "additionalProperties": false,
-            "required": []
+            "$ref": "#/definitions/EventDistributionParameter"
           }
         },
         "persistent": {
@@ -570,7 +636,22 @@
         }
       },
       "additionalProperties": false,
-      "required": ["name", "objType", "desc", "mainItem", "evType"]
+      "required": ["name", "objType", "desc", "mainItem", "evType"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evType": {
+                "const": "etDistribution"
+              }
+            },
+            "required": ["evType"]
+          },
+          "then": {
+            "required": ["distType", "parameters", "dfltTimeRate"]
+          }
+        }
+      ]
     },
     "LogicNode": {
       "type": "object",
@@ -906,6 +987,53 @@
       "additionalProperties": false,
       "required": ["name"]
     },
+    "MultiThreadInfo": {
+      "type": "object",
+      "properties": {
+        "ToCopyForRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ToCopyForRef"
+          }
+        },
+        "AssignedTime": {
+          "type": "string",
+          "description": "ISO 8601 date time when the multi-thread copy references were assigned."
+        }
+      },
+      "additionalProperties": false
+    },
+    "ToCopyForRef": {
+      "type": "object",
+      "properties": {
+        "ItemName": {
+          "type": "string"
+        },
+        "ItemType": {
+          "$ref": "#/definitions/EnIDType"
+        },
+        "RefPath": {
+          "type": "string"
+        },
+        "ToCopy": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "string"
+          }
+        },
+        "RelPath": {
+          "type": "string"
+        },
+        "AdjRelRoot": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "EnIDType": {
+      "type": "string",
+      "enum": ["itVar", "itComp", "itState", "itEvent", "itAction", "itTreeNode", "itTimer", "itDiagram", "itExtSim"]
+    },
     "DiagramType": {
       "type": "string",
       "description": "Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram",
@@ -963,7 +1091,8 @@
           "type": "string",
           "description": "Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true."
         }
-      }
+      },
+      "additionalProperties": false
     },
     "VarChangeOptions": {
       "type": "string",

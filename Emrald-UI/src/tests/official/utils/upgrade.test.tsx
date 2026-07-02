@@ -290,4 +290,164 @@ describe('Model Upgrade', () => {
       expect(removeIds(upgraded)).toEqual(expected[name]);
     }
   });
+  test('upgrade v3.2 removes legacy state geometry', () => {
+    const model = {
+      objType: 'EMRALD_Model',
+      name: 'upgrade v3.2 removes legacy state geometry',
+      desc: '',
+      emraldVersion: 3.2,
+      version: 1,
+      versionHistory: [],
+      DiagramList: [],
+      ExtSimList: [],
+      StateList: [
+        {
+          objType: 'State',
+          name: 'State1',
+          desc: '',
+          stateType: 'stStandard',
+          diagramName: 'Diagram1',
+          immediateActions: [],
+          events: [],
+          eventActions: [],
+          geometry: '{ x: 20, y: 90, width: 200, height: 130 }',
+          geometryInfo: { x: 20, y: 90, width: 200, height: 130 },
+        },
+      ],
+      ActionList: [],
+      EventList: [],
+      LogicNodeList: [],
+      VariableList: [],
+      templates: [
+        {
+          objType: 'EMRALD_Model',
+          name: 'template with legacy geometry',
+          desc: '',
+          emraldVersion: 3.2,
+          version: 1,
+          versionHistory: [],
+          DiagramList: [],
+          ExtSimList: [],
+          StateList: [
+            {
+              objType: 'State',
+              name: 'TemplateState1',
+              desc: '',
+              stateType: 'stStandard',
+              diagramName: 'Diagram1',
+              immediateActions: [],
+              events: [],
+              eventActions: [],
+              geometry: '{ x: 1, y: 2 }',
+              geometryInfo: { x: 1, y: 2 },
+            },
+          ],
+          ActionList: [],
+          EventList: [],
+          LogicNodeList: [],
+          VariableList: [],
+        },
+      ],
+    };
+
+    const upgraded = upgradeModel(JSON.stringify(model), 3.3);
+
+    expect(upgraded).not.toBeNull();
+    if (upgraded) {
+      expect(upgraded.emraldVersion).toBe(3.3);
+      expect(upgraded.StateList[0]).toHaveProperty('geometryInfo');
+      expect(upgraded.StateList[0]).not.toHaveProperty('geometry');
+      expect(upgraded.templates?.[0]?.StateList[0]).toHaveProperty('geometryInfo');
+      expect(upgraded.templates?.[0]?.StateList[0]).not.toHaveProperty('geometry');
+    }
+  });
+  test('upgrade v3.2 removes legacy logic rootName', () => {
+    const model = {
+      objType: 'EMRALD_Model',
+      name: 'upgrade v3.2 removes legacy logic rootName',
+      desc: '',
+      emraldVersion: 3.2,
+      version: 1,
+      versionHistory: [],
+      DiagramList: [],
+      ExtSimList: [],
+      StateList: [],
+      ActionList: [],
+      EventList: [],
+      LogicNodeList: [
+        {
+          objType: 'LogicNode',
+          name: 'RootLogic',
+          desc: '',
+          gateType: 'gtAnd',
+          compChildren: [],
+          gateChildren: [],
+          rootName: 'RootLogic',
+        },
+        {
+          objType: 'LogicNode',
+          name: 'ChildLogic',
+          desc: '',
+          gateType: 'gtOr',
+          compChildren: [],
+          gateChildren: [],
+          isRoot: false,
+          rootName: 'RootLogic',
+        },
+        {
+          objType: 'LogicNode',
+          name: 'ExistingRootLogic',
+          desc: '',
+          gateType: 'gtOr',
+          compChildren: [],
+          gateChildren: [],
+          isRoot: true,
+          rootName: 'OtherRoot',
+        },
+      ],
+      VariableList: [],
+      templates: [
+        {
+          objType: 'EMRALD_Model',
+          name: 'template with legacy rootName',
+          desc: '',
+          emraldVersion: 3.2,
+          version: 1,
+          versionHistory: [],
+          DiagramList: [],
+          ExtSimList: [],
+          StateList: [],
+          ActionList: [],
+          EventList: [],
+          LogicNodeList: [
+            {
+              objType: 'LogicNode',
+              name: 'TemplateRoot',
+              desc: '',
+              gateType: 'gtAnd',
+              compChildren: [],
+              gateChildren: [],
+              isRoot: false,
+              rootName: 'TemplateRoot',
+            },
+          ],
+          VariableList: [],
+        },
+      ],
+    };
+
+    const upgraded = upgradeModel(JSON.stringify(model), 3.3);
+
+    expect(upgraded).not.toBeNull();
+    if (upgraded) {
+      expect(upgraded.LogicNodeList[0]).not.toHaveProperty('rootName');
+      expect(upgraded.LogicNodeList[0]?.isRoot).toBe(true);
+      expect(upgraded.LogicNodeList[1]).not.toHaveProperty('rootName');
+      expect(upgraded.LogicNodeList[1]?.isRoot).toBe(false);
+      expect(upgraded.LogicNodeList[2]).not.toHaveProperty('rootName');
+      expect(upgraded.LogicNodeList[2]?.isRoot).toBe(true);
+      expect(upgraded.templates?.[0]?.LogicNodeList[0]).not.toHaveProperty('rootName');
+      expect(upgraded.templates?.[0]?.LogicNodeList[0]?.isRoot).toBe(true);
+    }
+  });
 });

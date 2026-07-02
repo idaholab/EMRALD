@@ -5,6 +5,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "C:/MAAP.exe",
+    "ExeFromPreCode": false,
     "formData": {
       "caType": "MAAP",
       "exePath": "C:/MAAP.exe",
@@ -345,6 +346,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "",
+    "ExeFromPreCode": false,
     "formData": {
       "caType": "MAAP",
       "exePath": "C:/MAAP.exe",
@@ -689,6 +691,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "",
+    "ExeFromPreCode": false,
     "formData": {
       "caType": "MAAP",
       "exePath": "C:/MAAP.exe",
@@ -1029,6 +1032,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "",
+    "ExeFromPreCode": false,
     "variableName": "Test DocLink Variable",
     "formData": {
       "caType": "MAAP",

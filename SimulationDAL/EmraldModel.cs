@@ -423,6 +423,20 @@ namespace SimulationDAL
       ModelRefsList.AddRange(allVariables.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       ModelRefsList.AddRange(allLogicNodes.ScanFor(ScanForTypes.sfMultiThreadIssues, this));
       
+      string MultiThreadRefKey(string itemName, EnIDTypes itemType, string refPath)
+      {
+        return itemType.ToString() + "\u001F" + itemName + "\u001F" + (refPath ?? "");
+      }
+
+      var currentThreadRefKeys = ModelRefsList
+        .OfType<ScanForRefsItem>()
+        .Select(item => MultiThreadRefKey(item.itemName, item.itemType, item.Path))
+        .ToHashSet(StringComparer.Ordinal);
+
+      multiThreadInfo.ToCopyForRefs = multiThreadInfo.ToCopyForRefs
+        .Where(item => currentThreadRefKeys.Contains(MultiThreadRefKey(item.ItemName, item.ItemType, item.RefPath)))
+        .ToList();
+
       //go through each of the found items and look for them in the multiThreadInfo or put in a new list.
       var notAccountedFor = new List<String>();
       Dictionary<string, List<ToCopyForRef>> curMutiThreadItems = new Dictionary<string, List<ToCopyForRef>>();

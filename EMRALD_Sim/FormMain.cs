@@ -44,6 +44,7 @@ namespace EMRALD_Sim
     private int _pathResultsInterval = -1;
     private List<string> _recentFiles = new List<string>();
     private bool _skipApplyOptionsOnce = false;
+    private bool _applyingOptionsToUI = false;
     private bool _isCommandLineRun = false;
     private bool _pendingAutoRun = false; // command-line run is deferred to FormMain_Load so the window handle exists before the sim marshals UI updates
     private Options_cur _curSimOptions = new Options_cur();
@@ -892,10 +893,11 @@ namespace EMRALD_Sim
     private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
     {
       int curT = 0;
-      if (_running && cbMultiThreaded.Checked && cbCurThread.Visible)
-        curT = cbCurThread.SelectedIndex;
+      bool showOverallResults = threadNum == null;
+      if (!showOverallResults && _running && cbMultiThreaded.Checked && cbCurThread.Visible)
+        curT = Math.Max(cbCurThread.SelectedIndex, 0);
 
-      if ((_lastError == "") && ((threadNum == null) || (curT == (int)threadNum))) //only update for specified thread or if there is none specified
+      if ((_lastError == "") && (showOverallResults || (curT == threadNum.Value))) //only update for specified thread or if there is none specified
       {
         lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";
         lblRunTime.Text = runTime.ToString("g");
@@ -1166,7 +1168,16 @@ namespace EMRALD_Sim
       tbLogRunStart.Text = _curSimOptions.debugStartIdx > 0 ? _curSimOptions.debugStartIdx.ToString() : "1";
       tbLogRunEnd.Text = _curSimOptions.debugEndIdx > 0 ? _curSimOptions.debugEndIdx.ToString() : tbRunCnt.Text;
 
-      cbMultiThreaded.Checked = _curSimOptions.threads > 0;
+      _applyingOptionsToUI = true;
+      try
+      {
+        cbMultiThreaded.Checked = _curSimOptions.threads > 0;
+      }
+      finally
+      {
+        _applyingOptionsToUI = false;
+      }
+      UpdateMultiThreadControlsVisibility();
 
       // Coupling settings
       if (_curSimOptions.couplingInfo == null)
@@ -1230,6 +1241,16 @@ namespace EMRALD_Sim
       SetCurThreadCB();
 
       ValidateOptionsVariables();
+    }
+
+    private void UpdateMultiThreadControlsVisibility()
+    {
+      tbThreads.Visible = cbMultiThreaded.Checked;
+      lblThreads.Visible = cbMultiThreaded.Checked;
+      cbClearTemps.Visible = cbMultiThreaded.Checked;
+      lbl_CurThread.Visible = cbMultiThreaded.Checked && (!_running);
+      cbCurThread.Visible = cbMultiThreaded.Checked;
+      bttnPathRefs.Visible = cbMultiThreaded.Checked;
     }
 
     // Verify that every name in _curSimOptions.variables and initVars exists in the loaded model.
@@ -1700,13 +1721,24 @@ namespace EMRALD_Sim
 
     private void cbMultiThreaded_CheckedChanged(object sender, EventArgs e)
     {
+      if (_applyingOptionsToUI)
+      {
+        UpdateMultiThreadControlsVisibility();
+        SetCurThreadCB();
+        return;
+      }
+
       Cursor.Current = Cursors.WaitCursor;
       try
       {
-        if (_sim == null)
+        if (_sim == null || !_validSim || string.IsNullOrWhiteSpace(_sim.modelTxt))
         {
-          MessageBox.Show("You must load a model before enabling multi-threaded mode.", "No Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-          cbMultiThreaded.Checked = false;
+          if (cbMultiThreaded.Checked)
+          {
+            MessageBox.Show("You must load a valid model before enabling multi-threaded mode.", "No Valid Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            cbMultiThreaded.Checked = false;
+          }
+          UpdateMultiThreadControlsVisibility();
           return;
         }
 
@@ -1764,12 +1796,7 @@ namespace EMRALD_Sim
           tbSeed.Enabled = false;
         }
 
-        tbThreads.Visible = cbMultiThreaded.Checked;
-        lblThreads.Visible = cbMultiThreaded.Checked;
-        cbClearTemps.Visible = cbMultiThreaded.Checked;
-        lbl_CurThread.Visible = cbMultiThreaded.Checked && (!_running);
-        cbCurThread.Visible = cbMultiThreaded.Checked;
-        bttnPathRefs.Visible = cbMultiThreaded.Checked;
+        UpdateMultiThreadControlsVisibility();
 
         LoadLib.SetThreads(tbThreads.Text);
         SetCurThreadCB();

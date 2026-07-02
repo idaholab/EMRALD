@@ -65,6 +65,7 @@ interface ActionFormContextType {
   openSimVarParams?: boolean;
   makeInputFileCode?: string;
   exePath?: string;
+  exeFromPreCode: boolean;
   processOutputFileCode?: string;
   formData?: MAAPFormData;
   hasError: boolean;
@@ -98,6 +99,7 @@ interface ActionFormContextType {
   setNewStateItems: Dispatch<SetStateAction<NewStateItem[] | undefined>>;
   setMakeInputFileCode: Dispatch<SetStateAction<string | undefined>>;
   setExePath: Dispatch<SetStateAction<string | undefined>>;
+  setExeFromPreCode: Dispatch<SetStateAction<boolean>>;
   setProcessOutputFileCode: Dispatch<SetStateAction<string | undefined>>;
   setFormData: Dispatch<SetStateAction<MAAPFormData | undefined>>;
   setHasError: Dispatch<SetStateAction<boolean>>;
@@ -193,6 +195,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [exePath, setExePath] = useState(formData?.exePath);
+  const [exeFromPreCode, setExeFromPreCode] = useState(false);
   const { updateVariable, createVariable } = useVariableContext();
   const [returnProcess, setReturnProcess] = useState<
     ReturnProcessType | undefined
@@ -371,6 +374,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
       simEndTime,
       makeInputFileCode,
       exePath,
+      ...(actType === 'atRunExtApp' ? { ExeFromPreCode: exeFromPreCode } : {}),
       processOutputFileCode,
       openSimVarParams,
       mainItem: true,
@@ -588,6 +592,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setSimEndTime(undefined);
     setMakeInputFileCode(undefined);
     setExePath(undefined);
+    setExeFromPreCode(false);
     setProcessOutputFileCode(undefined);
     setFormData(undefined); // Assuming formData can be undefined
     setHasError(false); // Default value for hasError
@@ -650,6 +655,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     // run app items
     setMakeInputFileCode(actionData?.makeInputFileCode);
     setExePath(actionData?.exePath);
+    setExeFromPreCode(actionData?.ExeFromPreCode ?? false);
     setProcessOutputFileCode(actionData?.processOutputFileCode);
     setFormData(actionData?.formData);
     setRaType(actionData?.raType);
@@ -680,6 +686,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         simEndTime,
         makeInputFileCode,
         exePath,
+        exeFromPreCode,
         processOutputFileCode,
         formData,
         hasError,
@@ -712,6 +719,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         setNewStateItems,
         setMakeInputFileCode,
         setExePath,
+        setExeFromPreCode,
         setProcessOutputFileCode,
         setFormData,
         setHasError,

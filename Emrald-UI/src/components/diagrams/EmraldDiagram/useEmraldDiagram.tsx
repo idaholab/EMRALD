@@ -265,12 +265,19 @@ export function useEmraldDiagram() {
 
   // Check if the new states are in this diagram (the one this hook instance
   // is bound to), not whichever diagram last rendered into the shared signal.
-  const isStateInCurrentDiagram = (action?: Action) =>
-    action
-      ? getActionNewStates(action).every(newState =>
-          getCurrentDiagramStates().includes(newState),
-        )
-      : false;
+  const isStateInCurrentDiagram = (action?: Action, diagramName?: string) => {
+    if (!action) {
+      return false;
+    }
+
+    const diagramStates = diagramName
+      ? (getDiagramByDiagramName(diagramName)?.states ?? [])
+      : getCurrentDiagramStates();
+
+    return getActionNewStates(action).every(newState =>
+      diagramStates.includes(newState),
+    );
+  };
 
   // Find and open window for diagram that has new states
   const openDiagramFromNewState = (action: Action) => {

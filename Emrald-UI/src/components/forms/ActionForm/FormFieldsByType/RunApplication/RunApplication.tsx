@@ -1,6 +1,7 @@
 import type { CustomFormType } from '../../../../../types/EMRALD_Model';
 import {
   Box,
+  Checkbox,
   FormControl,
   FormControlLabel,
   InputLabel,
@@ -8,6 +9,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { startCase } from 'lodash';
@@ -28,6 +30,7 @@ export const RunApplication: React.FC = () => {
     codeVariables,
     makeInputFileCode,
     exePath,
+    exeFromPreCode,
     processOutputFileCode,
     raType,
     returnProcess,
@@ -36,6 +39,7 @@ export const RunApplication: React.FC = () => {
     addToUsedVariables,
     setMakeInputFileCode,
     setExePath,
+    setExeFromPreCode,
     setProcessOutputFileCode,
     setRaType,
     setFormData,
@@ -128,6 +132,19 @@ export const RunApplication: React.FC = () => {
                 codeVariables={codeVariables}
               />
 
+              <Tooltip title="Check this box if the preprocessor code determines the executable and is art of the return string">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={exeFromPreCode}
+                      onChange={event => {
+                        setExeFromPreCode(event.target.checked);
+                      }}
+                    />
+                  }
+                  label="Exe in Preprocessor code"
+                />
+              </Tooltip>
               <TextFieldComponent
                 label="Executable Location"
                 value={exePath ?? ''}
