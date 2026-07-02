@@ -162,6 +162,8 @@ Runs user-defined scripts to both execute an external piece of code and process 
 <img src="/images/Modeling/actions/RunApplicationOptions.png" alt="Run Application Options" width="500"/>
 
 - **Preprocess Code (C#):** Type or copy and paste into this text field the C# code you would like to be executed before the executable is started when this action is triggered. This code must return a string, and this string is passed as parameters on end of executable being run. For example, if you are running Notepad, you could return "c:/somepath/file.txt" to open a specific file.
+- **Exe in Preprocessor code:** Select this option if the preprocessor code determines the executable and includes it as part of the returned string.
+- **Use model file as root folder:** Select this option if passing in parameters that are path relative to the saved EMRALD model. When selected, the executable is run with the saved model folder as the working directory.
 - **Executable Location:** Type or copy and paste into this text field the path to the executable.
 - **Return Type:** The type of process for returning data from the executable. Options are "None", "State List", and "Variable". If a value other than "None" is selected, the Postprocess Code section will be shown (see below).
 - **Target Variable:** If the "Variable" return type is selected, a drop down menu will be shown where you can select the variable to store the results of the external code. The postprocess code (see below) returns the value that is written to this variable.

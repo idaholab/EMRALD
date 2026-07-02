@@ -179,7 +179,12 @@ export const projectOptions = {
 
     const validationResult = validateModel(data);
     if (!validationResult.valid) {
-      console.error('Model validation errors:', validationResult.errors);
+      console.error('Model validation failed:', {
+        schemaVersion: validationResult.schemaVersion,
+        displayedErrorCount: validationResult.errors.length,
+        truncated: validationResult.truncated,
+        firstError: validationResult.errors[0],
+      });
       const shouldSave = confirmInvalidModelSave
         ? await confirmInvalidModelSave(validationResult)
         : window.confirm(

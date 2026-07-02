@@ -474,10 +474,16 @@ export interface Action {
    */
   ExeFromPreCode?: boolean;
   /**
+   * Optional. For action type atRunExtApp. When true, the executable working directory is the model project path instead of the executable directory.
+   */
+  useProjPathExeWorkingDir?: boolean;
+  /**
    * Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results..
    */
   processOutputFileCode?: string;
-  formData?: MAAPFormData;
+  formData?: {
+    [k: string]: unknown;
+  };
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
