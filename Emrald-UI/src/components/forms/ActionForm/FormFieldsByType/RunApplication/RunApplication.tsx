@@ -72,6 +72,16 @@ export const RunApplication: React.FC = () => {
   }, [customFormType]);
 
   useEffect(() => {
+    if (
+      applicationType === 'custom'
+      && customFormType === 'MAAP'
+      && !exeFromPreCode
+    ) {
+      setExeFromPreCode(true);
+    }
+  }, [applicationType, customFormType, exeFromPreCode, setExeFromPreCode]);
+
+  useEffect(() => {
     if (!hasInitialCode) {
       setHasInitialCode(true);
       if (!makeInputFileCode || makeInputFileCode.length === 0) {
@@ -85,6 +95,9 @@ export const RunApplication: React.FC = () => {
   const handleSetCustomFormType = (value: CustomFormType) => {
     setCustomFormType(value);
     setFormData(prev => ({ ...prev, caType: value }));
+    if (value === 'MAAP') {
+      setExeFromPreCode(true);
+    }
   };
 
   const handleApplicationTypeChange = (value: string) => {

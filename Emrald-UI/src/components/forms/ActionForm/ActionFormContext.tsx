@@ -325,6 +325,11 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         ? 1.0
         : probability;
     };
+    const isMAAPCustomApplication =
+      actType === 'atRunExtApp'
+      && raType === 'custom'
+      && formData?.caType === 'MAAP';
+    const savedExeFromPreCode = isMAAPCustomApplication || exeFromPreCode;
 
     action.value = {
       ...action.value,
@@ -377,7 +382,7 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
       simEndTime,
       makeInputFileCode,
       exePath,
-      ...(actType === 'atRunExtApp' ? { ExeFromPreCode: exeFromPreCode } : {}),
+      ...(actType === 'atRunExtApp' ? { ExeFromPreCode: savedExeFromPreCode } : {}),
       ...(actType === 'atRunExtApp' ? { useProjPathExeWorkingDir } : {}),
       processOutputFileCode,
       openSimVarParams,

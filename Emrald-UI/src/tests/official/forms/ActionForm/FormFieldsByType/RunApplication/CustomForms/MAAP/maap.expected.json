@@ -5,7 +5,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "C:/MAAP.exe",
-    "ExeFromPreCode": false,
+    "ExeFromPreCode": true,
     "formData": {
       "caType": "MAAP",
       "exePath": "C:/MAAP.exe",
@@ -338,6 +338,7 @@
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n      string neededResults = @\".inp,.log,.D59\";\n      //only need to copy results when not running multi threaded so document variable have correct path. if multithreaded this is taken care of.\n      if(!MultiThreaded)\n      {\n        string sourceDir = Path.Join(\n          Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),\n          \"EMRALD_MAAP\"\n        );\n        if (!Directory.Exists(sourceDir))\n          throw new Exception(\"MAAP source folder not found - \" + sourceDir);\n  \n        // Copy .inp, .log, and .D59 to inpLoc which is RootPath + ../MAAPFiles/\n        if (!Path.IsPathRooted(inpLoc))\n          inpLoc = Path.GetFullPath(Path.Join(RootPath, inpLoc));    \n        string maapFilesPath = Path.GetDirectoryName(inpLoc);\n        if(!Directory.Exists(maapFilesPath))\n          throw new Exception(\"MAAP results destination folder invalid - \" + maapFilesPath);\n  \n        string baseFileName = Path.GetFileNameWithoutExtension(inpLoc);\n      \n        string[] maapFilesExtensions = neededResults.Split(',', StringSplitOptions.RemoveEmptyEntries);\n        foreach (string ext in maapFilesExtensions)\n        {\n          string sourceFile = Path.Combine(sourceDir, baseFileName + ext);\n          string destFile = Path.Combine(maapFilesPath, baseFileName + ext);\n    \n          if (File.Exists(sourceFile))\n          {\n            File.Copy(sourceFile, destFile, true);\n          }\n        }\n      }",
     "raType": "custom",
     "returnProcess": "rtNone",
+    "useProjPathExeWorkingDir": false,
     "codeVariables": []
   },
   "uses variables": {
@@ -346,7 +347,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "",
-    "ExeFromPreCode": false,
+    "ExeFromPreCode": true,
     "formData": {
       "caType": "MAAP",
       "exePath": "C:/MAAP.exe",
@@ -683,6 +684,7 @@
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
     "returnProcess": "rtNone",
+    "useProjPathExeWorkingDir": false,
     "codeVariables": ["Test_Variable"]
   },
   "modifies initiators": {
@@ -691,7 +693,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "",
-    "ExeFromPreCode": false,
+    "ExeFromPreCode": true,
     "formData": {
       "caType": "MAAP",
       "exePath": "C:/MAAP.exe",
@@ -1024,6 +1026,7 @@
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
     "returnProcess": "rtNone",
+    "useProjPathExeWorkingDir": false,
     "codeVariables": []
   },
   "sets output": {
@@ -1032,7 +1035,7 @@
     "desc": "",
     "actType": "atRunExtApp",
     "exePath": "",
-    "ExeFromPreCode": false,
+    "ExeFromPreCode": true,
     "variableName": "Test DocLink Variable",
     "formData": {
       "caType": "MAAP",
@@ -1368,6 +1371,7 @@
     "processOutputFileCode": "string inpLoc = @\"C:/Test.INP\";\n  if (!Path.IsPathRooted(inpLoc))\n        inpLoc = RootPath + inpLoc;\n    string docVarPath = @\"./MAAP/temp.log\";\n  if (!Path.IsPathRooted(docVarPath))\n        docVarPath = RootPath + docVarPath;\n  string resLoc = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), \"EMRALD_MAAP\", Path.GetFileNameWithoutExtension(inpLoc) + \".log\");\n  Directory.CreateDirectory(Path.GetDirectoryName(docVarPath));\n  File.Copy(resLoc, docVarPath, true);",
     "raType": "custom",
     "returnProcess": "rtNone",
+    "useProjPathExeWorkingDir": false,
     "codeVariables": []
   }
 }
