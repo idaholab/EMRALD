@@ -1299,6 +1299,7 @@ namespace SimulationDAL
     private int _regExpLine = -1;//-1 means just the regular expression, box unchecked
     private int _begPosition = 0;
     private int _numChars = -1; //-1 goes until the next white space
+    private int _regExpGroup = -1;
 
     private Regex _cachedRegex = null!;
     private string _cachedPattern = null!;
@@ -1326,6 +1327,7 @@ namespace SimulationDAL
       retStr = retStr + "," + Environment.NewLine + "\"regExpLine\": \"" + _regExpLine.ToString() + "\"";
       retStr = retStr + "," + Environment.NewLine + "\"begPosition\": " + _begPosition;
       retStr = retStr + "," + Environment.NewLine + "\"numChars\": " + _numChars;
+      retStr += $",{Environment.NewLine}\"regExpGroup\": {_regExpGroup}";
       //TODO- File from Model Editor doesn't print JSON with " " around the value for _numChars, but this does. Should it have the " "? Should the other fields have " " around the value? Currently the Model Editor does print JSON with " " around the value for _regExpLine and _begPosition
       return retStr;
     }
@@ -1349,6 +1351,9 @@ namespace SimulationDAL
 
       if (dynObj.numChars != null)
         this._numChars = Convert.ToInt32(dynObj.numChars);
+
+      if (dynObj.regExpGroup != null)
+        _regExpGroup = Convert.ToInt32(dynObj.regExpGroup);
 
 
       if (!base.DeserializeDerived((object)dynObj, false, lists, useGivenIDs))
@@ -1376,12 +1381,30 @@ namespace SimulationDAL
 
           if (matches.Count < 1)
           {
-            throw new Exception("Failed to find RegEx - " + linkStr() + " in file - " + _docFullPath);
+            throw new Exception($"Failed to find RegEx - {linkStr()} in file - {_docFullPath}");
           }
 
-          if (this._regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
+          if (_regExpLine == -1) // Change functionality, unchecked, want to use RegEx itself as variable value and variable value to be changed
           {
-            docTxt = rx.Replace(docTxt, newValue.ToString()!, 1);
+            if (_regExpGroup >= 0)
+            {
+              // Replace only the nth capture group within the first match.
+              Match m = matches[0];
+              Group g = m.Groups[_regExpGroup];
+              if (g.Success)
+              {
+                // Build replacement: text before group + newValue + text after group (still within the match).
+                docTxt = $"{docTxt[..(m.Index + g.Index)]}{newValue}{docTxt[(m.Index + g.Index + g.Length)..]}";
+              }
+              else
+              {
+                throw new Exception($"RegExp group {_regExpGroup} did not capture in match for - {linkStr()}");
+              }
+            }
+            else
+            {
+              docTxt = rx.Replace(docTxt, newValue.ToString()!, 1);
+            }
             File.WriteAllText(_docFullPath, docTxt);
           }
           else
@@ -1389,29 +1412,29 @@ namespace SimulationDAL
             // Split text blob by that match.
             string[] matchSplit = rx.Split(docTxt);
             // Then count the number of line breaks before the match.
-            int lineMatch = _lineBreakRegex.Matches(matchSplit[0]).Count;
-            string[] docLines = docTxt.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            int lineMatch = _lineBreakRegex.Count(matchSplit[0]);
+            string[] docLines = docTxt.Split([Environment.NewLine], StringSplitOptions.None);
 
             if (_regExpLine >= 0)
-              lineMatch = lineMatch + _regExpLine;
+              lineMatch += _regExpLine;
             string line = docLines[lineMatch];
 
             if (_begPosition >= 0)
             {
               // Cut the correct section from the line
-              int cnt = this._numChars;
+              int cnt = _numChars;
               if (cnt == 0) // Go to the next space
-                cnt = line.IndexOf(" ", _begPosition) - _begPosition;
+                cnt = line.IndexOf(' ', _begPosition) - _begPosition;
               if (cnt < 0)
                 cnt = line.Length - _begPosition;
 
               string begLine = "";
               if (_begPosition > 0)
-                begLine = line.Substring(0, _begPosition);
+                begLine = line[.._begPosition];
 
               string endLine = "";
               if ((_begPosition + cnt) < line.Length)
-                endLine = line.Substring(_begPosition + cnt, (line.Length - (_begPosition + cnt)));
+                endLine = line[(_begPosition + cnt)..];
 
               string newLine = begLine + newValue.ToString() + endLine;
               docLines[lineMatch] = newLine;
@@ -1433,7 +1456,7 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          throw new Exception("Failed to write new value in document - " + _docFullPath, ex);
+          throw new Exception($"Failed to write new value in document - {_docFullPath}", ex);
         }
       }
 
@@ -1441,7 +1464,7 @@ namespace SimulationDAL
       {
         throw new IOException("Unable to update the file after multiple attempts.");
       }
-      
+
     }
 
     public override object GetValue(bool dfltOnError)
@@ -1468,22 +1491,22 @@ namespace SimulationDAL
             if (curTimestamp.Year == 1601)
             {
               if (!_pathMustExist)
-                return this._dfltValue;
+                return _dfltValue;
               else
-                throw new FileNotFoundException("Required file not found: " + _docFullPath);
+                throw new FileNotFoundException($"Required file not found: {_docFullPath}");
             }
           }
           catch (Exception ex)
           {
             if (!_pathMustExist)
-              return this._dfltValue;
-            throw new Exception("Error accessing file: " + _docFullPath, ex);
+              return _dfltValue;
+            throw new Exception($"Error accessing file: {_docFullPath}", ex);
           }
 
           // If not changed, return the previous value
           if ((curTimestamp == _timestamp) && (_oldLinkStr == curLinkStr) && (_value != null))
           {
-            return this._value;
+            return _value;
           }
 
           // Value is new, so save the timestamp and look up the new value
@@ -1496,13 +1519,13 @@ namespace SimulationDAL
 
           if (!firstMatch.Success)
           {
-            if (dfltOnError && !this._pathMustExist)
+            if (dfltOnError && !_pathMustExist)
             {
               result = _dfltValue;
             }
             else
             {
-              throw new Exception("Failed to find RegEx - " + curLinkStr + " in file - " + _docFullPath);
+              throw new Exception($"Failed to find RegEx - {curLinkStr} in file - {_docFullPath}");
             }
           }
           else
@@ -1510,7 +1533,17 @@ namespace SimulationDAL
             string foundTxt = firstMatch.Value;
             try
             {
-              if (this._regExpLine >= 0)
+              if (_regExpGroup >= 0)
+              {
+                // Extract from the specified capture group instead of the full match.
+                Group g = firstMatch.Groups[_regExpGroup];
+                if (!g.Success)
+                {
+                  throw new Exception($"RegExp group {_regExpGroup} did not capture in match for - {curLinkStr}");
+                }
+                foundTxt = g.Value;
+              }
+              else if (_regExpLine >= 0)
               {
                 // Count line breaks in the prefix before the match. Earlier code re-ran the
                 // user regex over the whole file via rx.Split just to recover this prefix;
@@ -1518,15 +1551,15 @@ namespace SimulationDAL
                 // Regex.Count on a ReadOnlySpan avoids allocating both the prefix substring
                 // and the MatchCollection that .Matches(...).Count used to create.
                 int lineMatch = _lineBreakRegex.Count(docTxt.AsSpan(0, firstMatch.Index));
-                string[] docLines = docTxt.Split(new[] { Environment.NewLine, "\r" }, StringSplitOptions.None);
+                string[] docLines = docTxt.Split([Environment.NewLine, "\r"], StringSplitOptions.None);
                 foundTxt = docLines[lineMatch + _regExpLine];
 
                 if (_begPosition >= 0)
                 {
                   // Cut the correct section from the line
-                  int cnt = this._numChars;
+                  int cnt = _numChars;
                   if (cnt == 0) // Go to the next space
-                    cnt = foundTxt.IndexOf(" ", _begPosition) - _begPosition;
+                    cnt = foundTxt.IndexOf(' ', _begPosition) - _begPosition;
                   if (cnt < 0)
                     cnt = foundTxt.Length - _begPosition;
                   foundTxt = foundTxt.Substring(_begPosition, cnt);
@@ -1538,7 +1571,7 @@ namespace SimulationDAL
             }
             catch (Exception ex)
             {
-              throw new Exception("Failed to convert - " + foundTxt + " into a " + this.dType.ToString(), ex);
+              throw new Exception($"Failed to convert - {foundTxt} into a {dType}", ex);
             }
           }
 
@@ -1552,13 +1585,13 @@ namespace SimulationDAL
         }
         catch (Exception ex)
         {
-          if (dfltOnError && !this._pathMustExist)
+          if (dfltOnError && !_pathMustExist)
           {
-            return this._dfltValue;
+            return _dfltValue;
           }
           else
           {
-            throw new Exception("Failed to get the value for RegEx variable " + this.name + ". Check the RegEx syntax. " + this.linkStr(), ex);
+            throw new Exception($"Failed to get the value for RegEx variable {name}. Check the RegEx syntax. {linkStr()}", ex);
           }
         }
       }
