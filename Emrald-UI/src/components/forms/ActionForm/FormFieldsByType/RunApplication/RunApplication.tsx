@@ -1,6 +1,7 @@
 import type { CustomFormType } from '../../../../../types/EMRALD_Model';
 import {
   Box,
+  Checkbox,
   FormControl,
   FormControlLabel,
   InputLabel,
@@ -8,6 +9,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { startCase } from 'lodash';
@@ -28,6 +30,8 @@ export const RunApplication: React.FC = () => {
     codeVariables,
     makeInputFileCode,
     exePath,
+    exeFromPreCode,
+    useProjPathExeWorkingDir,
     processOutputFileCode,
     raType,
     returnProcess,
@@ -36,6 +40,8 @@ export const RunApplication: React.FC = () => {
     addToUsedVariables,
     setMakeInputFileCode,
     setExePath,
+    setExeFromPreCode,
+    setUseProjPathExeWorkingDir,
     setProcessOutputFileCode,
     setRaType,
     setFormData,
@@ -66,6 +72,16 @@ export const RunApplication: React.FC = () => {
   }, [customFormType]);
 
   useEffect(() => {
+    if (
+      applicationType === 'custom'
+      && customFormType === 'MAAP'
+      && !exeFromPreCode
+    ) {
+      setExeFromPreCode(true);
+    }
+  }, [applicationType, customFormType, exeFromPreCode, setExeFromPreCode]);
+
+  useEffect(() => {
     if (!hasInitialCode) {
       setHasInitialCode(true);
       if (!makeInputFileCode || makeInputFileCode.length === 0) {
@@ -79,6 +95,9 @@ export const RunApplication: React.FC = () => {
   const handleSetCustomFormType = (value: CustomFormType) => {
     setCustomFormType(value);
     setFormData(prev => ({ ...prev, caType: value }));
+    if (value === 'MAAP') {
+      setExeFromPreCode(true);
+    }
   };
 
   const handleApplicationTypeChange = (value: string) => {
@@ -128,6 +147,32 @@ export const RunApplication: React.FC = () => {
                 codeVariables={codeVariables}
               />
 
+              <Tooltip title="Check this box if the preprocessor code determines the executable and is art of the return string">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={exeFromPreCode}
+                      onChange={event => {
+                        setExeFromPreCode(event.target.checked);
+                      }}
+                    />
+                  }
+                  label="Exe in Preprocessor code"
+                />
+              </Tooltip>
+              <Tooltip title="Check this if there are path relative parameters from the above preprocess code that are relative to this EMRALD model location">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={useProjPathExeWorkingDir}
+                      onChange={event => {
+                        setUseProjPathExeWorkingDir(event.target.checked);
+                      }}
+                    />
+                  }
+                  label="Use model file as root folder"
+                />
+              </Tooltip>
               <TextFieldComponent
                 label="Executable Location"
                 value={exePath ?? ''}

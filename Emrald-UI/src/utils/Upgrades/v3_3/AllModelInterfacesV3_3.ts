@@ -1,7 +1,7 @@
 /**
  * EMRALD model schema version 3.3
  */
-export type EMRALD_Model = Main_Model & Templates;
+export type EMRALD_Model = Main_Model & Templates & MultiThreadInfoContainer;
 /**
  * For event type of etDistribution this is the name of the distribution parameter.
  */
@@ -14,6 +14,16 @@ export type MainItemType
     | 'LogicNode'
     | 'Variable'
     | 'EMRALD_Model';
+export type EnIDType
+  = | 'itVar'
+    | 'itComp'
+    | 'itState'
+    | 'itEvent'
+    | 'itAction'
+    | 'itTreeNode'
+    | 'itTimer'
+    | 'itDiagram'
+    | 'itExtSim';
 /**
  * Type of the diagram. dtSingle - means you can only be in one state of the diagram at a time and states evaluate to a value. dtMulti - means you can be in multiple states at a time, but cant evaluate the diagram
  */
@@ -198,7 +208,7 @@ export interface Main_Model {
    * Temporary, only used internally for some identification or uniqueness needs
    */
   id?: string;
-  objType: MainItemType;
+  objType: 'EMRALD_Model';
   /**
    * Name of the EMRALD model
    */
@@ -460,10 +470,20 @@ export interface Action {
    */
   exePath?: string;
   /**
+   * Optional. For action type atRunExtApp. When true, the preprocessor code return string determines the executable to run instead of exePath.
+   */
+  ExeFromPreCode?: boolean;
+  /**
+   * Optional. For action type atRunExtApp. When true, the executable working directory is the model project path instead of the executable directory.
+   */
+  useProjPathExeWorkingDir?: boolean;
+  /**
    * Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results..
    */
   processOutputFileCode?: string;
-  formData?: MAAPFormData;
+  formData?: {
+    [k: string]: unknown;
+  };
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
@@ -994,5 +1014,26 @@ export interface Templates {
   /**
    * Templates available to make new diagrams in the model. These are basically small models all on their own.
    */
-  templates?: Main_Model[];
+  templates?: EMRALD_Model[];
+}
+export interface MultiThreadInfoContainer {
+  multiThreadInfo?: MultiThreadInfo;
+}
+export interface MultiThreadInfo {
+  /**
+   * References copied when preparing model data for multi-threaded simulation.
+   */
+  ToCopyForRefs?: ToCopyForRef[];
+  /**
+   * ISO 8601 date time when the multi-thread copy references were assigned.
+   */
+  AssignedTime?: string;
+}
+export interface ToCopyForRef {
+  ItemName?: string;
+  ItemType?: EnIDType;
+  RefPath?: string;
+  ToCopy?: string[] | null;
+  RelPath?: string;
+  AdjRelRoot?: string;
 }
