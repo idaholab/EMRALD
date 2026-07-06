@@ -448,12 +448,18 @@
           "description": "Optional. For action type atRunExtApp. When true, the preprocessor code return string determines the executable to run instead of exePath.",
           "default": false
         },
+        "useProjPathExeWorkingDir": {
+          "type": "boolean",
+          "description": "Optional. For action type atRunExtApp. When true, the executable working directory is the model project path instead of the executable directory.",
+          "default": false
+        },
         "processOutputFileCode": {
           "type": "string",
           "description": "Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results.."
         },
         "formData": {
-          "$ref": "#/definitions/MAAPFormData",
+          "type": "object",
+          "additionalProperties": true,
           "description": "Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats."
         },
         "template": {

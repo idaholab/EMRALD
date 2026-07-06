@@ -102,6 +102,7 @@ Listed as Var Condition in the drop-down menu, this event monitors variable valu
 
 - **Evaluate Code (c#):** Type or copy and paste into this text field the C# code to evaluate and determine if this event is triggered. This must return a boolean true or false value.
   - **Variables used in code:** A list of variables available in the model. Pre-existing variables such as CurTime are auto-checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Click the check box to identify which variables are used in the code.
+  - **Script file paths:** For single-thread runs, relative paths are from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. Use `RootPath` or `OrigRootPath` when building paths dynamically or for complex multi-thread scripts.
 
   
 <h3>State Change <img src="/images/Modeling/events/stateChange.png" alt="State Change" width="25"/></h3>
@@ -138,6 +139,7 @@ Listed as Var Condition in the drop-down menu, this event monitors variable valu
   - **External Sim Variable:** Click the field to expand the drop down menu of external simulation variables you created in the model. Select the one that will change when this event could be triggered. One must be selected to create the event. 
   - **Evaluate Code (C#):** Type or copy and paste the C# code into this text field to evaluate and determine if this event is triggered. This must return a boolean true or false value.
   - **Variables used in code:** A list of other variables available in the model for use in evaluating the code. Pre-existing variables such as CurTime are auto-checked and always available. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will include the all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Check the box to identify which variables are used in the code.
+  - **Script file paths:** For single-thread runs, relative paths are from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. Use `RootPath` or `OrigRootPath` when building paths dynamically or for complex multi-thread scripts.
 
 ## Time-based Events
 

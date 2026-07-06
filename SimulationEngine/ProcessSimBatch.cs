@@ -252,6 +252,34 @@ namespace SimulationEngine
       _stop = true;
     }
 
+    private CurrentDirectoryRestore SetCurrentDirectoryForSingleThreadRun()
+    {
+      if (threadNum != null || !Directory.Exists(this._lists.rootPath))
+        return default;
+
+      string originalCurrentDirectory = Directory.GetCurrentDirectory();
+      Directory.SetCurrentDirectory(this._lists.rootPath);
+      return new CurrentDirectoryRestore(originalCurrentDirectory);
+    }
+
+    private readonly struct CurrentDirectoryRestore : IDisposable
+    {
+      private readonly string originalCurrentDirectory;
+
+      public CurrentDirectoryRestore(string originalCurrentDirectory)
+      {
+        this.originalCurrentDirectory = originalCurrentDirectory;
+      }
+
+      public void Dispose()
+      {
+        if (!string.IsNullOrEmpty(originalCurrentDirectory))
+        {
+          Directory.SetCurrentDirectory(originalCurrentDirectory);
+        }
+      }
+    }
+
     public void RunBatch()
     {
      
@@ -259,6 +287,7 @@ namespace SimulationEngine
       _tempThreadFilesWriten = false;
       this._lists = new EmraldModel();
       this._lists.DeserializeJSON(modelTxt, origionalRootPath, origionalFileName, threadNum); //this will update any references automatically if the threadNum != null
+      using CurrentDirectoryRestore currentDirectoryRestore = SetCurrentDirectoryForSingleThreadRun();
       _tempThreadFilesWriten = true;
 
       //if this is mutithreaded then it needs a temp work area for the model and results.

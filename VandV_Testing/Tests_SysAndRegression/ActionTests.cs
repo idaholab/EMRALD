@@ -168,9 +168,6 @@ namespace SysAndRegressionTesting
     }
 
 
-    // THIS TEST CURRENTLY FAILS
-    // Expected : The global variable "Var" to be equal to the run id
-    // Current Result: An error, it cannot find the string in the path to MultithreadWrite.txt
     [Fact]
     [Description("Test pathing in the change variable action when running in multi thread")]
     public async Task MultiThreadVarChange()

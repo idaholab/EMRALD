@@ -659,6 +659,11 @@ namespace SimulationDAL
     public void UpdatePathRefs(string oldRef, string newRef, string modelPath)
     {
       //find the file references in the code and look for a match of the oldRef and replace.
+      if (!modelPath.EndsWith(@"\"))
+        modelPath += @"\";
+
+      newRef = CommonFunctions.NormalizeGetFullPath(Path.Combine(modelPath, newRef));
+
       string newRefEscaped = newRef.Replace("\\", "\\\\").Replace("\"", "\\\"");
       var paths = CommonFunctions.FindFilePathReferences(ref scriptCode, oldRef, newRefEscaped);
 

@@ -378,7 +378,18 @@ export const Header: React.FC = () => {
           are fixed.
         </Typography>
         <Alert severity="warning" sx={{ mb: 2 }}>
-          Review the validation errors before choosing whether to save anyway.
+          Review the grouped validation errors before choosing whether to save
+          anyway. Showing
+          {saveValidationResult?.truncated
+            ? ` the first ${saveValidationResult.errorLimit}`
+            : ` ${saveValidationResult?.errors.length ?? 0}`}
+          {' '}
+          error
+          {(saveValidationResult?.truncated
+            || (saveValidationResult?.errors.length ?? 0) !== 1)
+            ? 's'
+            : ''}
+          .
         </Alert>
         <Box
           component="ul"

@@ -54,6 +54,9 @@ Whether you are identifying or adding variables to a Variable Condition Event or
 
 This list will include pre-existing variables such as CurTime. See [Dynamic Scripts](./backendInfo.md#dynamic-scripts) for more information. It will also include all of the variables that you create and are listed in the All tab of the Left Navigation Frame. Check the box(es) to identify which variables are used in the code.
 
+
+If a script uses file paths, relative paths are from the saved EMRALD model folder for single-thread runs. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. Path variables such as `RootPath` and `OrigRootPath` are available for scripts that need to build paths dynamically or support complex multi-thread scenarios.
+
 See Variable Condition Event under [Conditional Events](./events.md#conditional-events) and Change Variable Value Action under [Types of Actions](./actions.md#types-of-actions) for more information on those respective topics.
 
 ## Variable Scope

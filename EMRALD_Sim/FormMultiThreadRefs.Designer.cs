@@ -57,8 +57,8 @@
       // 
       // lstItems
       // 
+      lstItems.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
       lstItems.FormattingEnabled = true;
-      lstItems.ItemHeight = 15;
       lstItems.Location = new System.Drawing.Point(10, 30);
       lstItems.Name = "lstItems";
       lstItems.Size = new System.Drawing.Size(176, 319);
@@ -67,6 +67,7 @@
       // 
       // txtRefPath
       // 
+      txtRefPath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
       txtRefPath.Location = new System.Drawing.Point(201, 47);
       txtRefPath.Name = "txtRefPath";
       txtRefPath.ReadOnly = true;
@@ -75,6 +76,7 @@
       // 
       // txtRelPath
       // 
+      txtRelPath.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
       txtRelPath.Location = new System.Drawing.Point(201, 94);
       txtRelPath.Name = "txtRelPath";
       txtRelPath.ReadOnly = true;
@@ -83,15 +85,17 @@
       // 
       // lstToCopy
       // 
+      lstToCopy.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
       lstToCopy.FormattingEnabled = true;
-      lstToCopy.ItemHeight = 15;
+      lstToCopy.HorizontalScrollbar = true;
       lstToCopy.Location = new System.Drawing.Point(201, 150);
       lstToCopy.Name = "lstToCopy";
-      lstToCopy.Size = new System.Drawing.Size(438, 139);
+      lstToCopy.Size = new System.Drawing.Size(438, 199);
       lstToCopy.TabIndex = 3;
       // 
       // btnAddCopy
       // 
+      btnAddCopy.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
       btnAddCopy.Location = new System.Drawing.Point(656, 150);
       btnAddCopy.Name = "btnAddCopy";
       btnAddCopy.Size = new System.Drawing.Size(66, 26);
@@ -102,6 +106,7 @@
       // 
       // btnRemoveCopy
       // 
+      btnRemoveCopy.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
       btnRemoveCopy.Location = new System.Drawing.Point(656, 188);
       btnRemoveCopy.Name = "btnRemoveCopy";
       btnRemoveCopy.Size = new System.Drawing.Size(66, 26);
@@ -112,6 +117,7 @@
       // 
       // btnOK
       // 
+      btnOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
       btnOK.Enabled = false;
       btnOK.Location = new System.Drawing.Point(481, 366);
       btnOK.Name = "btnOK";
@@ -123,6 +129,7 @@
       // 
       // btnCancel
       // 
+      btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
       btnCancel.Location = new System.Drawing.Point(569, 366);
       btnCancel.Name = "btnCancel";
       btnCancel.Size = new System.Drawing.Size(79, 33);
