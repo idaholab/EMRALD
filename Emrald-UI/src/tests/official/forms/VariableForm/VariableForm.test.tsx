@@ -24,7 +24,9 @@ describe('Variable Form', () => {
     await user.type(await screen.findByLabelText('Description'), 'Desc');
     await user.type(await screen.findByLabelText('Value'), '1');
     await user.click(
-      await screen.findByLabelText('Reset to initial value for every simulation run'),
+      await screen.findByLabelText(
+        'Reset to initial value for every simulation run',
+      ),
     );
 
     await save();
@@ -35,7 +37,10 @@ describe('Variable Form', () => {
     renderVariableForm(<VariableForm />);
     const user = userEvent.setup();
 
-    await user.type(await screen.findByLabelText('Name'), 'requires_initial_value');
+    await user.type(
+      await screen.findByLabelText('Name'),
+      'requires_initial_value',
+    );
 
     expect(await screen.findByRole('button', { name: 'Save' })).toBeDisabled();
   });
@@ -94,31 +99,111 @@ describe('Variable Form', () => {
 
     // Drag the states to the form
     await user.click(await screen.findByText('States'));
-    drag(await screen.findByText('Test State'), await screen.findByText('Drop State Items Here'));
-    drag(await screen.findByText('Test State 2'), await screen.findByText('Accrual Rate'));
+    drag(
+      await screen.findByText('Test State'),
+      await screen.findByText('Drop State Items Here'),
+    );
+    drag(
+      await screen.findByText('Test State 2'),
+      await screen.findByText('Accrual Rate'),
+    );
 
     // Change second state to dynamic
     await user.click((await screen.findAllByLabelText('Dynamic'))[1]);
 
     // Set multiplication factor and rate for the first state
-    await user.type(await screen.findByLabelText('Accrual Multiplication Factor'), '2'); // This actually enters a value of 12 because the 1 is in the text field by default
+    await user.type(
+      await screen.findByLabelText('Accrual Multiplication Factor'),
+      '2',
+    ); // This actually enters a value of 12 because the 1 is in the text field by default
     await user.click(
-      await findByRole((await screen.findAllByLabelText('Multiplication Rate'))[0], 'combobox'),
+      await findByRole(
+        (await screen.findAllByLabelText('Multiplication Rate'))[0],
+        'combobox',
+      ),
     );
     await user.click(await screen.findByRole('option', { name: 'Day' }));
 
     // Add rows to the second state
     await user.click(await screen.findByText('Add Row'));
     await user.click(await screen.findByText('Add Row'));
-    await user.type((await screen.findAllByLabelText('Simulation Time'))[0], '1');
+    await user.type(
+      (await screen.findAllByLabelText('Simulation Time'))[0],
+      '1',
+    );
     await user.type((await screen.findAllByLabelText('Accrual Rate'))[0], '2');
-    await user.type((await screen.findAllByLabelText('Simulation Time'))[1], '3');
+    await user.type(
+      (await screen.findAllByLabelText('Simulation Time'))[1],
+      '3',
+    );
     await user.type((await screen.findAllByLabelText('Accrual Rate'))[1], '4');
 
     await save();
     expect(getVariable(name)).toEqual(expected[name]);
   });
 
+  test('existing accrual variable displays and saves accrual states data', async () => {
+    const name = 'existing_accrual_variable';
+    renderVariableForm(
+      <VariableForm
+        variableData={{
+          objType: 'Variable',
+          name,
+          desc: '',
+          varScope: 'gtAccrual',
+          value: 0,
+          type: 'double',
+          accrualStatesData: [
+            {
+              stateName: 'Existing Static State',
+              type: 'ctMultiplier',
+              accrualMult: 3,
+              multRate: 'trMinutes',
+              accrualTable: [],
+            },
+            {
+              stateName: 'Existing Dynamic State',
+              type: 'ctTable',
+              accrualMult: 1,
+              multRate: 'trHours',
+              accrualTable: [
+                [0, 2],
+                [4, 5],
+              ],
+            },
+          ],
+        }}
+      />,
+    );
+
+    expect(
+      await screen.findByText('Existing Static State'),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText('Existing Dynamic State'),
+    ).toBeInTheDocument();
+
+    await save();
+    expect(getVariable(name)?.accrualStatesData).toEqual([
+      {
+        stateName: 'Existing Static State',
+        type: 'ctMultiplier',
+        accrualMult: 3,
+        multRate: 'trMinutes',
+        accrualTable: [],
+      },
+      {
+        stateName: 'Existing Dynamic State',
+        type: 'ctTable',
+        accrualMult: 1,
+        multRate: 'trHours',
+        accrualTable: [
+          [0, 2],
+          [4, 5],
+        ],
+      },
+    ]);
+  });
   test('ext sim variable', async () => {
     const name = 'ext_sim_variable';
     renderVariableForm(
@@ -166,7 +251,12 @@ describe('Variable Form', () => {
     await user.type(await screen.findByLabelText('3DSimID'), '1234');
 
     // Select the external sim from the dropdown
-    await user.click(await findByRole(await screen.findByLabelText('External Sim'), 'combobox'));
+    await user.click(
+      await findByRole(
+        await screen.findByLabelText('External Sim'),
+        'combobox',
+      ),
+    );
     await user.click(await screen.findByRole('option', { name: 'MooseSim' }));
 
     await save();
@@ -195,7 +285,10 @@ describe('Variable Form', () => {
     );
 
     // The External Sim field should show the linked sim's name.
-    const combobox = await findByRole(await screen.findByLabelText('External Sim'), 'combobox');
+    const combobox = await findByRole(
+      await screen.findByLabelText('External Sim'),
+      'combobox',
+    );
     expect(combobox).toHaveTextContent('MooseSim');
   });
 
@@ -216,11 +309,17 @@ describe('Variable Form', () => {
     const user = userEvent.setup();
 
     // Enter values
-    await user.click(await findByRole(await screen.findByLabelText('Doc Type'), 'combobox'));
+    await user.click(
+      await findByRole(await screen.findByLabelText('Doc Type'), 'combobox'),
+    );
     await user.click(await screen.findByRole('option', { name: 'JSON' }));
     await user.type(await screen.findByLabelText('Doc Path'), 'C:/');
     await user.type(await screen.findByLabelText('Var Link'), 'Test');
-    await user.click(await screen.findByLabelText('Doc Path and Var Link must exist on startup'));
+    await user.click(
+      await screen.findByLabelText(
+        'Doc Path and Var Link must exist on startup',
+      ),
+    );
     await user.type(await screen.findByLabelText('Default'), 'Default');
 
     await save();
