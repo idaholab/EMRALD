@@ -43,8 +43,10 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     value,
     typeProperties,
     setValue,
+    setAccrualStatesData,
     setHasError,
     setType,
+    sync,
   } = useVariableFormContext();
   const { updateVariable, createVariable } = useVariableContext();
   const { handleClose } = useWindowContext();
@@ -57,12 +59,20 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
   useEffect(() => {
     setName(variableData?.name ?? '');
     setType(variableData?.type ?? 'int');
-    setValue(variableData?.value === undefined ? '' : String(variableData.value));
+    setValue(
+      variableData?.value === undefined ? '' : String(variableData.value),
+    );
     if (variableData?.name) {
       setOriginalName(variableData.name);
     }
     setDesc(variableData?.desc ?? '');
     setVarScope(variableData?.varScope ?? 'gtGlobal');
+    const accrualStatesData =
+      variableData?.varScope === 'gtAccrual'
+        ? variableData.accrualStatesData
+        : undefined;
+    setAccrualStatesData(accrualStatesData);
+    sync({ accrualStatesData });
   }, []);
 
   const handleSave = (variableData?: Variable) => {
@@ -121,7 +131,7 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
       appData.value.VariableList.filter(
         variable => variable.name !== originalName,
       ).some(variable => variable.name === trimmedName)
-      || /[^a-zA-Z0-9-_]/.test(trimmedName),
+        || /[^a-zA-Z0-9-_]/.test(trimmedName),
     );
     setName(updatedName);
   };
