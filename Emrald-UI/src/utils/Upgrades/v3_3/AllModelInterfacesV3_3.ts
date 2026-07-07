@@ -936,6 +936,10 @@ export interface Variable {
    */
   numChars?: number;
   /**
+   * Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this defines a regex matching group to read the result from.
+   */
+  regExpGroup?: number;
+  /**
    * Optional, this specifies if the value of the variable is to be reset to the default value on each run or retain the value from the last run.
    */
   resetOnRuns?: boolean;

@@ -11,6 +11,7 @@
         "regExpLine": "1",
         "begPosition": 0,
         "numChars": -1,
+        "regExpGroup":  -1,
         "pathMustExist": true,
         "type": "int",
       }

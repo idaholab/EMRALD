@@ -6,6 +6,7 @@ import {
   Link,
   MenuItem,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
@@ -35,6 +36,8 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
   const [showRegExFields, setShowRegExFields] = useState<boolean>();
   const [showNumChars, setShowNumChars] = useState<boolean>();
   const [numChars, setNumChars] = useState<number>();
+  const [showGroup, setShowGroup] = useState(false);
+  const [regExpGroup, setRegExpGroup] = useState<number>();
 
   useEffect(() => {
     setDocType(variableData?.docType ?? 'dtXML');
@@ -53,6 +56,10 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
       setShowNumChars(true);
       setNumChars(variableData.numChars);
     }
+    if (variableData?.regExpGroup !== undefined) {
+      setShowGroup(true);
+      setRegExpGroup(variableData.regExpGroup);
+    }
     setAccrualStatesData(variableData?.accrualStatesData);
     setTypeProperties([
       'docType',
@@ -63,6 +70,7 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
       'regExpLine',
       'begPosition',
       'accrualStatesData',
+      'regExpGroup',
     ]);
   }, []);
 
@@ -75,6 +83,7 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
       numChars,
       regExpLine,
       begPosition,
+      regExpGroup,
     });
   }, [
     docLink,
@@ -84,6 +93,7 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
     numChars,
     regExpLine,
     begPosition,
+    regExpGroup,
   ]);
 
   return (
@@ -181,6 +191,22 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
               />
             }
           />
+          <Tooltip title="Read the value from a match group in your Regex expression">
+            <FormControlLabel
+              label="Read from group"
+              control={
+                <Checkbox
+                  checked={showGroup}
+                  onChange={e => {
+                    if (!e.target.checked) {
+                      setRegExpGroup(undefined);
+                    }
+                    setShowGroup(e.target.checked);
+                  }}
+                />
+              }
+            />
+          </Tooltip>
           {showRegExFields && (
             <>
               <FormControlLabel
@@ -238,11 +264,26 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
               )}
             </>
           )}
+          {showGroup && (
+            <TextField
+              label="Match Group"
+              margin="normal"
+              variant="outlined"
+              type="number"
+              size="small"
+              value={regExpGroup}
+              onChange={e => {
+                setRegExpGroup(Number.parseInt(e.target.value));
+              }}
+              fullWidth
+              sx={{ mb: 0 }}
+            />
+          )}
         </>
       )}
       {type === 'int' || type === 'double' ? (
         <TextField
-          label="Default"
+          label="Default Value"
           margin="normal"
           variant="outlined"
           type="number"

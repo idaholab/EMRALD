@@ -813,6 +813,10 @@
           "type": "integer",
           "description": "Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this how many characters to read for the value of the variable"
         },
+        "regExpGroup": {
+          "type": "integer",
+          "description": "Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, if this is defined, the value will be read from the given group within the user's regex expression"
+        },
         "resetOnRuns": {
           "type": "boolean",
           "description": "Optional, this specifies if the value of the variable is to be reset to the default value on each run or retain the value from the last run."
