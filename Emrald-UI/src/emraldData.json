@@ -1,5 +1,7 @@
 {
   "id": "0",
+  "name": "Demo EMRALD Model",
+  "desc": "",
   "version": 1,
   "DiagramList": [
     {
@@ -3212,7 +3214,6 @@
       "triggerStates": [
         "Stop_Systems"
       ],
-      "logicError": "missing state for something",
       "id": "0b949b91-b1b2-432c-914a-712cd4641300",
       "objType": "Event"
     },
