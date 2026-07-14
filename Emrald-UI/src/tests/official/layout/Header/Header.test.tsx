@@ -12,8 +12,10 @@ describe('Header', () => {
     const user = userEvent.setup();
 
     // Rename the project
-    await user.click(await screen.findByText('Click Here to Name Project'));
-    await user.type(await screen.findByLabelText('Name'), name);
+    await user.click(await screen.findByText('Demo EMRALD Model'));
+    const nameField = await screen.findByLabelText('Name');
+    await user.clear(nameField);
+    await user.type(nameField, name);
     await user.type(await screen.findByLabelText('Description'), 'Desc');
     await user.type(await screen.findByLabelText('Version'), '2');
     await user.click(await screen.findByRole('button', { name: 'Save' }));
