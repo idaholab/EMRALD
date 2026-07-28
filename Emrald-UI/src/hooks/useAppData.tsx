@@ -2,18 +2,42 @@ import type { EMRALD_Model } from '../types/EMRALD_Model';
 import { signal } from '@preact/signals-react';
 import emraldData from '../emraldData.json';
 import { CreateEmptyEMRALDModel } from '../types/ModelUtils';
-import { upgradeModel } from '../utils/Upgrades/upgrade';
+import { repairModelReferences } from '../utils/ModelRepair';
+import { upgradeModel, validateModel } from '../utils/Upgrades/upgrade';
 
 const storedData = sessionStorage.getItem('appData');
 
 export const appData = signal(CreateEmptyEMRALDModel());
+
+function repairInvalidStartupModel(model: EMRALD_Model, source: string) {
+  const validationResult = validateModel(model);
+  if (validationResult.valid) {
+    return model;
+  }
+
+  const shouldRepair = window.confirm(
+    `${source} does not match EMRALD schema ${validationResult.schemaVersion.toString()}. Repair it before continuing? Repair removes unnamed items and clears invalid references.`,
+  );
+  if (!shouldRepair) {
+    return null;
+  }
+
+  const repairedModel = repairModelReferences(model);
+  const repairedValidationResult = validateModel(repairedModel);
+  if (!repairedValidationResult.valid) {
+    console.error('Could not repair startup model', repairedValidationResult.errors);
+    return null;
+  }
+
+  return repairedModel;
+}
 
 // Try to parse & upgrade the stored model
 if (storedData === null) {
   // Load & upgrades the default model
   const upgraded = upgradeModel(JSON.stringify(emraldData));
   if (upgraded) {
-    appData.value = upgraded;
+    appData.value = repairModelReferences(upgraded);
   } else {
     // Something has gone really wrong and the default model failed to upgrade
     // TODO: This needs an actual notification in the UI
@@ -26,7 +50,10 @@ if (storedData === null) {
     // TODO: This needs an actual notification in the UI
     console.error('Could not upgrade local model');
   } else {
-    appData.value = upgraded;
+    const usableModel = repairInvalidStartupModel(upgraded, 'The cached model');
+    if (usableModel) {
+      appData.value = usableModel;
+    }
   }
 }
 

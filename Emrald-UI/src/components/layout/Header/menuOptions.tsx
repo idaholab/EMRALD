@@ -4,6 +4,7 @@ import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, clearCacheData } from '../../../hooks/useAppData';
 import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
+import { repairModelReferences } from '../../../utils/ModelRepair';
 import {
   type ModelValidationResult,
   upgradeModel,
@@ -49,6 +50,56 @@ function normalizeModelObjType(model: EMRALD_Model): EMRALD_Model {
   };
 }
 
+function formatValidationSummary(validationResult: ModelValidationResult) {
+  const visibleErrors = validationResult.errors.slice(0, 5).join('\n');
+  return validationResult.truncated
+    ? `${visibleErrors}\nAdditional errors were omitted.`
+    : visibleErrors;
+}
+
+function confirmRepairInvalidModel(validationResult: ModelValidationResult) {
+  return window.confirm(
+    `This model does not match EMRALD schema ${validationResult.schemaVersion.toString()}.\n\nRepair it before continuing?\n\nRepair removes unnamed items and clears invalid references.\n\n${formatValidationSummary(validationResult)}`,
+  );
+}
+
+function reportUnrepairableModel(
+  validationResult: ModelValidationResult,
+  handleModelError?: (message: string) => void,
+) {
+  const message = `The model was repaired, but it still does not match EMRALD schema ${validationResult.schemaVersion.toString()}.\n\n${formatValidationSummary(validationResult)}`;
+  if (handleModelError) {
+    handleModelError(message);
+  } else {
+    window.alert(message);
+  }
+}
+
+function getUsableModel(
+  model: EMRALD_Model,
+  handleModelError?: (message: string) => void,
+) {
+  const normalizedModel = normalizeModelObjType(model);
+  const validationResult = validateModel(normalizedModel);
+
+  if (validationResult.valid) {
+    return normalizedModel;
+  }
+
+  if (!confirmRepairInvalidModel(validationResult)) {
+    return null;
+  }
+
+  const repairedModel = repairModelReferences(normalizedModel);
+  const repairedValidationResult = validateModel(repairedModel);
+  if (!repairedValidationResult.valid) {
+    reportUnrepairableModel(repairedValidationResult, handleModelError);
+    return null;
+  }
+
+  return repairedModel;
+}
+
 export const projectOptions = {
   New(newProject: () => void) {
     newProject();
@@ -87,10 +138,16 @@ export const projectOptions = {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            populateNewData(normalizeModelObjType(upgradedModel));
+            const usableModel = getUsableModel(upgradedModel, handleModelError);
+            if (usableModel) {
+              populateNewData(usableModel);
+            }
           }
         } else {
-          populateNewData(normalizeModelObjType(parsedContent));
+          const usableModel = getUsableModel(parsedContent, handleModelError);
+          if (usableModel) {
+            populateNewData(usableModel);
+          }
         }
       } catch (error) {
         console.error('Invalid JSON format');
@@ -140,12 +197,18 @@ export const projectOptions = {
         if (
           Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
         ) {
-          mergeNewData(normalizeModelObjType(parsedContent));
+          const usableModel = getUsableModel(parsedContent, handleModelError);
+          if (usableModel) {
+            mergeNewData(usableModel);
+          }
         } else {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            mergeNewData(normalizeModelObjType(upgradedModel));
+            const usableModel = getUsableModel(upgradedModel, handleModelError);
+            if (usableModel) {
+              mergeNewData(usableModel);
+            }
           }
         }
       } catch (error) {
@@ -174,10 +237,10 @@ export const projectOptions = {
       validationResult: ModelValidationResult,
     ) => boolean | Promise<boolean>,
   ) => {
-    const data = normalizeModelObjType(structuredClone(appData.value));
+    let data = normalizeModelObjType(structuredClone(appData.value));
     data.desc = data.desc ?? ''; // Ensure desc is a string before validating and saving.
 
-    const validationResult = validateModel(data);
+    let validationResult = validateModel(data);
     if (!validationResult.valid) {
       console.error('Model validation failed:', {
         schemaVersion: validationResult.schemaVersion,
@@ -185,14 +248,21 @@ export const projectOptions = {
         truncated: validationResult.truncated,
         firstError: validationResult.errors[0],
       });
-      const shouldSave = confirmInvalidModelSave
-        ? await confirmInvalidModelSave(validationResult)
-        : window.confirm(
-            `This model does not match EMRALD schema ${validationResult.schemaVersion.toString()}. Save anyway?`,
-          );
+      if (confirmRepairInvalidModel(validationResult)) {
+        data = repairModelReferences(data);
+        validationResult = validateModel(data);
+      }
 
-      if (!shouldSave) {
-        return;
+      if (!validationResult.valid) {
+        const shouldSave = confirmInvalidModelSave
+          ? await confirmInvalidModelSave(validationResult)
+          : window.confirm(
+              `This model does not match EMRALD schema ${validationResult.schemaVersion.toString()}. Save anyway?`,
+            );
+
+        if (!shouldSave) {
+          return;
+        }
       }
     }
 
@@ -314,12 +384,18 @@ export const projectOptions = {
         if (
           Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
         ) {
-          compareData(normalizeModelObjType(parsedContent));
+          const usableModel = getUsableModel(parsedContent, handleModelError);
+          if (usableModel) {
+            compareData(usableModel);
+          }
         } else {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            compareData(normalizeModelObjType(upgradedModel));
+            const usableModel = getUsableModel(upgradedModel, handleModelError);
+            if (usableModel) {
+              compareData(usableModel);
+            }
           }
         }
       } catch (error) {
@@ -373,12 +449,18 @@ export const templateSubMenuOptions = {
         const parsedContent = JSON.parse(content) as EMRALD_Model[];
         for (const model of parsedContent) {
           if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
-            mergeTemplateToList(normalizeModelObjType(model));
+            const usableModel = getUsableModel(model, handleModelError);
+            if (usableModel) {
+              mergeTemplateToList(usableModel);
+            }
           } else {
             const upgradedModel = upgradeModel(JSON.stringify(model));
             if (upgradedModel) {
               upgradedModel.id = uuidv4();
-              mergeTemplateToList(normalizeModelObjType(upgradedModel));
+              const usableModel = getUsableModel(upgradedModel, handleModelError);
+              if (usableModel) {
+                mergeTemplateToList(usableModel);
+              }
             }
           }
         }
