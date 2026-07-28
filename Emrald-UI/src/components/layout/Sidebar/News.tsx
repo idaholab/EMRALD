@@ -5,6 +5,9 @@ type Discussion = {
   title: string;
   body: string;
   state: 'open' | 'closed';
+  category: {
+    name: string;
+  };
 };
 
 export const News: React.FC = () => {
@@ -23,7 +26,9 @@ export const News: React.FC = () => {
             'https://api.github.com/repos/idaholab/emrald/discussions',
           )
         ).json()) as Discussion[]
-      ).at(-1);
+      )
+        .filter(d => d.category.name === 'Announcements')
+        .findLast(d => d.state === 'open');
       if (discussion !== undefined && discussion.state === 'open') {
         setTitle(discussion.title);
         const body = discussion.body;
