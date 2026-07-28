@@ -9,7 +9,7 @@ type Discussion = {
 
 export const News: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [hasNews, setHasNews] = useState(false);
   const [title, setTitle] = useState<string>();
   const [body, setBody] = useState<string>();
@@ -126,7 +126,7 @@ export const News: React.FC = () => {
         ) : (
           <span>{url.length < 40 ? url : `${url.slice(0, 37)}...`}</span>
         )}
-        {!loading && <span>↗</span>}
+        {!loading && url !== undefined && <span>↗</span>}
       </Box>
     </Box>
   ) : (
