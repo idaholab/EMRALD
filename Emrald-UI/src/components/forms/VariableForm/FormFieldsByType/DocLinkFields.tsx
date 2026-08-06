@@ -140,9 +140,11 @@ export const DocLinkFields: React.FC<VariableFormProps> = ({
         <Link
           target="_blank"
           href={
-            docType === 'dtXML' || docType === 'dtTextRegEx'
+            docType === 'dtXML'
               ? 'https://www.site24x7.com/tools/xpath-evaluator.html'
-              : 'https://jsonpath.com/'
+              : docType === 'dtJSON'
+                ? 'https://jsonpath.com/'
+                : 'https://regex101.com/'
           }
         >
           Tester

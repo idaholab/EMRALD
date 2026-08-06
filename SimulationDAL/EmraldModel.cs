@@ -193,6 +193,19 @@ namespace SimulationDAL
       return jsonModel;
     }
 
+    private static bool EnsureRootModelName(JObject jsonObj, string fileName)
+    {
+      JToken? nameToken = jsonObj["name"];
+      string? modelName = nameToken?.Type == JTokenType.Null ? null : nameToken?.ToString();
+
+      if (!string.IsNullOrWhiteSpace(modelName))
+        return false;
+
+      string fallbackName = string.IsNullOrWhiteSpace(fileName) ? "Untitled_EMRALD_Project" : fileName.Trim();
+      jsonObj["name"] = fallbackName;
+      return true;
+    }
+
     private string GetTempThreadFilesPath(int threadID = -1)
     {
       if(threadID < 0)
@@ -208,7 +221,8 @@ namespace SimulationDAL
         throw new Exception("Invalid path - " + modelPath);
 
       dynamic jsonObj = JsonConvert.DeserializeObject(jsonModel)!;
-      this.modelTxt = jsonModel;
+      bool rootNameAdded = EnsureRootModelName((JObject)jsonObj, fileName);
+      this.modelTxt = rootNameAdded ? JsonConvert.SerializeObject(jsonObj, Formatting.Indented) : jsonModel;
       this.fileName = fileName;
       this._threadNumber = threadNum;
       this._rootPath = modelPath;
@@ -336,8 +350,9 @@ namespace SimulationDAL
       {
         try
         {
-          string upgraded = UpgradeModel.UpgradeJSON(jsonModel);
+          string upgraded = UpgradeModel.UpgradeJSON(this.modelTxt);
           jsonObj = JsonConvert.DeserializeObject(upgraded)!;
+          EnsureRootModelName((JObject)jsonObj, fileName);
         }
         catch (Exception ex)
         {

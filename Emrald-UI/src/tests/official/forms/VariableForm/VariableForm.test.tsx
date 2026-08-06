@@ -325,4 +325,30 @@ describe('Variable Form', () => {
     await save();
     expect(getVariable(name)).toEqual(expected[name]);
   });
+
+  test('uses a regular expression tester for Text RegEx links', async () => {
+    renderVariableForm(
+      <VariableForm
+        variableData={{
+          objType: 'Variable',
+          name: 'regex_tester_link',
+          desc: '',
+          varScope: 'gtDocLink',
+          value: '',
+          type: 'string',
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+
+    await user.click(
+      await findByRole(await screen.findByLabelText('Doc Type'), 'combobox'),
+    );
+    await user.click(await screen.findByRole('option', { name: 'Text RegEx' }));
+
+    expect(await screen.findByRole('link', { name: 'Tester' })).toHaveAttribute(
+      'href',
+      'https://regex101.com/',
+    );
+  });
 });
