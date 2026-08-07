@@ -608,8 +608,20 @@ namespace SimulationEngine
           
           foreach (var keyS in resultObj.keyStates)
           {
-            if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
-              keyS.watchVariables = _variableVals[keyS.name];
+            // Copy variable values for this key state from _variableVals instead of aliasing
+            // the dictionary directly. Aliasing caused cross-thread merges in AddOtherBatchResults
+            // to mutate _variableVals via watchVariables, leading to duplicate suffixed keys
+            // (e.g., x.1 and x.2 from the same thread).
+            if (_variableVals.Count > 0 && _variableVals.TryGetValue(keyS.name, out var keyStateVarVals))
+            {
+              var watchVarCopy = new Dictionary<string, Dictionary<string, string>>(keyStateVarVals.Count);
+              foreach (var v in keyStateVarVals)
+              {
+                watchVarCopy[v.Key] = new Dictionary<string, string>(v.Value);
+              }
+
+              keyS.watchVariables = watchVarCopy;
+            }
           }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
