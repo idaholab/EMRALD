@@ -34,8 +34,9 @@ namespace SimulationDAL
     private int? _threadNumber = 0;
     private bool _updated = false;
     private MultiThreadInfo _MultiThreadInfo = null!;
-    private string _origRootPath = ""; //origional root path before being changed by multithreading 
+    private string _origRootPath = ""; //origional root path before being changed by multithreading
     private string _rootPath = ""; //emrald model root path
+    private string _runInstanceId = ""; // per-run instance identifier for temp folders
     public const double SCHEMA_VERSION = 3.3;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
@@ -70,6 +71,15 @@ namespace SimulationDAL
     public MultiThreadInfo multiThreadInfo
     {
       get { if (_MultiThreadInfo == null) _MultiThreadInfo = new MultiThreadInfo(); return _MultiThreadInfo; }
+    }
+
+    // Identifier for this run instance, used to separate per-thread temp folders
+    // when multiple EMRALD instances run the same model concurrently.
+    // Not serialized into the model JSON; runtime-only.
+    public string RunInstanceId
+    {
+      get => _runInstanceId;
+      set => _runInstanceId = value ?? "";
     }
 
     //public int dbID = 0;
@@ -208,9 +218,23 @@ namespace SimulationDAL
 
     private string GetTempThreadFilesPath(int threadID = -1)
     {
-      if(threadID < 0)
+      if (threadID < 0)
         threadID = (int)_threadNumber!;
-      return CommonFunctions.NormalizeCombine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"EMRALD\" + this.fileName + "_T" + threadID.ToString());
+
+      string appDataRoot = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+      // Base name starts from the model file name
+      string baseName = this.fileName;
+
+      // When a run instance ID is set, include it in the folder name so that
+      // each run gets its own namespace: <fileName>_<runInstanceId>_T<threadID>.
+      // If RunInstanceId is empty, fall back to the legacy naming for backward compatibility.
+      if (!string.IsNullOrEmpty(_runInstanceId))
+        baseName = baseName + "_" + _runInstanceId;
+
+      string subPath = @"EMRALD\" + baseName + "_T" + threadID.ToString();
+
+      return CommonFunctions.NormalizeCombine(appDataRoot, subPath);
     }
 
     public bool DeserializeJSON(string jsonModel, string modelPath, string fileName, int? threadNum = null) 

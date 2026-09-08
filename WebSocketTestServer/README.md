@@ -28,7 +28,20 @@ Minimal example of an EMRALD-coupled WebSocket server with a pluggable simulatio
 
 ## Message Flow (simplified)
 1) Client sends `GetAppOptions` → server returns available app names.
-2) Client sends `CreateConnection` → server creates a `ConnectionStateMachine` for that socket and returns `conID`.
+2) Client sends a `CreateConnection` command with the target `appName` and a `watchItems` array of `WatchItem` objects:
+
+   ```json
+   {
+     "command": "CreateConnection",
+     "appName": "App1",
+     "watchItems": [
+       { "name": "T_FW", "type": "double" },
+       { "name": "valve_12", "type": "double", "WatchEventCriteria": "(valve_12 > 5) & (valve_12 < 10)" }
+     ]
+   }
+   ```
+
+   Each element of `watchItems` is a `MessageDefLib.WatchItem` carrying the EMRALD variable `name`, its `type`, and an optional `WatchEventCriteria` fParser boolean expression. When the expression is present, the server only sends callbacks while it evaluates to true; without it, callbacks are sent on every value change.
 3) Client sends `SendActionMsg` with `simAction` (e.g., `atOpenSim`, `atTimer`, `atCompModify`, `atContinue`, `atCancelSim`, `atTerminate`).
 4) Server responds with `mtSimEvent` wrappers containing status (`etStatus`), timer callbacks (`etTimer`), value changes (`etCompEv`), and load completion (`etSimLoaded`).
 

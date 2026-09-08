@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import { v4 as uuidv4 } from 'uuid';
 import { EMRALD_JsonSchema } from '../../types/EMRALD_Model';
 import { EMRALD_SchemaVersion } from '../../types/ModelUtils';
+import { getItemsWithEmptyNames } from '../ModelRepair';
 import { Upgrade } from './upgradeGiveID';
 
 export interface ModelValidationResult {
@@ -38,7 +39,7 @@ function formatPath(path: string) {
   return path
     .split('/')
     .filter(Boolean)
-    .map((part) => {
+    .map(part => {
       const decoded = part.replace(/~1/g, '/').replace(/~0/g, '~');
       return /^\d+$/.test(decoded) ? `[${decoded}]` : `.${decoded}`;
     })
@@ -49,7 +50,7 @@ function formatPath(path: string) {
 function groupPath(path: string) {
   const segments = path.split('/').filter(Boolean);
   const formDataIndex = segments.indexOf('formData');
-  if (formDataIndex >= 0) {
+  if (formDataIndex !== -1) {
     return formatPath(
       `/${segments.slice(0, Math.min(formDataIndex + 3, segments.length)).join('/')}`,
     );
@@ -93,6 +94,11 @@ export function validateModel(model: EMRALD_Model): ModelValidationResult {
   if (model.emraldVersion !== EMRALD_SchemaVersion) {
     addError(
       `model.emraldVersion: Model schema version ${String(model.emraldVersion)} does not match the latest schema version ${EMRALD_SchemaVersion.toString()}.`,
+    );
+  }
+  for (const item of getItemsWithEmptyNames(model)) {
+    addError(
+      `${item.listName}[${item.index.toString()}].name: ${item.itemType} name must not be empty.`,
     );
   }
   try {
