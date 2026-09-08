@@ -218,7 +218,7 @@ namespace SimulationDAL
                 throw new Exception("Invalid stateName property in stateValues list - " + (string)item.stateName + " doesn't exist");
 
               int stateVal = -1;
-              switch ((string)dynObj.defaultSingleStateValue)
+              switch ((string)item.stateValue)
               {
                 case "True":
                   stateVal = 1;
@@ -293,7 +293,7 @@ namespace SimulationDAL
           
 
         case EnGateType.gtNot:
-          return evalSum > 0 ? 1 : 0; //Should only be one so just return 1 if greater than 0.
+          return evalSum > 0 ? 0 : 1; //Should only be one child, so invert its value.
 
         case EnGateType.gtNofM:
           return evalSum > val1 ? 1 : 0;

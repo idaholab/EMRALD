@@ -272,16 +272,17 @@ namespace SimulationDAL
       bool found = false;
       foreach (var s in _States.Values)
       {
-        // See if the user has specified a different value for the state than the default
-        if (!changedStateValues.TryGetValue(s.id, out retValue))
+        // Only the state the simulation is currently in determines the value
+        if (curStates[s.id])
         {
-          // No specified value so use the default one or ignore
-          if (curStates[s.id])
+          found = true;
+          // See if the user has specified a different value for the state than the default
+          if (!changedStateValues.TryGetValue(s.id, out retValue))
           {
-            found = true;
+            // No specified value so use the default one or ignore
             retValue = s.dfltStateValue;
-            break;
           }
+          break;
         }
       }
 
