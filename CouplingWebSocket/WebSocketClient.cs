@@ -204,6 +204,7 @@ namespace CouplingWebSocket
     private async Task ReceiveLoop()
     {
       byte[] buffer = new byte[8192];
+      using var messageBytes = new MemoryStream();
 
       try
       {
@@ -228,7 +229,15 @@ namespace CouplingWebSocket
 
           if (result.MessageType == WebSocketMessageType.Text)
           {
-            string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+            // A message larger than the buffer arrives over several reads, so
+            // collect them and only process once the last one has been read.
+            messageBytes.Write(buffer, 0, result.Count);
+            if (!result.EndOfMessage)
+              continue;
+
+            string message = Encoding.UTF8.GetString(
+                messageBytes.GetBuffer(), 0, (int)messageBytes.Length);
+            messageBytes.SetLength(0);
             ProcessIncomingMessage(message);
           }
         }
