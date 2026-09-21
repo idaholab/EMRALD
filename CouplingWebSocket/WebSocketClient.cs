@@ -203,19 +203,19 @@ namespace CouplingWebSocket
 
     private async Task ReceiveLoop()
     {
-      byte[] buffer = new byte[8192];
-
       try
       {
         while (_client.State == WebSocketState.Open &&
                !_cancellationTokenSource.Token.IsCancellationRequested)
         {
-          var result = await _client.ReceiveAsync(
-              new ArraySegment<byte>(buffer),
+          // Reads a whole message however many chunks it spans, so a large response is not
+          // truncated into unparseable JSON fragments.
+          var message = await WebSocketMessageReader.ReceiveMessageAsync(
+              _client,
               _cancellationTokenSource.Token
           ).ConfigureAwait(false);
 
-          if (result.MessageType == WebSocketMessageType.Close)
+          if (message.MessageType == WebSocketMessageType.Close)
           {
             await _client.CloseAsync(
                 WebSocketCloseStatus.NormalClosure,
@@ -226,10 +226,16 @@ namespace CouplingWebSocket
             break;
           }
 
-          if (result.MessageType == WebSocketMessageType.Text)
+          if (message.TooLarge)
           {
-            string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-            ProcessIncomingMessage(message);
+            ErrorOccurred?.Invoke(this, $"Dropped an incoming message of {message.ByteCount} bytes, " +
+                $"over the {WebSocketMessageReader.DefaultMaxMessageBytes} byte limit");
+            continue;
+          }
+
+          if (message.MessageType == WebSocketMessageType.Text)
+          {
+            ProcessIncomingMessage(message.Text);
           }
         }
       }

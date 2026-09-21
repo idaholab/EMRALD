@@ -103,18 +103,17 @@ namespace WebSocketTestServer
         // Receives messages from a client WebSocket and forwards them for handling.
         private static async Task HandleWebSocketConnection(WebSocket webSocket)
         {
-            byte[] buffer = new byte[8192];
-
             try
             {
                 while (webSocket.State == WebSocketState.Open)
                 {
-                    // Block for next message from the client.
-                    var result = await webSocket.ReceiveAsync(
-                        new ArraySegment<byte>(buffer), 
+                    // Block for next message from the client. Reads a whole message however many
+                    // chunks it spans, so a large command is not truncated into unparseable JSON.
+                    var received = await WebSocketMessageReader.ReceiveMessageAsync(
+                        webSocket,
                         CancellationToken.None);
 
-                    if (result.MessageType == WebSocketMessageType.Close)
+                    if (received.MessageType == WebSocketMessageType.Close)
                     {
                         await webSocket.CloseAsync(
                             WebSocketCloseStatus.NormalClosure,
@@ -126,16 +125,29 @@ namespace WebSocketTestServer
                         break;
                     }
 
-                    if (result.MessageType == WebSocketMessageType.Text)
+                    if (received.TooLarge)
                     {
-                        string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+#if DEBUG
+                        if (LogMessages) Console.WriteLine($"Dropped oversized message ({received.ByteCount} bytes)");
+#endif
+                        await SendMessage(webSocket, JsonConvert.SerializeObject(new
+                        {
+                            error = $"Message of {received.ByteCount} bytes exceeds the " +
+                                    $"{WebSocketMessageReader.DefaultMaxMessageBytes} byte limit"
+                        }));
+                        continue;
+                    }
+
+                    if (received.MessageType == WebSocketMessageType.Text)
+                    {
+                        string message = received.Text;
 #if DEBUG
                         if (LogMessages) Console.WriteLine($"Received: {message}");
 #endif
-                        
+
                         // Process the JSON command and optionally send a response.
                         string response = await ProcessCommand(message, webSocket);
-                        
+
                         if (!string.IsNullOrEmpty(response))
                         {
                             await SendMessage(webSocket, response);
