@@ -104,6 +104,7 @@ namespace WebSocketTestServer
         private static async Task HandleWebSocketConnection(WebSocket webSocket)
         {
             byte[] buffer = new byte[8192];
+            using var messageBytes = new MemoryStream();
 
             try
             {
@@ -128,7 +129,17 @@ namespace WebSocketTestServer
 
                     if (result.MessageType == WebSocketMessageType.Text)
                     {
-                        string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                        // A message larger than the buffer arrives over several
+                        // reads, so collect them before handling the command.
+                        messageBytes.Write(buffer, 0, result.Count);
+                        if (!result.EndOfMessage)
+                        {
+                            continue;
+                        }
+
+                        string message = Encoding.UTF8.GetString(
+                            messageBytes.GetBuffer(), 0, (int)messageBytes.Length);
+                        messageBytes.SetLength(0);
 #if DEBUG
                         if (LogMessages) Console.WriteLine($"Received: {message}");
 #endif

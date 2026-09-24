@@ -113,6 +113,9 @@ namespace SimulationEngine
     protected string origionalRootPath = ""; //Origonal path to the model file
     protected string origionalFileName = ""; //origional file Name
     protected bool _tempThreadFilesWriten = false;
+
+    // Identifier shared by all threads in this batch/run instance.
+    private readonly string _runInstanceId;
     
 
 
@@ -135,20 +138,20 @@ namespace SimulationEngine
     //public string resultFile { get { return _resultFile; } }
     //public string jsonResultsPaths { get { return _jsonResultPaths; } }
 
-    public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
+    public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, string runInstanceId, int? threadNum = null)
     {
       //don't deserialize model here because the singletions for numbering are by thread and the tread has not been assigned yet if multitheading
       modelTxt = origModel.modelTxt;
       origionalRootPath = origModel.rootPath;
       origionalFileName = origModel.fileName;
+
+      _runInstanceId = runInstanceId ?? "";
       this._threadNum = threadNum;
       this._endTime = endtime;
       this._pathResultsInterval = pathResultsInterval;
       this.progressCallback = null;
       this._origionalJsonResutsFile = jsonResPaths;
       this._origionalResutsFile = resultFile;
-
-
 
       this._resultFile = resultFile;
       this._jsonResultPaths = jsonResPaths;
@@ -282,10 +285,11 @@ namespace SimulationEngine
 
     public void RunBatch()
     {
-     
+
       //make a new model so that we don't have issues if they run multiple batches or for mutli thraded must do in the thread function
       _tempThreadFilesWriten = false;
       this._lists = new EmraldModel();
+      this._lists.RunInstanceId = _runInstanceId;
       this._lists.DeserializeJSON(modelTxt, origionalRootPath, origionalFileName, threadNum); //this will update any references automatically if the threadNum != null
       using CurrentDirectoryRestore currentDirectoryRestore = SetCurrentDirectoryForSingleThreadRun();
       _tempThreadFilesWriten = true;
@@ -604,8 +608,20 @@ namespace SimulationEngine
           
           foreach (var keyS in resultObj.keyStates)
           {
-            if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
-              keyS.watchVariables = _variableVals[keyS.name];
+            // Copy variable values for this key state from _variableVals instead of aliasing
+            // the dictionary directly. Aliasing caused cross-thread merges in AddOtherBatchResults
+            // to mutate _variableVals via watchVariables, leading to duplicate suffixed keys
+            // (e.g., x.1 and x.2 from the same thread).
+            if (_variableVals.Count > 0 && _variableVals.TryGetValue(keyS.name, out var keyStateVarVals))
+            {
+              var watchVarCopy = new Dictionary<string, Dictionary<string, string>>(keyStateVarVals.Count);
+              foreach (var v in keyStateVarVals)
+              {
+                watchVarCopy[v.Key] = new Dictionary<string, string>(v.Value);
+              }
+
+              keyS.watchVariables = watchVarCopy;
+            }
           }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);

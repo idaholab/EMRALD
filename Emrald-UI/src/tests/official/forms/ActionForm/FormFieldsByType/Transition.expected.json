@@ -7,7 +7,7 @@
     "actType": "atTransition",
     "newStates": [
       { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
-      { "toState": "Test State 2", "prob": 0, "failDesc": "" }
+      { "toState": "Test State 2", "prob": -1, "failDesc": "" }
     ]
   },
   "uses scientific notation": {
@@ -18,7 +18,8 @@
     "actType": "atTransition",
     "newStates": [
       { "toState": "Test State 1", "prob": 0.00002, "failDesc": "" }
-    ]
+    ],
+    "mutExcl": false
   },
   "uses remaining probability": {
     "objType": "Action",
@@ -29,8 +30,7 @@
     "newStates": [
       { "toState": "Test State 1", "prob": 0.4, "failDesc": "" },
       { "toState": "Test State 2", "prob": -1, "failDesc": "" }
-    ],
-    "mutExcl": true
+    ]
   },
   "uses variables": {
     "objType": "Action",
@@ -74,6 +74,6 @@
     "desc": "",
     "mainItem": true,
     "actType": "atTransition",
-    "newStates": [{ "toState": "Test State 2", "prob": 0, "failDesc": "" }]
+    "newStates": [{ "toState": "Test State 2", "prob": -1, "failDesc": "" }]
   }
 }
