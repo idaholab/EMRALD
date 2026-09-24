@@ -79,6 +79,13 @@ describe('Transition Actions', () => {
       await screen.findByText('Drop State Items Here'),
     );
 
+    // Allow a probability below 1 for this transition.
+    await user.click(
+      await screen.findByLabelText(
+        'Mutually Exclusive (Transitions to one and only one of the states)',
+      ),
+    );
+
     // Enter probability for state 1
     await user.type(
       (await screen.findAllByLabelText('Probability'))[0] as Element,
@@ -164,22 +171,12 @@ describe('Transition Actions', () => {
       await screen.findByText('Fixed Value or Variable'),
     );
 
-    // Check mutually exclusive
-    await user.click(
-      await screen.findByLabelText(
-        'Mutually Exclusive (Transitions to one and only one of the states)',
-      ),
-    );
+    expect(await screen.findByLabelText('Remaining')).toBeChecked();
 
     // Enter probability for state 1
     await user.type(
       (await screen.findAllByLabelText('Probability'))[0] as Element,
       '0.4',
-    );
-
-    // Check remaining for state 2
-    await user.click(
-      (await screen.findAllByLabelText('Remaining'))[1] as Element,
     );
 
     await save();
@@ -254,22 +251,12 @@ describe('Transition Actions', () => {
       await screen.findByText('Fixed Value or Variable'),
     );
 
-    // Check mutually exclusive
-    await user.click(
-      await screen.findByLabelText(
-        'Mutually Exclusive (Transitions to one and only one of the states)',
-      ),
-    );
+    expect(await screen.findByLabelText('Remaining')).toBeChecked();
 
     // Enter probability for state 1
     await user.type(
       (await screen.findAllByLabelText('Probability'))[0] as Element,
       '0.4',
-    );
-
-    // Check remaining for state 2
-    await user.click(
-      (await screen.findAllByLabelText('Remaining'))[1] as Element,
     );
 
     // Un-check mutually exclusive

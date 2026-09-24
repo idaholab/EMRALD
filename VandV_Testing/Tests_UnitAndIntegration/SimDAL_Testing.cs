@@ -1080,7 +1080,7 @@ namespace UnitAndIntegrationTesting
 
     private static ProcessSimBatch MakeBatchWithVariableVals(int numRuns, string keyStateName, string varName, Dictionary<string, string> values)
     {
-      ProcessSimBatch batch = new ProcessSimBatch(new EmraldModel(), TimeSpan.Zero, "", "", -1);
+      ProcessSimBatch batch = new ProcessSimBatch(new EmraldModel(), TimeSpan.Zero, "", "", -1, "testRun", null);
       batch.SetupBatch(numRuns);
       batch.keyPaths.Add(keyStateName, new KeyStateResult(keyStateName));
       GetBatchVariableVals(batch).Add(keyStateName, new Dictionary<string, Dictionary<string, string>>

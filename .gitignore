@@ -303,3 +303,4 @@ instrumented
 *.iws
 /WebSocketTestServer/.vscode
 /.claude/settings.json
+/.claude/plans/

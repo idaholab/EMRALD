@@ -8,23 +8,32 @@ import { useActionFormContext } from '../forms/ActionForm/ActionFormContext';
 import { ActionToStateTable } from '../forms/ActionForm/ActionToStateTable';
 
 export const ActionDropTarget: React.FC = () => {
-  const { newStateItems, setNewStateItems, sortNewStates }
+  const { newStateItems, mutuallyExclusive, setNewStateItems, sortNewStates }
     = useActionFormContext();
 
   const [{ isOver }, drop] = useDrop({
     accept: 'State',
     drop: (item?: State) => {
       if (item) {
+        const shouldUseRemaining =
+          (mutuallyExclusive ?? true) && !!newStateItems?.length;
+        const existingItems = shouldUseRemaining
+          ? newStateItems?.map(newStateItem =>
+              newStateItem.remaining
+                ? { ...newStateItem, remaining: false, prob: 0 }
+                : newStateItem,
+            )
+          : newStateItems;
         const newStateItem: NewStateItem = {
           id: uuidv4(),
           toState: item.name,
-          prob: 0,
+          prob: shouldUseRemaining ? -1 : 0,
           failDesc: '',
-          remaining: false,
+          remaining: shouldUseRemaining,
           probType: 'fixed',
         };
-        if (newStateItems) {
-          setNewStateItems(sortNewStates([...newStateItems, newStateItem]));
+        if (existingItems) {
+          setNewStateItems(sortNewStates([...existingItems, newStateItem]));
         } else {
           setNewStateItems([newStateItem]);
         }

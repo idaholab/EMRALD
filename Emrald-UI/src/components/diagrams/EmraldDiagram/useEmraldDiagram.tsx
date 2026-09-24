@@ -50,7 +50,7 @@ export function useEmraldDiagram() {
   const { addWindow } = useWindowContext();
 
   const defaultTransitionProbability = (action?: Action) =>
-    action?.mutExcl === false ? 1.0 : -1;
+    action?.mutExcl === false ? 1 : -1;
 
   // Get the edges for the state nodes
   const getEdges = (stateNodes: Node<{ state: State }>[]) => {
@@ -300,21 +300,27 @@ export function useEmraldDiagram() {
 
   // Build the state nodes
   const getStateNodes = () => {
-    const stateNodes = getCurrentDiagramStates().map(state => {
+    const stateNodes = getCurrentDiagramStates().flatMap(state => {
       const stateDetails = getStateByStateName(state);
+      if (!stateDetails) {
+        return [];
+      }
+
       const { x, y } = {
-        x: stateDetails?.geometryInfo?.x ?? 0,
-        y: stateDetails?.geometryInfo?.y ?? 0,
+        x: stateDetails.geometryInfo?.x ?? 0,
+        y: stateDetails.geometryInfo?.y ?? 0,
       };
-      return {
-        id: stateDetails?.id ?? '',
-        position: { x, y },
-        type: 'custom',
-        data: {
-          label: state,
-          state: stateDetails,
+      return [
+        {
+          id: stateDetails.id ?? '',
+          position: { x, y },
+          type: 'custom',
+          data: {
+            label: stateDetails.name,
+            state: stateDetails,
+          },
         },
-      };
+      ];
     });
     setNodes(stateNodes);
   };
