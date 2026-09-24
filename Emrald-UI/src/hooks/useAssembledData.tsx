@@ -135,7 +135,10 @@ export function useAssembledData() {
       path: string,
     ) => {
       if (base === undefined || compare === undefined) {
-        if (!(base === undefined && compare === undefined)) {
+        if (
+          (base === undefined && compare !== undefined)
+          || (base !== undefined && compare === undefined)
+        ) {
           differences.push({
             key: path,
             oldValue: base === undefined ? 'Does not exist' : 'Exists',
@@ -164,19 +167,21 @@ export function useAssembledData() {
         && !Array.isArray(compare)
       ) {
         for (const key in compare) {
-          if (base[key] && compare[key]) {
-            checkObjDiff(
-              base[key],
-              compare[key],
-              `${path} ${formatKeyName(key)}`,
-            );
-          } else if (!excludedKeys.has(key)) {
-            differences.push({
-              key: `${path} ${formatKeyName(key)}`,
-              oldValue: base[key] === undefined ? 'Does not exist' : 'Exists',
-              newValue:
-                compare[key] === undefined ? 'Does not exist' : 'Exists',
-            });
+          if (!excludedKeys.has(key.toLowerCase())) {
+            if (base[key] !== undefined && compare[key] !== undefined) {
+              checkObjDiff(
+                base[key],
+                compare[key],
+                `${path} ${formatKeyName(key)}`,
+              );
+            } else {
+              differences.push({
+                key: `${path} ${formatKeyName(key)}`,
+                oldValue: base[key] === undefined ? 'Does not exist' : 'Exists',
+                newValue:
+                  compare[key] === undefined ? 'Does not exist' : 'Exists',
+              });
+            }
           }
         }
         // Again, the redundant checks are just to help TypeScript understand
