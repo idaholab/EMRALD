@@ -3,8 +3,10 @@ import type { ModelItem } from '../types/ModelUtils';
 import { ImportForm } from '../components/forms/ImportForm/ImportForm';
 import {
   CompareModels,
-  type ModelDifference,
+  ITEM_EXISTENCE_KEY,
+  type ModelDifferences,
   type ModelValue,
+  type PropertyDifference,
 } from '../components/layout/CompareModels';
 import { useActionContext } from '../contexts/ActionContext';
 import { useDiagramContext } from '../contexts/DiagramContext';
@@ -120,44 +122,68 @@ export function useAssembledData() {
   };
 
   const compareData = (newModel: EMRALD_Model) => {
-    const differences: ModelDifference[] = [];
+    const differences: ModelDifferences = {};
     const excludedKeys = new Set(['id']);
     const formatKeyName = (key: string) =>
       (key[0]?.toUpperCase() ?? '') + key.slice(1);
+    const joinPath = (path: string, key: string) =>
+      path ? `${path} ${formatKeyName(key)}` : formatKeyName(key);
+    const existence = (value: ModelValue) =>
+      value === undefined ? 'Does not exist' : 'Exists';
+    /**
+     * Records a difference for the given property of an item, creating the category and item entries as needed.
+     * @param category - The type of item the difference belongs to (e.g. "State").
+     * @param item - The name of the item that differs.
+     * @param property - The path of the differing property within the item.
+     */
+    const addDifference = (
+      category: string,
+      item: string,
+      property: string,
+      difference: PropertyDifference,
+    ) => {
+      differences[category] ??= {};
+      differences[category][item] ??= {};
+      differences[category][item][property] = difference;
+    };
     /**
      * Recursively checks each property of the objects for equality.
      * @param base - The base object to compare against.
      * @param compare - The object to compare to.
+     * @param addDiff - Records a difference at the given property path.
+     * @param path - The property path of the current values within the item.
      */
     const checkObjDiff = (
       base: ModelValue | undefined,
       compare: ModelValue | undefined,
+      addDiff: (property: string, difference: PropertyDifference) => void,
       path: string,
     ) => {
       if (base === undefined || compare === undefined) {
-        if (
-          (base === undefined && compare !== undefined)
-          || (base !== undefined && compare === undefined)
-        ) {
-          differences.push({
-            key: path,
-            oldValue: base === undefined ? 'Does not exist' : 'Exists',
-            newValue: compare === undefined ? 'Does not exist' : 'Exists',
+        if (base !== compare) {
+          addDiff(path, {
+            oldValue: existence(base),
+            newValue: existence(compare),
           });
         }
         return;
       }
       if (typeof base !== typeof compare) {
-        differences.push({
-          key: path,
+        addDiff(path, {
           oldValue: `Type: ${typeof base}`,
           newValue: `Type: ${typeof compare}`,
         });
         return;
       }
       if (Array.isArray(base) && Array.isArray(compare)) {
-        for (const [i, element] of base.entries()) {
-          checkObjDiff(element, compare[i], `${path}[${i.toString()}]`);
+        const length = Math.max(base.length, compare.length);
+        for (let i = 0; i < length; i++) {
+          checkObjDiff(
+            base[i],
+            compare[i],
+            addDiff,
+            `${path}[${i.toString()}]`,
+          );
         }
         // The array.isarray checks on this if are redundant, but TypeScript gets confused without them
       } else if (
@@ -172,14 +198,13 @@ export function useAssembledData() {
               checkObjDiff(
                 base[key],
                 compare[key],
-                `${path} ${formatKeyName(key)}`,
+                addDiff,
+                joinPath(path, key),
               );
             } else {
-              differences.push({
-                key: `${path} ${formatKeyName(key)}`,
-                oldValue: base[key] === undefined ? 'Does not exist' : 'Exists',
-                newValue:
-                  compare[key] === undefined ? 'Does not exist' : 'Exists',
+              addDiff(joinPath(path, key), {
+                oldValue: existence(base[key]),
+                newValue: existence(compare[key]),
               });
             }
           }
@@ -192,8 +217,7 @@ export function useAssembledData() {
         && !Array.isArray(compare)
         && base !== compare
       ) {
-        differences.push({
-          key: path,
+        addDiff(path, {
           oldValue: base,
           newValue: compare,
         });
@@ -208,53 +232,46 @@ export function useAssembledData() {
           checkObjDiff(
             baseItem as unknown as ModelValue,
             item as unknown as ModelValue,
-            item.name,
+            (property, difference) => {
+              addDifference(item.objType, item.name, property, difference);
+            },
+            '',
           );
           baseNames.splice(baseNames.indexOf(item.name), 1);
         } else {
-          differences.push({
-            key: item.objType,
-            newValue: item.name,
+          addDifference(item.objType, item.name, ITEM_EXISTENCE_KEY, {
             oldValue: 'Does not exist',
+            newValue: 'Exists',
           });
         }
       }
       for (const name of baseNames) {
-        differences.push({
-          key: base[0]?.objType ?? '',
+        addDifference(base[0]?.objType ?? '', name, ITEM_EXISTENCE_KEY, {
+          oldValue: 'Exists',
           newValue: 'Does not exist',
-          oldValue: name,
         });
       }
     };
-    if (newModel.emraldVersion !== appData.value.emraldVersion) {
-      differences.push({
-        key: 'EMRALD Version',
-        newValue: newModel.emraldVersion,
-        oldValue: appData.value.emraldVersion,
-      });
-    }
-    if (newModel.name !== appData.value.name) {
-      differences.push({
-        key: 'Project Name',
-        newValue: newModel.name,
-        oldValue: appData.value.name,
-      });
-    }
-    if (newModel.desc !== appData.value.desc) {
-      differences.push({
-        key: 'Project Description',
-        newValue: newModel.desc,
-        oldValue: appData.value.desc,
-      });
-    }
-    if (newModel.version !== appData.value.version) {
-      differences.push({
-        key: 'Project Version',
-        newValue: newModel.version,
-        oldValue: appData.value.version,
-      });
-    }
+    const addProjectDifference = (
+      property: string,
+      oldValue: ModelValue,
+      newValue: ModelValue,
+    ) => {
+      if (oldValue !== newValue) {
+        addDifference('Project', 'Project Details', property, {
+          oldValue,
+          newValue,
+        });
+      }
+    };
+    addProjectDifference(
+      'EMRALD Version',
+      appData.value.emraldVersion,
+      newModel.emraldVersion,
+    );
+    addProjectDifference('Name', appData.value.name, newModel.name);
+    addProjectDifference('Description', appData.value.desc, newModel.desc);
+    addProjectDifference('Version', appData.value.version, newModel.version);
     processItemList(appData.value.DiagramList, newModel.DiagramList);
     processItemList(appData.value.ActionList, newModel.ActionList);
     processItemList(appData.value.EventList, newModel.EventList);
@@ -270,7 +287,7 @@ export function useAssembledData() {
         x: 75,
         y: 25,
         width: 1000,
-        height: 350,
+        height: 550,
       },
       null,
     );
