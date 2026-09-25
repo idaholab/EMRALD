@@ -2584,15 +2584,15 @@ namespace SimulationDAL
         if ((item.Value is VarValueAct) || (item.Value is VarValueDLLAct))
         {
           // In distribution mode the action has no scriptCode to compile.
-          // Also skip when there's literally no script content to compile (defensive: covers
-          // any path where useDistribution might not be set yet but the JSON had no scriptCode).
-          if (item.Value is VarValueAct vva)
-          {
-            if (vva.useDistribution || string.IsNullOrWhiteSpace(vva.scriptCode))
-              continue;
-          }
+          if (((VarValueAct)item.Value).useDistribution)
+            continue;
           try
           {
+            // Script mode with no code can never run. Report it at load rather than
+            // waiting for the first sim run that happens to reach the action.
+            if (string.IsNullOrWhiteSpace(((VarValueAct)item.Value).scriptCode))
+              throw new Exception("No code for " + item.Value.name);
+
             ((VarValueAct)item.Value).CompileCode(lists.allVariables);
           }
           catch (Exception e)
