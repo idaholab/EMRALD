@@ -130,6 +130,7 @@ namespace EMRALD_Sim
       tbSeed = new System.Windows.Forms.TextBox();
       label18 = new System.Windows.Forms.Label();
       chkLog = new System.Windows.Forms.CheckBox();
+      chkLogConsole = new System.Windows.Forms.CheckBox();
       grpDebugOpts = new System.Windows.Forms.GroupBox();
       btn_DebugOpen = new System.Windows.Forms.Button();
       label21 = new System.Windows.Forms.Label();
@@ -833,7 +834,6 @@ namespace EMRALD_Sim
       // 
       listBoxClients.Dock = System.Windows.Forms.DockStyle.Fill;
       listBoxClients.FormattingEnabled = true;
-      listBoxClients.ItemHeight = 15;
       listBoxClients.Location = new System.Drawing.Point(2, 18);
       listBoxClients.Margin = new System.Windows.Forms.Padding(2);
       listBoxClients.Name = "listBoxClients";
@@ -1156,6 +1156,7 @@ namespace EMRALD_Sim
       chkDebug.Controls.Add(tbSeed);
       chkDebug.Controls.Add(label18);
       chkDebug.Controls.Add(chkLog);
+      chkDebug.Controls.Add(chkLogConsole);
       chkDebug.Controls.Add(grpDebugOpts);
       chkDebug.Controls.Add(label17);
       chkDebug.Controls.Add(label16);
@@ -1288,7 +1289,7 @@ namespace EMRALD_Sim
       // chkLog
       // 
       chkLog.AutoSize = true;
-      chkLog.Location = new System.Drawing.Point(159, 187);
+      chkLog.Location = new System.Drawing.Point(159, 210);
       chkLog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       chkLog.Name = "chkLog";
       chkLog.Size = new System.Drawing.Size(245, 19);
@@ -1296,6 +1297,18 @@ namespace EMRALD_Sim
       chkLog.Text = "Debug (file debugLog.txt in run directory)";
       chkLog.UseVisualStyleBackColor = true;
       chkLog.CheckedChanged += chkLog_CheckedChanged;
+      // 
+      // chkLogConsole
+      // 
+      chkLogConsole.AutoSize = true;
+      chkLogConsole.Location = new System.Drawing.Point(159, 187);
+      chkLogConsole.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+      chkLogConsole.Name = "chkLogConsole";
+      chkLogConsole.Size = new System.Drawing.Size(169, 19);
+      chkLogConsole.TabIndex = 40;
+      chkLogConsole.Text = "Output Console to Log Tab";
+      chkLogConsole.UseVisualStyleBackColor = true;
+      chkLogConsole.CheckedChanged += chkLogConsole_CheckedChanged;
       // 
       // grpDebugOpts
       // 
@@ -1307,7 +1320,7 @@ namespace EMRALD_Sim
       grpDebugOpts.Controls.Add(rbDebugDetailed);
       grpDebugOpts.Controls.Add(rbDebugBasic);
       grpDebugOpts.Enabled = false;
-      grpDebugOpts.Location = new System.Drawing.Point(159, 197);
+      grpDebugOpts.Location = new System.Drawing.Point(159, 220);
       grpDebugOpts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
       grpDebugOpts.Name = "grpDebugOpts";
       grpDebugOpts.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -1709,7 +1722,7 @@ namespace EMRALD_Sim
       tabLog.Name = "tabLog";
       tabLog.Size = new System.Drawing.Size(1251, 793);
       tabLog.TabIndex = 2;
-      tabLog.Text = "XMPP msg Log";
+      tabLog.Text = "Log";
       tabLog.UseVisualStyleBackColor = true;
       // 
       // rtbLog
@@ -1925,6 +1938,7 @@ namespace EMRALD_Sim
     private System.Windows.Forms.TextBox tbSavePath2;
     private System.Windows.Forms.SaveFileDialog saveFileDialog2;
     private System.Windows.Forms.CheckBox chkLog;
+    private System.Windows.Forms.CheckBox chkLogConsole;
     private System.Windows.Forms.GroupBox grpDebugOpts;
     private System.Windows.Forms.RadioButton rbDebugDetailed;
     private System.Windows.Forms.RadioButton rbDebugBasic;

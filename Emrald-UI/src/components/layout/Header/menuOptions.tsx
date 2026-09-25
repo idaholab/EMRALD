@@ -4,11 +4,122 @@ import type { EMRALD_Model } from '../../../types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
 import { appData, clearCacheData } from '../../../hooks/useAppData';
 import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
-import { upgradeModel, validateModel } from '../../../utils/Upgrades/upgrade';
+import { repairModelReferences } from '../../../utils/ModelRepair';
+import {
+  type ModelValidationResult,
+  upgradeModel,
+  validateModel,
+} from '../../../utils/Upgrades/upgrade';
 import {
   SankeyTimelineDiagram,
   type TimelineOptions,
 } from '../../diagrams/SankeyTimelineDiagram/SankeyTimelineDiagram';
+
+const DEFAULT_MODEL_NAME = 'Untitled_EMRALD_Project';
+
+function nameFromFileName(fileName: string) {
+  return fileName.replace(/\.[^/.]+$/, '').trim();
+}
+
+function normalizeModelObjType(model: EMRALD_Model, fallbackName?: string): EMRALD_Model {
+  type StateWithLegacyGeometry = EMRALD_Model['StateList'][number] & {
+    geometry?: unknown;
+  };
+
+  type LogicNodeWithLegacyRootName = EMRALD_Model['LogicNodeList'][number] & {
+    rootName?: string;
+  };
+
+  type EventWithTransientErrors = EMRALD_Model['EventList'][number] & {
+    logicError?: unknown;
+  };
+
+  const normalizeState = (state: EMRALD_Model['StateList'][number]) => {
+    const { geometry: _geometry, ...stateWithoutGeometry }
+      = state as StateWithLegacyGeometry;
+    return stateWithoutGeometry;
+  };
+
+  const normalizeLogicNode = (
+    logicNode: EMRALD_Model['LogicNodeList'][number],
+  ) => {
+    const { rootName, isRoot, ...logicNodeWithoutRootName }
+      = logicNode as LogicNodeWithLegacyRootName;
+    return {
+      ...logicNodeWithoutRootName,
+      isRoot: isRoot || rootName === logicNode.name,
+    };
+  };
+
+  const normalizeEvent = (event: EMRALD_Model['EventList'][number]) => {
+    const { logicError: _logicError, ...eventWithoutTransientErrors }
+      = event as EventWithTransientErrors;
+    return eventWithoutTransientErrors;
+  };
+
+  const name = model.name?.trim() || fallbackName?.trim();
+
+  return {
+    ...model,
+    ...(name ? { name } : {}),
+    objType: 'EMRALD_Model',
+    StateList: model.StateList.map(state => normalizeState(state)),
+    EventList: model.EventList.map(event => normalizeEvent(event)),
+    LogicNodeList: model.LogicNodeList.map(logicNode => normalizeLogicNode(logicNode)),
+    templates: model.templates?.map(template => normalizeModelObjType(template)),
+  };
+}
+
+function formatValidationSummary(validationResult: ModelValidationResult) {
+  const visibleErrors = validationResult.errors.slice(0, 5).join('\n');
+  return validationResult.truncated
+    ? `${visibleErrors}\nAdditional errors were omitted.`
+    : visibleErrors;
+}
+
+function confirmRepairInvalidModel(validationResult: ModelValidationResult) {
+  return window.confirm(
+    `This model does not match EMRALD schema ${validationResult.schemaVersion.toString()}.\n\nRepair it before continuing?\n\nRepair removes unnamed items and clears invalid references.\n\n${formatValidationSummary(validationResult)}`,
+  );
+}
+
+function reportUnrepairableModel(
+  validationResult: ModelValidationResult,
+  handleModelError?: (message: string) => void,
+) {
+  const message = `The model was repaired, but it still does not match EMRALD schema ${validationResult.schemaVersion.toString()}.\n\n${formatValidationSummary(validationResult)}`;
+  if (handleModelError) {
+    handleModelError(message);
+  } else {
+    window.alert(message);
+  }
+}
+
+function getUsableModel(
+  model: EMRALD_Model,
+  fallbackName?: string,
+  handleModelError?: (message: string) => void,
+) {
+  const normalizedModel = normalizeModelObjType(model, fallbackName);
+  const validationResult = validateModel(normalizedModel);
+
+  if (validationResult.valid) {
+    return normalizedModel;
+  }
+
+  if (!confirmRepairInvalidModel(validationResult)) {
+    return null;
+  }
+
+  const repairedModel = repairModelReferences(normalizedModel);
+  const repairedValidationResult = validateModel(repairedModel);
+  if (!repairedValidationResult.valid) {
+    reportUnrepairableModel(repairedValidationResult, handleModelError);
+    return null;
+  }
+
+  return repairedModel;
+}
 
 export const projectOptions = {
   New(newProject: () => void) {
@@ -34,6 +145,7 @@ export const projectOptions = {
         return; // If no file is selected, exit
       }
       const fileName = selectedFile.name; // Get the filename
+      const fallbackModelName = nameFromFileName(fileName);
       if (setFileName) {
         setFileName(fileName);
       }
@@ -48,10 +160,24 @@ export const projectOptions = {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            populateNewData(upgradedModel);
+            const usableModel = getUsableModel(
+              upgradedModel,
+              fallbackModelName,
+              handleModelError,
+            );
+            if (usableModel) {
+              populateNewData(usableModel);
+            }
           }
         } else {
-          populateNewData(parsedContent);
+          const usableModel = getUsableModel(
+            parsedContent,
+            fallbackModelName,
+            handleModelError,
+          );
+          if (usableModel) {
+            populateNewData(usableModel);
+          }
         }
       } catch (error) {
         console.error('Invalid JSON format');
@@ -94,6 +220,7 @@ export const projectOptions = {
         return; // If no file is selected, exit
       }
 
+      const fallbackModelName = nameFromFileName(selectedFile.name);
       const content = await selectedFile.text(); // Read the file as text
       // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
       try {
@@ -101,12 +228,26 @@ export const projectOptions = {
         if (
           Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
         ) {
-          mergeNewData(parsedContent);
+          const usableModel = getUsableModel(
+            parsedContent,
+            fallbackModelName,
+            handleModelError,
+          );
+          if (usableModel) {
+            mergeNewData(usableModel);
+          }
         } else {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            mergeNewData(upgradedModel);
+            const usableModel = getUsableModel(
+              upgradedModel,
+              fallbackModelName,
+              handleModelError,
+            );
+            if (usableModel) {
+              mergeNewData(usableModel);
+            }
           }
         }
       } catch (error) {
@@ -130,21 +271,46 @@ export const projectOptions = {
     // Trigger a click on the file input to open the file dialog
     fileInput.click();
   },
-  Save: async () => {
-    // validate the model
-    const errors: string[] = await validateModel(appData.value);
+  Save: async (
+    confirmInvalidModelSave?: (
+      validationResult: ModelValidationResult,
+    ) => boolean | Promise<boolean>,
+  ) => {
+    let data = normalizeModelObjType(
+      structuredClone(appData.value),
+      DEFAULT_MODEL_NAME,
+    );
+    const modelName = data.name ?? DEFAULT_MODEL_NAME;
+    data.name = modelName;
+    data.desc = data.desc ?? ''; // Ensure desc is a string before validating and saving.
 
-    // if error TODO
-    if (errors.length > 0) {
-      // todo let the user know the errors and report a bug to developers, provide the model if possible
-      console.error('Model validation errors:', errors);
+    let validationResult = validateModel(data);
+    if (!validationResult.valid) {
+      console.error('Model validation failed:', {
+        schemaVersion: validationResult.schemaVersion,
+        displayedErrorCount: validationResult.errors.length,
+        truncated: validationResult.truncated,
+        firstError: validationResult.errors[0],
+      });
+      if (confirmRepairInvalidModel(validationResult)) {
+        data = repairModelReferences(data);
+        validationResult = validateModel(data);
+      }
+
+      if (!validationResult.valid) {
+        const shouldSave = confirmInvalidModelSave
+          ? await confirmInvalidModelSave(validationResult)
+          : window.confirm(
+              `This model does not match EMRALD schema ${validationResult.schemaVersion.toString()}. Save anyway?`,
+            );
+
+        if (!shouldSave) {
+          return;
+        }
+      }
     }
-    // Convert JSON data to a string
-    const data = structuredClone(appData.value);
-    data.desc = data.desc ?? ''; // Ensure desc is a string
-    const jsonString = JSON.stringify(data, null, 2);
 
-    // todo validate the appData from the latest emrald schema version in types
+    const jsonString = JSON.stringify(data, null, 2);
 
     // Create a Blob (Binary Large Object) with the JSON string
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -155,7 +321,7 @@ export const projectOptions = {
     // Create an <a> element to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${data.name === undefined || data.name.length === 0 ? 'Untitled_EMRALD_Project' : data.name}.emrald`;
+    a.download = `${modelName}.emrald`;
 
     // Trigger a click event on the <a> element to initiate the download
     a.click();
@@ -255,6 +421,7 @@ export const projectOptions = {
         return; // If no file is selected, exit
       }
 
+      const fallbackModelName = nameFromFileName(selectedFile.name);
       const content = await selectedFile.text(); // Read the file as text
       // TODO: Make sure there is no duplicates when merging. If there are show the import form to resolve conflicts.
       try {
@@ -262,12 +429,26 @@ export const projectOptions = {
         if (
           Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
         ) {
-          compareData(parsedContent);
+          const usableModel = getUsableModel(
+            parsedContent,
+            fallbackModelName,
+            handleModelError,
+          );
+          if (usableModel) {
+            compareData(usableModel);
+          }
         } else {
           const upgradedModel = upgradeModel(content);
           if (upgradedModel) {
             upgradedModel.id = uuidv4();
-            compareData(upgradedModel);
+            const usableModel = getUsableModel(
+              upgradedModel,
+              fallbackModelName,
+              handleModelError,
+            );
+            if (usableModel) {
+              compareData(usableModel);
+            }
           }
         }
       } catch (error) {
@@ -321,12 +502,22 @@ export const templateSubMenuOptions = {
         const parsedContent = JSON.parse(content) as EMRALD_Model[];
         for (const model of parsedContent) {
           if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
-            mergeTemplateToList(model);
+            const usableModel = getUsableModel(model, undefined, handleModelError);
+            if (usableModel) {
+              mergeTemplateToList(usableModel);
+            }
           } else {
             const upgradedModel = upgradeModel(JSON.stringify(model));
             if (upgradedModel) {
               upgradedModel.id = uuidv4();
-              mergeTemplateToList(upgradedModel);
+              const usableModel = getUsableModel(
+                upgradedModel,
+                undefined,
+                handleModelError,
+              );
+              if (usableModel) {
+                mergeTemplateToList(usableModel);
+              }
             }
           }
         }
@@ -356,7 +547,11 @@ export const templateSubMenuOptions = {
       return 'error';
     }
     // Convert JSON data to a string
-    const jsonString = JSON.stringify(templates, null, 2);
+    const jsonString = JSON.stringify(
+      templates.map(template => normalizeModelObjType(template)),
+      null,
+      2,
+    );
 
     // Create a Blob (Binary Large Object) with the JSON string
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -368,7 +563,7 @@ export const templateSubMenuOptions = {
     const a = document.createElement('a');
     a.href = url;
     a.download = `${
-      appData.value.name ?? 'Untitled_EMRALD_Project'
+      appData.value.name ?? DEFAULT_MODEL_NAME
     }-templates.json`;
 
     // Trigger a click event on the <a> element to initiate the download

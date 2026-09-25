@@ -10,6 +10,8 @@ using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks.Sources;
 using MessageDefLib;
@@ -70,6 +72,9 @@ namespace WebSocketTestServer
         internal TimeSpan LocalTimeOffset {get; private set;} = TimeSpan.Zero;
         //the global simulation time is the local plus the offset
         internal TimeSpan GlobalSimTime => Simulation.simTime + LocalTimeOffset;
+        //this sim's own elapsed time (without the offset). SimEvent.time is reported in local time -
+        //EMRALD adds the sim start time to convert it back to global, so do NOT add the offset here.
+        internal TimeSpan LocalSimTime => Simulation.simTime;
         //Maximum simulation time this can run in GlobalSimTime provided on setup from the EMRALD model
         internal TimeSpan? MaxSimulationTime => simInfo?.endTime;
         //Path to a model or data needed by this simulation, if needed, provided by the EMRALD model
@@ -93,6 +98,41 @@ namespace WebSocketTestServer
         internal string LastError = "";
         // Instance of the simulation tool used by this connection.
         public ExampleSim Simulation { get; } = new ExampleSim();
+
+        // Variables EMRALD asked us to watch, including the optional boolean rule (WatchEventCriteria).
+        internal IReadOnlyList<WatchItem> WatchItems => _connection.WatchItems;
+
+        /// <summary>
+        /// Resolve a watched variable name to its current numeric value, used when evaluating a
+        /// watch item's WatchEventCriteria rule. Extend this map to expose more of your simulation's state.
+        /// </summary>
+        internal double ResolveWatchVariable(string name)
+        {
+            switch (name)
+            {
+                case "T_FW": return Simulation.T_FW;
+                case "epsilon3": return Simulation.epsilon3;
+                case "TotalVolume": return Simulation.TotalVolume;
+                case "simTime": return Simulation.simTime.TotalSeconds;
+                default: throw new KeyNotFoundException($"Unknown watch variable '{name}'");
+            }
+        }
+
+        /// <summary>
+        /// Whether EMRALD should be notified about a variable right now. If EMRALD attached a rule
+        /// (WatchEventCriteria) to the watch item, only report when that rule is true - this is what
+        /// cuts down callback chatter. With no rule (or no matching watch item) we report on every change.
+        /// </summary>
+        /// <param name="varName">External-sim variable name being considered for a callback.</param>
+        internal bool ShouldReport(string varName)
+        {
+            var item = WatchItems?.FirstOrDefault(w => string.Equals(w.name, varName, StringComparison.Ordinal));
+            if (item == null)
+                return true;
+
+            // Evaluate handles a null/empty expression as "always report".
+            return WatchEventCriteriaEvaluator.Evaluate(item.WatchEventCriteria, ResolveWatchVariable);
+        }
 
 
         /// <summary>
@@ -258,7 +298,8 @@ namespace WebSocketTestServer
         internal Task SendEventAsync(SimEventType eventType, ItemData itemData = null!, string displayName = null!)
         {
             var wrapper = CreateWrapper(displayName ?? $"Event: {eventType}");
-            var simEvent = new SimEvent(eventType, GlobalSimTime)
+            // SimEvent.time is the sim's local elapsed time; the wrapper carries the global time.
+            var simEvent = new SimEvent(eventType, LocalSimTime)
             {
                 status = MapStatus(CurrentStateKind)
             };
@@ -279,7 +320,8 @@ namespace WebSocketTestServer
         internal Task SendStatusAsync(StatusType status, string displayName = null!)
         {
             var wrapper = CreateWrapper(displayName ?? $"Status: {status}");
-            var statusEvent = new SimEvent(SimEventType.etStatus, GlobalSimTime)
+            // SimEvent.time is the sim's local elapsed time; the wrapper carries the global time.
+            var statusEvent = new SimEvent(SimEventType.etStatus, LocalSimTime)
             {
                 status = status
             };

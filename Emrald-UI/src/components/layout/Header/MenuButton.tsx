@@ -1,3 +1,4 @@
+import type { ModelValidationResult } from '../../../utils/Upgrades/upgrade';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -31,6 +32,9 @@ interface MenuButtonProps {
   openVersionDialog?: () => void;
   openNameDialog?: () => void;
   handleModelError?: (message: string) => void;
+  confirmInvalidModelSave?: (
+    validationResult: ModelValidationResult,
+  ) => boolean | Promise<boolean>;
 }
 
 export const MenuButton: React.FC<MenuButtonProps> = ({
@@ -42,6 +46,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
   openVersionDialog,
   openNameDialog,
   handleModelError,
+  confirmInvalidModelSave,
 }) => {
   const { newProject, mergeNewData, populateNewData, compareData }
     = useAssembledData();
@@ -123,7 +128,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
         break;
       }
       case 'Save': {
-        await projectOptions.Save();
+        await projectOptions.Save(confirmInvalidModelSave);
         break;
       }
       case 'Load Results': {

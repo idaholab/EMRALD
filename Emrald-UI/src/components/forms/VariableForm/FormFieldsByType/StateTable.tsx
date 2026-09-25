@@ -29,8 +29,8 @@ import {
 import { useVariableFormContext } from '../VariableFormContext';
 
 export const StateTable: React.FC = () => {
-  const { setValue, accrualStatesData, setAccrualStatesData, sync }
-    = useVariableFormContext();
+  const { setValue, accrualStatesData, setAccrualStatesData, sync } =
+    useVariableFormContext();
   const [accrualMults, setAccrualMults] = useState<number[]>([]);
   const [multRates, setMultRates] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>([]);
@@ -117,8 +117,8 @@ export const StateTable: React.FC = () => {
       }
       setAccrualTables(newAccrualTables);
       if (accrualStatesData && accrualStatesData[index]) {
-        accrualStatesData[index].accrualTable[idx]
-          = newAccrualTables[index]?.[idx] ?? [];
+        accrualStatesData[index].accrualTable[idx] =
+          newAccrualTables[index]?.[idx] ?? [];
       }
     }
   }
@@ -172,6 +172,8 @@ export const StateTable: React.FC = () => {
             minWidth: min ? 80 : 120,
             width: min ? 'min-content' : '100%',
             my: 1,
+            '& .MuiInputLabel-root': { fontSize: '0.875rem' },
+            '& .MuiSelect-select': { fontSize: '0.875rem' },
           }}
         >
           <InputLabel id="rate-label">
@@ -186,10 +188,18 @@ export const StateTable: React.FC = () => {
             }}
             label={min ? 'Rate' : 'Multiplication Rate'}
           >
-            <MenuItem value="trSeconds">{min ? 'Sec' : 'Second'}</MenuItem>
-            <MenuItem value="trMinutes">{min ? 'Min' : 'Minute'}</MenuItem>
-            <MenuItem value="trHours">{min ? 'Hr' : 'Hour'}</MenuItem>
-            <MenuItem value="trDays">{min ? 'Day' : 'Day'}</MenuItem>
+            <MenuItem value="trSeconds" sx={{ fontSize: '0.875rem' }}>
+              {min ? 'Sec' : 'Second'}
+            </MenuItem>
+            <MenuItem value="trMinutes" sx={{ fontSize: '0.875rem' }}>
+              {min ? 'Min' : 'Minute'}
+            </MenuItem>
+            <MenuItem value="trHours" sx={{ fontSize: '0.875rem' }}>
+              {min ? 'Hr' : 'Hour'}
+            </MenuItem>
+            <MenuItem value="trDays" sx={{ fontSize: '0.875rem' }}>
+              {min ? 'Day' : 'Day'}
+            </MenuItem>
           </Select>
         </FormControl>
       )
@@ -211,12 +221,17 @@ export const StateTable: React.FC = () => {
           {accrualStatesData?.map((item, index) => (
             <StyledTableRow key={index}>
               <StyledTableCell>
-                <Typography variant="h6">{item.stateName}</Typography>
+                <Typography variant="body2" fontWeight={500}>
+                  {item.stateName}
+                </Typography>
               </StyledTableCell>
               <StyledTableCell>
                 {types[index] && (
                   <RadioGroup
-                    sx={{ margin: '8px' }}
+                    sx={{
+                      margin: '8px',
+                      '& .MuiFormControlLabel-label': { fontSize: '0.875rem' },
+                    }}
                     aria-label="status-value"
                     name="status-value"
                     value={types[index]}
@@ -228,13 +243,21 @@ export const StateTable: React.FC = () => {
                     <FormControlLabel
                       value="ctMultiplier"
                       control={
-                        <Radio checked={types[index] === 'ctMultiplier'} />
+                        <Radio
+                          size="small"
+                          checked={types[index] === 'ctMultiplier'}
+                        />
                       }
                       label="Static"
                     />
                     <FormControlLabel
                       value="ctTable"
-                      control={<Radio checked={types[index] === 'ctTable'} />}
+                      control={
+                        <Radio
+                          size="small"
+                          checked={types[index] === 'ctTable'}
+                        />
+                      }
                       label="Dynamic"
                     />
                   </RadioGroup>
@@ -254,7 +277,7 @@ export const StateTable: React.FC = () => {
                       handleStaticAccrualMultChange(event, index);
                     }}
                   />
-                  <Typography>per</Typography>
+                  <Typography variant="body2">per</Typography>
                   {getMultRateOptions(index)}
                 </StyledTableCell>
               ) : (
@@ -280,7 +303,7 @@ export const StateTable: React.FC = () => {
                         <StyledTableRow>
                           <StyledTableCell>
                             <Box display="flex" alignItems="center">
-                              <Typography sx={{ mx: 1 }}>
+                              <Typography variant="body2" sx={{ mx: 1 }}>
                                 Simulation Time
                               </Typography>
                               &nbsp;
@@ -289,7 +312,7 @@ export const StateTable: React.FC = () => {
                           </StyledTableCell>
                           <StyledTableCell>
                             <Box display="flex" alignItems="center">
-                              <Typography sx={{ mx: 1 }}>
+                              <Typography variant="body2" sx={{ mx: 1 }}>
                                 Accrual Rate
                               </Typography>
                               &nbsp;
@@ -297,7 +320,9 @@ export const StateTable: React.FC = () => {
                             </Box>
                           </StyledTableCell>
                           <StyledTableCell>
-                            <Typography sx={{ mx: 1 }}>Command</Typography>
+                            <Typography variant="body2" sx={{ mx: 1 }}>
+                              Command
+                            </Typography>
                           </StyledTableCell>
                         </StyledTableRow>
                       </TableHead>

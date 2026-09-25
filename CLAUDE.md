@@ -40,6 +40,12 @@ npm run build      # Build Tauri desktop executable
 
 The simulator (`EMRALD_Sim`) and engine (`SimulationEngine`) are .NET 10.0 projects. Build via VS or `dotnet build EMRALD.sln`.
 
+## Git Workflow
+
+- New branches should start with `v3_` by default unless the user explicitly requests a different naming convention.
+- When creating a GitHub issue or pull request, use the repository's configured template rather than drafting from scratch.
+- If a commit or pull request is related to a GitHub issue, reference the issue in the commit message and pull request text. Use a closing keyword such as `Fixes #123` when the change resolves the issue.
+
 ## Architecture
 
 The project has three independently runnable layers:

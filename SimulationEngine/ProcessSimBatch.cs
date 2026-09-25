@@ -113,6 +113,9 @@ namespace SimulationEngine
     protected string origionalRootPath = ""; //Origonal path to the model file
     protected string origionalFileName = ""; //origional file Name
     protected bool _tempThreadFilesWriten = false;
+
+    // Identifier shared by all threads in this batch/run instance.
+    private readonly string _runInstanceId;
     
 
 
@@ -135,20 +138,20 @@ namespace SimulationEngine
     //public string resultFile { get { return _resultFile; } }
     //public string jsonResultsPaths { get { return _jsonResultPaths; } }
 
-    public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, int? threadNum = null)
+    public ProcessSimBatch(EmraldModel origModel, TimeSpan endtime, string resultFile, string jsonResPaths, int pathResultsInterval, string runInstanceId, int? threadNum = null)
     {
       //don't deserialize model here because the singletions for numbering are by thread and the tread has not been assigned yet if multitheading
       modelTxt = origModel.modelTxt;
       origionalRootPath = origModel.rootPath;
       origionalFileName = origModel.fileName;
+
+      _runInstanceId = runInstanceId ?? "";
       this._threadNum = threadNum;
       this._endTime = endtime;
       this._pathResultsInterval = pathResultsInterval;
       this.progressCallback = null;
       this._origionalJsonResutsFile = jsonResPaths;
       this._origionalResutsFile = resultFile;
-
-
 
       this._resultFile = resultFile;
       this._jsonResultPaths = jsonResPaths;
@@ -195,6 +198,23 @@ namespace SimulationEngine
       if ((runIdx != 1) && ((ConfigData.debugRunStart == null) || (ConfigData.debugRunEnd == null)))
         return;
 
+      // No NLog.config was discovered next to the host binary (e.g. CommandLineCP without
+      // its NLog.config copied). Build a minimal default so debug logging still works
+      // instead of NRE'ing on LogManager.Configuration.LoggingRules below.
+      if (LogManager.Configuration == null)
+      {
+        var cfg = new NLog.Config.LoggingConfiguration();
+        var fileTarget = new NLog.Targets.FileTarget("logfile")
+        {
+          FileName = "DebugLog.txt",
+          Layout = "${message}",
+          DeleteOldFileOnStartup = true
+        };
+        cfg.AddTarget(fileTarget);
+        cfg.AddRule(LogLevel.Off, LogLevel.Fatal, fileTarget, "logfile");
+        LogManager.Configuration = cfg;
+      }
+
       if (((runIdx == 1) && (ConfigData.debugRunStart == null)) || (runIdx == ConfigData.debugRunStart))
       {
         foreach (var rule in LogManager.Configuration.LoggingRules)
@@ -235,13 +255,43 @@ namespace SimulationEngine
       _stop = true;
     }
 
+    private CurrentDirectoryRestore SetCurrentDirectoryForSingleThreadRun()
+    {
+      if (threadNum != null || !Directory.Exists(this._lists.rootPath))
+        return default;
+
+      string originalCurrentDirectory = Directory.GetCurrentDirectory();
+      Directory.SetCurrentDirectory(this._lists.rootPath);
+      return new CurrentDirectoryRestore(originalCurrentDirectory);
+    }
+
+    private readonly struct CurrentDirectoryRestore : IDisposable
+    {
+      private readonly string originalCurrentDirectory;
+
+      public CurrentDirectoryRestore(string originalCurrentDirectory)
+      {
+        this.originalCurrentDirectory = originalCurrentDirectory;
+      }
+
+      public void Dispose()
+      {
+        if (!string.IsNullOrEmpty(originalCurrentDirectory))
+        {
+          Directory.SetCurrentDirectory(originalCurrentDirectory);
+        }
+      }
+    }
+
     public void RunBatch()
     {
-     
+
       //make a new model so that we don't have issues if they run multiple batches or for mutli thraded must do in the thread function
       _tempThreadFilesWriten = false;
       this._lists = new EmraldModel();
+      this._lists.RunInstanceId = _runInstanceId;
       this._lists.DeserializeJSON(modelTxt, origionalRootPath, origionalFileName, threadNum); //this will update any references automatically if the threadNum != null
+      using CurrentDirectoryRestore currentDirectoryRestore = SetCurrentDirectoryForSingleThreadRun();
       _tempThreadFilesWriten = true;
 
       //if this is mutithreaded then it needs a temp work area for the model and results.
@@ -536,7 +586,10 @@ namespace SimulationEngine
       GetVarValues(logVarVals, true);
 
       if (progressCallback != null)
-        progressCallback(_totRunTime, _numRuns, _logFailedComps, _lists.threadNum);
+      {
+        int? callbackThreadNum = ignoreThreadPath ? null : _lists.threadNum;
+        progressCallback(_totRunTime, _numRuns, _logFailedComps, callbackThreadNum);
+      }
     }
 
     private bool MakePathResults(int curIdx, bool makeSankey)
@@ -555,8 +608,20 @@ namespace SimulationEngine
           
           foreach (var keyS in resultObj.keyStates)
           {
-            if (_variableVals.Count > 0) //if there are any being tracked, they should have a value for each key state.
-              keyS.watchVariables = _variableVals[keyS.name];
+            // Copy variable values for this key state from _variableVals instead of aliasing
+            // the dictionary directly. Aliasing caused cross-thread merges in AddOtherBatchResults
+            // to mutate _variableVals via watchVariables, leading to duplicate suffixed keys
+            // (e.g., x.1 and x.2 from the same thread).
+            if (_variableVals.Count > 0 && _variableVals.TryGetValue(keyS.name, out var keyStateVarVals))
+            {
+              var watchVarCopy = new Dictionary<string, Dictionary<string, string>>(keyStateVarVals.Count);
+              foreach (var v in keyStateVarVals)
+              {
+                watchVarCopy[v.Key] = new Dictionary<string, string>(v.Value);
+              }
+
+              keyS.watchVariables = watchVarCopy;
+            }
           }
 
           string output = JsonConvert.SerializeObject(resultObj, Formatting.Indented);
@@ -809,15 +874,6 @@ namespace SimulationEngine
         if (!this.keyPaths.ContainsKey(keyPath.Key))
         {
           this.keyPaths.Add(keyPath.Value.name, keyPath.Value);
-          foreach (var variableCategory in toAddBatch._variableVals)
-          {
-            if (!_variableVals.ContainsKey(variableCategory.Key))
-              _variableVals.Add(variableCategory.Key, new Dictionary<string, Dictionary<string, string>>(variableCategory.Value));
-#if DEBUG
-            else
-              throw new Exception($"Duplicate variable category key '{variableCategory.Key}' when merging batch results in AddOtherBatchResults.");
-#endif
-          }
         }
         else
         {
@@ -827,6 +883,8 @@ namespace SimulationEngine
 
         this.keyPaths[keyPath.Key].AssignResults();
       }
+
+      MergeVariableValues(toAddBatch._variableVals);
 
       //add in the other paths
       //public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
@@ -852,6 +910,44 @@ namespace SimulationEngine
 
       this._totRunTime += toAddBatch._totRunTime;
       this._numRuns += toAddBatch._numRuns;
+    }
+
+    private void MergeVariableValues(Dictionary<string, Dictionary<string, Dictionary<string, string>>> addVariableVals)
+    {
+      foreach (var variableCategory in addVariableVals)
+      {
+        Dictionary<string, Dictionary<string, string>> curVariableCategory;
+        if (!_variableVals.TryGetValue(variableCategory.Key, out curVariableCategory))
+        {
+          curVariableCategory = new Dictionary<string, Dictionary<string, string>>();
+          _variableVals.Add(variableCategory.Key, curVariableCategory);
+        }
+
+        foreach (var variable in variableCategory.Value)
+        {
+          Dictionary<string, string> curVariableVals;
+          if (!curVariableCategory.TryGetValue(variable.Key, out curVariableVals))
+          {
+            curVariableVals = new Dictionary<string, string>();
+            curVariableCategory.Add(variable.Key, curVariableVals);
+          }
+
+          foreach (var variableValue in variable.Value)
+          {
+            string runIdKey = variableValue.Key;
+            if (curVariableVals.ContainsKey(runIdKey))
+            {
+              int sub = 1;
+              while (curVariableVals.ContainsKey(runIdKey + "." + sub.ToString()))
+                sub++;
+
+              runIdKey += "." + sub.ToString();
+            }
+
+            curVariableVals.Add(runIdKey, variableValue.Value);
+          }
+        }
+      }
     }
 
     public void ClearTempThreadData()

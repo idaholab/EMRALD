@@ -35,8 +35,18 @@ Use this guide to turn the `CouplingWebSocket` library and `WebSocketTestServer`
    - Status/health → `etStatus` / `etPing`.
 4. **Watch variables**  
    Honor `watchItems` passed in `CreateConnection`; send only the requested variables to cut chatter.
+   Each watch item is an object `{ "name", "type", "WatchEventCriteria" }` where `type` is the
+   variable's EMRALD type and `WatchEventCriteria` is an optional fParser boolean expression string
+   (e.g. `"(valve_12 > 5) & (valve_12 < 10)"`). When `WatchEventCriteria` is present, only call back
+   while the expression evaluates true; when it is omitted, report on every change. See
+   `WatchEventCriteriaEvaluator.cs` in the sample for a reference expression evaluator.
 5. **Timekeeping**  
-   Keep `GlobalSimTime` accurate in the state machine so outbound events use EMRALD global time.
+   Two times travel in each message and they are **not** the same: the wrapper's `globalRunTime` is
+   global (this sim's start time + its local elapsed time) and EMRALD uses it to detect stale/out-of-order
+   messages, while each `SimEvent.time` is the sim's **local** elapsed time (no offset). EMRALD adds the
+   sim's start time to localize `SimEvent.time` back to global, so stamping a `SimEvent` with global time
+   double-counts the offset and pushes EMRALD's clock ahead (its messages then look perpetually stale).
+   In the sample, `GlobalSimTime` feeds the wrapper and `LocalSimTime` feeds each `SimEvent`.
 6. **Threading**  
    The sample processes a connection on a single logical loop. If you add background threads, funnel all outbound messages through the state machine to preserve ordering.
 
@@ -45,8 +55,14 @@ Use this guide to turn the `CouplingWebSocket` library and `WebSocketTestServer`
 Client → {"command":"GetAppOptions"}
 Server → {"names":["AppA","AppB", ...]}
 
-Client → {"command":"CreateConnection","appName":"AppA","watchItems":["var1","var2"]}
+Client → {"command":"CreateConnection","appName":"AppA","watchItems":[
+           {"name":"var1","type":"double"},
+           {"name":"valve_12","type":"double","WatchEventCriteria":"(valve_12 > 5) & (valve_12 < 10)"}
+         ]}
 Server → {"conID":"<guid>"}
+         // watchItems are objects: name, EMRALD type, and an optional WatchEventCriteria fParser
+         // expression string. With an expression, the server only calls back while it evaluates
+         // true; without one, it reports on every change.
 
 Client → {"command":"SendActionMsg","conID":"<guid>","action":<TMsgWrapper JSON>}
 Server → {"conID":"<guid>","message":<TMsgWrapper JSON>}   // events: etSimLoaded, etCompEv, etTimer, etEndSim, etStatus, etc.

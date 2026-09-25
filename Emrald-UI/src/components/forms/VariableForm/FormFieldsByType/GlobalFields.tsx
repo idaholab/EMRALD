@@ -1,5 +1,10 @@
 import type { VariableFormProps } from '../VariableForm';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -7,11 +12,21 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useVariableFormContext } from '../VariableFormContext';
 
-export const GlobalFields: React.FC<VariableFormProps> = ({ variableData }) => {
+interface GlobalFieldsProps extends VariableFormProps {
+  // When true (external sim variables), Input/Output Variable default to checked for a new variable.
+  defaultInOutChecked?: boolean;
+}
+
+export const GlobalFields: React.FC<GlobalFieldsProps> = ({
+  variableData,
+  defaultInOutChecked,
+}) => {
   const { type, value, setValue, sync }
     = useVariableFormContext();
 
@@ -19,17 +34,31 @@ export const GlobalFields: React.FC<VariableFormProps> = ({ variableData }) => {
   const [canMonitor, setCanMonitor] = useState(false);
   const [monitorInSim, setMonitorInSim] = useState(false);
   const [cumulativeStats, setCumulativeStats] = useState(false);
+  const [inVariable, setInVariable] = useState(false);
+  const [outVariable, setOutVariable] = useState(false);
 
   useEffect(() => {
     setResetOnRuns(variableData?.resetOnRuns ?? true);
     setCanMonitor(variableData?.canMonitor ?? false);
     setMonitorInSim(variableData?.monitorInSim ?? false);
     setCumulativeStats(variableData?.cumulativeStats ?? false);
+    setInVariable(variableData?.inVariable ?? defaultInOutChecked ?? false);
+    setOutVariable(variableData?.outVariable ?? defaultInOutChecked ?? false);
   }, []);
 
   useEffect(() => {
-    sync({ resetOnRuns, canMonitor, monitorInSim, cumulativeStats });
-  }, [resetOnRuns, canMonitor, monitorInSim, cumulativeStats]);
+    // For external-sim variables (defaultInOutChecked) the in/out flags default to true, so persist
+    // them explicitly - true or false - to remember the user's choice. For other scopes they default
+    // to false, so omit when false to keep the saved model clean (absence then reads back as false).
+    sync({
+      resetOnRuns,
+      canMonitor,
+      monitorInSim,
+      cumulativeStats,
+      inVariable: defaultInOutChecked ? inVariable : inVariable || undefined,
+      outVariable: defaultInOutChecked ? outVariable : outVariable || undefined,
+    });
+  }, [resetOnRuns, canMonitor, monitorInSim, cumulativeStats, inVariable, outVariable]);
 
   return (
     <>
@@ -82,62 +111,114 @@ export const GlobalFields: React.FC<VariableFormProps> = ({ variableData }) => {
           fullWidth
         />
       )}
-      <FormControlLabel
-        label="Reset to initial value for every simulation run"
-        control={
-          <Checkbox
-            checked={resetOnRuns}
-            onChange={e => {
-              setResetOnRuns(e.target.checked);
-            }}
-          />
-        }
-      />
-      <br />
-      <FormControlLabel
-        label="Allow Monitor in Simulation"
-        value={canMonitor}
-        control={
-          <Checkbox
-            checked={canMonitor}
-            onChange={e => {
-              setCanMonitor(e.target.checked);
-            }}
-          />
-        }
-      />
-      {canMonitor ? (
-        <>
-          <br />
-          <FormControlLabel
-            label="Monitor By Default"
-            value={monitorInSim}
-            control={
-              <Checkbox
-                checked={monitorInSim}
-                onChange={e => {
-                  setMonitorInSim(e.target.checked);
-                }}
-              />
-            }
-          />
-          <br />
-          <FormControlLabel
-            label="Monitor Cumulative Stats"
-            value={cumulativeStats}
-            control={
-              <Checkbox
-                checked={cumulativeStats}
-                onChange={e => {
-                  setCumulativeStats(e.target.checked);
-                }}
-              />
-            }
-          />
-        </>
-      ) : (
-        <></>
-      )}
+      <Tooltip
+        title="When checked, the variable is set back to its initial value at the start of every Monte Carlo run. When unchecked, it keeps the value carried over from the end of the previous run."
+        placement="right"
+      >
+        <FormControlLabel
+          label="Reset to initial value for every simulation run"
+          control={
+            <Checkbox
+              checked={resetOnRuns}
+              onChange={e => {
+                setResetOnRuns(e.target.checked);
+              }}
+            />
+          }
+        />
+      </Tooltip>
+
+      <Accordion disableGutters elevation={0} sx={{ mt: 1, '&:before': { display: 'none' } }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 0 }}>
+          <Typography variant="subtitle2">Running Parameters</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', pt: 0 }}>
+          <Tooltip
+            title="Mark this variable as a simulation input - its value is supplied into a run (for example, set by a coupled/external application or used as a run parameter) rather than only being computed within EMRALD."
+            placement="right"
+          >
+            <FormControlLabel
+              label="Input Variable"
+              control={
+                <Checkbox
+                  checked={inVariable}
+                  onChange={e => {
+                    setInVariable(e.target.checked);
+                  }}
+                />
+              }
+            />
+          </Tooltip>
+          <Tooltip
+            title="Mark this variable as a simulation output - its value is produced during a run and exposed to the results or to a coupled/external application."
+            placement="right"
+          >
+            <FormControlLabel
+              label="Output Variable"
+              control={
+                <Checkbox
+                  checked={outVariable}
+                  onChange={e => {
+                    setOutVariable(e.target.checked);
+                  }}
+                />
+              }
+            />
+          </Tooltip>
+          <Tooltip
+            title="Allow this variable to be monitored - tracked live while a simulation runs and available for inclusion in the results, not just live viewing. Must be enabled to use the monitor options below."
+            placement="right"
+          >
+            <FormControlLabel
+              label="Allow Monitor in Simulation"
+              control={
+                <Checkbox
+                  checked={canMonitor}
+                  onChange={e => {
+                    setCanMonitor(e.target.checked);
+                  }}
+                />
+              }
+            />
+          </Tooltip>
+          {canMonitor && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', ml: 3 }}>
+              <Tooltip
+                title="Pre-select this variable for monitoring in the solver by default when a simulation is run."
+                placement="right"
+              >
+                <FormControlLabel
+                  label="Monitor By Default"
+                  control={
+                    <Checkbox
+                      checked={monitorInSim}
+                      onChange={e => {
+                        setMonitorInSim(e.target.checked);
+                      }}
+                    />
+                  }
+                />
+              </Tooltip>
+              <Tooltip
+                title="Output the Mean, 5th, 95th of the variable when part of a key states"
+                placement="right"
+              >
+                <FormControlLabel
+                  label="Monitor Variable Stats"
+                  control={
+                    <Checkbox
+                      checked={cumulativeStats}
+                      onChange={e => {
+                        setCumulativeStats(e.target.checked);
+                      }}
+                    />
+                  }
+                />
+              </Tooltip>
+            </Box>
+          )}
+        </AccordionDetails>
+      </Accordion>
     </>
   );
 };

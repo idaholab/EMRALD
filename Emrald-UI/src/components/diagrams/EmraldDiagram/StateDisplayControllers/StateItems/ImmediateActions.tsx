@@ -79,10 +79,11 @@ export const ImmediateActions: React.FC<ImmediateActionsProps> = ({
               }}
             >
               <Typography sx={{ fontSize: 10, ml: '5px' }}>{action}</Typography>
-              {isStateInCurrentDiagram(actionValue) ? (
+              {isStateInCurrentDiagram(actionValue, state.diagramName) ? (
                 <></>
               ) : (
                 <FaLink
+                  data-testid="diagram-link-icon"
                   onClick={() => {
                     if (actionValue) {
                       openDiagramFromNewState(actionValue);

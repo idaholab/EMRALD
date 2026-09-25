@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.87
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11709.129 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulationDAL", "SimulationDAL\SimulationDAL.csproj", "{536E2AE0-B2F3-4DEE-8E35-5E2AD2D74F7F}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "emrald-docs", "emrald-docs\emrald-docs.njsproj", "{2FBBA795-DFFE-4908-9FB2-99478460FFA9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineCP", "CommandLineCP\CommandLineCP.csproj", "{A0A45F59-8044-4187-B1DD-70C65B33908B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouplingWebSocket", "CouplingWebSocket\CouplingWebSocket.csproj", "{5D3FCFEF-05AB-89B3-EA4B-51F8EBFAA84C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0A45F59-8044-4187-B1DD-70C65B33908B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D3FCFEF-05AB-89B3-EA4B-51F8EBFAA84C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D3FCFEF-05AB-89B3-EA4B-51F8EBFAA84C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D3FCFEF-05AB-89B3-EA4B-51F8EBFAA84C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D3FCFEF-05AB-89B3-EA4B-51F8EBFAA84C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

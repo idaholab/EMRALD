@@ -44,9 +44,13 @@ namespace EMRALD_Sim
     private int _pathResultsInterval = -1;
     private List<string> _recentFiles = new List<string>();
     private bool _skipApplyOptionsOnce = false;
+    private bool _applyingOptionsToUI = false;
     private bool _isCommandLineRun = false;
+    private bool _pendingAutoRun = false; // command-line run is deferred to FormMain_Load so the window handle exists before the sim marshals UI updates
     private Options_cur _curSimOptions = new Options_cur();
     private ContextMenuStrip _monitorVarsContextMenu = null;
+    private static FormMain _rtbLogInstance;
+    private TextWriter _origConsoleOut;
 
     [DllImport("kernel32.dll")]
     static extern bool AttachConsole(int dwProcessId);
@@ -59,6 +63,8 @@ namespace EMRALD_Sim
       _optionsAccessor = optionsAccessor;
       InitializeComponent();
 
+      _rtbLogInstance = this;
+      AttachRtbLogToNLog();
 
       teModel.SetHighlighting("JSON");
       tcCouplingTypeInfo.SelectedIndex = 1;
@@ -87,6 +93,7 @@ namespace EMRALD_Sim
       }
 
       bool execute = false;
+      bool startupOptionsProvided = false;
       string model = null;
 
       if (args.Length > 0)
@@ -101,9 +108,12 @@ namespace EMRALD_Sim
 
         if (isJSON)
         {
+          startupOptionsProvided = true;
           try
           {
-            _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0]));
+            _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0])) ?? new Options_cur();
+            _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
+            _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
             model = _curSimOptions.inpfile;
             execute = true;
             _isCommandLineRun = true;
@@ -115,23 +125,26 @@ namespace EMRALD_Sim
         }
         else
         {
+          startupOptionsProvided = true;
           execute = LoadFromArgs(args, out model);
         }
       }
 
       if (model != null && OpenModel(model))
       {
-        LoadCurSimOptionsFromDisk(model);
+        if (!startupOptionsProvided)
+          LoadCurSimOptionsFromDisk(model);
         tcMain.SelectedTab = tabSimulate;
         AddRecentFile(model);
       }
 
       ApplyOptionsToUI();
 
-      if (execute && _validSim)
-      {
-        btnStartSims_Click(this, null);
-      }
+      // Defer the auto-run to FormMain_Load. Starting the sim here (before Application.Run
+      // shows the form) means the window handle isn't created yet, so the background sim
+      // thread's UI marshaling (InvokeUIUpdate) throws "Invoke or BeginInvoke cannot be
+      // called on a control until the window handle has been created."
+      _pendingAutoRun = execute && _validSim;
     }
 
     // Create right-click menu for monitor vars to select/unselect all.
@@ -485,7 +498,10 @@ namespace EMRALD_Sim
     // Ensure delegate executes on UI thread.
     private void InvokeUIUpdate(MethodInvoker methodInvokerDelegate)
     {
-      if (this.InvokeRequired)
+      // Only marshal when the window handle exists; otherwise Invoke throws "Invoke or BeginInvoke
+      // cannot be called on a control until the window handle has been created." Running inline is
+      // safe before the handle exists because there's no UI thread message pump to marshal onto yet.
+      if (this.IsHandleCreated && this.InvokeRequired)
       {
         this.Invoke(methodInvokerDelegate);
       }
@@ -614,6 +630,13 @@ namespace EMRALD_Sim
         cbMsgType.Items.Add(actT.ToString().Substring(2));
       }
       cbMsgType.SelectedIndex = 0;
+
+      // Run the command-line/JSON sim now that the form is loaded and its window handle exists.
+      if (_pendingAutoRun)
+      {
+        _pendingAutoRun = false;
+        btnStartSims_Click(this, null);
+      }
     }
 
     private void cbMsgType_SelectedIndexChanged(object sender, EventArgs e)
@@ -876,10 +899,11 @@ namespace EMRALD_Sim
     private void DispResults(TimeSpan runTime, int runCnt, bool logFailedComps, int? threadNum)
     {
       int curT = 0;
-      if (_running && cbMultiThreaded.Checked && cbCurThread.Visible)
-        curT = cbCurThread.SelectedIndex;
+      bool showOverallResults = threadNum == null;
+      if (!showOverallResults && _running && cbMultiThreaded.Checked && cbCurThread.Visible)
+        curT = Math.Max(cbCurThread.SelectedIndex, 0);
 
-      if ((_lastError == "") && ((threadNum == null) || (curT == (int)threadNum))) //only update for specified thread or if there is none specified
+      if ((_lastError == "") && (showOverallResults || (curT == threadNum.Value))) //only update for specified thread or if there is none specified
       {
         lbl_ResultHeader.Text = _sim.name + " " + runCnt.ToString() + " of " + tbRunCnt.Text + " runs.";
         lblRunTime.Text = runTime.ToString("g");
@@ -1150,7 +1174,16 @@ namespace EMRALD_Sim
       tbLogRunStart.Text = _curSimOptions.debugStartIdx > 0 ? _curSimOptions.debugStartIdx.ToString() : "1";
       tbLogRunEnd.Text = _curSimOptions.debugEndIdx > 0 ? _curSimOptions.debugEndIdx.ToString() : tbRunCnt.Text;
 
-      cbMultiThreaded.Checked = _curSimOptions.threads > 0;
+      _applyingOptionsToUI = true;
+      try
+      {
+        cbMultiThreaded.Checked = _curSimOptions.threads > 0;
+      }
+      finally
+      {
+        _applyingOptionsToUI = false;
+      }
+      UpdateMultiThreadControlsVisibility();
 
       // Coupling settings
       if (_curSimOptions.couplingInfo == null)
@@ -1214,6 +1247,16 @@ namespace EMRALD_Sim
       SetCurThreadCB();
 
       ValidateOptionsVariables();
+    }
+
+    private void UpdateMultiThreadControlsVisibility()
+    {
+      tbThreads.Visible = cbMultiThreaded.Checked;
+      lblThreads.Visible = cbMultiThreaded.Checked;
+      cbClearTemps.Visible = cbMultiThreaded.Checked;
+      lbl_CurThread.Visible = cbMultiThreaded.Checked && (!_running);
+      cbCurThread.Visible = cbMultiThreaded.Checked;
+      bttnPathRefs.Visible = cbMultiThreaded.Checked;
     }
 
     // Verify that every name in _curSimOptions.variables and initVars exists in the loaded model.
@@ -1684,13 +1727,24 @@ namespace EMRALD_Sim
 
     private void cbMultiThreaded_CheckedChanged(object sender, EventArgs e)
     {
+      if (_applyingOptionsToUI)
+      {
+        UpdateMultiThreadControlsVisibility();
+        SetCurThreadCB();
+        return;
+      }
+
       Cursor.Current = Cursors.WaitCursor;
       try
       {
-        if (_sim == null)
+        if (_sim == null || !_validSim || string.IsNullOrWhiteSpace(_sim.modelTxt))
         {
-          MessageBox.Show("You must load a model before enabling multi-threaded mode.", "No Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-          cbMultiThreaded.Checked = false;
+          if (cbMultiThreaded.Checked)
+          {
+            MessageBox.Show("You must load a valid model before enabling multi-threaded mode.", "No Valid Model Loaded", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            cbMultiThreaded.Checked = false;
+          }
+          UpdateMultiThreadControlsVisibility();
           return;
         }
 
@@ -1748,12 +1802,7 @@ namespace EMRALD_Sim
           tbSeed.Enabled = false;
         }
 
-        tbThreads.Visible = cbMultiThreaded.Checked;
-        lblThreads.Visible = cbMultiThreaded.Checked;
-        cbClearTemps.Visible = cbMultiThreaded.Checked;
-        lbl_CurThread.Visible = cbMultiThreaded.Checked && (!_running);
-        cbCurThread.Visible = cbMultiThreaded.Checked;
-        bttnPathRefs.Visible = cbMultiThreaded.Checked;
+        UpdateMultiThreadControlsVisibility();
 
         LoadLib.SetThreads(tbThreads.Text);
         SetCurThreadCB();
@@ -1856,6 +1905,114 @@ namespace EMRALD_Sim
 
       _curSimOptions.couplingInfo.couplingURL = string.IsNullOrWhiteSpace(tbWebSocketURL.Text) ? null : tbWebSocketURL.Text;
       SaveUISettingsToJson();
+    }
+
+    // Register a MethodCall NLog target on the existing "logfile" rule so debug log
+    // entries are mirrored to rtbLog whenever NLog actually writes (i.e. when the
+    // user enables debug via chkLog and SetLog raises the rule's level).
+    private void AttachRtbLogToNLog()
+    {
+      var config = NLog.LogManager.Configuration;
+      if (config == null) return;
+
+      var uiTarget = new NLog.Targets.MethodCallTarget("logUI");
+      uiTarget.ClassName = typeof(FormMain).AssemblyQualifiedName;
+      uiTarget.MethodName = nameof(AppendDebugLogToRtb);
+      uiTarget.Parameters.Add(new NLog.Targets.MethodCallParameter("msg", "${message}"));
+      config.AddTarget(uiTarget);
+
+      foreach (var rule in config.LoggingRules)
+      {
+        if (rule.LoggerNamePattern == "logfile" && !rule.Targets.Contains(uiTarget))
+          rule.Targets.Add(uiTarget);
+      }
+      NLog.LogManager.Configuration = config;
+    }
+
+    // Static entry point invoked by NLog's MethodCallTarget; marshals to UI thread.
+    public static void AppendDebugLogToRtb(string msg)
+    {
+      var inst = _rtbLogInstance;
+      if (inst == null || inst.IsDisposed) return;
+      var rtb = inst.rtbLog;
+      if (rtb == null || rtb.IsDisposed || !rtb.IsHandleCreated) return;
+
+      try
+      {
+        if (rtb.InvokeRequired)
+          rtb.BeginInvoke((System.Action)(() => SafeAppend(rtb, msg + Environment.NewLine)));
+        else
+          SafeAppend(rtb, msg + Environment.NewLine);
+      }
+      catch (ObjectDisposedException) { }
+      catch (InvalidOperationException) { }
+    }
+
+    private static void SafeAppend(RichTextBox rtb, string text)
+    {
+      if (rtb.IsDisposed) return;
+      rtb.AppendText(text);
+    }
+
+    // Toggles tee-ing Console.Out to rtbLog. Original Console.Out (terminal/debug
+    // console) keeps receiving everything; rtbLog is added as a second sink.
+    private void chkLogConsole_CheckedChanged(object sender, EventArgs e)
+    {
+      if (chkLogConsole.Checked)
+      {
+        if (_origConsoleOut == null)
+        {
+          _origConsoleOut = Console.Out;
+          Console.SetOut(new TeeTextWriter(_origConsoleOut, new RtbTextWriter(rtbLog)));
+        }
+      }
+      else
+      {
+        if (_origConsoleOut != null)
+        {
+          Console.SetOut(_origConsoleOut);
+          _origConsoleOut = null;
+        }
+      }
+    }
+
+    // TextWriter that forwards every write to two underlying writers.
+    private sealed class TeeTextWriter : TextWriter
+    {
+      private readonly TextWriter _a;
+      private readonly TextWriter _b;
+      public TeeTextWriter(TextWriter a, TextWriter b) { _a = a; _b = b; }
+      public override Encoding Encoding => _a?.Encoding ?? Encoding.UTF8;
+      public override void Write(char value) { _a?.Write(value); _b?.Write(value); }
+      public override void Write(string value) { _a?.Write(value); _b?.Write(value); }
+      public override void Write(char[] buffer, int index, int count) { _a?.Write(buffer, index, count); _b?.Write(buffer, index, count); }
+      public override void WriteLine(string value) { _a?.WriteLine(value); _b?.WriteLine(value); }
+      public override void Flush() { _a?.Flush(); _b?.Flush(); }
+    }
+
+    // TextWriter that appends to a RichTextBox, marshaling to its UI thread.
+    private sealed class RtbTextWriter : TextWriter
+    {
+      private readonly RichTextBox _rtb;
+      public RtbTextWriter(RichTextBox rtb) { _rtb = rtb; }
+      public override Encoding Encoding => Encoding.UTF8;
+      public override void Write(char value) => Append(value.ToString());
+      public override void Write(string value) { if (value != null) Append(value); }
+      public override void Write(char[] buffer, int index, int count) => Append(new string(buffer, index, count));
+      public override void WriteLine(string value) => Append((value ?? string.Empty) + Environment.NewLine);
+      private void Append(string text)
+      {
+        if (_rtb == null || _rtb.IsDisposed || !_rtb.IsHandleCreated) return;
+        try
+        {
+          if (_rtb.InvokeRequired)
+            _rtb.BeginInvoke((System.Action)(() => SafeAppend(_rtb, text)));
+          else
+            SafeAppend(_rtb, text);
+        }
+        catch (ObjectDisposedException) { }
+        catch (InvalidOperationException) { }
+      }
     }
   }
 }

@@ -162,13 +162,14 @@ namespace SimulationDAL
 
     /// <summary>
     /// Resolves each parameter to its current numeric value (literal or current variable value)
-    /// and returns them keyed by parameter name. timeRate is preserved on each entry.
+    /// and returns them keyed by parameter name. timeRate is preserved on each entry. The variable
+    /// list is consulted lazily and only when a parameter actually references a variable, so
+    /// literal-only distributions can be sampled without ever calling
+    /// <see cref="LoadVariableReferences"/> (this matches the legacy DistEvent behavior and keeps
+    /// the unit tests that exercise Sample directly via DeserializeDerived working).
     /// </summary>
     private Dictionary<string, DistribParams> ResolveParameters()
     {
-      if (_vars == null)
-        throw new Exception("Distribution variable list has not been loaded - call LoadVariableReferences first");
-
       Dictionary<string, DistribParams> resolved = new Dictionary<string, DistribParams>();
       foreach (DistribParams p in _dParams)
       {
@@ -177,6 +178,8 @@ namespace SimulationDAL
         // so existing models without an explicit useVariable flag still resolve via variable.
         if ((!p.useVariable.HasValue || p.useVariable.Value) && p.variable != null)
         {
+          if (_vars == null)
+            throw new Exception("Distribution parameter \"" + p.name + "\" references variable \"" + p.variable + "\" but the variable list has not been loaded - call LoadVariableReferences first");
           var v = _vars.FindByName(p.variable);
           val = Convert.ToDouble(v.value);
         }
@@ -210,9 +213,9 @@ namespace SimulationDAL
       {
         distParams = ResolveParameters();
       }
-      catch
+      catch (Exception ex)
       {
-        throw new Exception("Failed to load parameter values for distribution");
+        throw new Exception("Failed to load parameter values for distribution: " + ex.Message, ex);
       }
 
       // Helper for std/min/max parameters that, in time-rate mode, must be normalized to the

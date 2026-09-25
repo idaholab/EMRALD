@@ -1,11 +1,11 @@
 {
-  "id": "0",
+  "id": "d2977214-530d-498e-afb8-c11e5de6ef67",
   "name": "CoupledSimWebSocketTest",
   "desc": "",
   "version": 1,
   "DiagramList": [
     {
-      "id": "ba56f36a-706a-4188-a06f-ba8bb1e1c715",
+      "id": "3f87eae4-09c7-40ca-b62a-708d772c2948",
       "name": "Main",
       "desc": "",
       "diagramType": "dtMulti",
@@ -26,7 +26,7 @@
   ],
   "StateList": [
     {
-      "id": "5b16159d-7077-49da-8128-11df61ad46ff",
+      "id": "1f62546f-400e-4216-8a4e-224b77876cb6",
       "name": "Begin",
       "desc": "",
       "diagramName": "Main",
@@ -61,7 +61,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "d274300c-a037-4960-a49e-29f47129d30c",
+      "id": "292a8da9-f56d-419d-96ef-28cd69f10ff0",
       "name": "Done",
       "desc": "",
       "diagramName": "Main",
@@ -80,7 +80,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "4370ff95-e685-4bd6-a59c-8c9d87764855",
+      "id": "13792409-b94f-450c-acbd-f717809cc6bb",
       "name": "EventDone",
       "desc": "",
       "diagramName": "Main",
@@ -115,7 +115,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "43fc57f5-ea38-4182-bb72-fa12f076c87a",
+      "id": "443201f3-8209-429a-92d3-bbf43478ed20",
       "name": "ExtSimStart",
       "desc": "",
       "diagramName": "Main",
@@ -145,7 +145,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "95ed063e-d3d9-4d80-9735-f5409f2ce1ef",
+      "id": "e1b0b3dc-33b2-4afb-817f-ff09f316fcc0",
       "name": "OutsideBounds",
       "desc": "",
       "diagramName": "Main",
@@ -166,7 +166,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "c4932508-bdbd-46fa-ba38-5b45d26ee724",
+      "id": "8747174d-64c1-4560-ab81-6d3679adc9bd",
       "name": "PipeBreak",
       "desc": "",
       "diagramName": "Main",
@@ -196,7 +196,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "f146f68f-a93e-4d59-95d0-8f92b77c218a",
+      "id": "3c9b3e82-65f2-408e-8f86-10fdb251325a",
       "name": "PipeRepaired",
       "desc": "",
       "diagramName": "Main",
@@ -217,7 +217,7 @@
       "defaultSingleStateValue": "Ignore"
     },
     {
-      "id": "e1e32eb6-e1e5-43ee-9ca8-5c6c5ca7d854",
+      "id": "574f6e1b-c6be-41b8-9fc0-ec4bf69870a9",
       "name": "WithinBounds",
       "desc": "",
       "diagramName": "Main",
@@ -240,7 +240,7 @@
   ],
   "ActionList": [
     {
-      "id": "9cf2fd1f-d8eb-4015-8037-cbab76cb8a78",
+      "id": "70cce30b-f2c8-4a92-b691-fdd28378eb95",
       "name": "GotoDone",
       "desc": "",
       "actType": "atTransition",
@@ -257,7 +257,7 @@
       ]
     },
     {
-      "id": "a5d96782-4526-4c28-8153-fe1739326f55",
+      "id": "33bcdb65-c41a-4df9-85c6-7525d2354243",
       "name": "GotoEventDone",
       "desc": "",
       "actType": "atTransition",
@@ -274,7 +274,7 @@
       ]
     },
     {
-      "id": "274fe49b-a5e8-4829-838d-ad61a5fcc453",
+      "id": "de71d15e-e424-4eda-8e5b-6142f2c9169e",
       "name": "GotoExtSimStart",
       "desc": "",
       "actType": "atTransition",
@@ -291,7 +291,7 @@
       ]
     },
     {
-      "id": "4ffec78c-37a6-4658-985e-32b7e36d8f5c",
+      "id": "1a3e010c-566a-46fc-a426-581758642c90",
       "name": "GotoOutsideBounds",
       "desc": "",
       "actType": "atTransition",
@@ -308,7 +308,7 @@
       ]
     },
     {
-      "id": "1ebbc671-576c-43b2-9b34-5674c219cc41",
+      "id": "4ff66b8b-1753-4d5f-9acd-d99f241c434d",
       "name": "GotoPipeBreak",
       "desc": "",
       "actType": "atTransition",
@@ -325,7 +325,7 @@
       ]
     },
     {
-      "id": "db77591f-8067-4725-babc-92062d0a0564",
+      "id": "dc293cba-90f9-475d-92d1-4079ca99393d",
       "name": "GotoPipeRepaired",
       "desc": "",
       "actType": "atTransition",
@@ -342,7 +342,7 @@
       ]
     },
     {
-      "id": "f602c240-4f4f-4d5c-b869-826ddb1004c0",
+      "id": "69684611-63d7-47df-8260-d13d6eac5ed0",
       "name": "GotoWithinBounds",
       "desc": "",
       "actType": "atTransition",
@@ -359,7 +359,7 @@
       ]
     },
     {
-      "id": "d8f7cd27-a34f-45f2-bcbc-2f8f86b96a14",
+      "id": "4083fcf6-1476-4500-b962-ed1cc2d4927d",
       "name": "OpenExtSim",
       "desc": "",
       "actType": "at3DSimMsg",
@@ -374,7 +374,7 @@
       "extSim": "MooseSim"
     },
     {
-      "id": "131dfb20-3e0e-441b-8986-1da978ce53c6",
+      "id": "3e8740c1-a954-4b86-bfe1-3eea34e1d599",
       "name": "SetFlowRate",
       "desc": "",
       "actType": "atCngVarVal",
@@ -386,7 +386,7 @@
       "scriptCode": "return Rand.NextDouble() * 5.0; "
     },
     {
-      "id": "d658b58e-299d-42b4-84b6-9815feb2f796",
+      "id": "85e135c6-3666-44be-bb73-fc1b1b3622d5",
       "name": "SetFlowrateFixed",
       "desc": "",
       "actType": "atCngVarVal",
@@ -400,7 +400,7 @@
   ],
   "EventList": [
     {
-      "id": "453defb2-a329-4f5b-b1aa-61dcac47080f",
+      "id": "3066a128-0644-4bea-b2c0-8df539e9f1bc",
       "name": "BreakTime",
       "desc": "",
       "evType": "etDistribution",
@@ -433,7 +433,7 @@
       ]
     },
     {
-      "id": "a0a4d895-38fe-49a0-87c7-73a92b585973",
+      "id": "cf930c9e-89b6-46e6-8113-67851ea71b77",
       "name": "FixingPipeTime",
       "desc": "",
       "evType": "etDistribution",
@@ -466,7 +466,7 @@
       ]
     },
     {
-      "id": "4fe0ce6c-e270-4d2c-a789-e2e841db79f4",
+      "id": "184c6e8d-4d46-47dd-b815-7f86bd314d2c",
       "name": "StartExtSim",
       "desc": "",
       "evType": "etTimer",
@@ -476,7 +476,7 @@
       "time": "P0DT1S"
     },
     {
-      "id": "0b52630d-b06f-4ee3-a6e2-be6b87c0326a",
+      "id": "438f97ca-daf7-4309-8345-58e0f504f792",
       "name": "TimeUp",
       "desc": "",
       "evType": "etTimer",
@@ -486,7 +486,7 @@
       "time": "P0DT5M"
     },
     {
-      "id": "48290926-d0fe-4baa-8be2-14233bc2ec2e",
+      "id": "d057e081-14a4-4d40-8ea9-da274ce8e88e",
       "name": "TridiumHigh",
       "desc": "",
       "evType": "etVarCond",
@@ -499,7 +499,7 @@
       "code": "return TridiumVal >= 500;"
     },
     {
-      "id": "02dabd19-ed40-45ed-a9d9-753628e158a1",
+      "id": "d732bc95-d703-4744-89d5-7a5acf719581",
       "name": "TridiumLow",
       "desc": "",
       "evType": "etVarCond",
@@ -520,35 +520,39 @@
       "value": -1,
       "type": "double",
       "objType": "Variable",
-      "id": "76421f03-3186-45fd-ba1b-db718e093cdf",
+      "id": "f06296f4-f4a1-4c56-a961-823cc3135a28",
       "desc": "",
       "sim3DId": "epsilon3",
       "resetOnRuns": true,
       "extSim": "MooseSim"
     },
     {
-      "name": "TridiumVal",
-      "varScope": "gt3DSim",
-      "value": 0,
-      "type": "double",
-      "objType": "Variable",
-      "id": "329df2b4-f2c7-4490-bbaa-b903699cb9eb",
-      "desc": "",
-      "sim3DId": "T_FW",
       "resetOnRuns": true,
-      "extSim": "MooseSim"
+      "canMonitor": false,
+      "monitorInSim": false,
+      "cumulativeStats": false,
+      "extSim": "MooseSim",
+      "sim3DId": "T_FW",
+      "WatchEventCriteria": "T_FW > 0",
+      "objType": "Variable",
+      "id": "9530bd5c-6a4e-41b1-a488-d1d32ecc2b3b",
+      "type": "double",
+      "name": "TridiumVal",
+      "desc": "",
+      "value": "0",
+      "varScope": "gt3DSim"
     }
   ],
   "ExtSimList": [
     {
-      "id": "02aa22af-8e29-42f9-9d4e-6897e7b7df10",
+      "id": "7c216737-5cdc-42d9-99db-ac3edfcb259b",
       "name": "MooseSim",
       "resourceName": "MooseEMRALDTranslation",
       "objType": "ExtSim"
     }
   ],
   "objType": "EMRALD_Model",
-  "emraldVersion": 3.2,
+  "emraldVersion": 3.3,
   "versionHistory": [],
   "templates": []
 }

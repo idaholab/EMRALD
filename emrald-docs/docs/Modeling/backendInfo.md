@@ -3,10 +3,10 @@
 ## File References and Relative Paths
 
 Files on a local machine or server can be referenced in the following model locations:
-- **Action "Run Application":** The field "Executable Location" is the path (full or relative to the model location) or command to the executable to be run. The pre- and post-processing script can also specify file paths and relative paths; script relative paths for this action are from the exe location. See Run Application under [Types of Actions](./actions.md#types-of-actions) for more information.
+- **Action "Run Application":** The field "Executable Location" is the path (full or relative to the model location) or command to the executable to be run. The pre- and post-processing scripts can also specify file paths and relative paths. For single-thread runs, script relative paths are from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. If "Use model file as root folder" is selected, the external executable is run with the current EMRALD model folder as the working directory; in multi-thread mode, that is the thread-specific model copy. See Run Application under [Types of Actions](./actions.md#types-of-actions) for more information.
 - **Variable "Document Link":** The field "Doc Path" is the file path to a text document read from and/or written to by the variable. Relative paths are from the model location. See [Document Link Variable](./variables.md#variable-scope) for more information.
-- **Event "Var Condition":** The script fields can have file or relative paths to a text document or other item. Relative paths are from the model location. See [Var Condition](./events.md#conditional-events) for more information.
-- **Action "Change Var Value":** The script field can have file or relative paths to a text document or other item. Relative paths are from the model location. See [Change Variable Value](./variables.md#types-of-actions) for more information.
+- **Event "Var Condition":** The script fields can have file or relative paths to a text document or other item. For single-thread runs, relative paths are from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. See [Var Condition](./events.md#conditional-events) for more information.
+- **Action "Change Var Value":** The script field can have file or relative paths to a text document or other item. For single-thread runs, relative paths are from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the thread-specific model copy. See [Change Variable Value](./variables.md#types-of-actions) for more information.
 
 The other files that EMRALD references or creates are done in the simulation engine through the GUI or the command line (See [EMRALD Solver](solver.md) and the [Command Line Options](cmdLineOptions.md) for more details):
 - **UI "Basic Run Loc":** Specifies the location for the Basic Results file, which can also be passed in through the command line.
@@ -26,6 +26,9 @@ Users can define scripts in the following locations:
 - **Action "Change Var Value":** Fields "New Code Value". See New Code Value under [Types of Actions](./actions.md#types-of-actions) for more information.
 - **Event "Var Condition":** Field "Evaluate Code". See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
 - **Event "Ext Simulation":** Field "Evaluate Code". See Variable Condition under [Conditional Events](./events.md#conditional-events) for more information.
+
+
+For single-thread runs, file paths in scripts that are written as relative paths are evaluated from the saved EMRALD model folder. For multi-thread runs, relative path references captured by EMRALD's path-reference setup are adjusted to the per-thread model copy. For complex scripting scenarios, especially when a script creates paths dynamically or must work in multi-thread mode, use the default path variables such as `RootPath`, `OrigRootPath`, and the Run Application `ExePath` variable rather than relying only on the process current directory.
 
 ## Default Variables
 
@@ -52,5 +55,8 @@ The "Var Condition" event, see Variable Condition under [Conditional Events](./e
 ## Multi-Thread Solving
 
 This option makes a copy of the model and nesessary files for each thread. Then, EMRALD runs multiple start-up threads and runs the different copies of the model. Once all the treads are done, then it compiles the text and JSON path results back together and places them in location specified by the user for running the model. For most projects, this should be simple, but for projects that use and external executable, the user will have to ensure that all the necessary files are also coppied by using the UI when first specifying to run the model in multi-thread mode. All temporary files are saved in seprate folders in appdata/Roaming/EMRALD/. File paths are converted into relative, and relative path rules are maintained as stated above. 
+
+
+See [Multi-Thread Solving](./multiThread.md#modeling-rules-for-multi-threading) for modeling rules and examples for thread-safe path usage.
 
 <!--Copyright 2021 Battelle Energy Alliance-->

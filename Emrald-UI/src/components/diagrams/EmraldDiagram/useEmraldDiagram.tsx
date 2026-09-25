@@ -49,6 +49,9 @@ export function useEmraldDiagram() {
   } = useStateContext();
   const { addWindow } = useWindowContext();
 
+  const defaultTransitionProbability = (action?: Action) =>
+    action?.mutExcl === false ? 1 : -1;
+
   // Get the edges for the state nodes
   const getEdges = (stateNodes: Node<{ state: State }>[]) => {
     setEdges([]);
@@ -183,7 +186,7 @@ export function useEmraldDiagram() {
         prob:
           currentAction?.newStates && currentAction.newStates.length > 0
             ? 0
-            : -1, // If only a single newState default to -1
+            : defaultTransitionProbability(currentAction),
         varProb: null,
         failDesc: '',
       });
@@ -233,7 +236,7 @@ export function useEmraldDiagram() {
         );
         addNewStateToAction(currentAction, {
           toState: targetState?.name ?? '',
-          prob: -1,
+          prob: defaultTransitionProbability(currentAction),
           varProb: null,
           failDesc: '',
         });
@@ -262,12 +265,19 @@ export function useEmraldDiagram() {
 
   // Check if the new states are in this diagram (the one this hook instance
   // is bound to), not whichever diagram last rendered into the shared signal.
-  const isStateInCurrentDiagram = (action?: Action) =>
-    action
-      ? getActionNewStates(action).every(newState =>
-          getCurrentDiagramStates().includes(newState),
-        )
-      : false;
+  const isStateInCurrentDiagram = (action?: Action, diagramName?: string) => {
+    if (!action) {
+      return false;
+    }
+
+    const diagramStates = diagramName
+      ? (getDiagramByDiagramName(diagramName)?.states ?? [])
+      : getCurrentDiagramStates();
+
+    return getActionNewStates(action).every(newState =>
+      diagramStates.includes(newState),
+    );
+  };
 
   // Find and open window for diagram that has new states
   const openDiagramFromNewState = (action: Action) => {
@@ -290,21 +300,27 @@ export function useEmraldDiagram() {
 
   // Build the state nodes
   const getStateNodes = () => {
-    const stateNodes = getCurrentDiagramStates().map(state => {
+    const stateNodes = getCurrentDiagramStates().flatMap(state => {
       const stateDetails = getStateByStateName(state);
+      if (!stateDetails) {
+        return [];
+      }
+
       const { x, y } = {
-        x: stateDetails?.geometryInfo?.x ?? 0,
-        y: stateDetails?.geometryInfo?.y ?? 0,
+        x: stateDetails.geometryInfo?.x ?? 0,
+        y: stateDetails.geometryInfo?.y ?? 0,
       };
-      return {
-        id: stateDetails?.id ?? '',
-        position: { x, y },
-        type: 'custom',
-        data: {
-          label: state,
-          state: stateDetails,
+      return [
+        {
+          id: stateDetails.id ?? '',
+          position: { x, y },
+          type: 'custom',
+          data: {
+            label: stateDetails.name,
+            state: stateDetails,
+          },
         },
-      };
+      ];
     });
     setNodes(stateNodes);
   };

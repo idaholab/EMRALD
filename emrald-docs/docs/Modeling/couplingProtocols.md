@@ -18,7 +18,7 @@ WebSocket coupling removes the XMPP dependency and communicates directly over a 
 Typical flow:
 1. Client connects to `ws://<host>:<port>/` (sample server defaults to `ws://localhost:8465/`).
 2. Client sends `{"command":"GetAppOptions"}` to discover available app names.
-3. Client sends `{"command":"CreateConnection","appName":"<name>","watchItems":["var1","var2"]}`; server returns a `conID` (GUID).
+3. Client sends `{"command":"CreateConnection","appName":"<name>","watchItems":[{"name":"var1","type":"double"}, ...]}`; server returns a `conID` (GUID). Each watch item carries the variable `name`, its EMRALD `type`, and an optional `WatchEventCriteria` fParser boolean expression string (e.g. `"(valve_12 > 5) & (valve_12 < 10)"`); when present, the server only calls back while the expression is true.
 4. Client sends actions with `{"command":"SendActionMsg","conID":"<conID>","action":<TMsgWrapper JSON>}`.
 5. Server returns EMRALD event messages that include `conID` and `message` (the `TMsgWrapper` JSON).
 

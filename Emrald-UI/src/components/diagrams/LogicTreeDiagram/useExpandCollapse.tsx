@@ -13,7 +13,10 @@ function filterCollapsedChildren(
   dagre: Dagre.graphlib.Graph<LNode>,
   node: LNode,
 ) {
-  const children = dagre.successors(node.id);
+  // NOTE: `@dagrejs/dagre`'s typings claim `successors` returns node objects,
+  // but at runtime graphlib returns an array of node id strings. We cast to
+  // reflect the real runtime type so the ids below are used directly.
+  const children = dagre.successors(node.id) as unknown as string[] | undefined;
 
   // Update this node's props so it knows if it has children and can be expanded
   // or not.
@@ -25,8 +28,11 @@ function filterCollapsedChildren(
     while (children?.length) {
       const child = children.pop();
       if (child) {
-        children.push(...(dagre.successors(child.id) ?? []));
-        dagre.removeNode(child.id);
+        const grandChildren = dagre.successors(child) as unknown as
+          | string[]
+          | undefined;
+        children.push(...(grandChildren ?? []));
+        dagre.removeNode(child);
       }
     }
   }

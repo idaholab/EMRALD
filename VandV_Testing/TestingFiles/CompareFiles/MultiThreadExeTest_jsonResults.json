@@ -1,0 +1,191 @@
+{
+  "name": "JsonVarExeTest",
+  "numRuns": 20,
+  "keyStates": [
+    {
+      "name": "GT",
+      "contributionRate": 0.5,
+      "cRate5th": 0.28086534,
+      "cRate95th": 0.71913466,
+      "count": 10,
+      "timeMean": "00:01:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:01:00",
+      "timeMax": "00:01:00",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [OneMin] occured and caused the action - Goto_RunCompare",
+              "name": "OneMin & Goto_RunCompare",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "RunCompare",
+              "cnt": 10
+            }
+          ]
+        },
+        {
+          "name": "RunCompare",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:01:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:01:00",
+          "timeMax": "00:01:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [OneMin] occured and caused the action - Goto_RunCompare",
+              "name": "OneMin & Goto_RunCompare",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 10
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [IsGT] occured and caused the action - Goto_GT",
+              "name": "IsGT & Goto_GT",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "GT",
+              "cnt": 10
+            }
+          ]
+        },
+        {
+          "name": "GT",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:01:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:01:00",
+          "timeMax": "00:01:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [IsGT] occured and caused the action - Goto_GT",
+              "name": "IsGT & Goto_GT",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "RunCompare",
+              "cnt": 15
+            }
+          ],
+          "exits": []
+        }
+      ]
+    },
+    {
+      "name": "LT",
+      "contributionRate": 0.5,
+      "cRate5th": 0.28086534,
+      "cRate95th": 0.71913466,
+      "count": 10,
+      "timeMean": "00:01:00",
+      "timeStdDeviation": "00:00:00",
+      "timeMin": "00:01:00",
+      "timeMax": "00:01:00",
+      "watchVariables": {},
+      "paths": [
+        {
+          "name": "Start",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:00:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:00:00",
+          "timeMax": "00:00:00",
+          "watchVariables": {},
+          "entries": [],
+          "exits": [
+            {
+              "desc": "Event [OneMin] occured and caused the action - Goto_RunCompare",
+              "name": "OneMin & Goto_RunCompare",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "RunCompare",
+              "cnt": 10
+            }
+          ]
+        },
+        {
+          "name": "RunCompare",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:01:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:01:00",
+          "timeMax": "00:01:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [OneMin] occured and caused the action - Goto_RunCompare",
+              "name": "OneMin & Goto_RunCompare",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "Start",
+              "cnt": 10
+            }
+          ],
+          "exits": [
+            {
+              "desc": "Event [IsLT] occured and caused the action - Goto_LT",
+              "name": "IsLT & Goto_LT",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "LT",
+              "cnt": 10
+            }
+          ]
+        },
+        {
+          "name": "LT",
+          "contributionRate": 1.0,
+          "cRate5th": 1.0,
+          "cRate95th": 1.0,
+          "count": 10,
+          "timeMean": "00:01:00",
+          "timeStdDeviation": "00:00:00",
+          "timeMin": "00:01:00",
+          "timeMax": "00:01:00",
+          "watchVariables": {},
+          "entries": [
+            {
+              "desc": "Event [IsLT] occured and caused the action - Goto_LT",
+              "name": "IsLT & Goto_LT",
+              "evDesc": "",
+              "actDesc": "",
+              "otherState": "RunCompare",
+              "cnt": 15
+            }
+          ],
+          "exits": []
+        }
+      ]
+    }
+  ],
+  "otherStatePaths": []
+}

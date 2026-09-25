@@ -53,7 +53,9 @@
     "sim3DId": "1234",
     "canMonitor": false,
     "cumulativeStats": false,
-    "monitorInSim": false
+    "monitorInSim": false,
+    "inVariable": true,
+    "outVariable": true
   },
   "ext_sim_link_variable": {
     "objType": "Variable",
@@ -67,7 +69,9 @@
     "extSim": "MooseSim",
     "canMonitor": false,
     "cumulativeStats": false,
-    "monitorInSim": false
+    "monitorInSim": false,
+    "inVariable": true,
+    "outVariable": true
   },
   "doc_link_variable": {
     "objType": "Variable",

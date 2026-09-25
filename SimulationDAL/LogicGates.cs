@@ -73,6 +73,8 @@ namespace SimulationDAL
 
       //add derived items
       retStr = retStr + "\"gateType\": \"" + this.gateType.ToString() + "\"";
+      if (this.gateType == EnGateType.gtNofM) //only written when it is used, so other gates output unchanged
+        retStr = retStr + "," + Environment.NewLine + "\"val1\": " + this.val1.ToString();
       retStr = retStr + "," + Environment.NewLine + "\"isTop\": \"" + _isTop.ToString() + "\"";
       
 
@@ -139,6 +141,12 @@ namespace SimulationDAL
       lists.allLogicNodes.Add(this);
 
       gateType = (EnGateType)Enum.Parse(typeof(EnGateType), (string)dynObj.gateType, true);
+
+      //val1 is N for a gtNofM gate, the number of children that must be true. It is unused by
+      //the other gate types. Models without the property leave it at 0, which LoadObjLinks
+      //rejects for a gtNofM gate.
+      if (dynObj.val1 != null)
+        val1 = (int)dynObj.val1;
 
 
       //load the component children in the loadObjLinks so we keep the diagram name and load the state value list together.
@@ -218,7 +226,7 @@ namespace SimulationDAL
                 throw new Exception("Invalid stateName property in stateValues list - " + (string)item.stateName + " doesn't exist");
 
               int stateVal = -1;
-              switch ((string)dynObj.defaultSingleStateValue)
+              switch ((string)item.stateValue)
               {
                 case "True":
                   stateVal = 1;
@@ -241,6 +249,18 @@ namespace SimulationDAL
         }
 
       }
+
+      //A gtNofM gate needs a usable N. Without this a val1 of 0 would make the gate true
+      //whenever any child evaluated, and a val1 above the child count could never be true.
+      if (gateType == EnGateType.gtNofM)
+      {
+        int childCnt = _compChildren.Count + _subGates.Count;
+        if (val1 < 1)
+          throw new Exception("Logic node named - " + this.name + " is an N of M gate, so it must have a val1 of 1 or more for the number of children that must be true.");
+        if (val1 > childCnt)
+          throw new Exception("Logic node named - " + this.name + " is an N of M gate with a val1 of " + val1.ToString() + ", but it only has " + childCnt.ToString() + " children, so it could never be true.");
+      }
+
       return true;
     }
 
@@ -293,10 +313,12 @@ namespace SimulationDAL
           
 
         case EnGateType.gtNot:
-          return evalSum > 0 ? 1 : 0; //Should only be one so just return 1 if greater than 0.
+          return evalSum > 0 ? 0 : 1; //Should only be one child, so invert its value.
 
         case EnGateType.gtNofM:
-          return evalSum > val1 ? 1 : 0;
+          //True when at least val1 of the children are true. Unknown children are left out
+          //of the count, so they make the gate harder to satisfy, the same as they do for an OR.
+          return evalSum >= val1 ? 1 : 0;
         default:
           throw new Exception("Gate not defined to evaluate");
       }

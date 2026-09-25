@@ -17,7 +17,7 @@
     "preview": "vitepress preview docs"
   },
   "devDependencies": {
-    "@adobe/jsonschema2md": "^8.0.0",
+    "@adobe/jsonschema2md": "^8.0.11",
     "docx": "^9.5.1",
     "image-size": "^2.0.2",
     "shx": "^0.4.0",

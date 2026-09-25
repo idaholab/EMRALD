@@ -155,19 +155,8 @@ namespace ScriptEngineNS
               variables + preClassInfo + "\r\npublic " + typeStr + " Eval()\r\n{\r\n";
       int realLn0 = source.Count(c => c.Equals('\n')) + 1;
 
-      //set the current path to the model directory if given
-      source = source + "if ((RootPath != \"\") && Path.Exists(RootPath))\r\n{\r\n";
-      source = source + "  Directory.SetCurrentDirectory(RootPath);\r\n}\r\n"; 
-      
-      //wrap in a TryFinally block so we can reset the currend directory when done
-      source = source + "try\r\n{\r\n";
-
       source = source + code;
-      
-      source = source + "\r\n}\r\nfinally\r\n{\r\n";
-      source = source + "Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);\r\n";
-      source = source + "}\r\n"; // Close finally
-      source += "\r\n}\r\n}\r\n}"; // Close method, class, namespace
+      source += "\r\n\r\n}\r\n}\r\n}";
 
       SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
       var references = new List<MetadataReference>();

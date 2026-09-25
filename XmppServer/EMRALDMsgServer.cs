@@ -26,6 +26,7 @@ namespace XmppMessageServer
     private IMessageDispHandling _form;
     private int _nextMsgId = 0;
     private TEventCallBack _evCallBackFunc = null;
+    private TErrorCallBack _errCallBackFunc = null;
 
     private Dictionary<string, string> _resourceLookup = new Dictionary<string, string>(); //User & Resource lookup for jID into _roster.
     private Dictionary<string, Matrix.Xmpp.Roster.RosterItem> _roster = new Dictionary<string, Matrix.Xmpp.Roster.RosterItem>();
@@ -50,6 +51,8 @@ namespace XmppMessageServer
     }
 
     public TEventCallBack evCallBackFunc { set { _evCallBackFunc = value; } }
+
+    public TErrorCallBack errCallBackFunc { set { _errCallBackFunc = value; } }
 
     
     public EMRALDMsgServer(string passwd)
@@ -122,7 +125,7 @@ namespace XmppMessageServer
         try
         {
           TMsgWrapper msgObj = JsonConvert.DeserializeObject<TMsgWrapper>(msg.Body);
-          logger.Debug("Recieved message - " + msg.Body);
+          logger.Debug("Received message - " + msg.Body);
           if (msgObj != null)
           {
             //if (_form != null)
@@ -140,6 +143,8 @@ namespace XmppMessageServer
         {
           _form?.IncomingOtherMsg(ResAndNameFromConnection(msg.From), msg.Body);
           logger.Error(e.Message);
+          //let the consumer react to the processing failure (e.g. terminate the connection / abort the run)
+          _errCallBackFunc?.Invoke(ResAndNameFromConnection(msg.From), e.Message, msg.Body);
           System.Threading.Thread.Sleep(500); //give time for error to write to log
           throw new Exception(e.Message);
         }

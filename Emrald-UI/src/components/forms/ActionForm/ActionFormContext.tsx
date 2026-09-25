@@ -36,11 +36,11 @@ export interface NewStateItem {
   probType: string;
 }
 
-export type sim3DMessageType
-  = | 'atCompModify'
-    | 'atOpenSim'
-    | 'atCancelSim'
-    | 'atPing';
+export type sim3DMessageType =
+  | 'atCompModify'
+  | 'atOpenSim'
+  | 'atCancelSim'
+  | 'atPing';
 
 export type ReturnProcessType = 'rtVar' | 'rtNone' | 'rtStateList';
 
@@ -65,6 +65,8 @@ interface ActionFormContextType {
   openSimVarParams?: boolean;
   makeInputFileCode?: string;
   exePath?: string;
+  exeFromPreCode: boolean;
+  useProjPathExeWorkingDir: boolean;
   processOutputFileCode?: string;
   formData?: MAAPFormData;
   hasError: boolean;
@@ -98,6 +100,8 @@ interface ActionFormContextType {
   setNewStateItems: Dispatch<SetStateAction<NewStateItem[] | undefined>>;
   setMakeInputFileCode: Dispatch<SetStateAction<string | undefined>>;
   setExePath: Dispatch<SetStateAction<string | undefined>>;
+  setExeFromPreCode: Dispatch<SetStateAction<boolean>>;
+  setUseProjPathExeWorkingDir: Dispatch<SetStateAction<boolean>>;
   setProcessOutputFileCode: Dispatch<SetStateAction<string | undefined>>;
   setFormData: Dispatch<SetStateAction<MAAPFormData | undefined>>;
   setHasError: Dispatch<SetStateAction<boolean>>;
@@ -193,6 +197,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   const [reqPropsFilled, setReqPropsFilled] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>();
   const [exePath, setExePath] = useState(formData?.exePath);
+  const [exeFromPreCode, setExeFromPreCode] = useState(false);
+  const [useProjPathExeWorkingDir, setUseProjPathExeWorkingDir] = useState(false);
   const { updateVariable, createVariable } = useVariableContext();
   const [returnProcess, setReturnProcess] = useState<
     ReturnProcessType | undefined
@@ -206,19 +212,27 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     { value: 'atRunExtApp', label: 'Run Application' },
   ];
 
+  const isRemainingProbability = (prob?: number | string | null) =>
+    Number(prob) === -1;
+
   useEffect(() => {
     setReqPropsFilled(!!name && !!actType);
   }, [name, actType]);
 
   const handleMutuallyExclusiveChange = (value: boolean) => {
     if (newStateItems) {
-      for (const newStateItem of newStateItems) {
-        checkProbability(newStateItem, newStateItems, value);
-        if (!value && newStateItem.prob === -1) {
-          newStateItem.remaining = false;
-          newStateItem.prob = 0;
-        }
+      const updatedItems = newStateItems.map(newStateItem =>
+        !value && isRemainingProbability(newStateItem.prob)
+          ? { ...newStateItem, remaining: false, prob: '1.0' }
+          : !value
+            ? { ...newStateItem, remaining: false }
+            : newStateItem,
+      );
+
+      for (const newStateItem of updatedItems) {
+        checkProbability(newStateItem, updatedItems, value);
       }
+      setNewStateItems(updatedItems);
     }
     setMutuallyExclusive(value);
   };
@@ -254,21 +268,17 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     }
 
     if (updatedMutuallyExclusive ?? mutuallyExclusive) {
-      const totalProb
-        = updateItems?.reduce(
-          (acc, item) => (item.prob === -1 ? acc : acc + Number(item.prob)),
+      const totalProb =
+        updateItems?.reduce(
+          (acc, item) =>
+            isRemainingProbability(item.prob) ? acc : acc + Number(item.prob),
           0,
         ) ?? 0;
+      const hasRemaining =
+        updatedRemaining === true || updateItems?.some(item => item.remaining);
+      const normalizedTotal = (hasRemaining ? 1 - totalProb : 0) + totalProb;
 
-      if (
-        totalProb !== 1
-        && ((updatedRemaining !== undefined && updatedRemaining)
-          || updateItems?.some(item => item.remaining)
-          ? 1 - totalProb
-          : 0)
-        + totalProb
-        !== 1
-      ) {
+      if (totalProb !== 1 && normalizedTotal !== 1) {
         setErrorIds(
           prevErrorItemIds => new Set([...prevErrorItemIds, updatedItem.id]),
         );
@@ -306,6 +316,21 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
   };
 
   const handleSave = (event?: Event, state?: State) => {
+    const savedMutuallyExclusive = mutuallyExclusive ?? true;
+    const shouldSaveMutuallyExclusive =
+      actionData?.mutExcl !== undefined || !savedMutuallyExclusive;
+    const getSavedProbability = (newStateItem: NewStateItem) => {
+      const probability = Number(newStateItem.prob);
+      return !savedMutuallyExclusive && isRemainingProbability(probability)
+        ? 1.0
+        : probability;
+    };
+    const isMAAPCustomApplication =
+      actType === 'atRunExtApp'
+      && raType === 'custom'
+      && formData?.caType === 'MAAP';
+    const savedExeFromPreCode = isMAAPCustomApplication || exeFromPreCode;
+
     action.value = {
       ...action.value,
       id: actionData?.id ?? uuidv4(),
@@ -318,18 +343,18 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
               newStateItem.probType === 'fixed'
                 ? {
                     toState: newStateItem.toState,
-                    prob: Number(newStateItem.prob),
+                    prob: getSavedProbability(newStateItem),
                     failDesc: newStateItem.failDesc ?? '',
                   }
                 : {
                     toState: newStateItem.toState,
-                    prob: Number(newStateItem.prob),
+                    prob: getSavedProbability(newStateItem),
                     failDesc: newStateItem.failDesc ?? '',
                     varProb: newStateItem.varProb,
                   },
           )
         : undefined,
-      mutExcl: mutuallyExclusive,
+      mutExcl: shouldSaveMutuallyExclusive ? savedMutuallyExclusive : undefined,
       codeVariables: ['atCngVarVal', 'atRunExtApp'].includes(actType)
         ? codeVariables
         : undefined,
@@ -357,6 +382,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
       simEndTime,
       makeInputFileCode,
       exePath,
+      ...(actType === 'atRunExtApp' ? { ExeFromPreCode: savedExeFromPreCode } : {}),
+      ...(actType === 'atRunExtApp' ? { useProjPathExeWorkingDir } : {}),
       processOutputFileCode,
       openSimVarParams,
       mainItem: true,
@@ -515,12 +542,16 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     event: ChangeEvent<HTMLInputElement>,
     item: NewStateItem,
   ) => {
+    const checked = event.target.checked;
+    const nextRemaining = (mutuallyExclusive ?? true) && checked;
+    const nextProb = nextRemaining ? -1 : checked ? '1.0' : 0;
+
     const updatedItems = newStateItems?.map(newItem =>
       newItem === item
         ? {
             ...newItem,
-            remaining: event.target.checked,
-            prob: event.target.checked ? -1 : 0,
+            remaining: nextRemaining,
+            prob: nextProb,
           }
         : newItem,
     );
@@ -528,8 +559,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     checkProbability(
       {
         ...item,
-        remaining: event.target.checked,
-        prob: event.target.checked ? -1 : 0,
+        remaining: nextRemaining,
+        prob: nextProb,
       },
       updatedItems,
     );
@@ -570,6 +601,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setSimEndTime(undefined);
     setMakeInputFileCode(undefined);
     setExePath(undefined);
+    setExeFromPreCode(false);
+    setUseProjPathExeWorkingDir(false);
     setProcessOutputFileCode(undefined);
     setFormData(undefined); // Assuming formData can be undefined
     setHasError(false); // Default value for hasError
@@ -593,18 +626,22 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setDesc(actionData?.desc ?? '');
     setActType(actionData?.actType ?? 'atTransition');
     // transition items
-    setMutuallyExclusive(
-      actionData?.mutExcl === undefined ? true : actionData.mutExcl,
-    );
+    const initialMutuallyExclusive =
+      actionData?.mutExcl === undefined ? true : actionData.mutExcl;
+    setMutuallyExclusive(initialMutuallyExclusive);
     setNewStateItems(
       actionData?.newStates
         ? sortNewStates(
             actionData.newStates.map(state => ({
               ...state,
               id: uuidv4(),
-              remaining: state.prob === -1,
+              remaining:
+                initialMutuallyExclusive && isRemainingProbability(state.prob),
               probType: state.varProb ? 'variable' : 'fixed',
-              prob: toScientificIfNeeded(state.prob),
+              prob:
+                !initialMutuallyExclusive && isRemainingProbability(state.prob)
+                  ? '1.0'
+                  : toScientificIfNeeded(state.prob),
             })),
           )
         : undefined,
@@ -628,6 +665,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     // run app items
     setMakeInputFileCode(actionData?.makeInputFileCode);
     setExePath(actionData?.exePath);
+    setExeFromPreCode(actionData?.ExeFromPreCode ?? false);
+    setUseProjPathExeWorkingDir(actionData?.useProjPathExeWorkingDir ?? false);
     setProcessOutputFileCode(actionData?.processOutputFileCode);
     setFormData(actionData?.formData);
     setRaType(actionData?.raType);
@@ -658,6 +697,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         simEndTime,
         makeInputFileCode,
         exePath,
+        exeFromPreCode,
+        useProjPathExeWorkingDir,
         processOutputFileCode,
         formData,
         hasError,
@@ -690,6 +731,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
         setNewStateItems,
         setMakeInputFileCode,
         setExePath,
+        setExeFromPreCode,
+        setUseProjPathExeWorkingDir,
         setProcessOutputFileCode,
         setFormData,
         setHasError,

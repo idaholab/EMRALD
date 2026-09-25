@@ -13,9 +13,9 @@
       "timeMin": "09:00:00",
       "timeMax": "09:00:00",
       "watchVariables": {
-        "Int_Cnt": [
-          "10"
-        ]
+        "Int_Cnt": {
+          "1": "10"
+        }
       },
       "paths": [
         {
@@ -29,9 +29,9 @@
           "timeMin": "00:00:00",
           "timeMax": "00:00:00",
           "watchVariables": {
-            "Int_Cnt": [
-              "0"
-            ]
+            "Int_Cnt": {
+              "1": "0"
+            }
           },
           "entries": [],
           "exits": [
@@ -56,9 +56,9 @@
           "timeMin": "04:30:00",
           "timeMax": "04:30:00",
           "watchVariables": {
-            "Int_Cnt": [
-              "9"
-            ]
+            "Int_Cnt": {
+              "1": "9"
+            }
           },
           "entries": [
             {
@@ -108,9 +108,9 @@
           "timeMin": "09:00:00",
           "timeMax": "09:00:00",
           "watchVariables": {
-            "Int_Cnt": [
-              "10"
-            ]
+            "Int_Cnt": {
+              "1": "10"
+            }
           },
           "entries": [
             {

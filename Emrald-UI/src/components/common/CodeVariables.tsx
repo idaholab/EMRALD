@@ -4,10 +4,10 @@ import { appData } from '@/hooks/useAppData';
 
 const extSimOnlyBuiltIns = new Set(['ExtSimStartTime', 'NextEvTime']);
 
-export type CodeContext =
-  | 'event'
-  | 'changeVarValue'
-  | 'runApplication';
+export type CodeContext
+  = | 'event'
+    | 'changeVarValue'
+    | 'runApplication';
 
 interface BuiltInVariable {
   name: string;
@@ -118,11 +118,13 @@ const builtInsByContext: Record<CodeContext, BuiltInVariable[]> = {
   ],
 };
 
-const formatTooltip = (
+function formatTooltip(
   name: string,
   type: string,
   description: string,
-): string => `${name} (${type})\n${description}`;
+): string {
+  return `${name} (${type})\n${description}`;
+}
 
 interface CodeVariablesProps {
   variableList: Variable[];
@@ -138,7 +140,7 @@ export const CodeVariables: React.FC<CodeVariablesProps> = ({
   height,
   codeContext = 'event',
 }) => {
-  const hasExternalSim = (appData.value.ExtSimList?.length ?? 0) > 0;
+  const hasExternalSim = appData.value.ExtSimList.length > 0;
   const builtIns = builtInsByContext[codeContext].filter(
     builtIn => hasExternalSim || !extSimOnlyBuiltIns.has(builtIn.name),
   );

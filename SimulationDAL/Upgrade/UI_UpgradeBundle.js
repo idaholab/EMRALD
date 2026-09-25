@@ -592,8 +592,21 @@ function UpgradeV3_3_Recursive(oldModel) {
     // (useDistribution, distType, parameters, dfltTimeRate). Existing actions
     // without these fields default to using scriptCode, so no transformation
     // of existing data is needed.
+    const removeLegacyGeometry = (state) => {
+        const { geometry: _geometry, ...stateWithoutGeometry } = state;
+        return stateWithoutGeometry;
+    };
+    const removeLegacyRootName = (logicNode) => {
+        const { rootName, isRoot, ...logicNodeWithoutRootName } = logicNode;
+        return {
+            ...logicNodeWithoutRootName,
+            isRoot: isRoot === true || rootName === logicNode.name,
+        };
+    };
     const upgradeModel = (oldModel) => ({
         ...oldModel,
+        StateList: oldModel.StateList.map(state => removeLegacyGeometry(state)),
+        LogicNodeList: oldModel.LogicNodeList.map(logicNode => removeLegacyRootName(logicNode)),
         emraldVersion: 3.3,
     });
     return {

@@ -164,7 +164,8 @@ export const SearchContextMenu: React.FC<
                 },
               };
 
-              addWindow(name, componentMap[targetItem.objType](targetItem), {
+              const content = componentMap[targetItem.objType](targetItem);
+              addWindow(name, content, {
                 x: 75,
                 y: 25,
                 width: 1300,

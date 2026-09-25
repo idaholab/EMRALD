@@ -37,14 +37,25 @@ export function useContextMenu(
   const { updateState, deleteState, getStateByStateId } = useStateContext();
   const { updateDiagram, getDiagramByDiagramName } = useDiagramContext();
   const { deleteEvent } = useEventContext();
-  const { updateAction, deleteAction, getActionByActionId }
-    = useActionContext();
+  const { updateAction, deleteAction, getActionByActionId } =
+    useActionContext();
   const { showAlert } = useAlertContext();
 
   // A single-state diagram (dtSingle) can only be in one state at a time, so a
   // transition action must always exit the current state.
   const isSingleStateDiagram = (state: State) =>
     getDiagramByDiagramName(state.diagramName)?.diagramType === 'dtSingle';
+
+  const getEventActionForAction = (
+    state: State,
+    actionName: string,
+    eventActionIndex?: number,
+  ) =>
+    eventActionIndex === undefined
+      ? state.eventActions.find(eventAction =>
+          eventAction.actions.includes(actionName),
+        )
+      : state.eventActions[eventActionIndex];
 
   const closeContextMenu = () => {
     setMenu(null);
@@ -116,11 +127,7 @@ export function useContextMenu(
   };
 
   // * Context menu for edge
-  const onEdgeContextMenu = (
-    event: MouseEvent,
-    edge: Edge,
-    edges: Edge[],
-  ) => {
+  const onEdgeContextMenu = (event: MouseEvent, edge: Edge, edges: Edge[]) => {
     event.preventDefault(); // Prevent native context menu from showing
     setMenu({
       mouseX: event.clientX,
@@ -242,8 +249,8 @@ export function useContextMenu(
 
     let menuOptions = [...defaultOptions];
 
-    menuOptions
-      = type === 'event'
+    menuOptions =
+      type === 'event'
         ? menuOptions.filter(
             option =>
               option.label !== 'New Action' && option.label !== 'Paste Action',
@@ -401,6 +408,7 @@ export function useContextMenu(
     state: State,
     action: Action,
     type: 'immediate' | 'event',
+    eventActionIndex?: number,
   ) => {
     event.preventDefault(); // Prevent native context menu from showing
     event.stopPropagation();
@@ -426,7 +434,7 @@ export function useContextMenu(
       {
         label: 'Move Up',
         action: () => {
-          moveAction(state, action.name, 'up', type);
+          moveAction(state, action.name, 'up', type, eventActionIndex);
           closeContextMenu();
         },
         isDivider: true,
@@ -434,7 +442,7 @@ export function useContextMenu(
       {
         label: 'Move Down',
         action: () => {
-          moveAction(state, action.name, 'down', type);
+          moveAction(state, action.name, 'down', type, eventActionIndex);
           closeContextMenu();
         },
         isDivider: true,
@@ -450,7 +458,7 @@ export function useContextMenu(
       {
         label: 'Remove Action',
         action: () => {
-          removeActionItem(action, type, state);
+          removeActionItem(action, type, state, eventActionIndex);
           closeContextMenu();
         },
       },
@@ -467,26 +475,25 @@ export function useContextMenu(
 
     // Show the 'Move Up' and 'Move Down' options if the item is the first or last item or neither if its a single item
     if (type === 'event') {
-      for (const eventAction of state.eventActions) {
-        if (
-          eventAction.actions.includes(action.name)
-          && eventAction.actions.length === 1
-        ) {
-          menuOptions = menuOptions.filter(
-            option =>
-              option.label !== 'Move Up' && option.label !== 'Move Down',
-          );
-        } else if (eventAction.actions[0] === action.name) {
-          // Remove 'Move Up' action if the item is in the first spot
-          menuOptions = menuOptions.filter(
-            option => option.label !== 'Move Up',
-          );
-        } else if (eventAction.actions.at(-1) === action.name) {
-          // Remove 'Move Down' action if the item is in the last spot
-          menuOptions = menuOptions.filter(
-            option => option.label !== 'Move Down',
-          );
-        }
+      const eventAction = getEventActionForAction(
+        state,
+        action.name,
+        eventActionIndex,
+      );
+      const eventActions = eventAction?.actions ?? [];
+
+      if (eventActions.length <= 1) {
+        menuOptions = menuOptions.filter(
+          option => option.label !== 'Move Up' && option.label !== 'Move Down',
+        );
+      } else if (eventActions[0] === action.name) {
+        // Remove 'Move Up' action if the item is in the first spot
+        menuOptions = menuOptions.filter(option => option.label !== 'Move Up');
+      } else if (eventActions.at(-1) === action.name) {
+        // Remove 'Move Down' action if the item is in the last spot
+        menuOptions = menuOptions.filter(
+          option => option.label !== 'Move Down',
+        );
       }
     }
 
@@ -566,10 +573,13 @@ export function useContextMenu(
     actionName: string,
     direction: 'up' | 'down',
     type: 'immediate' | 'event',
+    eventActionIndex?: number,
   ) => {
     if (type === 'event') {
-      const eventActionToUpdate = state.eventActions.find(eventAction =>
-        eventAction.actions.includes(actionName),
+      const eventActionToUpdate = getEventActionForAction(
+        state,
+        actionName,
+        eventActionIndex,
       );
       if (!eventActionToUpdate) {
         return;
@@ -643,18 +653,22 @@ export function useContextMenu(
     actionToRemove?: Action,
     actionType?: 'immediate' | 'event',
     state?: State,
+    eventActionIndex?: number,
   ) => {
     if (!actionToRemove) {
       return;
     }
     if (actionType && state) {
       if (actionType === 'event') {
-        for (const eventAction of state.eventActions) {
-          if (eventAction.actions.includes(actionToRemove.name)) {
-            eventAction.actions = eventAction.actions.filter(
-              action => action !== actionToRemove.name,
-            );
-          }
+        const eventAction = getEventActionForAction(
+          state,
+          actionToRemove.name,
+          eventActionIndex,
+        );
+        if (eventAction) {
+          eventAction.actions = eventAction.actions.filter(
+            action => action !== actionToRemove.name,
+          );
         }
       }
       if (actionType === 'immediate') {
@@ -740,12 +754,13 @@ export function useContextMenu(
       actionToUpdate.newStates = actionToUpdate.newStates.filter(
         state => state.toState !== targetState?.name,
       );
-      // If only one newState remains make it so it is set to -1
+      // If only one newState remains, keep a default only for mutually exclusive transitions.
       if (
         actionToUpdate.newStates.length === 1
         && actionToUpdate.newStates[0]
       ) {
-        actionToUpdate.newStates[0].prob = -1;
+        actionToUpdate.newStates[0].prob =
+          actionToUpdate.mutExcl === false ? 1.0 : -1;
       }
       updateAction(actionToUpdate);
       const newEdges = edges.filter(

@@ -143,7 +143,7 @@
       "required": false,
       "codeVariables": [],
       "variableName": "Var",
-      "scriptCode": "string filePath = \"../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt\";\r\nFile.WriteAllText(filePath, $\"{RunIdx}\");\r\nstring fileContent = File.ReadAllText(filePath);\r\nint number = int.Parse(fileContent);\r\nreturn number;"
+      "scriptCode": "string filePath = \"../Other/MultithreadWrite.txt\";\r\nFile.WriteAllText(filePath, $\"{RunIdx}\");\r\nstring fileContent = File.ReadAllText(filePath);\r\nint number = int.Parse(fileContent);\r\nreturn number;"
     }
   ],
   "EventList": [
@@ -180,9 +180,9 @@
       {
         "ItemName": "VarChangeRel",
         "ItemType": "itAction",
-        "RefPath": "../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt",
+        "RefPath": "../Other/MultithreadWrite.txt",
         "ToCopy": [
-          "../../../VandV_Testing/TestingFiles/Other/MultithreadWrite.txt"
+          "../Other/MultithreadWrite.txt"
         ],
         "RelPath": ".\\Other\\MultithreadWrite.txt",
         "AdjRelRoot": ""

@@ -51,7 +51,7 @@ namespace MessageDefLib
     public SimEventType evType { get; set; }
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public ItemData itemData { get; set; }  //if type - etCompEv, etTimer, etStatus 
-    public TimeSpan time { get; set; } //time of event (in global time, so Global Run Time at this sim start time + this sim time)
+    public TimeSpan time { get; set; } //the sim's own LOCAL elapsed time for this event (time since this sim started, NOT including the start offset). EMRALD adds the sim's start time to convert it to global time. (The wrapper's globalRunTime carries the global time.)
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public StatusType status { get; set; } //if status type then this has a value  
   }
@@ -159,7 +159,7 @@ namespace MessageDefLib
     public string version { get; set; } // [major.minor.revision] Server and Client must operate on the same “Major” number for compatibility. Non required features will be a minor or revision number change
     public Guid pID { get; set; } //packet ID, unique for each mesage and simulation running
     public MessageType msgType { get; set; }  // Message type [Event, Action, Request, Response, Register] must have a matching name/value pair.
-    public TimeSpan globalRunTime { get; set; }
+    public TimeSpan globalRunTime { get; set; } //global simulation time of the message (this sim's start time + its local elapsed time). EMRALD uses this to detect stale/out-of-order messages, so it must be global - unlike SimEvent.time which is local.
     public string dispName; //display name of the action
     public string desc { get; set; } //User readable info for the message
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

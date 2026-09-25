@@ -7,6 +7,7 @@
     "mainItem": false,
     "makeInputFileCode": "return FailProb.ToString();",
     "exePath": ".\\THmodel.exe",
+    "ExeFromPreCode": false,
     "processOutputFileCode": "List<String> retStates = new List<String>();\nreturn retStates;",
     "codeVariables": [
       "FailProb"
