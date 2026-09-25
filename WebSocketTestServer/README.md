@@ -6,10 +6,13 @@ Minimal example of an EMRALD-coupled WebSocket server with a pluggable simulatio
 - Requirements: .NET 9 SDK, MessageDefLib (shared contract assembly) reachable at build time.
 - Build: `dotnet build` (ensure the `ProjectReference` to CouplingWebSocket/MessageDefLib points to a writable local path).
 - Run: `dotnet run` (listens on `http://localhost:8465/`).
-- Connect: open a WebSocket to that URL and send JSON commands (see `Program.cs` for expected shapes).
+- Connect: open a WebSocket to that URL and send JSON commands (see `CouplingServer.cs` for expected shapes).
 
 ## Project Layout
-- `Program.cs` – WebSocket listener; dispatches incoming messages to connection state machines.
+- `Program.cs` – entry point; starts the HTTP listener and hands WebSocket requests to a `CouplingServer`.
+- `CouplingServer.cs` – serves many sockets at once; dispatches incoming commands to connection state machines. Each socket has a `SocketContext` that serializes its sends.
+- `WebSocketServerHost.cs` – in-process host for tests (free port, `WsUri`, `Ledger`).
+- `TrafficLedger.cs` – records what each connection received and sent, so tests can check that each EMRALD thread used only its own connection.
 - `ConnectionStateMachine.cs` – shared connection data, timekeeping, dispatcher, and state transition API.
 - `ConnectionStates.cs` – concrete states (Idle, Loading, Waiting, Running, Done, Error, NotRunning) implementing EMRALD-style behavior.
 - `ExampleSim.cs` – stub simulator; replace with your real simulation implementation.
@@ -31,6 +34,11 @@ Minimal example of an EMRALD-coupled WebSocket server with a pluggable simulatio
 2) Client sends `CreateConnection` → server creates a `ConnectionStateMachine` for that socket and returns `conID`.
 3) Client sends `SendActionMsg` with `simAction` (e.g., `atOpenSim`, `atTimer`, `atCompModify`, `atContinue`, `atCancelSim`, `atTerminate`).
 4) Server responds with `mtSimEvent` wrappers containing status (`etStatus`), timer callbacks (`etTimer`), value changes (`etCompEv`), and load completion (`etSimLoaded`).
+
+If a command includes a `requestId`, the response (including an `{error}` response) echoes it so the client can match the response to its request. Clients that do not send one still work.
+
+## Multithreaded EMRALD Runs
+With WebSocket coupling and `threads` > 1, EMRALD opens one socket per simulation thread and creates its own connections on it. Each connection has its own state machine and `ExampleSim`, so threads never share simulation state. A socket is closed on `atTerminate` only once no other connection is using it.
 
 ## Common Gotchas
 - Ensure `MessageDefLib` and any referenced projects are on a writable path; the sample csproj points to `..\..\VS_Projects\EMRALD\CouplingWebSocket\...`.

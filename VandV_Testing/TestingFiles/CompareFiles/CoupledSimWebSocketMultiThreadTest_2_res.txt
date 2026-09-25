@@ -1,0 +1,21 @@
+Simulation = CoupledSimWebSocketTest
+Runtime = 00.00:00:28
+Runs = 6 of 6
+
+OutsideBounds Occurred 3 times, Probability =0.5, MeanTime = 00.00:05:00 +/- 00.00:00:00.00
+- Variable Values - 
+Run Idx, TridiumVal
+1, 883.9399039515328
+1.1, 985.0470526074279
+3, 1089.1104719221028
+
+WithinBounds Occurred 3 times, Probability =0.5, MeanTime = 00.00:05:00 +/- 00.00:00:00.00
+- Variable Values - 
+Run Idx, TridiumVal
+2, 439.106787730291
+2.1, 11.673596848271293
+3, 254.95787993459572
+---------------------------
+- End Sim Variable Values -
+---------------------------
+TridiumVal = 1089.1104719221028

@@ -5,16 +5,16 @@ Runs = 5 of 5
 OutsideBounds Occurred 2 times, Probability =0.4, MeanTime = 00.00:05:00 +/- 00.00:00:00.00
 - Variable Values - 
 Run Idx, TridiumVal
-1, 787.1583545617716
-3, 867.9105425026468
+1, 964.5051525274771
+3, 657.9343832134897
 
 WithinBounds Occurred 3 times, Probability =0.6, MeanTime = 00.00:05:00 +/- 00.00:00:00.00
 - Variable Values - 
 Run Idx, TridiumVal
-2, 331.3204692279242
-4, 472.92172604842165
-5, 46.05982862229446
+2, 294.53461031407807
+4, 339.23118408500744
+5, 76.8270034623148
 ---------------------------
 - End Sim Variable Values -
 ---------------------------
-TridiumVal = 46.05982862229446
+TridiumVal = 76.8270034623148

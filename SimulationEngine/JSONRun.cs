@@ -34,8 +34,10 @@ namespace SimulationEngine
     private string _error = "";
     public Options_cur options = new Options_cur();
     //private bool _done = false;
-    private ISimMessaging _msgCoupler = null;
-    
+    private ISimMessaging _msgCoupler = null; //XMPP only, WebSocket couplers are made per thread in RunThreadBatch
+    private readonly object _errorLock = new object();
+    private volatile bool _firstThreadDone = false;
+
     // Create attributes for objects
     private List<ProcessSimBatch> _simRuns = new List<ProcessSimBatch>();
     private EmraldModel _model = null;
@@ -145,13 +147,23 @@ namespace SimulationEngine
       ConfigData.threads = options.threads;
       ConfigData.threads = ConfigData.threads != 0 ? ConfigData.threads : null; //don't allow 0 for threads.
      
+      int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+
       //Assign any coupling data from JSON file
-      //start connectons needed
+      //WebSocket connections are opened per thread in RunThreadBatch, here only the watch items are built.
+      Dictionary<string, List<WatchItem>> appVars = null;
       if (options.couplingInfo != null)
       {
         //Set coupling connection stuff
-        if (options.couplingInfo.couplingPassword != null)
+        if ((_msgCoupler != null) && (options.couplingInfo.couplingPassword != null))
           _msgCoupler.connectionPassword = options.couplingInfo.couplingPassword;
+
+        //The XMPP message server routes by resource name only, so one server cannot keep threads apart.
+        if ((options.couplingInfo.couplingType == CouplingType.XMPP) && (threadCnt > 1))
+        {
+          _error = "XMPP coupling does not support multithreading, use WebSocket coupling or set threads to 1.";
+          return _error;
+        }
 
         if (options.couplingInfo.couplingType == CouplingType.WebSocket)
         {
@@ -166,7 +178,7 @@ namespace SimulationEngine
             return t?.Name ?? "";
           }
 
-          Dictionary<string, List<WatchItem>> appVars = new Dictionary<string, List<WatchItem>>();
+          appVars = new Dictionary<string, List<WatchItem>>();
           foreach (var v in _model.allVariables.Values)
           {
             if (v is Sim3DVariable s3dVar)
@@ -181,16 +193,6 @@ namespace SimulationEngine
               appVars[appName].Add(new WatchItem(s3dVar.sim3DNameId, WatchItemTypeName(s3dVar.dType), watchCriteria));
             }
           }
-          foreach (var extSim in _model.allExtSims.Values)
-          {
-            Guid conID;
-            if (appVars.ContainsKey(extSim.resourceName))
-              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, appVars[extSim.resourceName]).Result;
-            else
-              conID = (_msgCoupler as WebApiCoupling).StartupApp(extSim.resourceName, new List<WatchItem>()).Result;
-
-            extSim.connectionID = conID.ToString();
-          }
         }
       }
       //set the time limits for any ext Apps
@@ -203,7 +205,7 @@ namespace SimulationEngine
       // This is where the maxTime and outfile_path attributes are used
       List<Task> tasks = new List<Task>();
       _simRuns.Clear();
-      int threadCnt = ConfigData.threads == null ? 1 : (int)ConfigData.threads;
+      _firstThreadDone = false;
       int runsDiv = options.runct / threadCnt;
 
       for (int i = 0; i < threadCnt; i++) //if null just run once.
@@ -244,53 +246,18 @@ namespace SimulationEngine
           _simRuns[threadIndex].initVarVals.Add(varItem.varName, varItem.value);
         }
 
-        if (threadIndex == 0)
-        {
-          // Start the first thread immediately so it can set up the files needed by the others
-          var task = Task.Factory.StartNew(() =>
-          {
-            if (ConfigData.seed != null)
-              SingleRandom.Reset((int)ConfigData.seed + threadIndex);
-
-            _simRuns[threadIndex].RunBatch();
-            if (_simRuns[threadIndex].error != "")
-              _error += _simRuns[threadIndex].error + Environment.NewLine;
-            else
-              _simRuns[threadIndex].GetVarValues(_simRuns[threadIndex].logVarVals, true);
-          }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-          tasks.Add(task);
-        }
-        else
-        {
-          // Delay the start of all but first thread so that it has time to write so others have time to copy data
-          var task = Task.Factory.StartNew(() =>
-          {
-            if (ConfigData.seed != null)
-              SingleRandom.Reset((int)ConfigData.seed + threadIndex);
-
-            //wait until first thread is done writing temp tread files.
-            while (!_simRuns[0].tempThreadFilesWriten)
-              Thread.Sleep(10);  // Adjust the delay as needed
-
-            _simRuns[threadIndex].RunBatch();
-            if (_simRuns[threadIndex].error != "")
-              _error += _simRuns[threadIndex].error + Environment.NewLine;
-            else
-              _simRuns[threadIndex].GetVarValues(_simRuns[threadIndex].logVarVals, true);
-          }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-          tasks.Add(task);
-        }
+        // The first thread starts immediately so it can set up the files needed by the others, the rest wait on it in RunThreadBatch
+        var task = Task.Factory.StartNew(() => RunThreadBatch(threadIndex, appVars),
+                                         CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        tasks.Add(task);
       }
 
       // Wait for all tasks to complete asynchronously
       await Task.WhenAll(tasks);
 
-      // Send WebSocket close frame before tearing down the connection.
-      // WebApiCoupling.Dispose() calls DisconnectAsync, but is never invoked explicitly —
-      // without this the underlying socket is abandoned and the ext sim sees an abrupt TCP close
-      // instead of a proper WebSocket close handshake.
-      if (_msgCoupler is WebApiCoupling wsCouple)
-        await wsCouple.DisconnectAsync();
+      //A batch that never loaded its model (e.g. its coupling connection failed) has no results to merge.
+      if (_simRuns.Any(r => !r.tempThreadFilesWriten))
+        return error;
 
       //compile results if needed
       for (int i = 1; i < _simRuns.Count; i++)
@@ -304,6 +271,106 @@ namespace SimulationEngine
           simRun.ClearTempThreadData();
 
       return error;
+    }
+
+    /// <summary>
+    /// Run one thread's batch. For WebSocket coupling the thread gets its own coupler, and so its own socket and
+    /// connection IDs, so the server can keep each thread's sim separate. The coupler is made after the thread's
+    /// random seed is set so its receive loop runs in this thread's context.
+    /// </summary>
+    private void RunThreadBatch(int threadIndex, Dictionary<string, List<WatchItem>> appVars)
+    {
+      ProcessSimBatch simRun = _simRuns[threadIndex];
+      WebApiCoupling wsCoupler = null;
+      try
+      {
+        if (ConfigData.seed != null)
+          SingleRandom.Reset((int)ConfigData.seed + threadIndex);
+
+        if (threadIndex != 0)
+        {
+          //wait until first thread is done writing temp tread files.
+          while (!_simRuns[0].tempThreadFilesWriten && !_firstThreadDone)
+            Thread.Sleep(10);  // Adjust the delay as needed
+
+          if (!_simRuns[0].tempThreadFilesWriten)
+          {
+            AddError("Thread " + threadIndex + " not run because the first thread failed before setting up its files.");
+            return;
+          }
+        }
+
+        if ((options.couplingInfo != null) && (options.couplingInfo.couplingType == CouplingType.WebSocket))
+        {
+          wsCoupler = StartWebSocketCoupler(appVars);
+          simRun.AddExtSimulationData(wsCoupler, wsCoupler.ConnectionIds);
+        }
+
+        simRun.RunBatch();
+        if (simRun.error != "")
+          AddError(simRun.error);
+        else
+          simRun.GetVarValues(simRun.logVarVals, true);
+      }
+      catch (Exception ex)
+      {
+        AddError("Thread " + threadIndex + " failed - " + ex.Message);
+      }
+      finally
+      {
+        // Send the WebSocket close frame so the ext sim sees a proper close handshake instead of an abrupt TCP close.
+        if (wsCoupler != null)
+        {
+          try
+          {
+            wsCoupler.DisconnectAsync().GetAwaiter().GetResult();
+          }
+          catch (Exception ex)
+          {
+            AddError("Thread " + threadIndex + " failed to disconnect from the coupling server - " + ex.Message);
+          }
+          wsCoupler.Dispose();
+        }
+
+        if (threadIndex == 0)
+          _firstThreadDone = true;
+      }
+    }
+
+    /// <summary>
+    /// Open a WebSocket connection and start every ext sim in the model on it.
+    /// </summary>
+    private WebApiCoupling StartWebSocketCoupler(Dictionary<string, List<WatchItem>> appVars)
+    {
+      var coupler = new WebApiCoupling(options.couplingInfo.couplingURL);
+      try
+      {
+        if (options.couplingInfo.couplingPassword != null)
+          coupler.connectionPassword = options.couplingInfo.couplingPassword;
+
+        foreach (var extSim in _model.allExtSims.Values)
+        {
+          List<WatchItem> watchItems = (appVars != null) && appVars.ContainsKey(extSim.resourceName)
+            ? appVars[extSim.resourceName]
+            : new List<WatchItem>();
+          coupler.StartupApp(extSim.resourceName, watchItems).GetAwaiter().GetResult();
+        }
+      }
+      catch
+      {
+        coupler.Dispose();
+        throw;
+      }
+
+      return coupler;
+    }
+
+    private void AddError(string msg)
+    {
+      lock (_errorLock)
+      {
+        _error += msg + Environment.NewLine;
+      }
     }
 
     public void StopSims()
@@ -476,7 +543,8 @@ namespace SimulationEngine
         switch (optionsOut.couplingInfo.couplingType)
         {
           case CouplingType.WebSocket:
-            _msgCoupler = new WebApiCoupling(optionsOut.couplingInfo.couplingURL);
+            //Connections are opened per thread when the sim runs, see RunThreadBatch.
+            _msgCoupler = null;
             break;
           case CouplingType.XMPP:
             _msgCoupler = new EMRALDMsgServer(optionsOut.couplingInfo.couplingPassword);

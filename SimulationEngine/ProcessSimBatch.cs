@@ -121,6 +121,8 @@ namespace SimulationEngine
     public Dictionary<string, KeyStateResult> keyPaths = new Dictionary<string, KeyStateResult>();
     public Dictionary<string, ResultState> otherPaths = new Dictionary<string, ResultState>();
     private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _variableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+    private Dictionary<string, Dictionary<string, Dictionary<string, string>>> _ownVariableVals = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+    private IReadOnlyDictionary<string, Guid> _extSimConnectionIDs = null;
     public TProgressCallBack progressCallback;
     public List<string> logVarVals = new List<string>();
     public Dictionary<string, string> initVarVals = new Dictionary<string, string>();
@@ -132,6 +134,11 @@ namespace SimulationEngine
     public int? threadNum { get { return _threadNum; }  }
     public int numRuns { get { return _numRuns; } }
     public bool tempThreadFilesWriten { get {  return _tempThreadFilesWriten; } }
+    //Ext sim resource name to the connection ID this batch's coupler was given, null if not coupled or not a WebSocket coupling
+    public IReadOnlyDictionary<string, Guid> extSimConnectionIDs { get { return _extSimConnectionIDs; } }
+    //Variable values recorded by this batch only (key state -> variable -> run index -> value), copied before any
+    //other thread's results are merged in, so the results of each coupled thread can be checked on their own.
+    public IReadOnlyDictionary<string, Dictionary<string, Dictionary<string, string>>> ownVariableVals { get { return _ownVariableVals; } }
     //public string resultFile { get { return _resultFile; } }
     //public string jsonResultsPaths { get { return _jsonResultPaths; } }
 
@@ -155,9 +162,10 @@ namespace SimulationEngine
     }
 
     //public void Add3DSimulationData(HoudiniSimClient sim3DHandler, double frameRate, string sim3DPath)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
-    public void AddExtSimulationData(ISimMessaging msgServer)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
+    public void AddExtSimulationData(ISimMessaging msgServer, IReadOnlyDictionary<string, Guid> connectionIds = null)//, HoudiniSimClient.TLogEvCallBack viewNotifications)
     {
       _msgServer = msgServer;
+      _extSimConnectionIDs = connectionIds;
     }
 
     public bool AutoConnectExtSim()
@@ -515,6 +523,10 @@ namespace SimulationEngine
 
       stopWatch.Stop();
       this._totRunTime = stopWatch.Elapsed;
+
+      _ownVariableVals = _variableVals.ToDictionary(
+        ks => ks.Key,
+        ks => ks.Value.ToDictionary(v => v.Key, v => new Dictionary<string, string>(v.Value)));
 
       WriteFinalResults();
 

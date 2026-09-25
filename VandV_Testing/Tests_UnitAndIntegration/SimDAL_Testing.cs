@@ -546,6 +546,35 @@ namespace UnitAndIntegrationTesting
     }
 
     [Fact]
+    [Description("Test that the multithread scan of external sims returns one XMPP warning for the first sim and does not throw")]
+    public void ExtSimMultiThreadScanTest()
+    {
+      string testName = GetCurrentMethodName();
+      EmraldModel mainModel = new EmraldModel();
+      SetupTheTest(testName, mainModel);
+
+      //no external sims, nothing to report
+      Assert.Empty(mainModel.allExtSims.ScanFor(ScanForTypes.sfMultiThreadIssues, mainModel));
+
+      //IDs start at 1, so this also checks the first sim is found by position and not by key 0
+      ExternalSim firstSim = new ExternalSim("MooseEMRALDTranslation", "", "", TimeSpan.FromMinutes(5));
+      ExternalSim secondSim = new ExternalSim("App1", "", "", TimeSpan.FromMinutes(5));
+      mainModel.allExtSims.Add(firstSim);
+      mainModel.allExtSims.Add(secondSim);
+
+      List<ScanForReturnItem> found = null;
+      Exception scanEx = Record.Exception(() => found = mainModel.allExtSims.ScanFor(ScanForTypes.sfMultiThreadIssues, mainModel));
+      Assert.Null(scanEx);
+
+      ScanForReturnItem item = Assert.Single(found);
+      Assert.Equal(firstSim.id, item.itemID);
+      Assert.Equal(firstSim.name, item.itemName);
+      Assert.Equal(EnIDTypes.itAction, item.itemType);
+      Assert.Contains("XMPP", item.msg);
+      Assert.Contains("WebSocket", item.msg);
+    }
+
+    [Fact]
     [Description("Test to verify that the Ext Sim action loads from the model correctly")]
     public void ExtSimMsgActTest()
     {

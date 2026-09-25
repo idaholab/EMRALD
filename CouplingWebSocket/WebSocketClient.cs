@@ -18,6 +18,10 @@ namespace CouplingWebSocket
     private ClientWebSocket _client;
     private CancellationTokenSource _cancellationTokenSource;
     private Task? _receiveTask;
+    // ClientWebSocket allows only one outstanding SendAsync; the sim thread and receive-loop callbacks can both send.
+    private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
+    // Commands are issued one at a time so a response always belongs to the single pending request.
+    private readonly SemaphoreSlim _requestLock = new SemaphoreSlim(1, 1);
 
     // Configurable timeout in milliseconds
     public int RequestTimeoutMs { get; set; } = 5000; //set by WebApiCoupling constructor
@@ -162,9 +166,40 @@ namespace CouplingWebSocket
 
     private async Task<string> SendRequestAsync(object request, int? timeoutMs = null)
     {
-      var json = JsonConvert.SerializeObject(request);
-      await SendMessageAsync(json).ConfigureAwait(false);
-      return await WaitForResponse(timeoutMs ?? RequestTimeoutMs).ConfigureAwait(false);
+      await _requestLock.WaitAsync().ConfigureAwait(false);
+      try
+      {
+        // Tag the command so the response can be told apart from events carrying a conID. Servers that do
+        // not echo requestId fall back to the response-shape check in ProcessIncomingMessage.
+        string requestId = Guid.NewGuid().ToString();
+        var jsonObj = JObject.FromObject(request);
+        jsonObj["requestId"] = requestId;
+
+        // Register the waiter before sending so a fast response is not mistaken for an event.
+        var waiter = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _pendingRequestId = requestId;
+        _responseWaiter = waiter;
+        try
+        {
+          await SendMessageAsync(jsonObj.ToString(Formatting.None)).ConfigureAwait(false);
+          string response = await WaitForResponse(waiter, timeoutMs ?? RequestTimeoutMs).ConfigureAwait(false);
+
+          var responseObj = JObject.Parse(response);
+          if (responseObj.ContainsKey("error"))
+            throw new InvalidOperationException("Server error: " + responseObj["error"]?.ToString());
+
+          return response;
+        }
+        finally
+        {
+          _responseWaiter = null;
+          _pendingRequestId = null;
+        }
+      }
+      finally
+      {
+        _requestLock.Release();
+      }
     }
 
     private async Task SendMessageAsync(string message)
@@ -173,32 +208,53 @@ namespace CouplingWebSocket
       if (LogMessages) Console.WriteLine("Sent : " + message);
 #endif
       byte[] messageBytes = Encoding.UTF8.GetBytes(message);
-      await _client.SendAsync(
-          new ArraySegment<byte>(messageBytes),
-          WebSocketMessageType.Text,
-          true,
-          _cancellationTokenSource.Token
-      ).ConfigureAwait(false);
+      await _sendLock.WaitAsync(_cancellationTokenSource.Token).ConfigureAwait(false);
+      try
+      {
+        await _client.SendAsync(
+            new ArraySegment<byte>(messageBytes),
+            WebSocketMessageType.Text,
+            true,
+            _cancellationTokenSource.Token
+        ).ConfigureAwait(false);
+      }
+      finally
+      {
+        _sendLock.Release();
+      }
     }
 
-    private TaskCompletionSource<string>? _responseWaiter;
+    private volatile TaskCompletionSource<string>? _responseWaiter;
+    private volatile string? _pendingRequestId;
 
-    private async Task<string> WaitForResponse(int timeoutMs)
+    private static async Task<string> WaitForResponse(TaskCompletionSource<string> waiter, int timeoutMs)
     {
-      _responseWaiter = new TaskCompletionSource<string>();
-
       var timeoutTask = Task.Delay(timeoutMs);
-      var completedTask = await Task.WhenAny(_responseWaiter.Task, timeoutTask).ConfigureAwait(false);
+      var completedTask = await Task.WhenAny(waiter.Task, timeoutTask).ConfigureAwait(false);
 
       if (completedTask == timeoutTask)
       {
-        _responseWaiter = null;
         throw new TimeoutException($"Timeout waiting for server response after {timeoutMs}ms");
       }
 
-      var result = await _responseWaiter.Task.ConfigureAwait(false);
-      _responseWaiter = null;
-      return result;
+      return await waiter.Task.ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Whether an incoming message is the response to the pending command. A server that echoes requestId is
+    /// matched exactly. Otherwise a command response is recognized by shape: GetAppOptions returns "names" and
+    /// CreateConnection returns a "conID" with no "message", while events carry both "conID" and "message".
+    /// </summary>
+    private static bool IsResponseTo(JObject jsonObj, string? requestId)
+    {
+      var echoedId = jsonObj["requestId"]?.ToString();
+      if (echoedId != null)
+        return echoedId == requestId;
+
+      if (jsonObj.ContainsKey("message"))
+        return false;
+
+      return jsonObj.ContainsKey("names") || jsonObj.ContainsKey("conID") || jsonObj.ContainsKey("error");
     }
 
     private async Task ReceiveLoop()
@@ -256,14 +312,11 @@ namespace CouplingWebSocket
         var jsonObj = JObject.Parse(message);
 
         // Check if this is a command response (for GetAppOptions, CreateConnection)
-        if (_responseWaiter != null && !_responseWaiter.Task.IsCompleted)
+        var waiter = _responseWaiter;
+        if (waiter != null && !waiter.Task.IsCompleted && IsResponseTo(jsonObj, _pendingRequestId))
         {
-          // If it has "names" or "conID", it's a command response
-          if (jsonObj.ContainsKey("names") || jsonObj.ContainsKey("conID"))
-          {
-            _responseWaiter.SetResult(message);
-            return;
-          }
+          waiter.TrySetResult(message);
+          return;
         }
 
         // All other messages should have a conID and go to MessageReceived event
@@ -289,6 +342,8 @@ namespace CouplingWebSocket
       _cancellationTokenSource?.Cancel();
       _cancellationTokenSource?.Dispose();
       _client?.Dispose();
+      _sendLock.Dispose();
+      _requestLock.Dispose();
     }
   }
 }

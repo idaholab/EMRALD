@@ -54,6 +54,8 @@ namespace WebSocketTestServer
                     //could do optimization here if Machine.Simulation has already been loaded then 
                     //reset or clear instead of creating again.
                     Machine.SetSimMetadata(action.simInfo);
+                    if (action.simInfo != null)
+                        Machine.Traffic?.RecordOpenSim(action.simInfo.seed, action.simInfo.numRuns, action.simInfo.curRun);
                     if (action.time.HasValue)
                     {
                         Machine.SetLocalTimeOffset(action.time.Value);
@@ -138,6 +140,8 @@ namespace WebSocketTestServer
             switch (action.actType)
             {
                 case SimActionType.atCompModify:
+                    if (action.itemData != null)
+                        Machine.Traffic?.RecordReceived(action.itemData.nameId, action.itemData.value);
                     try
                     {
                         // TODO: apply the component modification to the simulation model using action.itemData.
@@ -273,7 +277,9 @@ namespace WebSocketTestServer
                 _lastTFW = sim.T_FW;
                 if (Machine.ShouldReport("T_FW"))
                 {
-                    await SendEventAsync(SimEventType.etCompEv, new ItemData("T_FW", sim.T_FW.ToString()), "T_FW Changed");
+                    string tfw = sim.T_FW.ToString();
+                    Machine.Traffic?.RecordSent("T_FW", tfw, Machine.LocalSimTime);
+                    await SendEventAsync(SimEventType.etCompEv, new ItemData("T_FW", tfw), "T_FW Changed");
                     await Machine.RequestTransitionAsync(SimulationState.Waiting, requireDrain: false);
                     return; // pause on value change; timer will be evaluated on the next pass
                 }
