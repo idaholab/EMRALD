@@ -582,12 +582,15 @@ namespace SimulationDAL
          (EnEventType.et3dSimEv != (EnEventType)Enum.Parse(typeof(EnEventType), (string)dynObj.evType, true)))
         throw new Exception("event types do not match, cannot change the type once an item is created!");
 
-      if ((this.evType == EnEventType.etVarCond) && (dynObj.code == null))
+      // Missing and blank are both model errors here, and an absent property
+      // deserializes to null rather than "", so test the string itself.
+      string? codeStr = (string?)dynObj.code;
+      if ((this.evType == EnEventType.etVarCond) && string.IsNullOrWhiteSpace(codeStr))
       {
-        throw new Exception("Evaluate Var Event, missing code");
+        throw new Exception("Evaluate Var Event \"" + this.name + "\" is missing its code.");
       }
 
-      compCode = (string)dynObj.code;
+      compCode = codeStr ?? "";
 
       processed = true;
       return true;
@@ -627,6 +630,11 @@ namespace SimulationDAL
 
     public virtual bool CompileCompCode(string modelPath)
     {
+      // Nothing to compile - report it by name rather than letting the compiler
+      // complain about an empty Eval() body.
+      if (string.IsNullOrWhiteSpace(compCode))
+        throw new Exception("No code for " + this.name);
+
       compiledComp.Code = compCode;
 
       //add the Time and 3D Frame variables needed event if 
@@ -853,7 +861,7 @@ namespace SimulationDAL
       //3D simulation var condition has a variable link
       if (this.extEventType == SimEventType.etCompEv)
       {
-        if (dynObj.code == null)
+        if (string.IsNullOrWhiteSpace((string?)dynObj.code))
         {
           throw new Exception("External Sim Event, missing code");
         }
