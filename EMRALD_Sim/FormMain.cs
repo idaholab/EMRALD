@@ -93,6 +93,7 @@ namespace EMRALD_Sim
       }
 
       bool execute = false;
+      bool startupOptionsProvided = false;
       string model = null;
 
       if (args.Length > 0)
@@ -107,9 +108,12 @@ namespace EMRALD_Sim
 
         if (isJSON)
         {
+          startupOptionsProvided = true;
           try
           {
-            _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0]));
+            _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0])) ?? new Options_cur();
+            _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
+            _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
             model = _curSimOptions.inpfile;
             execute = true;
             _isCommandLineRun = true;
@@ -121,13 +125,15 @@ namespace EMRALD_Sim
         }
         else
         {
+          startupOptionsProvided = true;
           execute = LoadFromArgs(args, out model);
         }
       }
 
       if (model != null && OpenModel(model))
       {
-        LoadCurSimOptionsFromDisk(model);
+        if (!startupOptionsProvided)
+          LoadCurSimOptionsFromDisk(model);
         tcMain.SelectedTab = tabSimulate;
         AddRecentFile(model);
       }

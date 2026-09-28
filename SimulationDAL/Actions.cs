@@ -514,7 +514,9 @@ namespace SimulationDAL
 
       lists.allActions.Add(this, false);
 
-      scriptCode = (string)dynObj.scriptCode;
+      // An absent scriptCode property deserializes to null, not "", so normalize it here;
+      // otherwise the empty-code guards downstream let it through to the compiler.
+      scriptCode = (string?)dynObj.scriptCode ?? "";
 
       processed = true;
       return true;
@@ -557,7 +559,7 @@ namespace SimulationDAL
 
     public virtual bool CompileCode(VariableList allVars)
     {
-      if (scriptCode == "")
+      if (string.IsNullOrWhiteSpace(scriptCode))
       {
         return false;
       }
@@ -857,7 +859,7 @@ namespace SimulationDAL
 
         if (!this.compiled)
         {
-          if (scriptCode == "")
+          if (string.IsNullOrWhiteSpace(scriptCode))
           {
             throw new Exception("No code for " + this.name);
           }
@@ -1097,7 +1099,7 @@ namespace SimulationDAL
     {
       if (!this.compiled)
       {
-        if (scriptCode == "")
+        if (string.IsNullOrWhiteSpace(scriptCode))
         {
           throw new Exception("No code for " + this.name);
         }
@@ -1137,7 +1139,7 @@ namespace SimulationDAL
 
     public bool CompileCode(EmraldModel lists, string modelPath)
     {
-      if (scriptCode == "")
+      if (string.IsNullOrWhiteSpace(scriptCode))
       {
         return false;
       }
@@ -1422,8 +1424,8 @@ namespace SimulationDAL
 
       lists.allActions.Add(this, false);
 
-      makeInputFileCode = (string)dynObj.makeInputFileCode;
-      processOutputFileCode = (string)dynObj.processOutputFileCode;
+      makeInputFileCode = (string?)dynObj.makeInputFileCode ?? "";
+      processOutputFileCode = (string?)dynObj.processOutputFileCode ?? "";
       exePath = (string)dynObj.exePath;
       exeFromPreCode = dynObj.ExeFromPreCode != null && Convert.ToBoolean((object)dynObj.ExeFromPreCode);
 
@@ -1493,7 +1495,7 @@ namespace SimulationDAL
 
     public bool CompileMakeInputFileCode(EmraldModel lists)
     {
-      if (makeInputFileCode == "")
+      if (string.IsNullOrWhiteSpace(makeInputFileCode))
       {
         return false;
       }
@@ -1584,7 +1586,7 @@ namespace SimulationDAL
 
     public bool CompileProcessOutputFileCode(EmraldModel lists)
     {
-      if (processOutputFileCode == "")
+      if (string.IsNullOrWhiteSpace(processOutputFileCode))
       {
         return false;
       }
@@ -2582,15 +2584,15 @@ namespace SimulationDAL
         if ((item.Value is VarValueAct) || (item.Value is VarValueDLLAct))
         {
           // In distribution mode the action has no scriptCode to compile.
-          // Also skip when there's literally no script content to compile (defensive: covers
-          // any path where useDistribution might not be set yet but the JSON had no scriptCode).
-          if (item.Value is VarValueAct vva)
-          {
-            if (vva.useDistribution || string.IsNullOrWhiteSpace(vva.scriptCode))
-              continue;
-          }
+          if (((VarValueAct)item.Value).useDistribution)
+            continue;
           try
           {
+            // Script mode with no code can never run. Report it at load rather than
+            // waiting for the first sim run that happens to reach the action.
+            if (string.IsNullOrWhiteSpace(((VarValueAct)item.Value).scriptCode))
+              throw new Exception("No code for " + item.Value.name);
+
             ((VarValueAct)item.Value).CompileCode(lists.allVariables);
           }
           catch (Exception e)

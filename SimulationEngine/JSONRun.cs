@@ -208,10 +208,13 @@ namespace SimulationEngine
       _firstThreadDone = false;
       int runsDiv = options.runct / threadCnt;
 
+      // Generate a per-run instance ID shared by all threads in this JSONRun
+      string runInstanceId = Guid.NewGuid().ToString("N");
+
       for (int i = 0; i < threadCnt; i++) //if null just run once.
       {
         int threadIndex = i;  // <-- CAPTURE i's current value immediately
-        _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, ConfigData.threads == null ? null : i));
+        _simRuns.Add(new ProcessSimBatch(_model, TimeSpan.Parse(options.runtime), options.resout, options.jsonRes, options.pathResultsInterval, runInstanceId, ConfigData.threads == null ? null : i));
 
         if (_msgCoupler != null)
         {
