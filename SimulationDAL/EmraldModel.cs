@@ -561,7 +561,7 @@ namespace SimulationDAL
           {
             if (i == retries - 1)
             {
-              throw new Exception("Failed to delete temp folder, loced file - " + lockedFile);
+              throw new Exception("Failed to delete temp folder, locked file - " + lockedFile);
             }
             System.Threading.Thread.Sleep(500);
           }
