@@ -528,7 +528,7 @@
     },
     {
       "resetOnRuns": true,
-      "canMonitor": false,
+      "canMonitor": true,
       "monitorInSim": false,
       "cumulativeStats": false,
       "extSim": "MooseSim",

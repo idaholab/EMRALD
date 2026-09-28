@@ -285,15 +285,17 @@ namespace SimulationDAL
     {
       var foundList = new List<ScanForReturnItem>();
 
+      //Only the XMPP message server (used by the EMRALD_Sim UI) is limited to a single thread. JSON runs using
+      //WebSocket coupling open one connection per thread and do not go through this check.
+      //IDs start at 1 so the first item must be taken by position, not by key 0.
       if ((scanType == ScanForTypes.sfMultiThreadIssues) &&
-          (this != null) &&
-          (this.Count > 0) &&
-          (this[0] != null)) 
+          (this.Count > 0))
       {
-        foundList.Add(new ScanForRefsItem(this[0].id,
-                                          this[0].name,
+        ExternalSim first = this.Values.First();
+        foundList.Add(new ScanForRefsItem(first.id,
+                                          first.name,
                                           EnIDTypes.itAction,
-                                          "Currently External Sim communication is not supported in multithreading.",
+                                          "External Sim communication through the XMPP message server is not supported in multithreading, use WebSocket coupling.",
                                           ""));
         return foundList;
       }
