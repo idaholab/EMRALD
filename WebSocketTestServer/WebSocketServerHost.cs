@@ -15,8 +15,12 @@ namespace WebSocketTestServer
     private readonly HttpListener _listener = new();
     private readonly CancellationTokenSource _cts = new();
     private Task? _acceptLoop;
+    private readonly CouplingServer _server = new();
 
     public Uri WsUri { get; private set; } = null!;
+
+    // What each connection on this host received and sent, so tests can check which thread used which connection.
+    public TrafficLedger Ledger => _server.Ledger;
 
     public async Task StartAsync()
     {
@@ -44,7 +48,7 @@ namespace WebSocketTestServer
 
           var context = contextTask.Result;
           if (context.Request.IsWebSocketRequest)
-            Program.ProcessWebSocketRequest(context);
+            _server.AcceptWebSocket(context);
           else
           {
             context.Response.StatusCode = 400;
@@ -63,12 +67,11 @@ namespace WebSocketTestServer
       _cts.Cancel();
       _listener.Stop();
 
-      // Cancel all active connection state machines so their dispatcher tasks exit
-      foreach (var conn in Program.GetActiveConnections())
-        conn.StateMachine?.Cancel();
-
       if (_acceptLoop is not null)
         await _acceptLoop;
+
+      // Cancel all active connection state machines so their dispatcher tasks exit, and wait for the sockets to close
+      await _server.ShutdownAsync(TimeSpan.FromSeconds(5));
       _listener.Close();
       _cts.Dispose();
     }

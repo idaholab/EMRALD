@@ -2,6 +2,7 @@
 // Implements the ISimMessaging interface over WebSocket to couple EMRALD with external simulation applications.
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -20,15 +21,31 @@ namespace CouplingWebSocket
     private TErrorCallBack? _errCallBackFunc = null;
     private IMessageDispHandling? _form = null;
     private List<string> _resourceOptions = new List<string>();
-    private Dictionary<Guid, string> _connectedApps = new Dictionary<Guid, string>(); //connectionID to current connected app name in EMRALD
-    private Dictionary<string, Guid> _connectedIDs = new Dictionary<string, Guid>(); //current connected app names in EMRALD to connectionID
+    //Written by the sim thread in StartupApp and read by the receive loop, so both maps are concurrent.
+    private ConcurrentDictionary<Guid, string> _connectedApps = new ConcurrentDictionary<Guid, string>(); //connectionID to current connected app name in EMRALD
+    private ConcurrentDictionary<string, Guid> _connectedIDs = new ConcurrentDictionary<string, Guid>(); //current connected app names in EMRALD to connectionID
     private string _serverUrl = "";
-    private bool _isConnected = false;
+    private volatile bool _isConnected = false;
     private string _connectionPassword = "";
     private int _frameRate = 0;
+    private int _timeoutMs = 5000;  // 5 sec normally
 
     // Single configurable timeout for all coupling operations
-    public int TimeoutMs { get; set; } = 5000;  // 5 sec normally
+    public int TimeoutMs
+    {
+      get { return _timeoutMs; }
+      set
+      {
+        _timeoutMs = value;
+        if (_client != null)
+          _client.RequestTimeoutMs = value;
+      }
+    }
+
+    /// <summary>
+    /// App name to the server connection ID for every app started on this coupler.
+    /// </summary>
+    public IReadOnlyDictionary<string, Guid> ConnectionIds => _connectedIDs;
 
     // Interface property implementations
     public string connectionPassword
@@ -48,10 +65,11 @@ namespace CouplingWebSocket
     /// Create a new WebApiCoupling instance
     /// </summary>
     /// <param name="serverUrl">WebSocket server URL</param>
-    /// <param name="clientName">Name of this client</param>
-    public WebApiCoupling(string serverUrl)
+    /// <param name="timeoutMs">Timeout for connecting and for each command, applied before the first request</param>
+    public WebApiCoupling(string serverUrl, int timeoutMs = 5000)
     {
       _serverUrl = serverUrl;
+      _timeoutMs = timeoutMs;
       _client = new WebSocketClient();
 
       // Set timeout from property
@@ -137,12 +155,20 @@ namespace CouplingWebSocket
         throw new Exception("Invalid app name or unavailable to couple with");
       }
 
+      //Messages are routed by app name, so one coupler can hold only one connection per app.
+      if (_connectedIDs.ContainsKey(appName))
+      {
+        throw new InvalidOperationException($"App '{appName}' is already started on this coupler (connection {_connectedIDs[appName]})");
+      }
+
       // Request connection from server and wait for the GUID response
       Guid retGuid = await _client.CreateConnection(appName, watchItems);
 
       // Now add to dictionaries with the server-provided GUID
-      _connectedApps.Add(retGuid, appName);
-      _connectedIDs.Add(appName, retGuid);
+      if (!_connectedApps.TryAdd(retGuid, appName) || !_connectedIDs.TryAdd(appName, retGuid))
+      {
+        throw new InvalidOperationException($"Duplicate connection registration for app '{appName}' ({retGuid})");
+      }
       _isConnected = true;
 
       return retGuid;

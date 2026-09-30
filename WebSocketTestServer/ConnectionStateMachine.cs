@@ -4,7 +4,7 @@
 // 3) Map EMRALD metadata: ModelPath, ConfigData, Seed, MaxSimulationTime are supplied on OpenSim; use them when you load.
 // 4) Add any connection-scoped data you need here; keep per-state logic in ConnectionStates.cs.
 // 5) Keep state transitions funneled through RequestTransitionAsync; this ensures ordered, single-threaded state changes.
-// 6) Program.cs already routes incoming actions to HandleActionAsync and sends JSON via SendMessage; change only if your transport differs.
+// 6) CouplingServer.cs already routes incoming actions to HandleActionAsync and sends JSON through the socket's SocketContext; change only if your transport differs.
 
 using System;
 using System.Net.WebSockets;
@@ -102,6 +102,9 @@ namespace WebSocketTestServer
         // Variables EMRALD asked us to watch, including the optional boolean rule (WatchEventCriteria).
         internal IReadOnlyList<WatchItem> WatchItems => _connection.WatchItems;
 
+        // Test recording of what this connection received and sent, not needed by a real coupling server.
+        internal ConnectionTraffic? Traffic => _connection.Traffic;
+
         /// <summary>
         /// Resolve a watched variable name to its current numeric value, used when evaluating a
         /// watch item's WatchEventCriteria rule. Extend this map to expose more of your simulation's state.
@@ -157,18 +160,20 @@ namespace WebSocketTestServer
         }
 
         /// <summary>
-        /// Route a client action to the active state; refuses processing once the machine is terminated.
-        /// </summary>
-        /// <param name="action">Client-requested simulation action.</param>
-        /// <returns>Task that completes when the state finishes handling.</returns>
-        /// <summary>
-        /// Cancel the dispatcher and stop processing, used during shutdown.
+        /// Cancel the dispatcher and stop processing, used during shutdown or when the socket closes.
+        /// Also stops the sim so a paused run loop does not stay blocked after the client is gone.
         /// </summary>
         internal void Cancel()
         {
             _dispatcherCts.Cancel();
+            Simulation.Reset();
         }
 
+        /// <summary>
+        /// Route a client action to the active state; refuses processing once the machine is terminated.
+        /// </summary>
+        /// <param name="action">Client-requested simulation action.</param>
+        /// <returns>Task that completes when the state finishes handling.</returns>
         internal Task HandleActionAsync(SimAction action)
         {
             if (action == null)
@@ -343,19 +348,20 @@ namespace WebSocketTestServer
             };
 
             string json = JsonConvert.SerializeObject(response);
-            await Program.SendMessage(_connection.Socket, json);
+            await _connection.SocketCtx.SendAsync(json);
         }
 
         /// <summary>
-        /// Attempt to gracefully close the underlying WebSocket connection.
+        /// Attempt to gracefully close the underlying WebSocket connection. Other connection IDs can share the
+        /// socket, so it is only closed when this is the last one using it.
         /// </summary>
         internal async Task CloseConnectionAsync()
         {
             try
             {
-                if (_connection.Socket != null && _connection.Socket.State == WebSocketState.Open)
+                if (_connection.SocketCtx != null)
                 {
-                    await _connection.Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Terminated", System.Threading.CancellationToken.None);
+                    await _connection.SocketCtx.CloseForConnectionAsync(_connection.ConID);
                 }
             }
             catch

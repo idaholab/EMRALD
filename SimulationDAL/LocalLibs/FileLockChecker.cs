@@ -25,8 +25,15 @@ namespace SimulationDAL.LocalLibs
     private const uint FILE_ATTRIBUTE_NORMAL = 0x80;
     private const uint FILE_FLAG_BACKUP_SEMANTICS = 0x02000000; // Required for directories
 
+    // Win32 CreateFile is only available on Windows. On other platforms open files do not
+    // block deletion, so callers should rely on normal IO exception handling instead.
+    private static bool IsSupported => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
     public static bool IsFileLocked(string filePath)
     {
+      if (!IsSupported)
+        return false;
+
       SafeFileHandle handle = CreateFile(
           filePath,
           GENERIC_READ | GENERIC_WRITE,
@@ -50,7 +57,7 @@ namespace SimulationDAL.LocalLibs
     {
       lockedFilePath = null!;
 
-      if (!Directory.Exists(directoryPath))
+      if (!IsSupported || !Directory.Exists(directoryPath))
         return false;
 
       // First check if the directory itself is locked
