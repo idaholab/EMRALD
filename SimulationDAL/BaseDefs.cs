@@ -385,6 +385,26 @@ namespace SimulationDAL
         throw new Exception("Missing conversion to EnEventType from class object");
     }
 
+    /// <summary>
+    /// Add two TimeSpans, clamping to TimeSpan.MaxValue instead of throwing on overflow.
+    /// Used when computing an absolute occurrence time (curTime + sampled duration) where the
+    /// sampled duration can legitimately be TimeSpan.MaxValue (e.g. an event that never occurs).
+    /// </summary>
+    public static TimeSpan AddClamped(TimeSpan a, TimeSpan b)
+    {
+      if ((a == TimeSpan.MaxValue) || (b == TimeSpan.MaxValue))
+        return TimeSpan.MaxValue;
+
+      try
+      {
+        return a + b;
+      }
+      catch (OverflowException)
+      {
+        return TimeSpan.MaxValue;
+      }
+    }
+
     public static TimeSpan NumberToTimeSpan(double number, EnTimeRate timeRate)
     {
       try
