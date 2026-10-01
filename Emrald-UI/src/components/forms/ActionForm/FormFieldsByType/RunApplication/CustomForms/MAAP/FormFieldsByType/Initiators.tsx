@@ -1,7 +1,7 @@
 import type {
   MAAPAssignment,
   MAAPSourceElement,
-} from '../../../../../../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Autocomplete,
@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useActionFormContext } from '../../../../../ActionFormContext';
+import { useActionFormContext } from '@/components/forms/ActionForm/ActionFormContext';
 import { MAAPToString } from '../Parser/maap-to-string';
 
 export const Initiators: React.FC = () => {

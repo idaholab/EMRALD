@@ -422,8 +422,7 @@
           "description": "Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results.."
         },
         "formData": {
-          "type": "object",
-          "additionalProperties": true,
+          "$ref": "#/definitions/MAAPFormData",
           "description": "Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats."
         },
         "template": {
@@ -588,22 +587,7 @@
         }
       },
       "additionalProperties": false,
-      "required": ["name", "objType", "desc", "mainItem", "evType"],
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "evType": {
-                "const": "etDistribution"
-              }
-            },
-            "required": ["evType"]
-          },
-          "then": {
-            "required": ["distType", "parameters", "dfltTimeRate"]
-          }
-        }
-      ]
+      "required": ["name", "objType", "desc", "mainItem", "evType"]
     },
     "LogicNode": {
       "type": "object",

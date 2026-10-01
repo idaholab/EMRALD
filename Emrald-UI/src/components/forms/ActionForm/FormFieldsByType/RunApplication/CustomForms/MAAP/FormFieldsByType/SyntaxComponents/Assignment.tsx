@@ -1,4 +1,4 @@
-import type { MAAPAssignment } from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPAssignment } from '@/types/EMRALD_Model';
 import {
   Autocomplete,
   Box,
@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { FaLink } from 'react-icons/fa6';
-import { appData } from '../../../../../../../../../hooks/useAppData';
+import { appData } from '@/hooks/useAppData';
 import { MAAPToString } from '../../Parser/maap-to-string';
 import { IsExpression } from './IsExpression';
 import { MultiExpression } from './MultiExpression';

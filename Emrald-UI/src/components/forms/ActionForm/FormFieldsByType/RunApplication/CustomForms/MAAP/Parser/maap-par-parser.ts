@@ -3,7 +3,7 @@
 // https://peggyjs.org/
 
 import type { LocationRange, parser, ParserOptions } from 'peggy';
-import type { MAAPParameter } from '../../../../../../../../types/EMRALD_Model';
+import type { MAAPParameter } from '@/types/EMRALD_Model';
 import {
   type DetailsCache,
   type GrammarSource,

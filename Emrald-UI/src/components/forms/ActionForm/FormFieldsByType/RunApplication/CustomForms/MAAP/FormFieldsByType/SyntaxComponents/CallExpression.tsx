@@ -1,7 +1,4 @@
-import type {
-  MAAPExpressionType,
-  MAAPIdentifier,
-} from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPExpressionType, MAAPIdentifier } from '@/types/EMRALD_Model';
 import { ExpressionType } from './ExpressionType';
 
 export const CallExpression: React.FC<{

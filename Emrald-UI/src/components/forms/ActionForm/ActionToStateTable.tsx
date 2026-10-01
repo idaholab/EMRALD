@@ -21,8 +21,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
-import { useVariableContext } from '../../../contexts/VariableContext';
-import { scientificToNumeric } from '../../../utils/util-functions';
+import { useVariableContext } from '@/contexts/VariableContext';
+import { scientificToNumeric } from '@/utils/util-functions';
 import { useActionFormContext } from './ActionFormContext';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({

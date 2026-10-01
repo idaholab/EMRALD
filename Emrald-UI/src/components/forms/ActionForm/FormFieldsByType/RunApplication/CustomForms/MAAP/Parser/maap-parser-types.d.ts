@@ -1,5 +1,5 @@
 import type { ParserOptions } from 'peggy';
-import type { MAAPSourceElement } from '../../../../../../../../types/EMRALD_Model';
+import type { MAAPSourceElement } from '@/types/EMRALD_Model';
 
 export type WrapperOptions = ParserOptions & {
   safeMode?: boolean;

@@ -5,11 +5,10 @@ import type {
   Event,
   ExtSim,
   LogicNode,
-  MainItemType,
   State,
   Variable,
-} from '../../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../../types/ModelUtils';
+} from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Button,
@@ -20,15 +19,15 @@ import {
   useTheme,
 } from '@mui/material';
 import { type KeyboardEvent, useState } from 'react';
-import { useAlertContext } from '../../../../contexts/AlertContext';
-import { useWindowContext } from '../../../../contexts/WindowContext';
-import { appData } from '../../../../hooks/useAppData';
+import { SearchResultForm } from '@/components/forms/SearchResultForm/SearchResultForm';
+import { useAlertContext } from '@/contexts/AlertContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData } from '@/hooks/useAppData';
 import {
   allMainItemTypes,
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
-} from '../../../../utils/ModelReferences';
-import { SearchResultForm } from '../../../forms/SearchResultForm/SearchResultForm';
+} from '@/utils/ModelReferences';
 import { ItemTypeMenuResults } from './ItemTypeMenuResults';
 
 export const SearchField: React.FC = () => {

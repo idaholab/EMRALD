@@ -1,8 +1,4 @@
-import type {
-  Diagram,
-  DiagramType,
-  EMRALD_Model,
-} from '../../../types/EMRALD_Model';
+import type { Diagram, DiagramType, EMRALD_Model } from '@/types/EMRALD_Model';
 import CloseIcon from '@mui/icons-material/Close';
 import {
   Alert,
@@ -22,18 +18,15 @@ import Typography from '@mui/material/Typography';
 import { useSignal } from '@preact/signals-react';
 import { useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  emptyDiagram,
-  useDiagramContext,
-} from '../../../contexts/DiagramContext';
-import { useTemplateContext } from '../../../contexts/TemplateContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { appData } from '../../../hooks/useAppData';
-import { upgradeModel } from '../../../utils/Upgrades/upgrade';
-import { FileUploadComponent, TabPanel } from '../../common';
-import { GroupListItems } from '../../common/GroupListItems';
-import { EmraldDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
-import { MainDetailsForm } from '../../forms/MainDetailsForm';
+import { FileUploadComponent, TabPanel } from '@/components/common';
+import { GroupListItems } from '@/components/common/GroupListItems';
+import { EmraldDiagram } from '@/components/diagrams/EmraldDiagram/EmraldDiagram';
+import { MainDetailsForm } from '@/components/forms/MainDetailsForm';
+import { emptyDiagram, useDiagramContext } from '@/contexts/DiagramContext';
+import { useTemplateContext } from '@/contexts/TemplateContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData } from '@/hooks/useAppData';
+import { upgradeModel } from '@/utils/Upgrades/upgrade';
 import { ImportForm } from '../ImportForm/ImportForm';
 
 interface DiagramFormProps {

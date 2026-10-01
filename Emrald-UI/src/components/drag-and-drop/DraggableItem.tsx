@@ -5,9 +5,9 @@ import type {
   Event as EventType,
   GateType,
   LogicNode,
-  MainItemType,
   State,
-} from '../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
+import type { MainItemType } from '@/types/ModelUtils';
 import { Box } from '@mui/material';
 import { useDrag } from 'react-dnd';
 

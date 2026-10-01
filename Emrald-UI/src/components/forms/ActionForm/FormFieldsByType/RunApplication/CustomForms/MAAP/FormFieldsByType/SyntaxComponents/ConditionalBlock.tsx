@@ -1,7 +1,4 @@
-import type {
-  MAAPExpression,
-  MAAPSourceElement,
-} from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPExpression, MAAPSourceElement } from '@/types/EMRALD_Model';
 import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
 import { Expression } from './Expression';
 import { SourceElement } from './SourceElement';

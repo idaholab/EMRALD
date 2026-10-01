@@ -3,11 +3,11 @@ import type {
   ActionType,
   Event,
   State,
-} from '../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { createElement, useEffect } from 'react';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
 import { MainDetailsForm } from '../MainDetailsForm';
 import { useActionFormContext } from './ActionFormContext';
 import {

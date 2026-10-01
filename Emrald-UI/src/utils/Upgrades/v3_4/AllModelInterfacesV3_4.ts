@@ -58,9 +58,93 @@ export type TimeVariableUnit
  * Optional. For action type atCngVarVal when useDistribution is true, this is the array of distribution parameters. The shape is shared with etDistribution events for convenience, but the timeRate field on each parameter is ignored for atCngVarVal (variable values are unitless raw numbers, not durations).
  */
 export type Parameters = EventDistributionParameter[];
-export type Event = {
-  [k: string]: unknown;
-};
+export type MAAPSourceElement
+  = | MAAPSensitivityStatement
+    | MAAPTitleStatement
+    | MAAPFileStatement
+    | MAAPBlockStatement
+    | MAAPAssignment
+    | MAAPTimerStatement
+    | MAAPConditionalBlockStatement
+    | MAAPAsExpression
+    | MAAPExpression
+    | MAAPIsExpression
+    | MAAPAliasStatement
+    | MAAPPlotFilStatement
+    | MAAPUserEvtStatement
+    | MAAPActionStatement
+    | MAAPFunctionStatement
+    | MAAPLookupStatement
+    | MAAPParameter
+    | MAAPLiteral
+    | MAAPCallExpression
+    | MAAPParameterName
+    | MAAPIdentifier;
+export type MAAPCommentArray = string[][];
+export type MAAPExpressionType = {
+  useVariable?: boolean;
+} & (MAAPCallExpression | MAAPExpressionBlock | MAAPVariable);
+export type MAAPExpression
+  = | MAAPMultiPartExpression
+    | MAAPIsExpression
+    | MAAPPureExpression
+    | MAAPExpressionType;
+export type MAAPVariable = {
+  useVariable?: boolean;
+} & (MAAPCallExpression | MAAPLiteral | MAAPParameterName | MAAPIdentifier);
+export type MAAPLiteral
+  = | MAAPBooleanLiteral
+    | MAAPNumericLiteral
+    | MAAPTimerLiteral;
+export type MAAPExpressionOperator
+  = | '**'
+    | '*'
+    | '/'
+    | '>='
+    | '<='
+    | '>'
+    | '<'
+    | '+'
+    | '-'
+    | '!='
+    | '==';
+export type CustomFormType = 'MAAP';
+/**
+ * Type of the event
+ */
+export type EventType
+  = | 'etStateCng'
+    | 'etComponentLogic'
+    | 'etFailRate'
+    | 'etTimer'
+    | 'et3dSimEv'
+    | 'etDistribution'
+    | 'etVarCond';
+/**
+ * Optional. When an event uses a variable and that variable changes, this tells the code how to update the event.
+ */
+export type VarChangeOptions = 'ocIgnore' | 'ocResample' | 'ocAdjust';
+/**
+ * Optional. For events of type et3dSimEv. This the type of message being sent to the external simulation. See the external messeage JSON schema.
+ */
+export type ExtEventMsgType = 'etCompEv' | 'etEndSim' | 'etStatus';
+/**
+ * Optional. For event type of etDistribution this is the type of distribution the user selected.
+ */
+export type DistributionType
+  = | 'dtNormal'
+    | 'dtExponential'
+    | 'dtWeibull'
+    | 'dtLogNormal'
+    | 'dtTriangular'
+    | 'dtGamma'
+    | 'dtGompertz'
+    | 'dtUniform'
+    | 'dtBeta';
+/**
+ * Optional. For event type of etDistribution this is an array of properties for the distribution calculation.
+ */
+export type Parameters1 = EventDistributionParameter[];
 /**
  * Gate type for the logic node
  */
@@ -404,12 +488,7 @@ export interface Action {
    * Optional. For action type atRunExtApp. It is the C# script to be executed after the accociated exe is ran. Typically it reads a result file and script typically returns a string list with +/-[StateName] to shift out or into a state because of the results..
    */
   processOutputFileCode?: string;
-  /**
-   * Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats.
-   */
-  formData?: {
-    [k: string]: unknown;
-  };
+  formData?: MAAPFormData;
   /**
    * Optional. For action type atRunExtApp. It is used for custom app form.
    */
@@ -467,6 +546,309 @@ export interface EventDistributionParameter {
    * Optional. The reference name of the variable to use as the value of the parameter if the useVariable flag is true.
    */
   variable?: string;
+}
+/**
+ * Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats.
+ */
+export interface MAAPFormData {
+  /**
+   * The path to the MAAP executable on the user's machine
+   */
+  exePath?: string;
+  /**
+   * The contents of original .inp file parsed into JSON
+   */
+  sourceElements?: MAAPSourceElement[];
+  /**
+   * Source elements from the .inp file identified as parameters
+   */
+  parameters?: MAAPAssignment[];
+  /**
+   * Source elements from the .inp file identified as initiators
+   */
+  initiators?: MAAPSourceElement[];
+  /**
+   * Source elements from the .inp file identified as input blocks (if blocks, when block, etc.)
+   */
+  inputBlocks?: MAAPConditionalBlockStatement[];
+  /**
+   * The paths to other files referenced by the .inp and .par files
+   */
+  fileRefs?: string[];
+  /**
+   * The full path to the .inp file on the user's machine
+   */
+  inputPath?: string;
+  /**
+   * The full path to the .par file on the user's machine
+   */
+  parameterPath?: string;
+  /**
+   * A list of possible initiators extracted from the .par file
+   */
+  possibleInitiators?: MAAPParameter[];
+  /**
+   * The doc link variable used to store the results
+   */
+  docLinkVariable?: string;
+  /**
+   * The MAAP output variable to store in the doc link variable
+   */
+  output?: string;
+  caType: CustomFormType;
+  needsUpgrade?: boolean;
+}
+export interface MAAPSensitivityStatement {
+  type: 'sensitivity';
+  value: 'ON' | 'OFF';
+  comments: MAAPCommentArray;
+}
+export interface MAAPTitleStatement {
+  type: 'title';
+  value: string;
+  comments: MAAPCommentArray;
+}
+export interface MAAPFileStatement {
+  fileType: 'PARAMETER FILE' | 'INCLUDE' | 'DOSE PARAMETER FILE';
+  type: 'file';
+  value: string;
+  comments: MAAPCommentArray;
+}
+export interface MAAPBlockStatement {
+  blockType: 'PARAMETER CHANGE' | 'INITIATORS';
+  type: 'block';
+  value: MAAPSourceElement[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPAssignment {
+  target: MAAPCallExpression | MAAPIdentifier;
+  type: 'assignment';
+  value: MAAPExpression & {
+    useVariable?: boolean;
+  };
+  comments: MAAPCommentArray;
+}
+export interface MAAPCallExpression {
+  arguments: MAAPExpressionType[];
+  type: 'call_expression';
+  value: MAAPIdentifier;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPExpressionBlock {
+  type: 'expression_block';
+  value: MAAPExpression;
+  units?: string;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPMultiPartExpression {
+  type: 'multi_expression';
+  op: string;
+  value: (MAAPExpression | MAAPIsExpression | MAAPMultiPartExpression)[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPIsExpression {
+  target: MAAPVariable;
+  type: 'is_expression';
+  value: MAAPExpression;
+  useVariable?: boolean;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPBooleanLiteral {
+  type: 'boolean';
+  value: boolean;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPNumericLiteral {
+  type: 'number';
+  units?: string;
+  value: number;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPTimerLiteral {
+  type: 'timer';
+  value: number;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPParameterName {
+  type: 'parameter_name';
+  value: string;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPIdentifier {
+  type: 'identifier';
+  value: string;
+  useVariable?: boolean;
+  comments?: MAAPCommentArray;
+}
+export interface MAAPPureExpression {
+  type: 'expression';
+  left: MAAPExpressionType;
+  op: MAAPExpressionOperator;
+  right: MAAPPureExpression | MAAPExpressionType;
+  useVariable?: boolean;
+}
+export interface MAAPTimerStatement {
+  type: 'set_timer';
+  value: MAAPTimerLiteral;
+  comments: MAAPCommentArray;
+}
+export interface MAAPConditionalBlockStatement {
+  blockType: 'IF' | 'WHEN';
+  test: MAAPExpression;
+  type: 'conditional_block';
+  value: MAAPSourceElement[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPAsExpression {
+  target: MAAPVariable;
+  type: 'as_expression';
+  value: MAAPVariable;
+  comments: MAAPCommentArray;
+}
+export interface MAAPAliasStatement {
+  type: 'alias';
+  value: MAAPSourceElement[];
+  comments?: MAAPCommentArray;
+}
+export interface MAAPPlotFilStatement {
+  n: number;
+  type: 'plotfil';
+  value: MAAPPlotFilBody[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPPlotFilBody {
+  row: MAAPVariable[];
+  comments: string[];
+}
+export interface MAAPUserEvtStatement {
+  type: 'user_evt';
+  value: MAAPSourceElement[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPActionStatement {
+  index: number;
+  type: 'action';
+  value: MAAPSourceElement[];
+  comments?: MAAPCommentArray;
+}
+export interface MAAPFunctionStatement {
+  name: MAAPIdentifier;
+  type: 'function';
+  value: MAAPExpression;
+  comments: MAAPCommentArray;
+}
+export interface MAAPLookupStatement {
+  name: MAAPVariable;
+  type: 'lookup_variable';
+  value: string[];
+  comments: MAAPCommentArray;
+}
+export interface MAAPParameter {
+  flag?: MAAPBooleanLiteral;
+  index?: number;
+  type: 'parameter';
+  value: MAAPExpression | MAAPParameterName | string;
+  comments?: MAAPCommentArray;
+  name?: string;
+  useVariable?: boolean;
+  unit?: string;
+  variable?: string;
+  desc?: string;
+}
+export interface Event {
+  /**
+   * Optional, internal use only.
+   */
+  id?: string;
+  objType: 'Event';
+  /**
+   * referenace name in the event in the model.
+   */
+  name: string;
+  /**
+   * User entered description of the event.
+   */
+  desc: string;
+  /**
+   * Is this a global item to show up in the global list, If false it showes up in local or all list.
+   */
+  mainItem: boolean;
+  evType: EventType;
+  /**
+   * Optional. For event type etStateCng. Flag to indicate if all the items in the triggerStates need to occure as specified or just one of them.
+   */
+  allItems?: boolean;
+  /**
+   * Optional. For event type etStateCng. List of state name references as part of the criteria needed to trigger the event. These are the states that need to be entered or exited to tirgger the event.
+   */
+  triggerStates?: string[];
+  /**
+   * Optional, Name references for all variables used in scripts if the event type uses scripts.
+   */
+  varNames?: string[];
+  /**
+   * Optional. For event type etStateCng, flag to indicate that event is triggired when entering or exiting states listed in triggerStates array. On Enter State/s or On Exit State/s
+   */
+  ifInState?: boolean;
+  /**
+   * Optional. For event type etStateCng, flag to indicate that the event should be evaluated when entering the state so that it is triggered without something changing. Enter State/s or On Exit State/s becomes Enter State/s or already in and On Exit State/s or not in
+   */
+  evalEvOnStateEntry?: boolean;
+  /**
+   * Optional. For event type etStateCng, flag to indicate that event is triggering needs all the items or just one or rmore from the states listed in triggerStates array. checkbox - All Items
+   */
+  onSuccess?: boolean;
+  /**
+   * Optional. For event type etComponentLogic, flag to indicate that event is triggered if logic tree evaluates to a False, otherwise it triggeres on true.
+   */
+  triggerOnFalse?: boolean;
+  /**
+   * Optional. For event type etComponentLogic, this is the logic tree name to be evaluated for triggering the event.
+   */
+  logicTop?: string;
+  /**
+   * Optional. Parameter for a event with type of etFailRate. It is either a number or the name of a variable if useVariable is true
+   */
+  lambda?: string | number;
+  /**
+   * Optional. arameter for a event with type of etFailRate. It is the lambda value time frequency.
+   */
+  lambdaTimeRate?: string;
+  /**
+   * Optional. Indicates that variables can be used for the fields
+   */
+  useVariable?: boolean;
+  onVarChange?: VarChangeOptions;
+  /**
+   * Optional, For events of type etTimer. This is a time or variable that indicates the time for the event.
+   */
+  time?: string;
+  timeVariableUnit?: TimeVariableUnit;
+  /**
+   * Optional, For time based events, is the time from the beginning of the simulation [true] or from when the state was entered.
+   */
+  fromSimStart?: boolean;
+  extEventType?: ExtEventMsgType;
+  /**
+   * Optional. For event type et3dSimEv and extEventType etCompEv. It is the reference name for the variable. If that variable is modified by the external code, then the script is executed to determine if the event is triggered.
+   */
+  variable?: string;
+  /**
+   * Optional. For event type et3dSimEv and extEventType etCompEv. It is the reference name for the variable. If that variable is modified by the external code, then this code script is executed to determine if the event is triggered.
+   */
+  code?: string;
+  distType?: DistributionType;
+  parameters?: Parameters1;
+  /**
+   * Optional. For event type of etFailRate, etDistribution, and etTimer. Sets the event value as being persistent, keeping the initial sampled time between state movements and only re-samples after it occurs.
+   */
+  persistent?: boolean;
+  dfltTimeRate?: TimeVariableUnit;
+  changeLog?: ChangeLog;
+  /**
+   * If this is a template then it indicates the item must exist in the current model before using the template.
+   */
+  required?: boolean;
 }
 export interface LogicNode {
   /**

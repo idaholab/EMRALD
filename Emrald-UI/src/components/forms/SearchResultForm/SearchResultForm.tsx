@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactNode } from 'react';
-import type { EMRALD_Model } from '../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../types/ModelUtils';
-import { ItemTypeMenuResults } from '../../layout/Header/SearchBar/ItemTypeMenuResults';
+import type { EMRALD_Model } from '@/types/EMRALD_Model';
+import type { ModelItem } from '@/types/ModelUtils';
+import { ItemTypeMenuResults } from '@/components/layout/Header/SearchBar/ItemTypeMenuResults';
 
 interface searchFormProps {
   model: EMRALD_Model;

@@ -6,13 +6,12 @@ import type {
   ExtSim,
   LogicNode,
   Main_Model,
-  MainItemType,
   State,
   Variable,
-} from '../types/EMRALD_Model';
-import type { ModelItem } from '../types/ModelUtils';
+} from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import jsonpath from 'jsonpath';
-import { appData } from '../hooks/useAppData';
+import { appData } from '@/hooks/useAppData';
 import {
   AdjustJsonPathRef,
   allMainItemTypes,

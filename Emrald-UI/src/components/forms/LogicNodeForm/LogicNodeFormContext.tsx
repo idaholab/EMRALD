@@ -1,3 +1,4 @@
+import type { ComponentStateValue } from './StateValuesTable';
 import type {
   CompChild,
   CompChildItems,
@@ -5,8 +6,7 @@ import type {
   GateType,
   LogicNode,
   StateEvalValue,
-} from '../../../types/EMRALD_Model';
-import type { ComponentStateValue } from './StateValuesTable';
+} from '@/types/EMRALD_Model';
 import { useSignal } from '@preact/signals-react';
 import {
   createContext,
@@ -15,15 +15,16 @@ import {
   type SetStateAction,
   useContext,
   useEffect,
-  useState } from 'react';
+  useState,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
 import {
   emptyLogicNode,
   useLogicNodeContext,
-} from '../../../contexts/LogicNodeContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { GetModelItemsReferencing } from '../../../utils/ModelReferences';
+} from '@/contexts/LogicNodeContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { GetModelItemsReferencing } from '@/utils/ModelReferences';
 
 interface LogicNodeFormContextType {
   name: string;

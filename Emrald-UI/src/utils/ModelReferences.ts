@@ -5,13 +5,12 @@
   Event,
   ExtSim,
   LogicNode,
-  MainItemType,
   State,
   Variable,
 } from '../types/EMRALD_Model';
 import jsonpath, { type PathComponent } from 'jsonpath';
 import { appData } from '../hooks/useAppData';
-import { CreateEmptyEMRALDModel, type ModelItem } from '../types/ModelUtils';
+import { CreateEmptyEMRALDModel, type MainItemType, type ModelItem } from '../types/ModelUtils';
 
 export type ItemReferencesArray = [string, MainItemType, string[] | null][];
 // Items referenced by the specified item [JsonPath, ItemType, Linked array if any]

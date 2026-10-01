@@ -1,3 +1,4 @@
+import type { Program } from './maap-parser-types';
 import type {
   MAAPActionStatement,
   MAAPAliasStatement,
@@ -29,8 +30,7 @@ import type {
   MAAPTitleStatement,
   MAAPUserEvtStatement,
   MAAPVariable,
-} from '../../../../../../../../types/EMRALD_Model';
-import type { Program } from './maap-parser-types';
+} from '@/types/EMRALD_Model';
 
 export class MAAPToString {
   /**

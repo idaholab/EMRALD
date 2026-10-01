@@ -1,10 +1,6 @@
-import type {
-  Diagram,
-  LogicNode,
-  MainItemType,
-} from '../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../types/ModelUtils';
 import type { AccordionMenuItemType } from './types/AccordionMenuItems';
+import type { Diagram, LogicNode } from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -17,7 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { Fragment, useState } from 'react';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
 import { DraggableItem } from '../../drag-and-drop/DraggableItem';
 import { ItemWithContextMenu } from './ItemWithContextMenu';
 

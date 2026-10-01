@@ -1,4 +1,4 @@
-import type { MAAPExpression, MAAPVariable } from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPExpression, MAAPVariable } from '@/types/EMRALD_Model';
 import { Expression } from './Expression';
 import { Identifier } from './Identifier';
 

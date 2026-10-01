@@ -6,10 +6,12 @@ import {
   RadioGroup,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useVariableContext } from '../../../../contexts/VariableContext';
-import { CodeEditorWithVariables } from '../../../common/CodeEditorWithVariables';
-import { DistributionFields } from '../../../common/DistributionFields';
-import { SelectComponent } from '../../../common/SelectComponent';
+import {
+  CodeEditorWithVariables,
+  DistributionFields,
+  SelectComponent,
+} from '@/components/common';
+import { useVariableContext } from '@/contexts/VariableContext';
 import { useActionFormContext } from '../ActionFormContext';
 
 export const ChangeVarValue: React.FC = () => {

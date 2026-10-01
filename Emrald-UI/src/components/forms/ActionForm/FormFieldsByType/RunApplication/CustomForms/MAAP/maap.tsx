@@ -3,15 +3,15 @@ import type {
   MAAPConditionalBlockStatement,
   MAAPParameter,
   MAAPSourceElement,
-} from '../../../../../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
 import { Box, Divider, Tab, Tabs, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
   FileUploadComponent,
   TabPanel,
   TextFieldComponent,
-} from '../../../../../../common';
-import { useActionFormContext } from '../../../../ActionFormContext';
+} from '@/components/common';
+import { useActionFormContext } from '@/components/forms/ActionForm/ActionFormContext';
 import { useCustomForm } from '../useCustomForm';
 import {
   Initiators,

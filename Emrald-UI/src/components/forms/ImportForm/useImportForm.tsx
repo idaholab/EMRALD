@@ -5,29 +5,29 @@ import type {
   Event,
   ExtSim,
   LogicNode,
-  MainItemType,
   State,
   Variable,
-} from '../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
+import type { MainItemType } from '@/types/ModelUtils';
 import { useCallback, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useActionContext } from '../../../contexts/ActionContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { useEventContext } from '../../../contexts/EventContext';
-import { useExtSimContext } from '../../../contexts/ExtSimContext';
-import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { useStateContext } from '../../../contexts/StateContext';
-import { useTemplateContext } from '../../../contexts/TemplateContext';
-import { useVariableContext } from '../../../contexts/VariableContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { appData, updateAppData } from '../../../hooks/useAppData';
-import { useAssembledData } from '../../../hooks/useAssembledData';
-import { GetItemByNameType } from '../../../utils/ModelReferences';
+import { EmraldDiagram } from '@/components/diagrams/EmraldDiagram/EmraldDiagram';
+import { useActionContext } from '@/contexts/ActionContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { useEventContext } from '@/contexts/EventContext';
+import { useExtSimContext } from '@/contexts/ExtSimContext';
+import { useLogicNodeContext } from '@/contexts/LogicNodeContext';
+import { useStateContext } from '@/contexts/StateContext';
+import { useTemplateContext } from '@/contexts/TemplateContext';
+import { useVariableContext } from '@/contexts/VariableContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData, updateAppData } from '@/hooks/useAppData';
+import { useAssembledData } from '@/hooks/useAssembledData';
+import { GetItemByNameType } from '@/utils/ModelReferences';
 import {
   updateModelAndReferences,
   updateSpecifiedModel,
-} from '../../../utils/UpdateModel';
-import { EmraldDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
+} from '@/utils/UpdateModel';
 
 interface ImportedItem {
   type: MainItemType;
@@ -518,7 +518,9 @@ export function useImportForm(
       } else {
         addWindow(
           importedDataCopy.DiagramList[0]?.name ?? '',
-          <EmraldDiagram diagram={importedDataCopy.DiagramList[0] as Diagram} />,
+          <EmraldDiagram
+            diagram={importedDataCopy.DiagramList[0] as Diagram}
+          />,
           {
             x: 75,
             y: 25,

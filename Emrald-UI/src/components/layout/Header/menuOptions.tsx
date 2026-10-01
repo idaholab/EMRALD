@@ -1,15 +1,15 @@
 import type { ReactNode } from 'react';
-import type { WindowPosition } from '../../../contexts/WindowContext';
-import type { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { WindowPosition } from '@/contexts/WindowContext';
+import type { EMRALD_Model } from '@/types/EMRALD_Model';
 import { v4 as uuidv4 } from 'uuid';
-import { appData, clearCacheData } from '../../../hooks/useAppData';
-import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
-import { repairModelReferences } from '../../../utils/ModelRepair';
+import { appData, clearCacheData } from '@/hooks/useAppData';
+import { EMRALD_SchemaVersion } from '@/types/ModelUtils';
+import { repairModelReferences } from '@/utils/ModelRepair';
 import {
   type ModelValidationResult,
   upgradeModel,
   validateModel,
-} from '../../../utils/Upgrades/upgrade';
+} from '@/utils/Upgrades/upgrade';
 import {
   SankeyTimelineDiagram,
   type TimelineOptions,
@@ -21,7 +21,10 @@ function nameFromFileName(fileName: string) {
   return fileName.replace(/\.[^/.]+$/, '').trim();
 }
 
-function normalizeModelObjType(model: EMRALD_Model, fallbackName?: string): EMRALD_Model {
+function normalizeModelObjType(
+  model: EMRALD_Model,
+  fallbackName?: string,
+): EMRALD_Model {
   type StateWithLegacyGeometry = EMRALD_Model['StateList'][number] & {
     geometry?: unknown;
   };
@@ -65,8 +68,12 @@ function normalizeModelObjType(model: EMRALD_Model, fallbackName?: string): EMRA
     objType: 'EMRALD_Model',
     StateList: model.StateList.map(state => normalizeState(state)),
     EventList: model.EventList.map(event => normalizeEvent(event)),
-    LogicNodeList: model.LogicNodeList.map(logicNode => normalizeLogicNode(logicNode)),
-    templates: model.templates?.map(template => normalizeModelObjType(template)),
+    LogicNodeList: model.LogicNodeList.map(logicNode =>
+      normalizeLogicNode(logicNode),
+    ),
+    templates: model.templates?.map(template =>
+      normalizeModelObjType(template),
+    ),
   };
 }
 
@@ -503,7 +510,11 @@ export const templateSubMenuOptions = {
         const parsedContent = JSON.parse(content) as EMRALD_Model[];
         for (const model of parsedContent) {
           if (Object.prototype.hasOwnProperty.call(model, 'emraldVersion')) {
-            const usableModel = getUsableModel(model, undefined, handleModelError);
+            const usableModel = getUsableModel(
+              model,
+              undefined,
+              handleModelError,
+            );
             if (usableModel) {
               mergeTemplateToList(usableModel);
             }
@@ -563,9 +574,7 @@ export const templateSubMenuOptions = {
     // Create an <a> element to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${
-      appData.value.name ?? DEFAULT_MODEL_NAME
-    }-templates.json`;
+    a.download = `${appData.value.name ?? DEFAULT_MODEL_NAME}-templates.json`;
 
     // Trigger a click event on the <a> element to initiate the download
     a.click();
