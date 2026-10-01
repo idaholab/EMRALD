@@ -123,7 +123,8 @@ export function useAssembledData() {
 
   const compareData = (newModel: EMRALD_Model) => {
     const differences: ModelDifferences = {};
-    const excludedKeys = new Set(['id']);
+    // These are compared to using toLowerCase so they need to be lowercase as well
+    const excludedKeys = new Set(['id', 'geometryinfo']);
     const formatKeyName = (key: string) =>
       (key[0]?.toUpperCase() ?? '') + key.slice(1);
     const joinPath = (path: string, key: string) =>
@@ -224,9 +225,10 @@ export function useAssembledData() {
       }
     };
     const processItemList = (base: ModelItem[], compare: ModelItem[]) => {
-      const baseNames = base.map(item => item.name);
+      const unmatchedBase = [...base];
       for (const item of compare) {
-        const baseItem = base.find(i => i.name === item.name);
+        const baseIndex = unmatchedBase.findIndex(i => i.name === item.name);
+        const baseItem = unmatchedBase[baseIndex];
         if (baseItem) {
           // Force ModelItems to be represented as a Record<string, ...>
           checkObjDiff(
@@ -237,7 +239,7 @@ export function useAssembledData() {
             },
             '',
           );
-          baseNames.splice(baseNames.indexOf(item.name), 1);
+          unmatchedBase.splice(baseIndex, 1);
         } else {
           addDifference(item.objType, item.name, ITEM_EXISTENCE_KEY, {
             oldValue: 'Does not exist',
@@ -245,8 +247,8 @@ export function useAssembledData() {
           });
         }
       }
-      for (const name of baseNames) {
-        addDifference(base[0]?.objType ?? '', name, ITEM_EXISTENCE_KEY, {
+      for (const baseItem of unmatchedBase) {
+        addDifference(baseItem.objType, baseItem.name, ITEM_EXISTENCE_KEY, {
           oldValue: 'Exists',
           newValue: 'Does not exist',
         });

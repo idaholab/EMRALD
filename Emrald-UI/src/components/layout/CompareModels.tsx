@@ -1,3 +1,4 @@
+import { OpenInNew } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -5,6 +6,7 @@ import {
   AccordionSummary,
   alpha,
   Box,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +15,19 @@ import {
   type Theme,
   Typography,
 } from '@mui/material';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData } from '@/hooks/useAppData';
+import { ActionForm } from '../forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '../forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '../forms/DiagramForm/DiagramForm';
+import { EventForm } from '../forms/EventForm/EventForm';
+import { EventFormContextProvider } from '../forms/EventForm/EventFormContext';
+import { ExtSimForm } from '../forms/ExtSimForm/ExtSimForm';
+import { LogicNodeForm } from '../forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '../forms/LogicNodeForm/LogicNodeFormContext';
+import { StateForm } from '../forms/StateForm/StateForm';
+import { VariableForm } from '../forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '../forms/VariableForm/VariableFormContext';
 
 type BaseModelValue = string | number;
 export type ModelValue
@@ -132,6 +147,104 @@ function valueCellSx(value: string, palette: 'error' | 'success') {
 export const CompareModels: React.FC<CompareModelsProps> = ({
   differences,
 }) => {
+  const { addWindow } = useWindowContext();
+
+  function findAndEdit(type: string, name: string) {
+    switch (type) {
+      case 'Action': {
+        const action = appData.value.ActionList.find(
+          item => item.name === name,
+        );
+        if (action) {
+          addWindow(
+            `Edit Properties: ${action.name}`,
+            <ActionFormContextProvider>
+              <ActionForm actionData={action} />
+            </ActionFormContextProvider>,
+          );
+        }
+        break;
+      }
+      case 'Event': {
+        const event = appData.value.EventList.find(item => item.name === name);
+        if (event) {
+          addWindow(
+            `Edit Properties: ${event.name}`,
+            <EventFormContextProvider>
+              <EventForm eventData={event} />
+            </EventFormContextProvider>,
+          );
+        }
+        break;
+      }
+      case 'State': {
+        const state = appData.value.StateList.find(item => item.name === name);
+        if (state) {
+          addWindow(
+            `Edit Properties: ${state.name}`,
+            <StateForm stateData={state} />,
+          );
+        }
+        break;
+      }
+      case 'Variable': {
+        const variable = appData.value.VariableList.find(
+          item => item.name === name,
+        );
+        if (variable) {
+          addWindow(
+            `Edit Properties: ${variable.name}`,
+            <VariableFormContextProvider>
+              <VariableForm variableData={variable} />
+            </VariableFormContextProvider>,
+          );
+        }
+        break;
+      }
+      case 'External Sim': {
+        const extSim = appData.value.ExtSimList.find(
+          item => item.name === name,
+        );
+        if (extSim) {
+          addWindow(
+            `Edit Properties: ${extSim.name}`,
+            <ExtSimForm ExtSimData={extSim} />,
+          );
+        }
+        break;
+      }
+      case 'Logic Tree': {
+        const logicNode = appData.value.LogicNodeList.find(
+          item => item.name === name,
+        );
+        if (logicNode) {
+          addWindow(
+            `Edit Properties: ${logicNode.name}`,
+            <LogicNodeFormContextProvider>
+              <LogicNodeForm logicNodeData={logicNode} editing />
+            </LogicNodeFormContextProvider>,
+          );
+        }
+        break;
+      }
+      case 'Diagram': {
+        const diagram = appData.value.DiagramList.find(
+          item => item.name === name,
+        );
+        if (diagram) {
+          addWindow(
+            `Edit Properties: ${diagram.name}`,
+            <DiagramForm diagramData={diagram} />,
+          );
+        }
+        break;
+      }
+      default: {
+        console.warn(`Item not found to edit: ${type}, ${name}`);
+      }
+    }
+  }
+
   const categories = Object.entries(differences);
 
   if (categories.length === 0) {
@@ -173,11 +286,7 @@ export const CompareModels: React.FC<CompareModelsProps> = ({
       <Typography sx={{ fontWeight: 600, overflowWrap: 'anywhere', flex: 1 }}>
         {itemName}
       </Typography>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ flexShrink: 0 }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={{ flexShrink: 0 }}>
         {detail}
       </Typography>
     </Box>
@@ -213,11 +322,7 @@ export const CompareModels: React.FC<CompareModelsProps> = ({
               </Typography>
             </Box>
           ))}
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ ml: 'auto' }}
-        >
+        <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
           Compare model relative to the open model
         </Typography>
       </Box>
@@ -300,6 +405,15 @@ export const CompareModels: React.FC<CompareModelsProps> = ({
                       )}
                     </AccordionSummary>
                     <AccordionDetails sx={{ px: 2, pt: 1, pb: 2 }}>
+                      <Button
+                        aria-label={`Edit ${itemName}`}
+                        onClick={() => {
+                          findAndEdit(category, itemName);
+                        }}
+                      >
+                        Edit In Current Model
+                        <OpenInNew />
+                      </Button>
                       <Table
                         size="small"
                         sx={{
