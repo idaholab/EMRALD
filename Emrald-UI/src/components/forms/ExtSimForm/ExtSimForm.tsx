@@ -1,4 +1,4 @@
-import type { ExtSim } from '../../../types/EMRALD_Model';
+import type { ExtSim } from '@/types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 import { useSignal } from '@preact/signals-react';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { emptyExtSim, useExtSimContext } from '../../../contexts/ExtSimContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
+import { emptyExtSim, useExtSimContext } from '@/contexts/ExtSimContext';
+import { useWindowContext } from '@/contexts/WindowContext';
 
 interface ExtSimFormProps {
   ExtSimData?: ExtSim;

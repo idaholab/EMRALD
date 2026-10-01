@@ -1,4 +1,4 @@
-import type { MAAPExpression } from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPExpression } from '@/types/EMRALD_Model';
 import { Expression } from './Expression';
 
 export const ExpressionBlock: React.FC<{

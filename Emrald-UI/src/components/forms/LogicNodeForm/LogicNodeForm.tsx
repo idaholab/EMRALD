@@ -1,4 +1,4 @@
-import type { GateType, LogicNode } from '../../../types/EMRALD_Model';
+import type { GateType, LogicNode } from '@/types/EMRALD_Model';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';

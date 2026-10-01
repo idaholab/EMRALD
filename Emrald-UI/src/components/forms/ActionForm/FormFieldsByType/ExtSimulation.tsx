@@ -7,11 +7,10 @@ import {
 } from '@mui/material';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { useExtSimContext } from '../../../../contexts/ExtSimContext';
-import { useVariableContext } from '../../../../contexts/VariableContext';
-import { convertToISOString } from '../../../../utils/util-functions';
-import { SelectComponent } from '../../../common';
-import { DurationComponent } from '../../../common/DurationComponent';
+import { DurationComponent, SelectComponent } from '@/components/common';
+import { useExtSimContext } from '@/contexts/ExtSimContext';
+import { useVariableContext } from '@/contexts/VariableContext';
+import { convertToISOString } from '@/utils/util-functions';
 import { useActionFormContext } from '../ActionFormContext';
 import 'react-duration-control/dist/react-duration-control.css';
 

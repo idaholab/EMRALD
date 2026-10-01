@@ -4,22 +4,21 @@ import type {
   Event,
   ExtSim,
   LogicNode,
-  MainItemType,
   State,
   Variable,
-} from '../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { ReactFlowProvider } from 'reactflow';
 import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
-import { useAlertContext } from '../../../contexts/AlertContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { EMRALD_SchemaVersion } from '../../../types/ModelUtils';
+import { useAlertContext } from '@/contexts/AlertContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { EMRALD_SchemaVersion, type MainItemType } from '@/types/ModelUtils';
 import {
   GetModelItemsReferencedBy,
   GetModelItemsReferencing,
-} from '../../../utils/ModelReferences';
+} from '@/utils/ModelReferences';
 import { EmraldDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import { LogicNodeTreeDiagram } from '../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
 import { ActionForm } from '../../forms/ActionForm/ActionForm';

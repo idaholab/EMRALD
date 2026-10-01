@@ -1,5 +1,5 @@
 import { Box, Checkbox, FormControlLabel, Typography } from '@mui/material';
-import { ActionDropTarget } from '../../../drag-and-drop/ActionDroppable';
+import { ActionDropTarget } from '@/components/drag-and-drop/ActionDroppable';
 import { useActionFormContext } from '../ActionFormContext';
 
 export const Transition: React.FC = () => {

@@ -1,4 +1,4 @@
-import type { ModelValidationResult } from '../../../utils/Upgrades/upgrade';
+import type { ModelValidationResult } from '@/utils/Upgrades/upgrade';
 import { Alert, Table } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,9 +8,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useEffect, useRef, useState } from 'react';
-import Logo from '../../../assets/EMRALD-logo.png';
-import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
-import { appData, updateAppData } from '../../../hooks/useAppData';
+import Logo from '@/assets/EMRALD-logo.png';
+import { useModelDetailsContext } from '@/contexts/ModelDetailsContext';
+import { appData, updateAppData } from '@/hooks/useAppData';
 import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
 import { MenuButton } from './MenuButton';
 import { downloadOptions, projectOptions } from './menuOptions';
@@ -381,8 +381,8 @@ export const Header: React.FC = () => {
           Review the grouped validation errors before choosing whether to save
           anyway. Showing
           {saveValidationResult?.truncated
-            ? ` the first ${saveValidationResult.errorLimit}`
-            : ` ${saveValidationResult?.errors.length ?? 0}`}
+            ? ` the first ${saveValidationResult.errorLimit.toString()}`
+            : ` ${(saveValidationResult?.errors.length ?? 0).toString()}`}
           {' '}
           error
           {(saveValidationResult?.truncated

@@ -9,7 +9,7 @@ import type {
   Variable,
 } from './EMRALD_Model';
 
-export const EMRALD_SchemaVersion = 3.3;
+export const EMRALD_SchemaVersion = 3.4;
 
 export function CreateEmptyEMRALDModel(): EMRALD_Model {
   return {
@@ -29,6 +29,22 @@ export function CreateEmptyEMRALDModel(): EMRALD_Model {
   };
 }
 
+/**
+ * Identifiers for model items
+ */
+export type MainItemType
+  = | 'Diagram'
+    | 'State'
+    | 'Action'
+    | 'Event'
+    | 'ExtSim'
+    | 'LogicNode'
+    | 'Variable'
+    | 'EMRALD_Model';
+
+/**
+ * Actual types for model items
+ */
 export type ModelItem
   = | Diagram
     | LogicNode

@@ -1,17 +1,13 @@
-import type {
-  Diagram,
-  EMRALD_Model,
-  MainItemType,
-} from '../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../types/ModelUtils';
 import type { AccordionMenuItemType } from './types/AccordionMenuItems';
+import type { Diagram, EMRALD_Model } from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import { Menu, MenuItem } from '@mui/material';
 import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import { type MouseEvent, type SyntheticEvent, useState } from 'react';
-import { useAlertContext } from '../../../contexts/AlertContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { upgradeModel } from '../../../utils/Upgrades/upgrade';
+import { useAlertContext } from '@/contexts/AlertContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { upgradeModel } from '@/utils/Upgrades/upgrade';
 import { ActionForm } from '../../forms/ActionForm/ActionForm';
 import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
 import { DiagramForm } from '../../forms/DiagramForm/DiagramForm';
@@ -216,8 +212,9 @@ export const MenuAccordion: React.FC<MenuAccordionProps> = ({
             <AccordionSummary
               aria-controls={`panel-${p.toString()}-content`}
               id={panel.type}
-              onContextMenu={e =>
-                void handleAccordionContextMenu(e, panel.type)}
+              onContextMenu={e => {
+                void handleAccordionContextMenu(e, panel.type);
+              }}
             >
               <Typography>{panel.type}</Typography>
             </AccordionSummary>

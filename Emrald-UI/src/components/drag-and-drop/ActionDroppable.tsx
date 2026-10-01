@@ -15,10 +15,10 @@ export const ActionDropTarget: React.FC = () => {
     accept: 'State',
     drop: (item?: State) => {
       if (item) {
-        const shouldUseRemaining =
-          (mutuallyExclusive ?? true) && !!newStateItems?.length;
+        const shouldUseRemaining
+          = (mutuallyExclusive ?? true) && !!newStateItems?.length;
         const existingItems = shouldUseRemaining
-          ? newStateItems?.map(newStateItem =>
+          ? newStateItems.map(newStateItem =>
               newStateItem.remaining
                 ? { ...newStateItem, remaining: false, prob: 0 }
                 : newStateItem,

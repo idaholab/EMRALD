@@ -4,17 +4,17 @@ import type {
   DiagramType,
   EventType,
   GateType,
-  MainItemType,
   StateType,
   VariableType,
-} from '../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
+import type { MainItemType } from '@/types/ModelUtils';
 import { Box, Button } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import { useWindowContext } from '../../contexts/WindowContext';
+import { useWindowContext } from '@/contexts/WindowContext';
 
 type ValueTypes<T extends MainItemType> = T extends 'Diagram'
   ? DiagramType

@@ -1,4 +1,4 @@
-import type { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { EMRALD_Model } from '@/types/EMRALD_Model';
 import {
   Backdrop,
   Box,
@@ -20,7 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import { FaLock, FaLockOpen } from 'react-icons/fa6';
-import { TextFieldComponent } from '../../common';
+import { TextFieldComponent } from '@/components/common';
 import { useImportForm } from './useImportForm';
 
 interface ImportDiagramFormProps {

@@ -1,7 +1,4 @@
-import type {
-  CompChildItems,
-  StateEvalValue,
-} from '../../../types/EMRALD_Model';
+import type { CompChildItems, StateEvalValue } from '@/types/EMRALD_Model';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
@@ -14,8 +11,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { useStateContext } from '../../../contexts/StateContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { useStateContext } from '@/contexts/StateContext';
 
 export interface ComponentStateValue {
   stateName: string;

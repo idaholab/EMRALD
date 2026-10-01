@@ -8,7 +8,7 @@ import type {
   MAAPFormData,
   NewState,
   State,
-} from '../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
 import { useSignal } from '@preact/signals-react';
 import {
   type ChangeEvent,
@@ -21,10 +21,10 @@ import {
   useState,
 } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { emptyAction, useActionContext } from '../../../contexts/ActionContext';
-import { useVariableContext } from '../../../contexts/VariableContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { appData } from '../../../hooks/useAppData';
+import { emptyAction, useActionContext } from '@/contexts/ActionContext';
+import { useVariableContext } from '@/contexts/VariableContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData } from '@/hooks/useAppData';
 
 export interface NewStateItem {
   id: string;
@@ -36,11 +36,11 @@ export interface NewStateItem {
   probType: string;
 }
 
-export type sim3DMessageType =
-  | 'atCompModify'
-  | 'atOpenSim'
-  | 'atCancelSim'
-  | 'atPing';
+export type sim3DMessageType
+  = | 'atCompModify'
+    | 'atOpenSim'
+    | 'atCancelSim'
+    | 'atPing';
 
 export type ReturnProcessType = 'rtVar' | 'rtNone' | 'rtStateList';
 
@@ -224,9 +224,9 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
       const updatedItems = newStateItems.map(newStateItem =>
         !value && isRemainingProbability(newStateItem.prob)
           ? { ...newStateItem, remaining: false, prob: '1.0' }
-          : !value
-            ? { ...newStateItem, remaining: false }
-            : newStateItem,
+          : value
+            ? newStateItem
+            : { ...newStateItem, remaining: false },
       );
 
       for (const newStateItem of updatedItems) {
@@ -268,14 +268,14 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     }
 
     if (updatedMutuallyExclusive ?? mutuallyExclusive) {
-      const totalProb =
-        updateItems?.reduce(
+      const totalProb
+        = updateItems?.reduce(
           (acc, item) =>
             isRemainingProbability(item.prob) ? acc : acc + Number(item.prob),
           0,
         ) ?? 0;
-      const hasRemaining =
-        updatedRemaining === true || updateItems?.some(item => item.remaining);
+      const hasRemaining
+        = updatedRemaining === true || updateItems?.some(item => item.remaining);
       const normalizedTotal = (hasRemaining ? 1 - totalProb : 0) + totalProb;
 
       if (totalProb !== 1 && normalizedTotal !== 1) {
@@ -317,18 +317,18 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
 
   const handleSave = (event?: Event, state?: State) => {
     const savedMutuallyExclusive = mutuallyExclusive ?? true;
-    const shouldSaveMutuallyExclusive =
-      actionData?.mutExcl !== undefined || !savedMutuallyExclusive;
+    const shouldSaveMutuallyExclusive
+      = actionData?.mutExcl !== undefined || !savedMutuallyExclusive;
     const getSavedProbability = (newStateItem: NewStateItem) => {
       const probability = Number(newStateItem.prob);
       return !savedMutuallyExclusive && isRemainingProbability(probability)
-        ? 1.0
+        ? 1
         : probability;
     };
-    const isMAAPCustomApplication =
-      actType === 'atRunExtApp'
-      && raType === 'custom'
-      && formData?.caType === 'MAAP';
+    const isMAAPCustomApplication
+      = actType === 'atRunExtApp'
+        && raType === 'custom'
+        && formData?.caType === 'MAAP';
     const savedExeFromPreCode = isMAAPCustomApplication || exeFromPreCode;
 
     action.value = {
@@ -626,8 +626,8 @@ export const ActionFormContextProvider: React.FC<PropsWithChildren> = ({
     setDesc(actionData?.desc ?? '');
     setActType(actionData?.actType ?? 'atTransition');
     // transition items
-    const initialMutuallyExclusive =
-      actionData?.mutExcl === undefined ? true : actionData.mutExcl;
+    const initialMutuallyExclusive
+      = actionData?.mutExcl === undefined ? true : actionData.mutExcl;
     setMutuallyExclusive(initialMutuallyExclusive);
     setNewStateItems(
       actionData?.newStates

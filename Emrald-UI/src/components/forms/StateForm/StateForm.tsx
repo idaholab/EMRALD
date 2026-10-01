@@ -4,7 +4,7 @@ import type {
   State,
   StateEvalValue,
   StateType,
-} from '../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
 import {
   Box,
   FormControl,
@@ -17,10 +17,10 @@ import Typography from '@mui/material/Typography';
 import { useSignal } from '@preact/signals-react';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { emptyState, useStateContext } from '../../../contexts/StateContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { MainDetailsForm } from '../../forms/MainDetailsForm';
+import { MainDetailsForm } from '@/components/forms/MainDetailsForm';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { emptyState, useStateContext } from '@/contexts/StateContext';
+import { useWindowContext } from '@/contexts/WindowContext';
 
 interface StateFormProps {
   stateData?: State;

@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useVariableContext } from '../../../../../../../../contexts/VariableContext';
+import { useVariableContext } from '@/contexts/VariableContext';
 import { useCustomForm } from '../../useCustomForm';
 
 export const Outputs: React.FC = () => {

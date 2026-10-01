@@ -1,4 +1,4 @@
-import type { MAAPSourceElement } from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPSourceElement } from '@/types/EMRALD_Model';
 import { Typography } from '@mui/material';
 import { MAAPToString } from '../../Parser/maap-to-string';
 import { Assignment } from './Assignment';

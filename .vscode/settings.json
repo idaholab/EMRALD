@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
     "Emrald"
-  ]
+  ],
+  "dotnet.defaultSolution": "EMRALD.sln"
 }

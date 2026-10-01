@@ -1,9 +1,9 @@
-import { useActionContext } from '../../../../../../contexts/ActionContext';
-import { useDiagramContext } from '../../../../../../contexts/DiagramContext';
-import { useEventContext } from '../../../../../../contexts/EventContext';
-import { useLogicNodeContext } from '../../../../../../contexts/LogicNodeContext';
-import { useStateContext } from '../../../../../../contexts/StateContext';
-import { useVariableContext } from '../../../../../../contexts/VariableContext';
+import { useActionContext } from '@/contexts/ActionContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { useEventContext } from '@/contexts/EventContext';
+import { useLogicNodeContext } from '@/contexts/LogicNodeContext';
+import { useStateContext } from '@/contexts/StateContext';
+import { useVariableContext } from '@/contexts/VariableContext';
 import { useActionFormContext } from '../../../ActionFormContext';
 
 export function useCustomForm() {

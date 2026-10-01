@@ -1,4 +1,4 @@
-import type { MAAPConditionalBlockStatement } from '../../../../../../../../types/EMRALD_Model';
+import type { MAAPConditionalBlockStatement } from '@/types/EMRALD_Model';
 import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCustomForm } from '../../useCustomForm';

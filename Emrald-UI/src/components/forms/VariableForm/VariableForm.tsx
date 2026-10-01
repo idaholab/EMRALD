@@ -67,8 +67,8 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
     }
     setDesc(variableData?.desc ?? '');
     setVarScope(variableData?.varScope ?? 'gtGlobal');
-    const accrualStatesData =
-      variableData?.varScope === 'gtAccrual'
+    const accrualStatesData
+      = variableData?.varScope === 'gtAccrual'
         ? variableData.accrualStatesData
         : undefined;
     setAccrualStatesData(accrualStatesData);
@@ -131,7 +131,7 @@ export const VariableForm: React.FC<VariableFormProps> = ({ variableData }) => {
       appData.value.VariableList.filter(
         variable => variable.name !== originalName,
       ).some(variable => variable.name === trimmedName)
-        || /[^a-zA-Z0-9-_]/.test(trimmedName),
+      || /[^a-zA-Z0-9-_]/.test(trimmedName),
     );
     setName(updatedName);
   };

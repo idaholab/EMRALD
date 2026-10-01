@@ -1,4 +1,4 @@
-import type { EMRALD_Model } from '../../../types/EMRALD_Model';
+import type { EMRALD_Model } from '@/types/EMRALD_Model';
 import {
   Box,
   Button,
@@ -20,8 +20,8 @@ import {
   Typography,
 } from '@mui/material';
 import { FaLock, FaLockOpen } from 'react-icons/fa6';
-import { DialogComponent, TextFieldComponent } from '../../common';
-import { GroupListItems } from '../../common/GroupListItems';
+import { DialogComponent, TextFieldComponent } from '@/components/common';
+import { GroupListItems } from '@/components/common/GroupListItems';
 import { useTemplateForm } from './useTemplateForm';
 
 interface TemplateDiagramFormProps {

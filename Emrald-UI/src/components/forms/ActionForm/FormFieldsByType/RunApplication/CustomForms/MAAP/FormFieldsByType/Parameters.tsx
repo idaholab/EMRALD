@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FaLink } from 'react-icons/fa6';
-import { appData } from '../../../../../../../../hooks/useAppData';
-import { useActionFormContext } from '../../../../../ActionFormContext';
+import { useActionFormContext } from '@/components/forms/ActionForm/ActionFormContext';
+import { appData } from '@/hooks/useAppData';
 import { MAAPToString } from '../Parser/maap-to-string';
 
 export const Parameters: React.FC = () => {
