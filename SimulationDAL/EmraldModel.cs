@@ -37,7 +37,7 @@ namespace SimulationDAL
     private string _origRootPath = ""; //origional root path before being changed by multithreading
     private string _rootPath = ""; //emrald model root path
     private string _runInstanceId = ""; // per-run instance identifier for temp folders
-    public const double SCHEMA_VERSION = 3.3;
+    public const double SCHEMA_VERSION = 3.4;
     //public dSimulation _Sim = null;
     //protected Diagram _Diagram = null; //TODO remove was added for testing.
     public AllDiagrams allDiagrams = new AllDiagrams();

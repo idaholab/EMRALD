@@ -153,6 +153,7 @@ export const projectOptions = {
       const content = await selectedFile.text(); // Read the file as text
       try {
         const parsedContent = JSON.parse(content) as EMRALD_Model;
+        parsedContent.filename = fileName;
         if (
           !Object.prototype.hasOwnProperty.call(parsedContent, 'emraldVersion')
           || parsedContent.emraldVersion < EMRALD_SchemaVersion

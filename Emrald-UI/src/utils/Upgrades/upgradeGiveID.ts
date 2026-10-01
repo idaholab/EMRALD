@@ -5,6 +5,7 @@ import { UpgradeV3_0 } from './v3_0/UpgradeV3_0';
 import { UpgradeV3_1 } from './v3_1/UpgradeV3_1';
 import { UpgradeV3_2 } from './v3_2/UpgradeV3_2';
 import { UpgradeV3_3 } from './v3_3/UpgradeV3_3';
+import { UpgradeV3_4 } from './v3_4/UpdateV3_4';
 
 interface ModelVersionFix {
   emraldVersion?: number;
@@ -65,6 +66,7 @@ export class Upgrade {
       { emraldVersion: 3.1, upgradeFunction: UpgradeV3_1 },
       { emraldVersion: 3.2, upgradeFunction: UpgradeV3_2 },
       { emraldVersion: 3.3, upgradeFunction: UpgradeV3_3 },
+      { emraldVersion: 3.4, upgradeFunction: UpgradeV3_4 },
     ];
 
     // Apply upgrades

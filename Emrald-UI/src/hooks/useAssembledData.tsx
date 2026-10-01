@@ -31,6 +31,7 @@ export function useAssembledData() {
     setName,
     setDesc,
     setVersion,
+    setFileName,
   } = useModelDetailsContext();
   const { diagrams, clearDiagramList, newDiagramList } = useDiagramContext();
   const { logicNodes, clearLogicNodeList, newLogicNodeList }
@@ -88,6 +89,9 @@ export function useAssembledData() {
         setName(openedModel.name);
         setDesc(openedModel.desc);
         setVersion(openedModel.version);
+        if (openedModel.filename !== undefined) {
+          setFileName(openedModel.filename);
+        }
         newTemplateList(openedModel.templates ?? []);
         updateAppData(openedModel);
       } else {

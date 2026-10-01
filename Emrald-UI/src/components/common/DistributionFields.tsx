@@ -1,5 +1,5 @@
 import type {
-  DistributionType,
+  Action,
   EventDistributionParameter,
   EventDistributionParameterName,
   TimeVariableUnit,
@@ -22,6 +22,8 @@ import {
   StyledTableRow,
 } from '@/components/forms/ActionForm/ActionToStateTable';
 import { appData } from '@/hooks/useAppData';
+
+type DistributionType = Required<Action>['distType'];
 
 const distConfig: Record<DistributionType, string[]> = {
   dtNormal: ['Mean', 'Standard Deviation'],
