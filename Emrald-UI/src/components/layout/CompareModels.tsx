@@ -14,9 +14,14 @@ import {
   TableRow,
   type Theme,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
+import { ReactFlowProvider } from 'reactflow';
 import { useWindowContext } from '@/contexts/WindowContext';
 import { appData } from '@/hooks/useAppData';
+import { theme } from '@/theme';
+import { EmraldDiagram } from '../diagrams/EmraldDiagram/EmraldDiagram';
+import { LogicNodeTreeDiagram } from '../diagrams/LogicTreeDiagram/LogicTreeDiagram';
 import { ActionForm } from '../forms/ActionForm/ActionForm';
 import { ActionFormContextProvider } from '../forms/ActionForm/ActionFormContext';
 import { DiagramForm } from '../forms/DiagramForm/DiagramForm';
@@ -148,7 +153,13 @@ export const CompareModels: React.FC<CompareModelsProps> = ({
   differences,
 }) => {
   const { addWindow } = useWindowContext();
+  const isMediumScreen = useMediaQuery(theme.breakpoints.between('sm', 'xl'));
 
+  /**
+   * Opens the window for the given item. For diagrams, logic trees, and states, this opens the PROPERTIES window.
+   * @param type - The item type (MainItemType)
+   * @param name - The name of the item.
+   */
   function findAndEdit(type: string, name: string) {
     switch (type) {
       case 'Action': {
@@ -236,6 +247,68 @@ export const CompareModels: React.FC<CompareModelsProps> = ({
             `Edit Properties: ${diagram.name}`,
             <DiagramForm diagramData={diagram} />,
           );
+        }
+        break;
+      }
+      default: {
+        console.warn(`Item not found to edit: ${type}, ${name}`);
+      }
+    }
+  }
+
+  /**
+   * For Diagrams, States, and Logic Nodes, this opens the visual view instead of properties to complement findAndEdit.
+   * @param type - The item type.
+   * @param name - The item name.
+   */
+  function findAndView(type: string, name: string) {
+    switch (type) {
+      case 'Diagram': {
+        const diagram = appData.value.DiagramList.find(
+          item => item.name === name,
+        );
+        if (diagram) {
+          addWindow(diagram.name, <EmraldDiagram diagram={diagram} />, {
+            x: 75,
+            y: 25,
+            width: isMediumScreen ? 600 : 1000,
+            height: isMediumScreen ? 400 : 500,
+          });
+        }
+        break;
+      }
+      case 'Logic Node': {
+        const logicNode = appData.value.LogicNodeList.find(
+          item => item.name === name,
+        );
+        if (logicNode) {
+          addWindow(
+            logicNode.name,
+            <ReactFlowProvider>
+              <LogicNodeTreeDiagram logicNode={logicNode} />
+            </ReactFlowProvider>,
+            {
+              x: 75,
+              y: 25,
+              width: isMediumScreen ? 600 : 1000,
+              height: isMediumScreen ? 400 : 500,
+            },
+          );
+        }
+        break;
+      }
+      case 'State': {
+        const state = appData.value.StateList.find(item => item.name === name);
+        const diagram = appData.value.DiagramList.find(
+          item => item.name === state?.diagramName,
+        );
+        if (diagram) {
+          addWindow(diagram.name, <EmraldDiagram diagram={diagram} />, {
+            x: 75,
+            y: 25,
+            width: isMediumScreen ? 600 : 1000,
+            height: isMediumScreen ? 400 : 500,
+          });
         }
         break;
       }
@@ -414,6 +487,19 @@ export const CompareModels: React.FC<CompareModelsProps> = ({
                         Edit In Current Model
                         <OpenInNew />
                       </Button>
+                      {['Diagram', 'Logic Node', 'State'].includes(category) ? (
+                        <Button
+                          aria-label={`View ${itemName}`}
+                          onClick={() => {
+                            findAndView(category, itemName);
+                          }}
+                        >
+                          View In Current Model
+                          <OpenInNew />
+                        </Button>
+                      ) : (
+                        <></>
+                      )}
                       <Table
                         size="small"
                         sx={{
