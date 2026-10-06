@@ -349,7 +349,7 @@ export const MAAP: React.FC = () => {
             }
           }
 
-          // Set state variables or perform other actions with comments, sections, and parameters
+          // Set state variables or perform other actions with comments and parameters
           const newParameters: MAAPAssignment[] = [];
           for (const param of parameters) {
             if (param.type === 'assignment') {

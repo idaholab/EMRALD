@@ -166,24 +166,19 @@ export const DistributionFields: React.FC<DistributionFieldsProps> = ({
     if (index === -1) {
       newParameters.push({
         name: row as EventDistributionParameterName,
-        value: varName === 'value' ? (value as string | number) : '',
-        timeRate:
-          varName === 'timeRate'
-            ? value === 'default'
-              ? undefined
-              : (value as TimeVariableUnit)
-            : undefined,
-        useVariable: varName === 'useVariable' ? (value as boolean) : false,
-        variable: varName === 'variable' ? (value as string) : undefined,
+        value: '',
+        useVariable: false,
       });
       index = newParameters.length - 1;
     }
 
-    newParameters[index] = {
-      ...newParameters[index],
-      [varName]:
-        varName === 'timeRate' && value === 'default' ? undefined : value,
-    };
+    // Omit optional properties rather than storing them as undefined
+    const newValue
+      = varName === 'timeRate' && value === 'default' ? undefined : value;
+    const { [varName]: _, ...rest } = newParameters[index];
+    newParameters[index] = (
+      newValue === undefined ? rest : { ...rest, [varName]: newValue }
+    ) as EventDistributionParameter;
     setParameters(newParameters);
   };
 
