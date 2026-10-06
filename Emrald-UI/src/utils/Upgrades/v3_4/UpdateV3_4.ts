@@ -35,7 +35,7 @@ function UpgradeV3_4_Recursive(oldModel: EMRALD_ModelV3_3): EMRALD_Model {
           i => ({
             type: 'parameter',
             value: {
-              type: 'identifier',
+              type: 'parameter_name',
               value: i as unknown as string,
             },
           }),
