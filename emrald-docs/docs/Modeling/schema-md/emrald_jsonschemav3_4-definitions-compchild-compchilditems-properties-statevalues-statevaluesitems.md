@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## items Type
 
@@ -16,10 +16,10 @@ EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items
 
 # items Properties
 
-| Property                  | Type     | Required | Nullable       | Defined by                                                                                                                                                                                                                                  |
-| :------------------------ | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [stateName](#statename)   | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statename.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateName")   |
-| [stateValue](#statevalue) | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statevalue.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateValue") |
+| Property                  | Type     | Required | Nullable       | Defined by                                                                                                                                                                                                                                 |
+| :------------------------ | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [stateName](#statename)   | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statename.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateName")   |
+| [stateValue](#statevalue) | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statevalue.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateValue") |
 
 ## stateName
 
@@ -33,7 +33,7 @@ State name for the value.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statename.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statename.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateName")
 
 ### stateName Type
 
@@ -51,7 +51,7 @@ For single state diagrams. Boolean value for the diagram when evaluated in a log
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statevalue.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateValue")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues-statevaluesitems-properties-statevalue.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues/items/properties/stateValue")
 
 ### stateValue Type
 

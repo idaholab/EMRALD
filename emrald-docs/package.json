@@ -13,14 +13,13 @@
   "scripts": {
     "dev": "vitepress dev docs",
     "build": "vitepress build docs",
-    "postbuild": "shx mv docs/.vitepress/dist ./dist",
+    "postbuild": "node -e \"const fs=require('fs');fs.rmSync('dist',{recursive:true,force:true});fs.cpSync('docs/.vitepress/dist','dist',{recursive:true});fs.rmSync('docs/.vitepress/dist',{recursive:true,force:true})\"",
     "preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@adobe/jsonschema2md": "^8.0.11",
     "docx": "^9.5.1",
     "image-size": "^2.0.2",
-    "shx": "^0.4.0",
-    "vitepress": "^1.6.4"
+    "vitepress": "^2.0.0-alpha.20"
   }
 }

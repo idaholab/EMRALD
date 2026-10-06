@@ -1,4 +1,4 @@
-# Untitled object in EMRALD\_Model Schema
+# Untitled object in EMRALD_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/MAAPAssignment
@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MAAPAssignment
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MAAPAssignment Type
 
@@ -16,12 +16,12 @@ EMRALD_Model#/definitions/MAAPAssignment
 
 # MAAPAssignment Properties
 
-| Property              | Type          | Required | Nullable       | Defined by                                                                                                                                          |
-| :-------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [target](#target)     | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target") |
-| [type](#type)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")     |
-| [value](#value)       | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")   |
-| [comments](#comments) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")               |
+| Property              | Type          | Required | Nullable       | Defined by                                                                                                                                         |
+| :-------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [target](#target)     | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target") |
+| [type](#type)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")     |
+| [value](#value)       | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")   |
+| [comments](#comments) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")               |
 
 ## target
 
@@ -35,7 +35,7 @@ EMRALD_Model#/definitions/MAAPAssignment
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target")
 
 ### target Type
 
@@ -59,7 +59,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")
 
 ### type Type
 
@@ -85,7 +85,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")
 
 ### value Type
 
@@ -127,7 +127,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")
 
 ### comments Type
 

@@ -1,4 +1,4 @@
-# EMRALD\_Model Schema
+# EMRALD_Model Schema
 
 ```txt
 EMRALD_Model
@@ -6,19 +6,19 @@ EMRALD_Model
 
 EMRALD model schema version 3.3
 
-| Abstract               | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
-| :--------------------- | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
-| Cannot be instantiated | Yes        | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD\_JsonSchemaV3\_4.json](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract               | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                   |
+| :--------------------- | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :------------------------------------------------------------------------------------------- |
+| Cannot be instantiated | Yes        | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD_JsonSchemaV3_4.json](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
-## EMRALD\_Model Type
+## EMRALD_Model Type
 
-`object` ([EMRALD\_Model](emrald_jsonschemav3_4.md))
+`object` ([EMRALD_Model](emrald_jsonschemav3_4.md))
 
 all of
 
 * [Main_Model](emrald_jsonschemav3_4-definitions-main_model.md "check type definition")
 
-# EMRALD\_Model Definitions
+# EMRALD_Model Definitions
 
 ## Definitions group Model
 
@@ -28,27 +28,27 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/Model"}
 ```
 
-| Property                            | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
-| :---------------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")                         |
-| [objType](#objtype)                 | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")               |
-| [name](#name)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")                     |
-| [desc](#desc)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")                     |
-| [emraldVersion](#emraldversion)     | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")   |
-| [version](#version)                 | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")               |
-| [versionHistory](#versionhistory)   | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory") |
-| [filename](#filename)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")             |
-| [DiagramList](#diagramlist)         | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")       |
-| [ExtSimList](#extsimlist)           | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")         |
-| [StateList](#statelist)             | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")           |
-| [ActionList](#actionlist)           | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")         |
-| [EventList](#eventlist)             | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")           |
-| [LogicNodeList](#logicnodelist)     | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")   |
-| [VariableList](#variablelist)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")     |
-| [templates](#templates)             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")           |
-| [multiThreadInfo](#multithreadinfo) | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")                     |
-| [changeLog](#changelog)             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")                                 |
-| [group](#group)                     | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")                                         |
+| Property                            | Type          | Required | Nullable       | Defined by                                                                                                                                                |
+| :---------------------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id)                           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")                         |
+| [objType](#objtype)                 | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")               |
+| [name](#name)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")                     |
+| [desc](#desc)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")                     |
+| [emraldVersion](#emraldversion)     | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")   |
+| [version](#version)                 | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")               |
+| [versionHistory](#versionhistory)   | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory") |
+| [filename](#filename)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")             |
+| [DiagramList](#diagramlist)         | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")       |
+| [ExtSimList](#extsimlist)           | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")         |
+| [StateList](#statelist)             | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")           |
+| [ActionList](#actionlist)           | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")         |
+| [EventList](#eventlist)             | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")           |
+| [LogicNodeList](#logicnodelist)     | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")   |
+| [VariableList](#variablelist)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")     |
+| [templates](#templates)             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")           |
+| [multiThreadInfo](#multithreadinfo) | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")                     |
+| [changeLog](#changelog)             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")                                 |
+| [group](#group)                     | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")                                         |
 
 ### id
 
@@ -62,7 +62,7 @@ Temporary, only used internally for some identification or uniqueness needs
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")
 
 #### id Type
 
@@ -80,7 +80,7 @@ Temporary, only used internally for some identification or uniqueness needs
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")
 
 #### objType Type
 
@@ -106,7 +106,7 @@ Name of the EMRALD model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")
 
 #### name Type
 
@@ -124,7 +124,7 @@ description of the EMRALD model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")
 
 #### desc Type
 
@@ -142,7 +142,7 @@ Version of the EMRALD model schema
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")
 
 #### emraldVersion Type
 
@@ -160,7 +160,7 @@ Version of the users model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")
 
 #### version Type
 
@@ -178,7 +178,7 @@ The user's model version history and change descriptions
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory")
 
 #### versionHistory Type
 
@@ -196,7 +196,7 @@ Name of the original file that was opened to help distinguish between different 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")
 
 #### filename Type
 
@@ -214,7 +214,7 @@ All the diagrams for the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")
 
 #### DiagramList Type
 
@@ -232,7 +232,7 @@ All the external simulation links for the mdoel
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")
 
 #### ExtSimList Type
 
@@ -250,7 +250,7 @@ All of the states for the different diagrams of the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")
 
 #### StateList Type
 
@@ -268,7 +268,7 @@ All the actions that can be used in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")
 
 #### ActionList Type
 
@@ -286,7 +286,7 @@ All the events that are used in the model.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")
 
 #### EventList Type
 
@@ -304,7 +304,7 @@ All the logic nodes to make the logic trees in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")
 
 #### LogicNodeList Type
 
@@ -322,7 +322,7 @@ All the variables used in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")
 
 #### VariableList Type
 
@@ -336,15 +336,15 @@ Templates available to make new diagrams in the model. These are basically small
 
 * is optional
 
-* Type: `object[]` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+* Type: `object[]` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")
 
 #### templates Type
 
-`object[]` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+`object[]` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 ### multiThreadInfo
 
@@ -358,7 +358,7 @@ Templates available to make new diagrams in the model. These are basically small
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")
 
 #### multiThreadInfo Type
 
@@ -376,7 +376,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")
 
 #### changeLog Type
 
@@ -394,7 +394,7 @@ What catagory grouping this item belongs to. Used to indicate a group for and EM
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")
 
 #### group Type
 
@@ -408,27 +408,27 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MainModel"}
 ```
 
-| Property                              | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
-| :------------------------------------ | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id-1)                           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")                         |
-| [objType](#objtype-1)                 | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")               |
-| [name](#name-1)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")                     |
-| [desc](#desc-1)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")                     |
-| [emraldVersion](#emraldversion-1)     | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")   |
-| [version](#version-1)                 | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")               |
-| [versionHistory](#versionhistory-1)   | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory") |
-| [filename](#filename-1)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")             |
-| [DiagramList](#diagramlist-1)         | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")       |
-| [ExtSimList](#extsimlist-1)           | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")         |
-| [StateList](#statelist-1)             | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")           |
-| [ActionList](#actionlist-1)           | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")         |
-| [EventList](#eventlist-1)             | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")           |
-| [LogicNodeList](#logicnodelist-1)     | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")   |
-| [VariableList](#variablelist-1)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")     |
-| [templates](#templates-1)             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")           |
-| [multiThreadInfo](#multithreadinfo-1) | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")                     |
-| [changeLog](#changelog-1)             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")                                 |
-| [group](#group-1)                     | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")                                         |
+| Property                              | Type          | Required | Nullable       | Defined by                                                                                                                                                |
+| :------------------------------------ | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-1)                           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")                         |
+| [objType](#objtype-1)                 | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")               |
+| [name](#name-1)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")                     |
+| [desc](#desc-1)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")                     |
+| [emraldVersion](#emraldversion-1)     | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")   |
+| [version](#version-1)                 | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")               |
+| [versionHistory](#versionhistory-1)   | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory") |
+| [filename](#filename-1)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")             |
+| [DiagramList](#diagramlist-1)         | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")       |
+| [ExtSimList](#extsimlist-1)           | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")         |
+| [StateList](#statelist-1)             | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")           |
+| [ActionList](#actionlist-1)           | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")         |
+| [EventList](#eventlist-1)             | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")           |
+| [LogicNodeList](#logicnodelist-1)     | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")   |
+| [VariableList](#variablelist-1)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")     |
+| [templates](#templates-1)             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")           |
+| [multiThreadInfo](#multithreadinfo-1) | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")                     |
+| [changeLog](#changelog-1)             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")                                 |
+| [group](#group-1)                     | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")                                         |
 
 ### id
 
@@ -442,7 +442,7 @@ Temporary, only used internally for some identification or uniqueness needs
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")
 
 #### id Type
 
@@ -460,7 +460,7 @@ Temporary, only used internally for some identification or uniqueness needs
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")
 
 #### objType Type
 
@@ -486,7 +486,7 @@ Name of the EMRALD model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")
 
 #### name Type
 
@@ -504,7 +504,7 @@ description of the EMRALD model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")
 
 #### desc Type
 
@@ -522,7 +522,7 @@ Version of the EMRALD model schema
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")
 
 #### emraldVersion Type
 
@@ -540,7 +540,7 @@ Version of the users model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")
 
 #### version Type
 
@@ -558,7 +558,7 @@ The user's model version history and change descriptions
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory")
 
 #### versionHistory Type
 
@@ -576,7 +576,7 @@ Name of the original file that was opened to help distinguish between different 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")
 
 #### filename Type
 
@@ -594,7 +594,7 @@ All the diagrams for the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")
 
 #### DiagramList Type
 
@@ -612,7 +612,7 @@ All the external simulation links for the mdoel
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")
 
 #### ExtSimList Type
 
@@ -630,7 +630,7 @@ All of the states for the different diagrams of the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")
 
 #### StateList Type
 
@@ -648,7 +648,7 @@ All the actions that can be used in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")
 
 #### ActionList Type
 
@@ -666,7 +666,7 @@ All the events that are used in the model.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")
 
 #### EventList Type
 
@@ -684,7 +684,7 @@ All the logic nodes to make the logic trees in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")
 
 #### LogicNodeList Type
 
@@ -702,7 +702,7 @@ All the variables used in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")
 
 #### VariableList Type
 
@@ -716,15 +716,15 @@ Templates available to make new diagrams in the model. These are basically small
 
 * is optional
 
-* Type: `object[]` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+* Type: `object[]` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")
 
 #### templates Type
 
-`object[]` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+`object[]` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 ### multiThreadInfo
 
@@ -738,7 +738,7 @@ Templates available to make new diagrams in the model. These are basically small
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")
 
 #### multiThreadInfo Type
 
@@ -756,7 +756,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")
 
 #### changeLog Type
 
@@ -774,7 +774,7 @@ What catagory grouping this item belongs to. Used to indicate a group for and EM
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")
 
 #### group Type
 
@@ -788,18 +788,18 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/Diagram"}
 ```
 
-| Property                            | Type          | Required | Nullable       | Defined by                                                                                                                                              |
-| :---------------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [id](#id-2)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")                           |
-| [objType](#objtype-2)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-objtype.md "EMRALD_Model#/definitions/Diagram/properties/objType")                 |
-| [name](#name-2)                     | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")                       |
-| [desc](#desc-2)                     | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")                       |
-| [diagramType](#diagramtype)         | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")         |
-| [diagramTemplate](#diagramtemplate) | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate") |
-| [diagramLabel](#diagramlabel)       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")       |
-| [states](#states)                   | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")                   |
-| [changeLog](#changelog-2)           | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")                                |
-| [required](#required)               | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-required.md "EMRALD_Model#/definitions/Diagram/properties/required")               |
+| Property                            | Type          | Required | Nullable       | Defined by                                                                                                                                             |
+| :---------------------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-2)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")                           |
+| [objType](#objtype-2)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-objtype.md "EMRALD_Model#/definitions/Diagram/properties/objType")                 |
+| [name](#name-2)                     | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")                       |
+| [desc](#desc-2)                     | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")                       |
+| [diagramType](#diagramtype)         | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")         |
+| [diagramTemplate](#diagramtemplate) | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate") |
+| [diagramLabel](#diagramlabel)       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")       |
+| [states](#states)                   | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")                   |
+| [changeLog](#changelog-2)           | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")                                |
+| [required](#required)               | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-required.md "EMRALD_Model#/definitions/Diagram/properties/required")               |
 
 ### id
 
@@ -813,7 +813,7 @@ Optional. Only used for internal processing needs.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-id.md "EMRALD_Model#/definitions/Diagram/properties/id")
 
 #### id Type
 
@@ -831,7 +831,7 @@ Optional. Only used for internal processing needs.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-objtype.md "EMRALD_Model#/definitions/Diagram/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-objtype.md "EMRALD_Model#/definitions/Diagram/properties/objType")
 
 #### objType Type
 
@@ -857,7 +857,7 @@ Name of the diagram
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-name.md "EMRALD_Model#/definitions/Diagram/properties/name")
 
 #### name Type
 
@@ -875,7 +875,7 @@ description of the diagram
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-desc.md "EMRALD_Model#/definitions/Diagram/properties/desc")
 
 #### desc Type
 
@@ -893,7 +893,7 @@ Type of the diagram. dtSingle - means you can only be in one state of the diagra
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtype.md "EMRALD_Model#/definitions/Diagram/properties/diagramType")
 
 #### diagramType Type
 
@@ -920,7 +920,7 @@ name of template used to make this diagram
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramtemplate.md "EMRALD_Model#/definitions/Diagram/properties/diagramTemplate")
 
 #### diagramTemplate Type
 
@@ -938,7 +938,7 @@ Name of grouping in the UI for this diagram
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-diagramlabel.md "EMRALD_Model#/definitions/Diagram/properties/diagramLabel")
 
 #### diagramLabel Type
 
@@ -956,7 +956,7 @@ Names of the states used in this diagram
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-states.md "EMRALD_Model#/definitions/Diagram/properties/states")
 
 #### states Type
 
@@ -974,7 +974,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Diagram/properties/changeLog")
 
 #### changeLog Type
 
@@ -992,7 +992,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-diagram-properties-required.md "EMRALD_Model#/definitions/Diagram/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-diagram-properties-required.md "EMRALD_Model#/definitions/Diagram/properties/required")
 
 #### required Type
 
@@ -1006,13 +1006,13 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/ExtSim"}
 ```
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                      |
-| :---------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id-3)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")                     |
-| [objType](#objtype-3)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")           |
-| [name](#name-3)               | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")                 |
-| [resourceName](#resourcename) | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName") |
-| [required](#required-1)       | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")         |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                     |
+| :---------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-3)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")                     |
+| [objType](#objtype-3)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")           |
+| [name](#name-3)               | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")                 |
+| [resourceName](#resourcename) | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName") |
+| [required](#required-1)       | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")         |
 
 ### id
 
@@ -1026,7 +1026,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")
 
 #### id Type
 
@@ -1044,7 +1044,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")
 
 #### objType Type
 
@@ -1070,7 +1070,7 @@ referenace name in the model for the external simulation
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")
 
 #### name Type
 
@@ -1088,7 +1088,7 @@ name of resource type to connect to in MsgServer, not unique if more than one si
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName")
 
 #### resourceName Type
 
@@ -1106,7 +1106,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")
 
 #### required Type
 
@@ -1120,21 +1120,21 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/State"}
 ```
 
-| Property                                            | Type          | Required | Nullable       | Defined by                                                                                                                                                          |
-| :-------------------------------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [id](#id-4)                                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")                                           |
-| [objType](#objtype-4)                               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-objtype.md "EMRALD_Model#/definitions/State/properties/objType")                                 |
-| [name](#name-4)                                     | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")                                       |
-| [desc](#desc-3)                                     | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")                                       |
-| [stateType](#statetype)                             | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")                             |
-| [diagramName](#diagramname)                         | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")                         |
-| [immediateActions](#immediateactions)               | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")               |
-| [events](#events)                                   | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")                                   |
-| [eventActions](#eventactions)                       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")                       |
-| [geometryInfo](#geometryinfo)                       | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometryInfo")                                        |
-| [changeLog](#changelog-3)                           | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")                                              |
-| [defaultSingleStateValue](#defaultsinglestatevalue) | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue") |
-| [required](#required-2)                             | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-required.md "EMRALD_Model#/definitions/State/properties/required")                               |
+| Property                                            | Type          | Required | Nullable       | Defined by                                                                                                                                                         |
+| :-------------------------------------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-4)                                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")                                           |
+| [objType](#objtype-4)                               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-objtype.md "EMRALD_Model#/definitions/State/properties/objType")                                 |
+| [name](#name-4)                                     | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")                                       |
+| [desc](#desc-3)                                     | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")                                       |
+| [stateType](#statetype)                             | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")                             |
+| [diagramName](#diagramname)                         | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")                         |
+| [immediateActions](#immediateactions)               | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")               |
+| [events](#events)                                   | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")                                   |
+| [eventActions](#eventactions)                       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")                       |
+| [geometryInfo](#geometryinfo)                       | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometryInfo")                                        |
+| [changeLog](#changelog-3)                           | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")                                              |
+| [defaultSingleStateValue](#defaultsinglestatevalue) | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue") |
+| [required](#required-2)                             | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-required.md "EMRALD_Model#/definitions/State/properties/required")                               |
 
 ### id
 
@@ -1148,7 +1148,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-id.md "EMRALD_Model#/definitions/State/properties/id")
 
 #### id Type
 
@@ -1166,7 +1166,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-objtype.md "EMRALD_Model#/definitions/State/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-objtype.md "EMRALD_Model#/definitions/State/properties/objType")
 
 #### objType Type
 
@@ -1192,7 +1192,7 @@ referenace name in the model for state
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-name.md "EMRALD_Model#/definitions/State/properties/name")
 
 #### name Type
 
@@ -1210,7 +1210,7 @@ User entered description of the state
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-desc.md "EMRALD_Model#/definitions/State/properties/desc")
 
 #### desc Type
 
@@ -1228,7 +1228,7 @@ Type of the state
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-statetype.md "EMRALD_Model#/definitions/State/properties/stateType")
 
 #### stateType Type
 
@@ -1257,7 +1257,7 @@ Diagram the state belongs to, A state can only be in one diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-diagramname.md "EMRALD_Model#/definitions/State/properties/diagramName")
 
 #### diagramName Type
 
@@ -1275,7 +1275,7 @@ Array of name references for the immediate actions to be run when entering the s
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-immediateactions.md "EMRALD_Model#/definitions/State/properties/immediateActions")
 
 #### immediateActions Type
 
@@ -1293,7 +1293,7 @@ Array of name references to events. These event will be monitored for when in th
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-events.md "EMRALD_Model#/definitions/State/properties/events")
 
 #### events Type
 
@@ -1311,7 +1311,7 @@ actions for the events in sibling "events" array. One to one relationship.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-eventactions.md "EMRALD_Model#/definitions/State/properties/eventActions")
 
 #### eventActions Type
 
@@ -1329,7 +1329,7 @@ position for the GUI
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometryInfo")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo.md "EMRALD_Model#/definitions/State/properties/geometryInfo")
 
 #### geometryInfo Type
 
@@ -1347,7 +1347,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/State/properties/changeLog")
 
 #### changeLog Type
 
@@ -1365,7 +1365,7 @@ For single state diagrams. Boolean value for the diagram when evaluated in a log
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-defaultsinglestatevalue.md "EMRALD_Model#/definitions/State/properties/defaultSingleStateValue")
 
 #### defaultSingleStateValue Type
 
@@ -1393,7 +1393,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-state-properties-required.md "EMRALD_Model#/definitions/State/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-state-properties-required.md "EMRALD_Model#/definitions/State/properties/required")
 
 #### required Type
 
@@ -1407,41 +1407,41 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/Action"}
 ```
 
-| Property                                              | Type          | Required | Nullable       | Defined by                                                                                                                                                              |
-| :---------------------------------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id-5)                                           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")                                             |
-| [objType](#objtype-5)                                 | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")                                   |
-| [name](#name-5)                                       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")                                         |
-| [desc](#desc-4)                                       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")                                         |
-| [actType](#acttype)                                   | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")                                   |
-| [mainItem](#mainitem)                                 | `boolean`     | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")                                 |
-| [mutExcl](#mutexcl)                                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")                                   |
-| [newStates](#newstates)                               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")                               |
-| [scriptCode](#scriptcode)                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")                             |
-| [variableName](#variablename)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")                         |
-| [codeVariables](#codevariables)                       | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")                       |
-| [useDistribution](#usedistribution)                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")                   |
-| [distType](#disttype)                                 | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")                                 |
-| [parameters](#parameters)                             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")                             |
-| [sim3DMessage](#sim3dmessage)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")                         |
-| [extSim](#extsim)                                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")                                     |
-| [sim3DVariable](#sim3dvariable)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")                       |
-| [openSimVarParams](#opensimvarparams)                 | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")                 |
-| [sim3DModelRef](#sim3dmodelref)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")                       |
-| [sim3DConfigData](#sim3dconfigdata)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")                   |
-| [simEndTime](#simendtime)                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")                             |
-| [makeInputFileCode](#makeinputfilecode)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")               |
-| [exePath](#exepath)                                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")                                   |
-| [ExeFromPreCode](#exefromprecode)                     | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")                     |
-| [useProjPathExeWorkingDir](#useprojpathexeworkingdir) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir") |
-| [processOutputFileCode](#processoutputfilecode)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")       |
-| [formData](#formdata)                                 | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-formdata.md "EMRALD_Model#/definitions/Action/properties/formData")                                 |
-| [template](#template)                                 | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")                                 |
-| [returnProcess](#returnprocess)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")                       |
-| [changeLog](#changelog-4)                             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")                                                 |
-| [raType](#ratype)                                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")                                     |
-| [updateVariables](#updatevariables)                   | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")                   |
-| [required](#required-3)                               | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")                                 |
+| Property                                              | Type          | Required | Nullable       | Defined by                                                                                                                                                             |
+| :---------------------------------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-5)                                           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")                                             |
+| [objType](#objtype-5)                                 | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")                                   |
+| [name](#name-5)                                       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")                                         |
+| [desc](#desc-4)                                       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")                                         |
+| [actType](#acttype)                                   | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")                                   |
+| [mainItem](#mainitem)                                 | `boolean`     | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")                                 |
+| [mutExcl](#mutexcl)                                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")                                   |
+| [newStates](#newstates)                               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")                               |
+| [scriptCode](#scriptcode)                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")                             |
+| [variableName](#variablename)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")                         |
+| [codeVariables](#codevariables)                       | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")                       |
+| [useDistribution](#usedistribution)                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")                   |
+| [distType](#disttype)                                 | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")                                 |
+| [parameters](#parameters)                             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")                             |
+| [sim3DMessage](#sim3dmessage)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")                         |
+| [extSim](#extsim)                                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")                                     |
+| [sim3DVariable](#sim3dvariable)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")                       |
+| [openSimVarParams](#opensimvarparams)                 | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")                 |
+| [sim3DModelRef](#sim3dmodelref)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")                       |
+| [sim3DConfigData](#sim3dconfigdata)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")                   |
+| [simEndTime](#simendtime)                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")                             |
+| [makeInputFileCode](#makeinputfilecode)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")               |
+| [exePath](#exepath)                                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")                                   |
+| [ExeFromPreCode](#exefromprecode)                     | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")                     |
+| [useProjPathExeWorkingDir](#useprojpathexeworkingdir) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir") |
+| [processOutputFileCode](#processoutputfilecode)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")       |
+| [formData](#formdata)                                 | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata.md "EMRALD_Model#/definitions/Action/properties/formData")                                               |
+| [template](#template)                                 | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")                                 |
+| [returnProcess](#returnprocess)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")                       |
+| [changeLog](#changelog-4)                             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")                                                 |
+| [raType](#ratype)                                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")                                     |
+| [updateVariables](#updatevariables)                   | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")                   |
+| [required](#required-3)                               | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")                                 |
 
 ### id
 
@@ -1455,7 +1455,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")
 
 #### id Type
 
@@ -1473,7 +1473,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")
 
 #### objType Type
 
@@ -1499,7 +1499,7 @@ referenace name in the model for the action
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")
 
 #### name Type
 
@@ -1517,7 +1517,7 @@ User entered description of the action
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")
 
 #### desc Type
 
@@ -1535,7 +1535,7 @@ The type of action
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")
 
 #### actType Type
 
@@ -1564,7 +1564,7 @@ Is this a global item to show up in the global list, If false it showes up in lo
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")
 
 #### mainItem Type
 
@@ -1582,7 +1582,7 @@ Optional. Only one action may be taken so the probability determines if this act
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")
 
 #### mutExcl Type
 
@@ -1600,7 +1600,7 @@ Optional. If this is a transition action then these are the states that it could
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")
 
 #### newStates Type
 
@@ -1618,7 +1618,7 @@ Optionsl. Script code to be executed if the action type has a script
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")
 
 #### scriptCode Type
 
@@ -1636,7 +1636,7 @@ Optional. For change var value actions, the result of the script is assigned to 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")
 
 #### variableName Type
 
@@ -1654,7 +1654,7 @@ Optional. If action has a script, these are the variable name references for var
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")
 
 #### codeVariables Type
 
@@ -1672,7 +1672,7 @@ Optional. For action type atCngVarVal. When true, the new value is sampled from 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")
 
 #### useDistribution Type
 
@@ -1690,7 +1690,7 @@ Optional. For event type of etDistribution this is the type of distribution the 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")
 
 #### distType Type
 
@@ -1724,7 +1724,7 @@ Optional. For action type atCngVarVal when useDistribution is true, this is the 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")
 
 #### parameters Type
 
@@ -1742,7 +1742,7 @@ Optional. For action type at3DSimMsg, this is the message to be sent to the coup
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")
 
 #### sim3DMessage Type
 
@@ -1760,7 +1760,7 @@ Optional. For action type at3DSimMsg, this is the name of the coupled external s
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")
 
 #### extSim Type
 
@@ -1778,7 +1778,7 @@ Optional. For action type at3DSimMsg and a sim3DMessage of atCompModify, this is
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")
 
 #### sim3DVariable Type
 
@@ -1796,7 +1796,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")
 
 #### openSimVarParams Type
 
@@ -1814,7 +1814,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")
 
 #### sim3DModelRef Type
 
@@ -1832,7 +1832,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")
 
 #### sim3DConfigData Type
 
@@ -1850,7 +1850,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")
 
 #### simEndTime Type
 
@@ -1868,7 +1868,7 @@ Optional. For action type atRunExtApp. It is the C# script to be executed and th
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")
 
 #### makeInputFileCode Type
 
@@ -1886,7 +1886,7 @@ Optional. For action type atRunExtApp. It is the path of the exe to be run. It c
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")
 
 #### exePath Type
 
@@ -1904,7 +1904,7 @@ Optional. For action type atRunExtApp. When true, the preprocessor code return s
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")
 
 #### ExeFromPreCode Type
 
@@ -1930,7 +1930,7 @@ Optional. For action type atRunExtApp. When true, the executable working directo
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir")
 
 #### useProjPathExeWorkingDir Type
 
@@ -1956,7 +1956,7 @@ Optional. For action type atRunExtApp. It is the C# script to be executed after 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")
 
 #### processOutputFileCode Type
 
@@ -1964,21 +1964,21 @@ Optional. For action type atRunExtApp. It is the C# script to be executed after 
 
 ### formData
 
-Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats.
+Form data used by the MAAP form
 
 `formData`
 
 * is optional
 
-* Type: `object` ([Details](emrald_jsonschemav3_4-definitions-action-properties-formdata.md))
+* Type: `object` ([MAAPFormData](emrald_jsonschemav3_4-definitions-maapformdata.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-formdata.md "EMRALD_Model#/definitions/Action/properties/formData")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata.md "EMRALD_Model#/definitions/Action/properties/formData")
 
 #### formData Type
 
-`object` ([Details](emrald_jsonschemav3_4-definitions-action-properties-formdata.md))
+`object` ([MAAPFormData](emrald_jsonschemav3_4-definitions-maapformdata.md))
 
 ### template
 
@@ -1992,7 +1992,7 @@ Optional. For action type atRunExtApp. It is used for custom app form.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")
 
 #### template Type
 
@@ -2010,7 +2010,7 @@ Optional. For action type atRunExtApp. It is flag to indicate the type of return
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")
 
 #### returnProcess Type
 
@@ -2028,7 +2028,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")
 
 #### changeLog Type
 
@@ -2046,7 +2046,7 @@ String for the run application action, only for UI used. Options depend on the c
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")
 
 #### raType Type
 
@@ -2064,7 +2064,7 @@ Used for custom form, variables used in the form.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")
 
 #### updateVariables Type
 
@@ -2082,7 +2082,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")
 
 #### required Type
 
@@ -2096,38 +2096,38 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/Event"}
 ```
 
-| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                |
-| :---------------------------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id-6)                               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")                                 |
-| [objType](#objtype-6)                     | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-objtype.md "EMRALD_Model#/definitions/Event/properties/objType")                       |
-| [name](#name-6)                           | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")                             |
-| [desc](#desc-5)                           | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")                             |
-| [mainItem](#mainitem-1)                   | `boolean`     | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")                     |
-| [evType](#evtype)                         | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")                         |
-| [allItems](#allitems)                     | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")                     |
-| [triggerStates](#triggerstates)           | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")           |
-| [varNames](#varnames)                     | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")                     |
-| [ifInState](#ifinstate)                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")                   |
-| [evalEvOnStateEntry](#evalevonstateentry) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-evalevonstateentry.md "EMRALD_Model#/definitions/Event/properties/evalEvOnStateEntry") |
-| [onSuccess](#onsuccess)                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")                   |
-| [triggerOnFalse](#triggeronfalse)         | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")         |
-| [logicTop](#logictop)                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")                     |
-| [lambda](#lambda)                         | Merged        | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")                         |
-| [lambdaTimeRate](#lambdatimerate)         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")         |
-| [useVariable](#usevariable)               | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")               |
-| [onVarChange](#onvarchange)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")               |
-| [time](#time)                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")                             |
-| [timeVariableUnit](#timevariableunit)     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit")     |
-| [fromSimStart](#fromsimstart)             | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")             |
-| [extEventType](#exteventtype)             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")             |
-| [variable](#variable)                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")                     |
-| [code](#code)                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")                             |
-| [distType](#disttype-1)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")                     |
-| [parameters](#parameters-1)               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")                 |
-| [persistent](#persistent)                 | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-persistent.md "EMRALD_Model#/definitions/Event/properties/persistent")                 |
-| [dfltTimeRate](#dflttimerate)             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")             |
-| [changeLog](#changelog-5)                 | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")                                    |
-| [required](#required-4)                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-required.md "EMRALD_Model#/definitions/Event/properties/required")                     |
+| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                               |
+| :---------------------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-6)                               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")                                 |
+| [objType](#objtype-6)                     | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-objtype.md "EMRALD_Model#/definitions/Event/properties/objType")                       |
+| [name](#name-6)                           | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")                             |
+| [desc](#desc-5)                           | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")                             |
+| [mainItem](#mainitem-1)                   | `boolean`     | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")                     |
+| [evType](#evtype)                         | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")                         |
+| [allItems](#allitems)                     | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")                     |
+| [triggerStates](#triggerstates)           | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")           |
+| [varNames](#varnames)                     | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")                     |
+| [ifInState](#ifinstate)                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")                   |
+| [evalEvOnStateEntry](#evalevonstateentry) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-evalevonstateentry.md "EMRALD_Model#/definitions/Event/properties/evalEvOnStateEntry") |
+| [onSuccess](#onsuccess)                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")                   |
+| [triggerOnFalse](#triggeronfalse)         | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")         |
+| [logicTop](#logictop)                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")                     |
+| [lambda](#lambda)                         | Merged        | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")                         |
+| [lambdaTimeRate](#lambdatimerate)         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")         |
+| [useVariable](#usevariable)               | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")               |
+| [onVarChange](#onvarchange)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")               |
+| [time](#time)                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")                             |
+| [timeVariableUnit](#timevariableunit)     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit")     |
+| [fromSimStart](#fromsimstart)             | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")             |
+| [extEventType](#exteventtype)             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")             |
+| [variable](#variable)                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")                     |
+| [code](#code)                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")                             |
+| [distType](#disttype-1)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")                     |
+| [parameters](#parameters-1)               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")                 |
+| [persistent](#persistent)                 | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-persistent.md "EMRALD_Model#/definitions/Event/properties/persistent")                 |
+| [dfltTimeRate](#dflttimerate)             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")             |
+| [changeLog](#changelog-5)                 | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")                                    |
+| [required](#required-4)                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-required.md "EMRALD_Model#/definitions/Event/properties/required")                     |
 
 ### id
 
@@ -2141,7 +2141,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-id.md "EMRALD_Model#/definitions/Event/properties/id")
 
 #### id Type
 
@@ -2159,7 +2159,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-objtype.md "EMRALD_Model#/definitions/Event/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-objtype.md "EMRALD_Model#/definitions/Event/properties/objType")
 
 #### objType Type
 
@@ -2185,7 +2185,7 @@ referenace name in the event in the model.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-name.md "EMRALD_Model#/definitions/Event/properties/name")
 
 #### name Type
 
@@ -2203,7 +2203,7 @@ User entered description of the event.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-desc.md "EMRALD_Model#/definitions/Event/properties/desc")
 
 #### desc Type
 
@@ -2221,7 +2221,7 @@ Is this a global item to show up in the global list, If false it showes up in lo
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-mainitem.md "EMRALD_Model#/definitions/Event/properties/mainItem")
 
 #### mainItem Type
 
@@ -2239,7 +2239,7 @@ Type of the event
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-evtype.md "EMRALD_Model#/definitions/Event/properties/evType")
 
 #### evType Type
 
@@ -2271,7 +2271,7 @@ Optional. For event type etStateCng. Flag to indicate if all the items in the tr
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-allitems.md "EMRALD_Model#/definitions/Event/properties/allItems")
 
 #### allItems Type
 
@@ -2289,7 +2289,7 @@ Optional. For event type etStateCng. List of state name references as part of th
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-triggerstates.md "EMRALD_Model#/definitions/Event/properties/triggerStates")
 
 #### triggerStates Type
 
@@ -2307,7 +2307,7 @@ Optional, Name references for all variables used in scripts if the event type us
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-varnames.md "EMRALD_Model#/definitions/Event/properties/varNames")
 
 #### varNames Type
 
@@ -2325,7 +2325,7 @@ Optional. For event type etStateCng, flag to indicate that event is triggired wh
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-ifinstate.md "EMRALD_Model#/definitions/Event/properties/ifInState")
 
 #### ifInState Type
 
@@ -2343,7 +2343,7 @@ Optional. For event type etStateCng, flag to indicate that the event should be e
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-evalevonstateentry.md "EMRALD_Model#/definitions/Event/properties/evalEvOnStateEntry")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-evalevonstateentry.md "EMRALD_Model#/definitions/Event/properties/evalEvOnStateEntry")
 
 #### evalEvOnStateEntry Type
 
@@ -2361,7 +2361,7 @@ Optional. For event type etStateCng, flag to indicate that event is triggering n
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-onsuccess.md "EMRALD_Model#/definitions/Event/properties/onSuccess")
 
 #### onSuccess Type
 
@@ -2379,7 +2379,7 @@ Optional. For event type etComponentLogic, flag to indicate that event is trigge
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-triggeronfalse.md "EMRALD_Model#/definitions/Event/properties/triggerOnFalse")
 
 #### triggerOnFalse Type
 
@@ -2397,7 +2397,7 @@ Optional. For event type etComponentLogic, this is the logic tree name to be eva
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-logictop.md "EMRALD_Model#/definitions/Event/properties/logicTop")
 
 #### logicTop Type
 
@@ -2415,7 +2415,7 @@ Optional. Parameter for a event with type of etFailRate. It is either a number o
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-lambda.md "EMRALD_Model#/definitions/Event/properties/lambda")
 
 #### lambda Type
 
@@ -2439,7 +2439,7 @@ Optional. arameter for a event with type of etFailRate. It is the lambda value t
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-lambdatimerate.md "EMRALD_Model#/definitions/Event/properties/lambdaTimeRate")
 
 #### lambdaTimeRate Type
 
@@ -2457,7 +2457,7 @@ Optional. Indicates that variables can be used for the fields
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-usevariable.md "EMRALD_Model#/definitions/Event/properties/useVariable")
 
 #### useVariable Type
 
@@ -2475,7 +2475,7 @@ Optional. When an event uses a variable and that variable changes, this tells th
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-onvarchange.md "EMRALD_Model#/definitions/Event/properties/onVarChange")
 
 #### onVarChange Type
 
@@ -2503,7 +2503,7 @@ Optional, For events of type etTimer. This is a time or variable that indicates 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-time.md "EMRALD_Model#/definitions/Event/properties/time")
 
 #### time Type
 
@@ -2521,7 +2521,7 @@ Optional, For events of type etTimer. This is a time unit if a variable is used 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-timevariableunit.md "EMRALD_Model#/definitions/Event/properties/timeVariableUnit")
 
 #### timeVariableUnit Type
 
@@ -2552,7 +2552,7 @@ Optional, For time based events, is the time from the beginning of the simulatio
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-fromsimstart.md "EMRALD_Model#/definitions/Event/properties/fromSimStart")
 
 #### fromSimStart Type
 
@@ -2570,7 +2570,7 @@ Optional. For events of type et3dSimEv. This the type of message being sent to t
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-exteventtype.md "EMRALD_Model#/definitions/Event/properties/extEventType")
 
 #### extEventType Type
 
@@ -2598,7 +2598,7 @@ Optional. For event type et3dSimEv and extEventType etCompEv. It is the referenc
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-variable.md "EMRALD_Model#/definitions/Event/properties/variable")
 
 #### variable Type
 
@@ -2616,7 +2616,7 @@ Optional. For event type et3dSimEv and extEventType etCompEv. It is the referenc
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-code.md "EMRALD_Model#/definitions/Event/properties/code")
 
 #### code Type
 
@@ -2634,7 +2634,7 @@ Optional. For event type of etDistribution this is the type of distribution the 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-disttype.md "EMRALD_Model#/definitions/Event/properties/distType")
 
 #### distType Type
 
@@ -2668,7 +2668,7 @@ Optional. For event type of etDistribution this is an array of properties for th
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-parameters.md "EMRALD_Model#/definitions/Event/properties/parameters")
 
 #### parameters Type
 
@@ -2686,7 +2686,7 @@ Optional. For event type of etFailRate, etDistribution, and etTimer. Sets the ev
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-persistent.md "EMRALD_Model#/definitions/Event/properties/persistent")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-persistent.md "EMRALD_Model#/definitions/Event/properties/persistent")
 
 #### persistent Type
 
@@ -2704,7 +2704,7 @@ Optional, For events of type etTimer. This is a time unit if a variable is used 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-dflttimerate.md "EMRALD_Model#/definitions/Event/properties/dfltTimeRate")
 
 #### dfltTimeRate Type
 
@@ -2735,7 +2735,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Event/properties/changeLog")
 
 #### changeLog Type
 
@@ -2753,7 +2753,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-event-properties-required.md "EMRALD_Model#/definitions/Event/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-event-properties-required.md "EMRALD_Model#/definitions/Event/properties/required")
 
 #### required Type
 
@@ -2767,18 +2767,18 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/LogicNode"}
 ```
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                            |
-| :---------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id-7)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-id.md "EMRALD_Model#/definitions/LogicNode/properties/id")                     |
-| [objType](#objtype-7)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-objtype.md "EMRALD_Model#/definitions/LogicNode/properties/objType")           |
-| [name](#name-7)               | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-name.md "EMRALD_Model#/definitions/LogicNode/properties/name")                 |
-| [desc](#desc-6)               | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-desc.md "EMRALD_Model#/definitions/LogicNode/properties/desc")                 |
-| [gateType](#gatetype)         | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatetype.md "EMRALD_Model#/definitions/LogicNode/properties/gateType")         |
-| [compChildren](#compchildren) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild.md "EMRALD_Model#/definitions/LogicNode/properties/compChildren")                         |
-| [gateChildren](#gatechildren) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatechildren.md "EMRALD_Model#/definitions/LogicNode/properties/gateChildren") |
-| [isRoot](#isroot)             | `boolean`     | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-isroot.md "EMRALD_Model#/definitions/LogicNode/properties/isRoot")             |
-| [changeLog](#changelog-6)     | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/LogicNode/properties/changeLog")                            |
-| [required](#required-5)       | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-required.md "EMRALD_Model#/definitions/LogicNode/properties/required")         |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                           |
+| :---------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-7)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-id.md "EMRALD_Model#/definitions/LogicNode/properties/id")                     |
+| [objType](#objtype-7)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-objtype.md "EMRALD_Model#/definitions/LogicNode/properties/objType")           |
+| [name](#name-7)               | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-name.md "EMRALD_Model#/definitions/LogicNode/properties/name")                 |
+| [desc](#desc-6)               | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-desc.md "EMRALD_Model#/definitions/LogicNode/properties/desc")                 |
+| [gateType](#gatetype)         | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatetype.md "EMRALD_Model#/definitions/LogicNode/properties/gateType")         |
+| [compChildren](#compchildren) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild.md "EMRALD_Model#/definitions/LogicNode/properties/compChildren")                         |
+| [gateChildren](#gatechildren) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatechildren.md "EMRALD_Model#/definitions/LogicNode/properties/gateChildren") |
+| [isRoot](#isroot)             | `boolean`     | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-isroot.md "EMRALD_Model#/definitions/LogicNode/properties/isRoot")             |
+| [changeLog](#changelog-6)     | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/LogicNode/properties/changeLog")                            |
+| [required](#required-5)       | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-required.md "EMRALD_Model#/definitions/LogicNode/properties/required")         |
 
 ### id
 
@@ -2792,7 +2792,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-id.md "EMRALD_Model#/definitions/LogicNode/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-id.md "EMRALD_Model#/definitions/LogicNode/properties/id")
 
 #### id Type
 
@@ -2810,7 +2810,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-objtype.md "EMRALD_Model#/definitions/LogicNode/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-objtype.md "EMRALD_Model#/definitions/LogicNode/properties/objType")
 
 #### objType Type
 
@@ -2836,7 +2836,7 @@ referenace name in the logic node
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-name.md "EMRALD_Model#/definitions/LogicNode/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-name.md "EMRALD_Model#/definitions/LogicNode/properties/name")
 
 #### name Type
 
@@ -2854,7 +2854,7 @@ User entered description of the logic node
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-desc.md "EMRALD_Model#/definitions/LogicNode/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-desc.md "EMRALD_Model#/definitions/LogicNode/properties/desc")
 
 #### desc Type
 
@@ -2872,7 +2872,7 @@ Gate type for the logic node
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatetype.md "EMRALD_Model#/definitions/LogicNode/properties/gateType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatetype.md "EMRALD_Model#/definitions/LogicNode/properties/gateType")
 
 #### gateType Type
 
@@ -2900,7 +2900,7 @@ Array of component diagram names and state values to use in evaluating if not us
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild.md "EMRALD_Model#/definitions/LogicNode/properties/compChildren")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild.md "EMRALD_Model#/definitions/LogicNode/properties/compChildren")
 
 #### compChildren Type
 
@@ -2918,7 +2918,7 @@ Array of logic node names that are children of this gate.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatechildren.md "EMRALD_Model#/definitions/LogicNode/properties/gateChildren")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-gatechildren.md "EMRALD_Model#/definitions/LogicNode/properties/gateChildren")
 
 #### gateChildren Type
 
@@ -2936,7 +2936,7 @@ Flag indicating that this is to be displayed as a tree top in the UI and can be 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-isroot.md "EMRALD_Model#/definitions/LogicNode/properties/isRoot")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-isroot.md "EMRALD_Model#/definitions/LogicNode/properties/isRoot")
 
 #### isRoot Type
 
@@ -2954,7 +2954,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/LogicNode/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/LogicNode/properties/changeLog")
 
 #### changeLog Type
 
@@ -2972,7 +2972,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-required.md "EMRALD_Model#/definitions/LogicNode/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-logicnode-properties-required.md "EMRALD_Model#/definitions/LogicNode/properties/required")
 
 #### required Type
 
@@ -2986,36 +2986,36 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/Variable"}
 ```
 
-| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                      |
-| :---------------------------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id-8)                               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")                                 |
-| [objType](#objtype-8)                     | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-objtype.md "EMRALD_Model#/definitions/Variable/properties/objType")                       |
-| [name](#name-8)                           | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")                             |
-| [desc](#desc-7)                           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")                             |
-| [varScope](#varscope)                     | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")                     |
-| [value](#value)                           | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")                           |
-| [docLink](#doclink)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")                       |
-| [docType](#doctype)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")                       |
-| [docPath](#docpath)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")                       |
-| [pathMustExist](#pathmustexist)           | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")           |
-| [type](#type)                             | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")                             |
-| [accrualStatesData](#accrualstatesdata)   | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData")   |
-| [regExpLine](#regexpline)                 | `integer`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")                 |
-| [begPosition](#begposition)               | `integer`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")               |
-| [numChars](#numchars)                     | `integer`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")                     |
-| [regExpGroup](#regexpgroup)               | `integer`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpgroup.md "EMRALD_Model#/definitions/Variable/properties/regExpGroup")               |
-| [resetOnRuns](#resetonruns)               | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")               |
-| [resourceName](#resourcename-1)           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")             |
-| [sim3DId](#sim3did)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")                       |
-| [extSim](#extsim-1)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-extsim.md "EMRALD_Model#/definitions/Variable/properties/extSim")                         |
-| [WatchEventCriteria](#watcheventcriteria) | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-watcheventcriteria.md "EMRALD_Model#/definitions/Variable/properties/WatchEventCriteria") |
-| [changeLog](#changelog-7)                 | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")                                       |
-| [cumulativeStats](#cumulativestats)       | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")       |
-| [monitorInSim](#monitorinsim)             | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")             |
-| [canMonitor](#canmonitor)                 | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")                 |
-| [inVariable](#invariable)                 | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-invariable.md "EMRALD_Model#/definitions/Variable/properties/inVariable")                 |
-| [outVariable](#outvariable)               | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-outvariable.md "EMRALD_Model#/definitions/Variable/properties/outVariable")               |
-| [required](#required-6)                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-required.md "EMRALD_Model#/definitions/Variable/properties/required")                     |
+| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                     |
+| :---------------------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id-8)                               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")                                 |
+| [objType](#objtype-8)                     | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-objtype.md "EMRALD_Model#/definitions/Variable/properties/objType")                       |
+| [name](#name-8)                           | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")                             |
+| [desc](#desc-7)                           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")                             |
+| [varScope](#varscope)                     | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")                     |
+| [value](#value)                           | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")                           |
+| [docLink](#doclink)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")                       |
+| [docType](#doctype)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")                       |
+| [docPath](#docpath)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")                       |
+| [pathMustExist](#pathmustexist)           | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")           |
+| [type](#type)                             | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")                             |
+| [accrualStatesData](#accrualstatesdata)   | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData")   |
+| [regExpLine](#regexpline)                 | `integer`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")                 |
+| [begPosition](#begposition)               | `integer`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")               |
+| [numChars](#numchars)                     | `integer`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")                     |
+| [regExpGroup](#regexpgroup)               | `integer`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpgroup.md "EMRALD_Model#/definitions/Variable/properties/regExpGroup")               |
+| [resetOnRuns](#resetonruns)               | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")               |
+| [resourceName](#resourcename-1)           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")             |
+| [sim3DId](#sim3did)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")                       |
+| [extSim](#extsim-1)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-extsim.md "EMRALD_Model#/definitions/Variable/properties/extSim")                         |
+| [WatchEventCriteria](#watcheventcriteria) | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-watcheventcriteria.md "EMRALD_Model#/definitions/Variable/properties/WatchEventCriteria") |
+| [changeLog](#changelog-7)                 | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")                                       |
+| [cumulativeStats](#cumulativestats)       | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")       |
+| [monitorInSim](#monitorinsim)             | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")             |
+| [canMonitor](#canmonitor)                 | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")                 |
+| [inVariable](#invariable)                 | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-invariable.md "EMRALD_Model#/definitions/Variable/properties/inVariable")                 |
+| [outVariable](#outvariable)               | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-outvariable.md "EMRALD_Model#/definitions/Variable/properties/outVariable")               |
+| [required](#required-6)                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-required.md "EMRALD_Model#/definitions/Variable/properties/required")                     |
 
 ### id
 
@@ -3029,7 +3029,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-id.md "EMRALD_Model#/definitions/Variable/properties/id")
 
 #### id Type
 
@@ -3047,7 +3047,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-objtype.md "EMRALD_Model#/definitions/Variable/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-objtype.md "EMRALD_Model#/definitions/Variable/properties/objType")
 
 #### objType Type
 
@@ -3073,7 +3073,7 @@ referenace name in the model for the variable
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-name.md "EMRALD_Model#/definitions/Variable/properties/name")
 
 #### name Type
 
@@ -3091,7 +3091,7 @@ User entered description of the variable
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-desc.md "EMRALD_Model#/definitions/Variable/properties/desc")
 
 #### desc Type
 
@@ -3109,7 +3109,7 @@ Context of use for the variable in the model.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-varscope.md "EMRALD_Model#/definitions/Variable/properties/varScope")
 
 #### varScope Type
 
@@ -3138,7 +3138,7 @@ The default value for the variable.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-value.md "EMRALD_Model#/definitions/Variable/properties/value")
 
 #### value Type
 
@@ -3164,7 +3164,7 @@ If the varScope is gtDocLink then this is the expression defining path in the do
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-doclink.md "EMRALD_Model#/definitions/Variable/properties/docLink")
 
 #### docLink Type
 
@@ -3182,7 +3182,7 @@ If the varScope is gtDocLink then this the type of document the variable can be 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-doctype.md "EMRALD_Model#/definitions/Variable/properties/docType")
 
 #### docType Type
 
@@ -3210,7 +3210,7 @@ If the varScope is gtDocLink then this is the path to the document the variable 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-docpath.md "EMRALD_Model#/definitions/Variable/properties/docPath")
 
 #### docPath Type
 
@@ -3228,7 +3228,7 @@ Flag, if true then the file in the docPath must exist when the simulation starts
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-pathmustexist.md "EMRALD_Model#/definitions/Variable/properties/pathMustExist")
 
 #### pathMustExist Type
 
@@ -3246,7 +3246,7 @@ This is the type of the variable, Bool, double, int, string
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-type.md "EMRALD_Model#/definitions/Variable/properties/type")
 
 #### type Type
 
@@ -3275,7 +3275,7 @@ Optional. If the variable varScope is gtAccrual, then these are the states used 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData")
 
 #### accrualStatesData Type
 
@@ -3293,7 +3293,7 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this is the r
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpline.md "EMRALD_Model#/definitions/Variable/properties/regExpLine")
 
 #### regExpLine Type
 
@@ -3311,7 +3311,7 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this the star
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-begposition.md "EMRALD_Model#/definitions/Variable/properties/begPosition")
 
 #### begPosition Type
 
@@ -3329,7 +3329,7 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, this how many
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-numchars.md "EMRALD_Model#/definitions/Variable/properties/numChars")
 
 #### numChars Type
 
@@ -3347,7 +3347,7 @@ Optional. For variable varScope of gtDocLink, docType dtTxtRegExp, if this is de
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpgroup.md "EMRALD_Model#/definitions/Variable/properties/regExpGroup")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-regexpgroup.md "EMRALD_Model#/definitions/Variable/properties/regExpGroup")
 
 #### regExpGroup Type
 
@@ -3365,7 +3365,7 @@ Optional, this specifies if the value of the variable is to be reset to the defa
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-resetonruns.md "EMRALD_Model#/definitions/Variable/properties/resetOnRuns")
 
 #### resetOnRuns Type
 
@@ -3383,7 +3383,7 @@ Optional. If the variable varScope is gt3DSim, this is the name reference to the
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-resourcename.md "EMRALD_Model#/definitions/Variable/properties/resourceName")
 
 #### resourceName Type
 
@@ -3401,7 +3401,7 @@ Optional. For variables of varScope gt3DSim, this is the external simulations na
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-sim3did.md "EMRALD_Model#/definitions/Variable/properties/sim3DId")
 
 #### sim3DId Type
 
@@ -3419,7 +3419,7 @@ Optional. For variables of varScope gt3DSim, this is the external simulation the
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-extsim.md "EMRALD_Model#/definitions/Variable/properties/extSim")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-extsim.md "EMRALD_Model#/definitions/Variable/properties/extSim")
 
 #### extSim Type
 
@@ -3427,7 +3427,7 @@ Optional. For variables of varScope gt3DSim, this is the external simulation the
 
 ### WatchEventCriteria
 
-Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g. '(valve\_12 > 5) & (valve\_12 < 10)') the external simulation must satisfy before reporting this variable. Sent in the initial coupling message. When omitted the variable is reported on every change.
+Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g. '(valve_12 > 5) & (valve_12 < 10)') the external simulation must satisfy before reporting this variable. Sent in the initial coupling message. When omitted the variable is reported on every change.
 
 `WatchEventCriteria`
 
@@ -3437,7 +3437,7 @@ Optional. For variables of varScope gt3DSim, an fParser boolean expression (e.g.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-watcheventcriteria.md "EMRALD_Model#/definitions/Variable/properties/WatchEventCriteria")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-watcheventcriteria.md "EMRALD_Model#/definitions/Variable/properties/WatchEventCriteria")
 
 #### WatchEventCriteria Type
 
@@ -3455,7 +3455,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Variable/properties/changeLog")
 
 #### changeLog Type
 
@@ -3473,7 +3473,7 @@ Flag to indicate the user want to do cumulative statistics in the results.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-cumulativestats.md "EMRALD_Model#/definitions/Variable/properties/cumulativeStats")
 
 #### cumulativeStats Type
 
@@ -3491,7 +3491,7 @@ Flag to have the monitor variable check box checked in the solver by default.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-monitorinsim.md "EMRALD_Model#/definitions/Variable/properties/monitorInSim")
 
 #### monitorInSim Type
 
@@ -3509,7 +3509,7 @@ Flag to indicate if the variable can be monitored in the solver. This removes it
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-canmonitor.md "EMRALD_Model#/definitions/Variable/properties/canMonitor")
 
 #### canMonitor Type
 
@@ -3527,7 +3527,7 @@ Optional. Flag marking this variable as a simulation input - its value is suppli
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-invariable.md "EMRALD_Model#/definitions/Variable/properties/inVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-invariable.md "EMRALD_Model#/definitions/Variable/properties/inVariable")
 
 #### inVariable Type
 
@@ -3545,7 +3545,7 @@ Optional. Flag marking this variable as a simulation output - its value is produ
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-outvariable.md "EMRALD_Model#/definitions/Variable/properties/outVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-outvariable.md "EMRALD_Model#/definitions/Variable/properties/outVariable")
 
 #### outVariable Type
 
@@ -3563,7 +3563,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-required.md "EMRALD_Model#/definitions/Variable/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-required.md "EMRALD_Model#/definitions/Variable/properties/required")
 
 #### required Type
 
@@ -3577,12 +3577,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/NewState"}
 ```
 
-| Property              | Type     | Required | Nullable       | Defined by                                                                                                                                  |
-| :-------------------- | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| [toState](#tostate)   | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-tostate.md "EMRALD_Model#/definitions/NewState/properties/toState")   |
-| [prob](#prob)         | `number` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-prob.md "EMRALD_Model#/definitions/NewState/properties/prob")         |
-| [failDesc](#faildesc) | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-faildesc.md "EMRALD_Model#/definitions/NewState/properties/failDesc") |
-| [varProb](#varprob)   | `string` | Optional | can be null    | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-varprob.md "EMRALD_Model#/definitions/NewState/properties/varProb")   |
+| Property              | Type     | Required | Nullable       | Defined by                                                                                                                                 |
+| :-------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| [toState](#tostate)   | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-tostate.md "EMRALD_Model#/definitions/NewState/properties/toState")   |
+| [prob](#prob)         | `number` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-prob.md "EMRALD_Model#/definitions/NewState/properties/prob")         |
+| [failDesc](#faildesc) | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-faildesc.md "EMRALD_Model#/definitions/NewState/properties/failDesc") |
+| [varProb](#varprob)   | `string` | Optional | can be null    | [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-varprob.md "EMRALD_Model#/definitions/NewState/properties/varProb")   |
 
 ### toState
 
@@ -3596,7 +3596,7 @@ reference name of the state to transtion to.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-tostate.md "EMRALD_Model#/definitions/NewState/properties/toState")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-tostate.md "EMRALD_Model#/definitions/NewState/properties/toState")
 
 #### toState Type
 
@@ -3614,7 +3614,7 @@ probability that this state will be transtioned to.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-prob.md "EMRALD_Model#/definitions/NewState/properties/prob")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-prob.md "EMRALD_Model#/definitions/NewState/properties/prob")
 
 #### prob Type
 
@@ -3632,7 +3632,7 @@ The description from the user for output if tthis transition takes place.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-faildesc.md "EMRALD_Model#/definitions/NewState/properties/failDesc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-faildesc.md "EMRALD_Model#/definitions/NewState/properties/failDesc")
 
 #### failDesc Type
 
@@ -3650,7 +3650,7 @@ Optional, if used  then the a variable is used for the probability. This is the 
 
 * can be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-newstate-properties-varprob.md "EMRALD_Model#/definitions/NewState/properties/varProb")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-newstate-properties-varprob.md "EMRALD_Model#/definitions/NewState/properties/varProb")
 
 #### varProb Type
 
@@ -3675,12 +3675,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/GeometryInfo"}
 ```
 
-| Property          | Type     | Required | Nullable       | Defined by                                                                                                                                      |
-| :---------------- | :------- | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| [x](#x)           | `number` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")           |
-| [y](#y)           | `number` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")           |
-| [width](#width)   | `number` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")   |
-| [height](#height) | `number` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height") |
+| Property          | Type     | Required | Nullable       | Defined by                                                                                                                                     |
+| :---------------- | :------- | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| [x](#x)           | `number` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")           |
+| [y](#y)           | `number` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")           |
+| [width](#width)   | `number` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")   |
+| [height](#height) | `number` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height") |
 
 ### x
 
@@ -3694,7 +3694,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-x.md "EMRALD_Model#/definitions/GeometryInfo/properties/x")
 
 #### x Type
 
@@ -3712,7 +3712,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-y.md "EMRALD_Model#/definitions/GeometryInfo/properties/y")
 
 #### y Type
 
@@ -3730,7 +3730,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-width.md "EMRALD_Model#/definitions/GeometryInfo/properties/width")
 
 #### width Type
 
@@ -3748,7 +3748,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-geometryinfo-properties-height.md "EMRALD_Model#/definitions/GeometryInfo/properties/height")
 
 #### height Type
 
@@ -3773,10 +3773,10 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/Group"}
 ```
 
-| Property              | Type     | Required | Nullable       | Defined by                                                                                                                            |
-| :-------------------- | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
-| [name](#name-9)       | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group-properties-name.md "EMRALD_Model#/definitions/Group/properties/name")         |
-| [subgroup](#subgroup) | `array`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group-properties-subgroup.md "EMRALD_Model#/definitions/Group/properties/subgroup") |
+| Property              | Type     | Required | Nullable       | Defined by                                                                                                                           |
+| :-------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| [name](#name-9)       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-group-properties-name.md "EMRALD_Model#/definitions/Group/properties/name")         |
+| [subgroup](#subgroup) | `array`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-group-properties-subgroup.md "EMRALD_Model#/definitions/Group/properties/subgroup") |
 
 ### name
 
@@ -3790,7 +3790,7 @@ Name of the group
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group-properties-name.md "EMRALD_Model#/definitions/Group/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-group-properties-name.md "EMRALD_Model#/definitions/Group/properties/name")
 
 #### name Type
 
@@ -3808,7 +3808,7 @@ Sub group tree path
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group-properties-subgroup.md "EMRALD_Model#/definitions/Group/properties/subgroup")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-group-properties-subgroup.md "EMRALD_Model#/definitions/Group/properties/subgroup")
 
 #### subgroup Type
 
@@ -3822,10 +3822,10 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MultiThreadInfo"}
 ```
 
-| Property                        | Type     | Required | Nullable       | Defined by                                                                                                                                                          |
-| :------------------------------ | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [ToCopyForRefs](#tocopyforrefs) | `array`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs") |
-| [AssignedTime](#assignedtime)   | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")   |
+| Property                        | Type     | Required | Nullable       | Defined by                                                                                                                                                         |
+| :------------------------------ | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ToCopyForRefs](#tocopyforrefs) | `array`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs") |
+| [AssignedTime](#assignedtime)   | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")   |
 
 ### ToCopyForRefs
 
@@ -3839,7 +3839,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs")
 
 #### ToCopyForRefs Type
 
@@ -3857,7 +3857,7 @@ ISO 8601 date time when the multi-thread copy references were assigned.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")
 
 #### AssignedTime Type
 
@@ -3871,14 +3871,14 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/ToCopyForRef"}
 ```
 
-| Property                  | Type     | Required | Nullable       | Defined by                                                                                                                                              |
-| :------------------------ | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [ItemName](#itemname)     | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")     |
-| [ItemType](#itemtype)     | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")     |
-| [RefPath](#refpath)       | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")       |
-| [ToCopy](#tocopy)         | `array`  | Optional | can be null    | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")         |
-| [RelPath](#relpath)       | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")       |
-| [AdjRelRoot](#adjrelroot) | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot") |
+| Property                  | Type     | Required | Nullable       | Defined by                                                                                                                                             |
+| :------------------------ | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ItemName](#itemname)     | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")     |
+| [ItemType](#itemtype)     | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")     |
+| [RefPath](#refpath)       | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")       |
+| [ToCopy](#tocopy)         | `array`  | Optional | can be null    | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")         |
+| [RelPath](#relpath)       | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")       |
+| [AdjRelRoot](#adjrelroot) | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot") |
 
 ### ItemName
 
@@ -3892,7 +3892,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")
 
 #### ItemName Type
 
@@ -3910,7 +3910,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")
 
 #### ItemType Type
 
@@ -3944,7 +3944,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")
 
 #### RefPath Type
 
@@ -3962,7 +3962,7 @@ Reference this group by using
 
 * can be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")
 
 #### ToCopy Type
 
@@ -3980,7 +3980,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")
 
 #### RelPath Type
 
@@ -3998,7 +3998,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot")
 
 #### AdjRelRoot Type
 
@@ -4067,13 +4067,13 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/EventDistributionParameter"}
 ```
 
-| Property                      | Type      | Required | Nullable       | Defined by                                                                                                                                                                            |
-| :---------------------------- | :-------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [name](#name-10)              | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")               |
-| [value](#value-1)             | Merged    | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")             |
-| [timeRate](#timerate)         | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")       |
-| [useVariable](#usevariable-1) | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable") |
-| [variable](#variable-1)       | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")       |
+| Property                      | Type      | Required | Nullable       | Defined by                                                                                                                                                                           |
+| :---------------------------- | :-------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [name](#name-10)              | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")               |
+| [value](#value-1)             | Merged    | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")             |
+| [timeRate](#timerate)         | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")       |
+| [useVariable](#usevariable-1) | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable") |
+| [variable](#variable-1)       | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")       |
 
 ### name
 
@@ -4087,7 +4087,7 @@ For event type of etDistribution this is the name of the distribution parameter.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")
 
 #### name Type
 
@@ -4122,7 +4122,7 @@ Optional. The value of the parameter if the useVariable flag is false. Can be a 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")
 
 #### value Type
 
@@ -4146,7 +4146,7 @@ Optional, For events of type etTimer. This is a time unit if a variable is used 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")
 
 #### timeRate Type
 
@@ -4177,7 +4177,7 @@ Flag to use the variable string vs the value item for the property
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable")
 
 #### useVariable Type
 
@@ -4195,7 +4195,7 @@ Optional. The reference name of the variable to use as the value of the paramete
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")
 
 #### variable Type
 
@@ -4341,10 +4341,10 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/VersionHistory"}
 ```
 
-| Property                    | Type     | Required | Nullable       | Defined by                                                                                                                                                    |
-| :-------------------------- | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [description](#description) | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-description.md "EMRALD_Model#/definitions/VersionHistory/properties/description") |
-| [version](#version-2)       | `number` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-version.md "EMRALD_Model#/definitions/VersionHistory/properties/version")         |
+| Property                    | Type     | Required | Nullable       | Defined by                                                                                                                                                   |
+| :-------------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [description](#description) | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-description.md "EMRALD_Model#/definitions/VersionHistory/properties/description") |
+| [version](#version-2)       | `number` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-version.md "EMRALD_Model#/definitions/VersionHistory/properties/version")         |
 
 ### description
 
@@ -4358,7 +4358,7 @@ A description of the changes made to the model in this version
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-description.md "EMRALD_Model#/definitions/VersionHistory/properties/description")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-description.md "EMRALD_Model#/definitions/VersionHistory/properties/description")
 
 #### description Type
 
@@ -4376,7 +4376,7 @@ The version number
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-version.md "EMRALD_Model#/definitions/VersionHistory/properties/version")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-versionhistory-properties-version.md "EMRALD_Model#/definitions/VersionHistory/properties/version")
 
 #### version Type
 
@@ -4401,21 +4401,21 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPFormData"}
 ```
 
-| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                              |
-| :---------------------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [exePath](#exepath-1)                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")                       |
-| [sourceElements](#sourceelements)         | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")         |
-| [parameters](#parameters-2)               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")                 |
-| [initiators](#initiators)                 | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")                 |
-| [inputBlocks](#inputblocks)               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")               |
-| [fileRefs](#filerefs)                     | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")                     |
-| [inputPath](#inputpath)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")                   |
-| [parameterPath](#parameterpath)           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")           |
-| [possibleInitiators](#possibleinitiators) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators") |
-| [docLinkVariable](#doclinkvariable)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")       |
-| [output](#output)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")                         |
-| [caType](#catype)                         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")                 |
-| [needsUpgrade](#needsupgrade)             | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")             |
+| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                             |
+| :---------------------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [exePath](#exepath-1)                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")                       |
+| [sourceElements](#sourceelements)         | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")         |
+| [parameters](#parameters-2)               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")                 |
+| [initiators](#initiators)                 | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")                 |
+| [inputBlocks](#inputblocks)               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")               |
+| [fileRefs](#filerefs)                     | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")                     |
+| [inputPath](#inputpath)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")                   |
+| [parameterPath](#parameterpath)           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")           |
+| [possibleInitiators](#possibleinitiators) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators") |
+| [docLinkVariable](#doclinkvariable)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")       |
+| [output](#output)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")                         |
+| [caType](#catype)                         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")                 |
+| [needsUpgrade](#needsupgrade)             | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")             |
 
 ### exePath
 
@@ -4429,7 +4429,7 @@ The path to the MAAP executable on the user's machine
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")
 
 #### exePath Type
 
@@ -4447,7 +4447,7 @@ The contents of original .inp file parsed into JSON
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")
 
 #### sourceElements Type
 
@@ -4465,7 +4465,7 @@ Source elements from the .inp file identified as parameters
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")
 
 #### parameters Type
 
@@ -4479,15 +4479,15 @@ Source elements from the .inp file identified as initiators
 
 * is optional
 
-* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators-items.md))
+* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")
 
 #### initiators Type
 
-an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators-items.md))
+an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 ### inputBlocks
 
@@ -4501,7 +4501,7 @@ Source elements from the .inp file identified as input blocks (if blocks, when b
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")
 
 #### inputBlocks Type
 
@@ -4519,7 +4519,7 @@ The paths to other files referenced by the .inp and .par files
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")
 
 #### fileRefs Type
 
@@ -4537,7 +4537,7 @@ The full path to the .inp file on the user's machine
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")
 
 #### inputPath Type
 
@@ -4555,7 +4555,7 @@ The full path to the .par file on the user's machine
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")
 
 #### parameterPath Type
 
@@ -4573,7 +4573,7 @@ A list of possible initiators extracted from the .par file
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators")
 
 #### possibleInitiators Type
 
@@ -4591,7 +4591,7 @@ The doc link variable used to store the results
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")
 
 #### docLinkVariable Type
 
@@ -4609,7 +4609,7 @@ The MAAP output variable to store in the doc link variable
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")
 
 #### output Type
 
@@ -4627,7 +4627,7 @@ The MAAP output variable to store in the doc link variable
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")
 
 #### caType Type
 
@@ -4653,7 +4653,7 @@ unknown ([CustomFormType](emrald_jsonschemav3_4-definitions-maapformdata-propert
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")
 
 #### needsUpgrade Type
 
@@ -4667,18 +4667,18 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPParameter"}
 ```
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                  |
-| :---------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [flag](#flag)                 | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")                          |
-| [index](#index)               | `number`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")             |
-| [type](#type-1)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")               |
-| [value](#value-2)             | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")             |
-| [comments](#comments)         | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")                        |
-| [name](#name-11)              | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")               |
-| [useVariable](#usevariable-2) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable") |
-| [unit](#unit)                 | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")               |
-| [variable](#variable-2)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")       |
-| [desc](#desc-8)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")               |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
+| :---------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [flag](#flag)                 | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")                          |
+| [index](#index)               | `number`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")             |
+| [type](#type-1)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")               |
+| [value](#value-2)             | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")             |
+| [comments](#comments)         | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")                        |
+| [name](#name-11)              | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")               |
+| [useVariable](#usevariable-2) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable") |
+| [unit](#unit)                 | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")               |
+| [variable](#variable-2)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")       |
+| [desc](#desc-8)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")               |
 
 ### flag
 
@@ -4692,7 +4692,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")
 
 #### flag Type
 
@@ -4710,7 +4710,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")
 
 #### index Type
 
@@ -4728,7 +4728,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")
 
 #### type Type
 
@@ -4754,7 +4754,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")
 
 #### value Type
 
@@ -4798,7 +4798,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")
 
 #### comments Type
 
@@ -4816,7 +4816,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")
 
 #### name Type
 
@@ -4834,7 +4834,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable")
 
 #### useVariable Type
 
@@ -4852,7 +4852,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")
 
 #### unit Type
 
@@ -4870,7 +4870,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")
 
 #### variable Type
 
@@ -4888,7 +4888,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")
 
 #### desc Type
 
@@ -4902,13 +4902,13 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPConditionalBlockStatement"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                                              |
-| :---------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [blockType](#blocktype) | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType") |
-| [test](#test)           | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")           |
-| [type](#type-2)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")           |
-| [value](#value-3)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")         |
-| [comments](#comments-1) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")                                    |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                                             |
+| :---------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [blockType](#blocktype) | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType") |
+| [test](#test)           | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")           |
+| [type](#type-2)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")           |
+| [value](#value-3)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")         |
+| [comments](#comments-1) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")                                    |
 
 ### blockType
 
@@ -4922,7 +4922,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType")
 
 #### blockType Type
 
@@ -4949,7 +4949,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")
 
 #### test Type
 
@@ -4991,7 +4991,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")
 
 #### type Type
 
@@ -5017,7 +5017,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")
 
 #### value Type
 
@@ -5035,7 +5035,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapcondit
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")
 
 #### comments Type
 
@@ -5060,13 +5060,13 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPIsExpression"}
 ```
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                        |
-| :---------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [target](#target)             | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/target")                                 |
-| [type](#type-3)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-type.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/type")               |
-| [value](#value-4)             | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-value.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/value")             |
-| [useVariable](#usevariable-3) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/useVariable") |
-| [comments](#comments-2)       | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/comments")                           |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                       |
+| :---------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [target](#target)             | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/target")                                 |
+| [type](#type-3)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-type.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/type")               |
+| [value](#value-4)             | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-value.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/value")             |
+| [useVariable](#usevariable-3) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/useVariable") |
+| [comments](#comments-2)       | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/comments")                           |
 
 ### target
 
@@ -5080,7 +5080,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/target")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/target")
 
 #### target Type
 
@@ -5118,7 +5118,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-type.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-type.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/type")
 
 #### type Type
 
@@ -5144,7 +5144,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-value.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-value.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/value")
 
 #### value Type
 
@@ -5186,7 +5186,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapisexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/useVariable")
 
 #### useVariable Type
 
@@ -5204,7 +5204,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIsExpression/properties/comments")
 
 #### comments Type
 
@@ -5229,12 +5229,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPCallExpression"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                        |
-| :---------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [arguments](#arguments) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-arguments.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/arguments") |
-| [type](#type-4)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-type.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/type")           |
-| [value](#value-5)       | `object`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/value")                              |
-| [comments](#comments-3) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/comments")                         |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                       |
+| :---------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [arguments](#arguments) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-arguments.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/arguments") |
+| [type](#type-4)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-type.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/type")           |
+| [value](#value-5)       | `object`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/value")                              |
+| [comments](#comments-3) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/comments")                         |
 
 ### arguments
 
@@ -5248,7 +5248,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-arguments.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/arguments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-arguments.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/arguments")
 
 #### arguments Type
 
@@ -5266,7 +5266,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapexpres
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-type.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcallexpression-properties-type.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/type")
 
 #### type Type
 
@@ -5292,7 +5292,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/value")
 
 #### value Type
 
@@ -5310,7 +5310,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPCallExpression/properties/comments")
 
 #### comments Type
 
@@ -5324,12 +5324,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPIdentifier"}
 ```
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                    |
-| :---------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [type](#type-5)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-type.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/type")               |
-| [value](#value-6)             | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-value.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/value")             |
-| [useVariable](#usevariable-4) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/useVariable") |
-| [comments](#comments-4)       | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/comments")                         |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                   |
+| :---------------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-5)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-type.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/type")               |
+| [value](#value-6)             | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-value.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/value")             |
+| [useVariable](#usevariable-4) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/useVariable") |
+| [comments](#comments-4)       | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/comments")                         |
 
 ### type
 
@@ -5343,7 +5343,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-type.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-type.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/type")
 
 #### type Type
 
@@ -5369,7 +5369,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-value.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-value.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/value")
 
 #### value Type
 
@@ -5387,7 +5387,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier-properties-usevariable.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/useVariable")
 
 #### useVariable Type
 
@@ -5405,7 +5405,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPIdentifier/properties/comments")
 
 #### comments Type
 
@@ -5430,12 +5430,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPExpressionBlock"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                  |
-| :---------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-6)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-type.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/type")   |
-| [value](#value-7)       | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-value.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/value") |
-| [units](#units)         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-units.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/units") |
-| [comments](#comments-5) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/comments")                  |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
+| :---------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-6)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-type.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/type")   |
+| [value](#value-7)       | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-value.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/value") |
+| [units](#units)         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-units.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/units") |
+| [comments](#comments-5) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/comments")                  |
 
 ### type
 
@@ -5449,7 +5449,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-type.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-type.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/type")
 
 #### type Type
 
@@ -5475,7 +5475,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-value.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-value.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/value")
 
 #### value Type
 
@@ -5517,7 +5517,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-units.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/units")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressionblock-properties-units.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/units")
 
 #### units Type
 
@@ -5535,7 +5535,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPExpressionBlock/properties/comments")
 
 #### comments Type
 
@@ -5549,13 +5549,13 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPPureExpression"}
 ```
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                            |
-| :---------------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-7)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")               |
-| [left](#left)                 | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")                               |
-| [op](#op)                     | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")                   |
-| [right](#right)               | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")             |
-| [useVariable](#usevariable-5) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable") |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                                           |
+| :---------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-7)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")               |
+| [left](#left)                 | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")                               |
+| [op](#op)                     | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")                   |
+| [right](#right)               | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")             |
+| [useVariable](#usevariable-5) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable") |
 
 ### type
 
@@ -5569,7 +5569,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")
 
 #### type Type
 
@@ -5595,7 +5595,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")
 
 #### left Type
 
@@ -5637,7 +5637,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")
 
 #### op Type
 
@@ -5673,7 +5673,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")
 
 #### right Type
 
@@ -5711,7 +5711,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable")
 
 #### useVariable Type
 
@@ -5736,11 +5736,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPParameterName"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                              |
-| :---------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [type](#type-8)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-type.md "EMRALD_Model#/definitions/MAAPParameterName/properties/type")   |
-| [value](#value-8)       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-value.md "EMRALD_Model#/definitions/MAAPParameterName/properties/value") |
-| [comments](#comments-6) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameterName/properties/comments")                |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                             |
+| :---------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-8)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-type.md "EMRALD_Model#/definitions/MAAPParameterName/properties/type")   |
+| [value](#value-8)       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-value.md "EMRALD_Model#/definitions/MAAPParameterName/properties/value") |
+| [comments](#comments-6) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameterName/properties/comments")                |
 
 ### type
 
@@ -5754,7 +5754,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-type.md "EMRALD_Model#/definitions/MAAPParameterName/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-type.md "EMRALD_Model#/definitions/MAAPParameterName/properties/type")
 
 #### type Type
 
@@ -5780,7 +5780,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-value.md "EMRALD_Model#/definitions/MAAPParameterName/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparametername-properties-value.md "EMRALD_Model#/definitions/MAAPParameterName/properties/value")
 
 #### value Type
 
@@ -5798,7 +5798,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameterName/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameterName/properties/comments")
 
 #### comments Type
 
@@ -5823,11 +5823,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPBooleanLiteral"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                |
-| :---------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-9)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-type.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/type")   |
-| [value](#value-9)       | `boolean`     | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-value.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/value") |
-| [comments](#comments-7) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/comments")                 |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                               |
+| :---------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-9)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-type.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/type")   |
+| [value](#value-9)       | `boolean`     | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-value.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/value") |
+| [comments](#comments-7) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/comments")                 |
 
 ### type
 
@@ -5841,7 +5841,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-type.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-type.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/type")
 
 #### type Type
 
@@ -5867,7 +5867,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-value.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral-properties-value.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/value")
 
 #### value Type
 
@@ -5885,7 +5885,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBooleanLiteral/properties/comments")
 
 #### comments Type
 
@@ -5899,12 +5899,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPNumericLiteral"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                |
-| :---------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-10)        | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-type.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/type")   |
-| [units](#units-1)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-units.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/units") |
-| [value](#value-10)      | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-value.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/value") |
-| [comments](#comments-8) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/comments")                 |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                               |
+| :---------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-10)        | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-type.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/type")   |
+| [units](#units-1)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-units.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/units") |
+| [value](#value-10)      | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-value.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/value") |
+| [comments](#comments-8) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/comments")                 |
 
 ### type
 
@@ -5918,7 +5918,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-type.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-type.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/type")
 
 #### type Type
 
@@ -5944,7 +5944,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-units.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/units")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-units.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/units")
 
 #### units Type
 
@@ -5962,7 +5962,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-value.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapnumericliteral-properties-value.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/value")
 
 #### value Type
 
@@ -5980,7 +5980,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPNumericLiteral/properties/comments")
 
 #### comments Type
 
@@ -5994,11 +5994,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPTimerLiteral"}
 ```
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                            |
-| :---------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-11)        | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")   |
-| [value](#value-11)      | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value") |
-| [comments](#comments-9) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")               |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                           |
+| :---------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-11)        | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")   |
+| [value](#value-11)      | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value") |
+| [comments](#comments-9) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")               |
 
 ### type
 
@@ -6012,7 +6012,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")
 
 #### type Type
 
@@ -6038,7 +6038,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value")
 
 #### value Type
 
@@ -6056,7 +6056,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")
 
 #### comments Type
 
@@ -6081,11 +6081,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPSensitivityStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                            |
-| :----------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-12)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-type.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/type")   |
-| [value](#value-12)       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-value.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/value") |
-| [comments](#comments-10) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/comments")                       |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                           |
+| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-12)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-type.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/type")   |
+| [value](#value-12)       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-value.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/value") |
+| [comments](#comments-10) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/comments")                       |
 
 ### type
 
@@ -6099,7 +6099,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-type.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-type.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/type")
 
 #### type Type
 
@@ -6125,7 +6125,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-value.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapsensitivitystatement-properties-value.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/value")
 
 #### value Type
 
@@ -6152,7 +6152,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPSensitivityStatement/properties/comments")
 
 #### comments Type
 
@@ -6166,11 +6166,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPTitleStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                |
-| :----------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-13)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-type.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/type")   |
-| [value](#value-13)       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-value.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/value") |
-| [comments](#comments-11) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/comments")                 |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                               |
+| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-13)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-type.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/type")   |
+| [value](#value-13)       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-value.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/value") |
+| [comments](#comments-11) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/comments")                 |
 
 ### type
 
@@ -6184,7 +6184,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-type.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-type.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/type")
 
 #### type Type
 
@@ -6210,7 +6210,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-value.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptitlestatement-properties-value.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/value")
 
 #### value Type
 
@@ -6228,7 +6228,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTitleStatement/properties/comments")
 
 #### comments Type
 
@@ -6242,12 +6242,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPFileStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                    |
-| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [fileType](#filetype)    | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-filetype.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/fileType") |
-| [type](#type-14)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-type.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/type")         |
-| [value](#value-14)       | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-value.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/value")       |
-| [comments](#comments-12) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/comments")                      |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                   |
+| :----------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [fileType](#filetype)    | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-filetype.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/fileType") |
+| [type](#type-14)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-type.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/type")         |
+| [value](#value-14)       | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-value.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/value")       |
+| [comments](#comments-12) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/comments")                      |
 
 ### fileType
 
@@ -6261,7 +6261,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-filetype.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/fileType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-filetype.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/fileType")
 
 #### fileType Type
 
@@ -6289,7 +6289,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-type.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-type.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/type")
 
 #### type Type
 
@@ -6315,7 +6315,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-value.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfilestatement-properties-value.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/value")
 
 #### value Type
 
@@ -6333,7 +6333,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFileStatement/properties/comments")
 
 #### comments Type
 
@@ -6347,12 +6347,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPBlockStatement"}
 ```
 
-| Property                  | Type          | Required | Nullable       | Defined by                                                                                                                                                        |
-| :------------------------ | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [blockType](#blocktype-1) | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/blockType") |
-| [type](#type-15)          | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/type")           |
-| [value](#value-15)        | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/value")         |
-| [comments](#comments-13)  | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/comments")                         |
+| Property                  | Type          | Required | Nullable       | Defined by                                                                                                                                                       |
+| :------------------------ | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [blockType](#blocktype-1) | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/blockType") |
+| [type](#type-15)          | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/type")           |
+| [value](#value-15)        | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/value")         |
+| [comments](#comments-13)  | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/comments")                         |
 
 ### blockType
 
@@ -6366,7 +6366,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/blockType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/blockType")
 
 #### blockType Type
 
@@ -6393,7 +6393,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/type")
 
 #### type Type
 
@@ -6419,7 +6419,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/value")
 
 #### value Type
 
@@ -6437,7 +6437,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapblocks
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPBlockStatement/properties/comments")
 
 #### comments Type
 
@@ -6462,11 +6462,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPAliasStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                |
-| :----------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type-16)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-type.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/type")   |
-| [value](#value-16)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-value.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/value") |
-| [comments](#comments-14) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/comments")                 |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                               |
+| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-16)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-type.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/type")   |
+| [value](#value-16)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-value.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/value") |
+| [comments](#comments-14) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/comments")                 |
 
 ### type
 
@@ -6480,7 +6480,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-type.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-type.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/type")
 
 #### type Type
 
@@ -6502,15 +6502,15 @@ unknown
 
 * is required
 
-* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-value-items.md))
+* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-value.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-value.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/value")
 
 #### value Type
 
-an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapaliasstatement-properties-value-items.md))
+an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 ### comments
 
@@ -6524,7 +6524,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapaliass
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAliasStatement/properties/comments")
 
 #### comments Type
 
@@ -6538,12 +6538,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPAsExpression"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                          |
-| :----------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [target](#target-1)      | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/target")                   |
-| [type](#type-17)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapasexpression-properties-type.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/type") |
-| [value](#value-17)       | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/value")                    |
-| [comments](#comments-15) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/comments")             |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                         |
+| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [target](#target-1)      | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/target")                   |
+| [type](#type-17)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapasexpression-properties-type.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/type") |
+| [value](#value-17)       | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/value")                    |
+| [comments](#comments-15) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/comments")             |
 
 ### target
 
@@ -6557,7 +6557,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/target")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/target")
 
 #### target Type
 
@@ -6595,7 +6595,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapasexpression-properties-type.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapasexpression-properties-type.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/type")
 
 #### type Type
 
@@ -6621,7 +6621,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/value")
 
 #### value Type
 
@@ -6659,7 +6659,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAsExpression/properties/comments")
 
 #### comments Type
 
@@ -6673,10 +6673,10 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPPlotFilBody"}
 ```
 
-| Property                 | Type    | Required | Nullable       | Defined by                                                                                                                                                |
-| :----------------------- | :------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [row](#row)              | `array` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-row.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/row")           |
-| [comments](#comments-16) | `array` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-comments.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/comments") |
+| Property                 | Type    | Required | Nullable       | Defined by                                                                                                                                               |
+| :----------------------- | :------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [row](#row)              | `array` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-row.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/row")           |
+| [comments](#comments-16) | `array` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-comments.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/comments") |
 
 ### row
 
@@ -6690,7 +6690,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-row.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/row")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-row.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/row")
 
 #### row Type
 
@@ -6708,7 +6708,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapvariab
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-comments.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilbody-properties-comments.md "EMRALD_Model#/definitions/MAAPPlotFilBody/properties/comments")
 
 #### comments Type
 
@@ -6722,12 +6722,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPPlotFilStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                    |
-| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [n](#n)                  | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-n.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/n")         |
-| [type](#type-18)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-type.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/type")   |
-| [value](#value-18)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-value.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/value") |
-| [comments](#comments-17) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/comments")                   |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                   |
+| :----------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [n](#n)                  | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-n.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/n")         |
+| [type](#type-18)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-type.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/type")   |
+| [value](#value-18)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-value.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/value") |
+| [comments](#comments-17) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/comments")                   |
 
 ### n
 
@@ -6741,7 +6741,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-n.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/n")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-n.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/n")
 
 #### n Type
 
@@ -6759,7 +6759,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-type.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-type.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/type")
 
 #### type Type
 
@@ -6785,7 +6785,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-value.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapplotfilstatement-properties-value.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/value")
 
 #### value Type
 
@@ -6803,7 +6803,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPPlotFilStatement/properties/comments")
 
 #### comments Type
 
@@ -6817,11 +6817,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPUserEvtStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                    |
-| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [type](#type-19)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-type.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/type")   |
-| [value](#value-19)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-value.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/value") |
-| [comments](#comments-18) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/comments")                   |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                   |
+| :----------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-19)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-type.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/type")   |
+| [value](#value-19)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-value.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/value") |
+| [comments](#comments-18) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/comments")                   |
 
 ### type
 
@@ -6835,7 +6835,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-type.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-type.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/type")
 
 #### type Type
 
@@ -6857,15 +6857,15 @@ unknown
 
 * is required
 
-* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-value-items.md))
+* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-value.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-value.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/value")
 
 #### value Type
 
-an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapuserevtstatement-properties-value-items.md))
+an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 ### comments
 
@@ -6879,7 +6879,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapuserev
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPUserEvtStatement/properties/comments")
 
 #### comments Type
 
@@ -6893,12 +6893,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPActionStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                  |
-| :----------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [index](#index-1)        | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-index.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/index") |
-| [type](#type-20)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/type")   |
-| [value](#value-20)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/value") |
-| [comments](#comments-19) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/comments")                  |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
+| :----------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [index](#index-1)        | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-index.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/index") |
+| [type](#type-20)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/type")   |
+| [value](#value-20)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/value") |
+| [comments](#comments-19) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/comments")                  |
 
 ### index
 
@@ -6912,7 +6912,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-index.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/index")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-index.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/index")
 
 #### index Type
 
@@ -6930,7 +6930,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/type")
 
 #### type Type
 
@@ -6952,15 +6952,15 @@ unknown
 
 * is required
 
-* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-value-items.md))
+* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/value")
 
 #### value Type
 
-an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapactionstatement-properties-value-items.md))
+an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 ### comments
 
@@ -6974,7 +6974,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapaction
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPActionStatement/properties/comments")
 
 #### comments Type
 
@@ -6988,12 +6988,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPFunctionStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                      |
-| :----------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [name](#name-12)         | `object`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/name")                          |
-| [type](#type-21)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/type")   |
-| [value](#value-21)       | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/value") |
-| [comments](#comments-20) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/comments")                    |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                     |
+| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [name](#name-12)         | `object`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/name")                          |
+| [type](#type-21)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/type")   |
+| [value](#value-21)       | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/value") |
+| [comments](#comments-20) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/comments")                    |
 
 ### name
 
@@ -7007,7 +7007,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapidentifier.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/name")
 
 #### name Type
 
@@ -7025,7 +7025,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-type.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/type")
 
 #### type Type
 
@@ -7051,7 +7051,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapfunctionstatement-properties-value.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/value")
 
 #### value Type
 
@@ -7093,7 +7093,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPFunctionStatement/properties/comments")
 
 #### comments Type
 
@@ -7107,11 +7107,11 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPTimerStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                              |
-| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [type](#type-22)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerstatement-properties-type.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/type") |
-| [value](#value-22)       | `object`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/value")                  |
-| [comments](#comments-21) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/comments")               |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                             |
+| :----------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-22)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerstatement-properties-type.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/type") |
+| [value](#value-22)       | `object`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/value")                  |
+| [comments](#comments-21) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/comments")               |
 
 ### type
 
@@ -7125,7 +7125,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerstatement-properties-type.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerstatement-properties-type.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/type")
 
 #### type Type
 
@@ -7151,7 +7151,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/value")
 
 #### value Type
 
@@ -7169,7 +7169,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerStatement/properties/comments")
 
 #### comments Type
 
@@ -7183,12 +7183,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPLookupStatement"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                  |
-| :----------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [name](#name-13)         | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/name")                          |
-| [type](#type-23)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-type.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/type")   |
-| [value](#value-23)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-value.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/value") |
-| [comments](#comments-22) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/comments")                  |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
+| :----------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [name](#name-13)         | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/name")                          |
+| [type](#type-23)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-type.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/type")   |
+| [value](#value-23)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-value.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/value") |
+| [comments](#comments-22) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/comments")                  |
 
 ### name
 
@@ -7202,7 +7202,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapvariable.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/name")
 
 #### name Type
 
@@ -7240,7 +7240,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-type.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-type.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/type")
 
 #### type Type
 
@@ -7266,7 +7266,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-value.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaplookupstatement-properties-value.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/value")
 
 #### value Type
 
@@ -7284,7 +7284,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPLookupStatement/properties/comments")
 
 #### comments Type
 
@@ -7298,12 +7298,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPAssignment"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                          |
-| :----------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [target](#target-2)      | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target") |
-| [type](#type-24)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")     |
-| [value](#value-24)       | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")   |
-| [comments](#comments-23) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")               |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                         |
+| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [target](#target-2)      | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target") |
+| [type](#type-24)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")     |
+| [value](#value-24)       | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")   |
+| [comments](#comments-23) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")               |
 
 ### target
 
@@ -7317,7 +7317,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-target.md "EMRALD_Model#/definitions/MAAPAssignment/properties/target")
 
 #### target Type
 
@@ -7341,7 +7341,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-type.md "EMRALD_Model#/definitions/MAAPAssignment/properties/type")
 
 #### type Type
 
@@ -7367,7 +7367,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapassignment-properties-value.md "EMRALD_Model#/definitions/MAAPAssignment/properties/value")
 
 #### value Type
 
@@ -7409,7 +7409,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPAssignment/properties/comments")
 
 #### comments Type
 
@@ -7423,12 +7423,12 @@ Reference this group by using
 {"$ref":"EMRALD_Model#/definitions/MAAPMultiPartExpression"}
 ```
 
-| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                          |
-| :----------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [type](#type-25)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-type.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/type")   |
-| [op](#op-1)              | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-op.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/op")       |
-| [value](#value-25)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-value.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/value") |
-| [comments](#comments-24) | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/comments")                      |
+| Property                 | Type          | Required | Nullable       | Defined by                                                                                                                                                         |
+| :----------------------- | :------------ | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type-25)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-type.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/type")   |
+| [op](#op-1)              | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-op.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/op")       |
+| [value](#value-25)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-value.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/value") |
+| [comments](#comments-24) | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/comments")                      |
 
 ### type
 
@@ -7442,7 +7442,7 @@ Reference this group by using
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-type.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-type.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/type")
 
 #### type Type
 
@@ -7468,7 +7468,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-op.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/op")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-op.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/op")
 
 #### op Type
 
@@ -7486,7 +7486,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-value.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapmultipartexpression-properties-value.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/value")
 
 #### value Type
 
@@ -7504,7 +7504,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapmultip
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPMultiPartExpression/properties/comments")
 
 #### comments Type
 

@@ -1,23 +1,23 @@
-# Untitled boolean in EMRALD_Model Schema
+# CustomFormType Schema
 
 ```txt
-EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir
+EMRALD_Model#/definitions/MAAPFormData/properties/caType
 ```
 
-Optional. For action type atRunExtApp. When true, the executable working directory is the model project path instead of the executable directory.
+
 
 | Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
 | :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
 | Can be instantiated | No         | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
-## useProjPathExeWorkingDir Type
+## caType Type
 
-`boolean`
+unknown ([CustomFormType](emrald_jsonschemav3_4-definitions-maapformdata-properties-customformtype.md))
 
-## useProjPathExeWorkingDir Default Value
+## caType Constraints
 
-The default value is:
+**enum**: the value of this property must be equal to one of the following values:
 
-```json
-false
-```
+| Value    | Explanation |
+| :------- | :---------- |
+| `"MAAP"` |             |

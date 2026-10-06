@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/CompChild/items
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## items Type
 
@@ -16,10 +16,10 @@ EMRALD_Model#/definitions/CompChild/items
 
 # items Properties
 
-| Property                    | Type     | Required | Nullable       | Defined by                                                                                                                                                               |
-| :-------------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [stateValues](#statevalues) | `array`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues") |
-| [diagramName](#diagramname) | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-diagramname.md "EMRALD_Model#/definitions/CompChild/items/properties/diagramName") |
+| Property                    | Type     | Required | Nullable       | Defined by                                                                                                                                                              |
+| :-------------------------- | :------- | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [stateValues](#statevalues) | `array`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues") |
+| [diagramName](#diagramname) | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-diagramname.md "EMRALD_Model#/definitions/CompChild/items/properties/diagramName") |
 
 ## stateValues
 
@@ -33,7 +33,7 @@ Evaluate value if not the states default.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-statevalues.md "EMRALD_Model#/definitions/CompChild/items/properties/stateValues")
 
 ### stateValues Type
 
@@ -51,7 +51,7 @@ Name of the diagram to be evaluated
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-diagramname.md "EMRALD_Model#/definitions/CompChild/items/properties/diagramName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-compchild-compchilditems-properties-diagramname.md "EMRALD_Model#/definitions/CompChild/items/properties/diagramName")
 
 ### diagramName Type
 

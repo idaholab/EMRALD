@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MAAPParameter
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MAAPParameter Type
 
@@ -16,18 +16,18 @@ EMRALD_Model#/definitions/MAAPParameter
 
 # MAAPParameter Properties
 
-| Property                    | Type          | Required | Nullable       | Defined by                                                                                                                                                  |
-| :-------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [flag](#flag)               | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")                          |
-| [index](#index)             | `number`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")             |
-| [type](#type)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")               |
-| [value](#value)             | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")             |
-| [comments](#comments)       | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")                        |
-| [name](#name)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")               |
-| [useVariable](#usevariable) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable") |
-| [unit](#unit)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")               |
-| [variable](#variable)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")       |
-| [desc](#desc)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")               |
+| Property                    | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
+| :-------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [flag](#flag)               | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")                          |
+| [index](#index)             | `number`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")             |
+| [type](#type)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")               |
+| [value](#value)             | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")             |
+| [comments](#comments)       | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")                        |
+| [name](#name)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")               |
+| [useVariable](#usevariable) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable") |
+| [unit](#unit)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")               |
+| [variable](#variable)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")       |
+| [desc](#desc)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")               |
 
 ## flag
 
@@ -41,7 +41,7 @@ EMRALD_Model#/definitions/MAAPParameter
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapbooleanliteral.md "EMRALD_Model#/definitions/MAAPParameter/properties/flag")
 
 ### flag Type
 
@@ -59,7 +59,7 @@ EMRALD_Model#/definitions/MAAPParameter
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-index.md "EMRALD_Model#/definitions/MAAPParameter/properties/index")
 
 ### index Type
 
@@ -77,7 +77,7 @@ EMRALD_Model#/definitions/MAAPParameter
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-type.md "EMRALD_Model#/definitions/MAAPParameter/properties/type")
 
 ### type Type
 
@@ -103,7 +103,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-value.md "EMRALD_Model#/definitions/MAAPParameter/properties/value")
 
 ### value Type
 
@@ -147,7 +147,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPParameter/properties/comments")
 
 ### comments Type
 
@@ -165,7 +165,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-name.md "EMRALD_Model#/definitions/MAAPParameter/properties/name")
 
 ### name Type
 
@@ -183,7 +183,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-usevariable.md "EMRALD_Model#/definitions/MAAPParameter/properties/useVariable")
 
 ### useVariable Type
 
@@ -201,7 +201,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-unit.md "EMRALD_Model#/definitions/MAAPParameter/properties/unit")
 
 ### unit Type
 
@@ -219,7 +219,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-variable.md "EMRALD_Model#/definitions/MAAPParameter/properties/variable")
 
 ### variable Type
 
@@ -237,7 +237,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapparameter-properties-desc.md "EMRALD_Model#/definitions/MAAPParameter/properties/desc")
 
 ### desc Type
 

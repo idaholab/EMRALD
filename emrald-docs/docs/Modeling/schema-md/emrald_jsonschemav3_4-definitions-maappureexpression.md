@@ -1,4 +1,4 @@
-# Untitled object in EMRALD\_Model Schema
+# Untitled object in EMRALD_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/MAAPPureExpression
@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MAAPPureExpression
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MAAPPureExpression Type
 
@@ -16,13 +16,13 @@ EMRALD_Model#/definitions/MAAPPureExpression
 
 # MAAPPureExpression Properties
 
-| Property                    | Type          | Required | Nullable       | Defined by                                                                                                                                                            |
-| :-------------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type)               | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")               |
-| [left](#left)               | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")                               |
-| [op](#op)                   | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")                   |
-| [right](#right)             | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")             |
-| [useVariable](#usevariable) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable") |
+| Property                    | Type          | Required | Nullable       | Defined by                                                                                                                                                           |
+| :-------------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type)               | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")               |
+| [left](#left)               | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")                               |
+| [op](#op)                   | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")                   |
+| [right](#right)             | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")             |
+| [useVariable](#usevariable) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable") |
 
 ## type
 
@@ -36,7 +36,7 @@ EMRALD_Model#/definitions/MAAPPureExpression
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-type.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/type")
 
 ### type Type
 
@@ -62,7 +62,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapexpressiontype.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/left")
 
 ### left Type
 
@@ -104,7 +104,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-op.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/op")
 
 ### op Type
 
@@ -140,7 +140,7 @@ all of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-right.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/right")
 
 ### right Type
 
@@ -178,7 +178,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maappureexpression-properties-usevariable.md "EMRALD_Model#/definitions/MAAPPureExpression/properties/useVariable")
 
 ### useVariable Type
 

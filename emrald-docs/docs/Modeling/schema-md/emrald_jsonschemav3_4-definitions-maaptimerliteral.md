@@ -1,4 +1,4 @@
-# Untitled object in EMRALD\_Model Schema
+# Untitled object in EMRALD_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/MAAPTimerLiteral
@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MAAPTimerLiteral
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MAAPTimerLiteral Type
 
@@ -16,11 +16,11 @@ EMRALD_Model#/definitions/MAAPTimerLiteral
 
 # MAAPTimerLiteral Properties
 
-| Property              | Type          | Required | Nullable       | Defined by                                                                                                                                            |
-| :-------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [type](#type)         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")   |
-| [value](#value)       | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value") |
-| [comments](#comments) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")               |
+| Property              | Type          | Required | Nullable       | Defined by                                                                                                                                           |
+| :-------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [type](#type)         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")   |
+| [value](#value)       | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value") |
+| [comments](#comments) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")               |
 
 ## type
 
@@ -34,7 +34,7 @@ EMRALD_Model#/definitions/MAAPTimerLiteral
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-type.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/type")
 
 ### type Type
 
@@ -60,7 +60,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maaptimerliteral-properties-value.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/value")
 
 ### value Type
 
@@ -78,7 +78,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPTimerLiteral/properties/comments")
 
 ### comments Type
 

@@ -1,4 +1,4 @@
-# Untitled object in EMRALD\_Model Schema
+# Untitled object in EMRALD_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/MultiThreadInfo
@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MultiThreadInfo
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MultiThreadInfo Type
 
@@ -16,10 +16,10 @@ EMRALD_Model#/definitions/MultiThreadInfo
 
 # MultiThreadInfo Properties
 
-| Property                        | Type     | Required | Nullable       | Defined by                                                                                                                                                          |
-| :------------------------------ | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [ToCopyForRefs](#tocopyforrefs) | `array`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs") |
-| [AssignedTime](#assignedtime)   | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")   |
+| Property                        | Type     | Required | Nullable       | Defined by                                                                                                                                                         |
+| :------------------------------ | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ToCopyForRefs](#tocopyforrefs) | `array`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs") |
+| [AssignedTime](#assignedtime)   | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")   |
 
 ## ToCopyForRefs
 
@@ -33,7 +33,7 @@ EMRALD_Model#/definitions/MultiThreadInfo
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-tocopyforrefs.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/ToCopyForRefs")
 
 ### ToCopyForRefs Type
 
@@ -51,7 +51,7 @@ ISO 8601 date time when the multi-thread copy references were assigned.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo-properties-assignedtime.md "EMRALD_Model#/definitions/MultiThreadInfo/properties/AssignedTime")
 
 ### AssignedTime Type
 
