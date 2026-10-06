@@ -48,25 +48,25 @@
 [data-emrald-theme='dark'] {
   color-scheme: dark;
 
-  --emrald-canvas: #111513;
-  --emrald-surface: #1b1f1d;
-  --emrald-titlebar: #2a312d;
-  --emrald-sidebar: #1b1f1d;
-  --emrald-text: #e5e9e6;
-  --emrald-divider: rgba(229, 233, 230, 0.12);
-  --emrald-separator: #424a45;
-  --emrald-resize-handle: #424a45;
-  --emrald-input-border: rgba(229, 233, 230, 0.35);
-  --emrald-input-label: rgba(229, 233, 230, 0.6);
+  --emrald-canvas: #131313;
+  --emrald-surface: #1d1d1d;
+  --emrald-titlebar: #2d2d2d;
+  --emrald-sidebar: #1d1d1d;
+  --emrald-text: #e8e8e8;
+  --emrald-divider: rgba(232, 232, 232, 0.12);
+  --emrald-separator: #464646;
+  --emrald-resize-handle: #464646;
+  --emrald-input-border: rgba(232, 232, 232, 0.35);
+  --emrald-input-label: rgba(232, 232, 232, 0.6);
   --emrald-selected: #183e27;
   --emrald-drop-over: #19482c;
-  --emrald-strike: #e5e9e6;
+  --emrald-strike: #e8e8e8;
   --emrald-status-ok: #4bc680;
   --emrald-status-bad: #f66c6d;
   --emrald-link: #47c496;
 
-  --emrald-node-bg: #262c28;
-  --emrald-node-header-border: #383f3b;
+  --emrald-node-bg: #292929;
+  --emrald-node-header-border: #3b3b3b;
   --emrald-node-handle: #7c8891;
   --emrald-node-shadow: 0 4px 6px -1px rgb(0 0 0 / 45%), 0 2px 4px -1px rgb(0 0 0 / 30%);
   --emrald-node-failed: rgba(255, 90, 90, 0.14);
@@ -75,16 +75,16 @@
   --emrald-node-failed-header-border: rgba(255, 90, 90, 0.34);
   --emrald-node-success-header-border: rgba(70, 200, 120, 0.32);
   --emrald-node-event: rgba(120, 170, 200, 0.14);
-  --emrald-annotation-bg: #2a312d;
+  --emrald-annotation-bg: #2d2d2d;
 
-  --emrald-flow-control: #2a312d;
-  --emrald-flow-control-hover: #353d38;
-  --emrald-flow-control-border: #424a45;
-  --emrald-flow-control-icon: #e5e9e6;
-  --emrald-flow-minimap: #222825;
-  --emrald-flow-minimap-mask: rgb(17 21 19 / 60%);
-  --emrald-flow-minimap-node: #424a45;
-  --emrald-flow-dots: #424a45;
+  --emrald-flow-control: #2d2d2d;
+  --emrald-flow-control-hover: #383838;
+  --emrald-flow-control-border: #464646;
+  --emrald-flow-control-icon: #e8e8e8;
+  --emrald-flow-minimap: #252525;
+  --emrald-flow-minimap-mask: rgb(19 19 19 / 60%);
+  --emrald-flow-minimap-node: #464646;
+  --emrald-flow-dots: #464646;
 }
 
 /* Apply styles to the entire page */

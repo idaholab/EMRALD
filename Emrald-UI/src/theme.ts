@@ -20,15 +20,15 @@ const brand = {
   },
 };
 
-// Dark neutrals are tinted toward the brand green (OKLCH hue ~160, chroma ~0.01).
+// Dark neutrals are plain grays; green is reserved for brand, selection and status colors.
 const dark = {
-  canvas: '#111513',
-  paper: '#1b1f1d',
-  raised: '#222825',
-  control: '#2a312d',
-  controlHover: '#353d38',
-  text: '#e5e9e6',
-  textMuted: '#a5ada8',
+  canvas: '#131313',
+  paper: '#1d1d1d',
+  raised: '#252525',
+  control: '#2d2d2d',
+  controlHover: '#383838',
+  text: '#e8e8e8',
+  textMuted: '#aaaaaa',
 };
 
 export const theme = createTheme({
@@ -61,9 +61,9 @@ export const theme = createTheme({
         text: {
           primary: dark.text,
           secondary: dark.textMuted,
-          disabled: 'rgba(229, 233, 230, 0.42)',
+          disabled: 'rgba(232, 232, 232, 0.42)',
         },
-        divider: 'rgba(229, 233, 230, 0.12)',
+        divider: 'rgba(232, 232, 232, 0.12)',
       },
     },
   },
