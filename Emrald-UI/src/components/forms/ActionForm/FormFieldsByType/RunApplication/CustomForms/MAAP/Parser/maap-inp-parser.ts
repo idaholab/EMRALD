@@ -3,6 +3,7 @@
 // https://peggyjs.org/
 
 import type { LocationRange, parser, ParserOptions } from 'peggy';
+import type { InnerTitleStatement, Program } from './maap-parser-types';
 import type {
   MAAPActionStatement,
   MAAPAliasStatement,
@@ -35,8 +36,7 @@ import type {
   MAAPTitleStatement,
   MAAPUserEvtStatement,
   MAAPVariable,
-} from '../../../../../../../../types/EMRALD_Model';
-import type { InnerTitleStatement, Program } from './maap-parser-types';
+} from '@/types/EMRALD_Model';
 import {
   type DetailsCache,
   type GrammarSource,

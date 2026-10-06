@@ -4,15 +4,14 @@ import type {
   Event,
   ExtSim,
   LogicNode,
-  MainItemType,
   State,
   Variable,
-} from '../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../types/ModelUtils';
+} from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import { Box } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { type DragEvent as ReactDragEvent, type MouseEvent, useState } from 'react';
+import { type MouseEvent, type DragEvent as ReactDragEvent, useState } from 'react';
 import { VARIABLE_DRAG_MIME } from '../../common/variableDrag';
 import { type Option, useOptionsMapping } from './OptionMapping';
 

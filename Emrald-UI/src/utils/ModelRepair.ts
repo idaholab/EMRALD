@@ -1,8 +1,5 @@
-import type {
-  EMRALD_Model,
-  EventActionItems,
-  MainItemType,
-} from '../types/EMRALD_Model';
+import type { EMRALD_Model, EventActionItems } from '@/types/EMRALD_Model';
+import type { MainItemType } from '@/types/ModelUtils';
 
 type NamedItem = {
   name?: string;
@@ -61,15 +58,11 @@ function removeItemsWithMissingNames(model: EMRALD_Model) {
   model.DiagramList = model.DiagramList.filter(diagram =>
     hasUsableName(diagram.name),
   );
-  model.StateList = model.StateList.filter(state =>
-    hasUsableName(state.name),
-  );
+  model.StateList = model.StateList.filter(state => hasUsableName(state.name));
   model.ActionList = model.ActionList.filter(action =>
     hasUsableName(action.name),
   );
-  model.EventList = model.EventList.filter(event =>
-    hasUsableName(event.name),
-  );
+  model.EventList = model.EventList.filter(event => hasUsableName(event.name));
   model.ExtSimList = model.ExtSimList.filter(extSim =>
     hasUsableName(extSim.name),
   );
@@ -97,7 +90,10 @@ function repairDiagramStateLists(model: EMRALD_Model) {
         continue;
       }
 
-      if (!hasUsableName(state.diagramName) || !diagramNames.has(state.diagramName)) {
+      if (
+        !hasUsableName(state.diagramName)
+        || !diagramNames.has(state.diagramName)
+      ) {
         state.diagramName = diagram.name;
       }
 
@@ -152,10 +148,16 @@ function repairActionReferences(model: EMRALD_Model) {
       action.extSim = cleanScalarReference(action.extSim, extSimNames);
     }
     if (action.variableName != null) {
-      action.variableName = cleanScalarReference(action.variableName, variableNames);
+      action.variableName = cleanScalarReference(
+        action.variableName,
+        variableNames,
+      );
     }
     if (action.codeVariables != null) {
-      action.codeVariables = cleanReferenceList(action.codeVariables, variableNames);
+      action.codeVariables = cleanReferenceList(
+        action.codeVariables,
+        variableNames,
+      );
     }
     if (action.newStates != null) {
       action.newStates = action.newStates

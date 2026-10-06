@@ -1,4 +1,4 @@
-import type { MAAPExpressionType } from '../../../../../../../../../types/EMRALD_Model';
+import type { MAAPExpressionType } from '@/types/EMRALD_Model';
 import { CallExpression } from './CallExpression';
 import { ExpressionBlock } from './ExpressionBlock';
 

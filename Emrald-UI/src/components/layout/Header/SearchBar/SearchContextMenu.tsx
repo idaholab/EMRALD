@@ -4,11 +4,10 @@ import type {
   Event,
   ExtSim,
   LogicNode,
-  MainItemType,
   State,
   Variable,
-} from '../../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../../types/ModelUtils';
+} from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import { Menu, MenuItem } from '@mui/material';
 import {
   type Attributes,
@@ -21,23 +20,23 @@ import {
   useState,
 } from 'react';
 import { ReactFlowProvider } from 'reactflow';
+import { EmraldDiagram } from '@/components/diagrams/EmraldDiagram/EmraldDiagram';
+import { LogicNodeTreeDiagram } from '@/components/diagrams/LogicTreeDiagram/LogicTreeDiagram';
+import { ActionForm } from '@/components/forms/ActionForm/ActionForm';
+import { ActionFormContextProvider } from '@/components/forms/ActionForm/ActionFormContext';
+import { DiagramForm } from '@/components/forms/DiagramForm/DiagramForm';
 import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
-import { useDiagramContext } from '../../../../contexts/DiagramContext';
-import { emptyLogicNode } from '../../../../contexts/LogicNodeContext';
-import { useWindowContext } from '../../../../contexts/WindowContext';
-import { GetModelItemsReferencing } from '../../../../utils/ModelReferences';
-import { EmraldDiagram } from '../../../diagrams/EmraldDiagram/EmraldDiagram';
-import { LogicNodeTreeDiagram } from '../../../diagrams/LogicTreeDiagram/LogicTreeDiagram';
-import { ActionForm } from '../../../forms/ActionForm/ActionForm';
-import { ActionFormContextProvider } from '../../../forms/ActionForm/ActionFormContext';
-import { DiagramForm } from '../../../forms/DiagramForm/DiagramForm';
-import { ExtSimForm } from '../../../forms/ExtSimForm/ExtSimForm';
-import { LogicNodeForm } from '../../../forms/LogicNodeForm/LogicNodeForm';
-import { LogicNodeFormContextProvider } from '../../../forms/LogicNodeForm/LogicNodeFormContext';
-import { StateForm } from '../../../forms/StateForm/StateForm';
-import { VariableForm } from '../../../forms/VariableForm/VariableForm';
-import { VariableFormContextProvider } from '../../../forms/VariableForm/VariableFormContext';
+import { ExtSimForm } from '@/components/forms/ExtSimForm/ExtSimForm';
+import { LogicNodeForm } from '@/components/forms/LogicNodeForm/LogicNodeForm';
+import { LogicNodeFormContextProvider } from '@/components/forms/LogicNodeForm/LogicNodeFormContext';
+import { StateForm } from '@/components/forms/StateForm/StateForm';
+import { VariableForm } from '@/components/forms/VariableForm/VariableForm';
+import { VariableFormContextProvider } from '@/components/forms/VariableForm/VariableFormContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { emptyLogicNode } from '@/contexts/LogicNodeContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { GetModelItemsReferencing } from '@/utils/ModelReferences';
 
 type SearchContextMenuProps = {
   targetItem: ModelItem | null;

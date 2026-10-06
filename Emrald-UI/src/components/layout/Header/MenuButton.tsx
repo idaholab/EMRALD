@@ -1,4 +1,4 @@
-import type { ModelValidationResult } from '../../../utils/Upgrades/upgrade';
+import type { ModelValidationResult } from '@/utils/Upgrades/upgrade';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,12 +9,12 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { startCase } from 'lodash';
 import { type MouseEvent, useEffect, useRef, useState } from 'react';
-import { useModelDetailsContext } from '../../../contexts/ModelDetailsContext';
-import { useTemplateContext } from '../../../contexts/TemplateContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { appData } from '../../../hooks/useAppData';
-import { useAssembledData } from '../../../hooks/useAssembledData';
-import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
+import { DialogComponent } from '@/components/common/DialogComponent/DialogComponent';
+import { useModelDetailsContext } from '@/contexts/ModelDetailsContext';
+import { useTemplateContext } from '@/contexts/TemplateContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { appData } from '@/hooks/useAppData';
+import { useAssembledData } from '@/hooks/useAssembledData';
 import {
   downloadOptions,
   projectOptions,

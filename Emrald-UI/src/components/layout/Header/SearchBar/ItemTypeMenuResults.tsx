@@ -1,6 +1,6 @@
 import type { PropsWithChildren, ReactNode } from 'react';
-import type { EMRALD_Model } from '../../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../../types/ModelUtils';
+import type { EMRALD_Model } from '@/types/EMRALD_Model';
+import type { ModelItem } from '@/types/ModelUtils';
 import {
   Accordion,
   AccordionDetails,

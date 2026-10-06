@@ -1,21 +1,16 @@
-import type {
-  Diagram,
-  LogicNode,
-  MainItemType,
-  State,
-} from '../../../types/EMRALD_Model';
-import type { ModelItem } from '../../../types/ModelUtils';
+import type { Diagram, LogicNode, State } from '@/types/EMRALD_Model';
+import type { MainItemType, ModelItem } from '@/types/ModelUtils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useActionContext } from '../../../contexts/ActionContext';
-import { useAlertContext } from '../../../contexts/AlertContext';
-import { useDiagramContext } from '../../../contexts/DiagramContext';
-import { useEventContext } from '../../../contexts/EventContext';
-import { useExtSimContext } from '../../../contexts/ExtSimContext';
-import { useLogicNodeContext } from '../../../contexts/LogicNodeContext';
-import { useStateContext } from '../../../contexts/StateContext';
-import { useVariableContext } from '../../../contexts/VariableContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { GetModelItemsReferencedBy } from '../../../utils/ModelReferences';
+import { useActionContext } from '@/contexts/ActionContext';
+import { useAlertContext } from '@/contexts/AlertContext';
+import { useDiagramContext } from '@/contexts/DiagramContext';
+import { useEventContext } from '@/contexts/EventContext';
+import { useExtSimContext } from '@/contexts/ExtSimContext';
+import { useLogicNodeContext } from '@/contexts/LogicNodeContext';
+import { useStateContext } from '@/contexts/StateContext';
+import { useVariableContext } from '@/contexts/VariableContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { GetModelItemsReferencedBy } from '@/utils/ModelReferences';
 import { currentDiagram } from '../../diagrams/EmraldDiagram/EmraldDiagram';
 import { useLogicNodeTreeDiagram } from '../../diagrams/LogicTreeDiagram/useLogicTreeDiagram';
 

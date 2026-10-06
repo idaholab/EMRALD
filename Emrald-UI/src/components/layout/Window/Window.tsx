@@ -8,7 +8,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import IconButton from '@mui/material/IconButton';
 import { useMemo } from 'react';
-import { useWindowContext } from '../../../contexts/WindowContext';
+import { useWindowContext } from '@/contexts/WindowContext';
 import { DraggableContainer } from './DraggableContainer';
 
 export const WindowComponent: React.FC = () => {

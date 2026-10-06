@@ -47,7 +47,7 @@ export const ModelDetailsContextProvider: React.FC<PropsWithChildren> = ({
     appData.value.emraldVersion,
   );
   const [version, setVersion] = useState(appData.value.version);
-  const [fileName, setFileName] = useState<string>();
+  const [fileName, setFileName] = useState(appData.value.filename);
 
   const clearFileName = () => {
     setFileName('');

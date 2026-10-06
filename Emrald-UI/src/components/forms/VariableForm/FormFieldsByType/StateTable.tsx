@@ -29,8 +29,8 @@ import {
 import { useVariableFormContext } from '../VariableFormContext';
 
 export const StateTable: React.FC = () => {
-  const { setValue, accrualStatesData, setAccrualStatesData, sync } =
-    useVariableFormContext();
+  const { setValue, accrualStatesData, setAccrualStatesData, sync }
+    = useVariableFormContext();
   const [accrualMults, setAccrualMults] = useState<number[]>([]);
   const [multRates, setMultRates] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>([]);
@@ -117,8 +117,8 @@ export const StateTable: React.FC = () => {
       }
       setAccrualTables(newAccrualTables);
       if (accrualStatesData && accrualStatesData[index]) {
-        accrualStatesData[index].accrualTable[idx] =
-          newAccrualTables[index]?.[idx] ?? [];
+        accrualStatesData[index].accrualTable[idx]
+          = newAccrualTables[index]?.[idx] ?? [];
       }
     }
   }

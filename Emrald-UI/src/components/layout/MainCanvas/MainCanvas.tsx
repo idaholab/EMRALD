@@ -13,7 +13,7 @@ import { TbCube3dSphere, TbSchema } from 'react-icons/tb';
 import { VscSymbolEvent } from 'react-icons/vsc';
 import { EventForm } from '@/components/forms/EventForm/EventForm';
 import { EventFormContextProvider } from '@/components/forms/EventForm/EventFormContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
+import { useWindowContext } from '@/contexts/WindowContext';
 import { ActionForm } from '../../forms/ActionForm/ActionForm';
 import { ActionFormContextProvider } from '../../forms/ActionForm/ActionFormContext';
 import { DiagramForm } from '../../forms/DiagramForm/DiagramForm';

@@ -6,15 +6,15 @@ import type {
   ExtSim,
   Group,
   LogicNode,
-  MainItemType,
   State,
   Variable,
-} from '../../../types/EMRALD_Model';
+} from '@/types/EMRALD_Model';
+import type { MainItemType } from '@/types/ModelUtils';
 import { type MouseEvent, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useTemplateContext } from '../../../contexts/TemplateContext';
-import { useWindowContext } from '../../../contexts/WindowContext';
-import { updateSpecifiedModel } from '../../../utils/UpdateModel';
+import { useTemplateContext } from '@/contexts/TemplateContext';
+import { useWindowContext } from '@/contexts/WindowContext';
+import { updateSpecifiedModel } from '@/utils/UpdateModel';
 
 interface TemplatedItem {
   type: MainItemType;

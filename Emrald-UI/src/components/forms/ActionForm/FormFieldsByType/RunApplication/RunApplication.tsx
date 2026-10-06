@@ -1,4 +1,4 @@
-import type { CustomFormType } from '../../../../../types/EMRALD_Model';
+import type { CustomFormType } from '@/types/EMRALD_Model';
 import {
   Box,
   Checkbox,
@@ -14,11 +14,13 @@ import {
 } from '@mui/material';
 import { startCase } from 'lodash';
 import { createElement, type ReactElement, useEffect, useState } from 'react';
-import { useVariableContext } from '../../../../../contexts/VariableContext';
-import { TextFieldComponent } from '../../../../common';
-import { CodeVariables } from '../../../../common/CodeVariables';
-import { DroppableEditor } from '../../../../common/DroppableEditor';
-import { SelectComponent } from '../../../../common/SelectComponent';
+import {
+  CodeVariables,
+  DroppableEditor,
+  SelectComponent,
+  TextFieldComponent,
+} from '@/components/common';
+import { useVariableContext } from '@/contexts/VariableContext';
 import {
   type ReturnProcessType,
   useActionFormContext,
@@ -95,6 +97,8 @@ export const RunApplication: React.FC = () => {
   const handleSetCustomFormType = (value: CustomFormType) => {
     setCustomFormType(value);
     setFormData(prev => ({ ...prev, caType: value }));
+    // Only possible option is MAAP right now, but this conditional should be expanded if/when other forms are added
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (value === 'MAAP') {
       setExeFromPreCode(true);
     }
