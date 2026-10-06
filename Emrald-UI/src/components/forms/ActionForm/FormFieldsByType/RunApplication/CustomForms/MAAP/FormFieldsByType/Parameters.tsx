@@ -97,14 +97,14 @@ export const Parameters: React.FC = () => {
                         ...params.InputProps,
                         startAdornment: useVariable[idx] ? (
                           <InputAdornment position="start">
-                            <FaLink color="#008362" />
+                            <FaLink color="var(--emrald-link)" />
                           </InputAdornment>
                         ) : undefined,
                       },
                     }}
                     sx={{
                       input: {
-                        color: useVariable[idx] ? '#008362' : 'inherit',
+                        color: useVariable[idx] ? 'var(--emrald-link)' : 'inherit',
                       },
                     }}
                     onChange={e => {

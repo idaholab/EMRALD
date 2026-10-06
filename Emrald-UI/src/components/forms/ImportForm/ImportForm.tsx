@@ -175,7 +175,7 @@ export const ImportForm: React.FC<ImportDiagramFormProps> = ({
                 <TableCell align="center">
                   {row.locked ? (
                     <IconButton
-                      sx={{ color: '#1b8f55' }}
+                      sx={{ color: 'var(--emrald-status-ok)' }}
                       disabled={row.required}
                       onClick={() => {
                         handleLockChange(index, false);
@@ -186,7 +186,7 @@ export const ImportForm: React.FC<ImportDiagramFormProps> = ({
                     </IconButton>
                   ) : (
                     <Icon
-                      style={{ color: '#d32c38' }}
+                      style={{ color: 'var(--emrald-status-bad)' }}
                       onClick={() => {
                         handleLockChange(index, true);
                       }}
@@ -261,8 +261,8 @@ export const ImportForm: React.FC<ImportDiagramFormProps> = ({
                     fontSize={14}
                     color={
                       getConflictStatus(row) === 'NO CONFLICT'
-                        ? '#1b8f55'
-                        : '#d32c38'
+                        ? 'var(--emrald-status-ok)'
+                        : 'var(--emrald-status-bad)'
                     }
                   >
                     {getConflictStatus(row)}

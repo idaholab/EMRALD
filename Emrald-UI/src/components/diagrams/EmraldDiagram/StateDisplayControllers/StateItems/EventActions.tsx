@@ -57,7 +57,7 @@ export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
         <Box
           key={item.event?.name}
           sx={{
-            borderBottom: '1px solid rgba(0, 0, 0, .125)',
+            borderBottom: '1px solid var(--emrald-divider)',
             display: 'flex',
             alignItems: 'center',
             pl: '5px',
@@ -84,7 +84,7 @@ export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
             onContextMenu={e => void onEventContextMenu(e, state, item.event)}
             sx={{
               width: '100%',
-              borderLeft: '1px solid rgba(0, 0, 0, .125)',
+              borderLeft: '1px solid var(--emrald-divider)',
             }}
           >
             {menu && (
@@ -108,16 +108,16 @@ export const EventActions: React.FC<EventActionsProps> = ({ state }) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  borderBottom: '1px solid rgba(0, 0, 0, .125)',
+                  borderBottom: '1px solid var(--emrald-divider)',
                   py: '5px',
-                  background: 'rgba(173,216,230, 0.25)',
+                  background: 'var(--emrald-node-event)',
                 }}
               >
                 <Typography
                   sx={{
                     fontSize: 10,
                     ml: '10px',
-                    ':hover': 'background: rgba(0, 0, 0, .125)',
+                    ':hover': 'background: var(--emrald-divider)',
                   }}
                 >
                   {item.event?.name}

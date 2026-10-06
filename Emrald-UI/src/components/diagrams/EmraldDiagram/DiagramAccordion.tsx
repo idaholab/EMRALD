@@ -23,7 +23,9 @@ export const DiagramAccordionSummary = styled(
   (props: AccordionSummaryProps) => (
     <MuiAccordionSummary
       expandIcon={
-        <ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem', color: '#000' }} />
+        <ArrowForwardIosSharpIcon
+          sx={{ fontSize: '0.9rem', color: 'var(--emrald-text)' }}
+        />
       }
       {...props}
     />
@@ -52,5 +54,5 @@ export const DiagramAccordionDetails = styled(
   ),
 )({
   paddingLeft: 0,
-  borderTop: '1px solid rgba(0, 0, 0, .125)',
+  borderTop: '1px solid var(--emrald-divider)',
 });

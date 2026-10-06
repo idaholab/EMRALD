@@ -1,27 +1,35 @@
 .emrald-diagram .react-flow__node-custom {
   & {
     font-size: 10px;
-    background: #f5f5f6;
-    color: #222;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
+    background: var(--emrald-node-bg);
+    color: var(--emrald-text);
+    box-shadow: var(--emrald-node-shadow);
     border-radius: 6px;
   }
 
   .failed-state {
-    background-color: rgba(255, 0, 4, 0.082);
+    background-color: var(--emrald-node-failed);
     border-radius: 6px;
+
+    .state-node__header {
+      border-bottom-color: var(--emrald-node-failed-header-border);
+    }
   }
 
   .success-state {
-    background-color: rgba(0, 128, 0, 0.089);
+    background-color: var(--emrald-node-success);
     border-radius: 6px;
+
+    .state-node__header {
+      border-bottom-color: var(--emrald-node-success-header-border);
+    }
   }
 
   .react-flow__handle-right {
     width: 3px;
     height: 20px;
     border-radius: 2px;
-    background-color: #778899;
+    background-color: var(--emrald-node-handle);
   }
 
   .source-handle {
@@ -38,7 +46,7 @@
     width: 3px;
     height: 20px;
     border-radius: 2px;
-    background-color: #778899;
+    background-color: var(--emrald-node-handle);
   }
 }
 
@@ -56,11 +64,12 @@
   & {
     border-radius: 0;
     text-align: left;
-    background: white;
+    background: var(--emrald-annotation-bg);
+    color: var(--emrald-text);
     border: none;
     line-height: 1.4;
     width: 225px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 15%), 0 2px 4px -1px rgb(0 0 0 / 8%);
+    box-shadow: var(--emrald-node-shadow);
   }
 
   .react-flow__handle {
@@ -70,7 +79,7 @@
 
 .state-node__header {
   padding: 8px 10px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--emrald-node-header-border);
   font-size: 12px;
   display: flex;
   justify-content: space-between;

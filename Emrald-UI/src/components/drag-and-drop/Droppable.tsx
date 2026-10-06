@@ -63,7 +63,9 @@ export const DropTargetComponent: React.FC<
     }),
   });
 
-  const backgroundColor = isOver ? 'lightgreen' : 'white';
+  const backgroundColor = isOver
+    ? 'var(--emrald-drop-over)'
+    : 'var(--emrald-surface)';
 
   return (
     <Box ref={drop as unknown as Ref<unknown>} sx={{ backgroundColor }}>

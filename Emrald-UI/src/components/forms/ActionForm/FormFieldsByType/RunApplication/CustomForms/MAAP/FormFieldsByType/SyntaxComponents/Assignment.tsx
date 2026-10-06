@@ -65,14 +65,14 @@ export const Assignment: React.FC<{
                   ...params.InputProps,
                   startAdornment: value.value.useVariable ? (
                     <InputAdornment position="start">
-                      <FaLink color="#008362" />
+                      <FaLink color="var(--emrald-link)" />
                     </InputAdornment>
                   ) : undefined,
                 },
               }}
               sx={{
                 input: {
-                  color: value.value.useVariable ? '#008362' : 'inherit',
+                  color: value.value.useVariable ? 'var(--emrald-link)' : 'inherit',
                 },
               }}
               onChange={e => {

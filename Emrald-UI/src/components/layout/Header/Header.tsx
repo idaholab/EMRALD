@@ -15,6 +15,7 @@ import { DialogComponent } from '../../common/DialogComponent/DialogComponent';
 import { MenuButton } from './MenuButton';
 import { downloadOptions, projectOptions } from './menuOptions';
 import { SearchField } from './SearchBar/SearchField';
+import { ThemeToggle } from './ThemeToggle';
 
 const url = window.location.href;
 let emraldDocsUrl = 'https://emrald-docs.inl.gov/'; // Default URL
@@ -187,6 +188,7 @@ export const Header: React.FC = () => {
             {fileName ?? ''}
           </Typography>
         </Box>
+        <ThemeToggle />
       </Toolbar>
 
       {/* Dialog for project updating name and description */}

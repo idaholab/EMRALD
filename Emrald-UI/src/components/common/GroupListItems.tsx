@@ -58,8 +58,8 @@ export const GroupListItems: React.FC<GroupListItemsProps> = ({
           sx={{
             backgroundColor:
               highlightSelectedGroup && item.name === selectedGroup
-                ? 'lightgreen'
-                : 'white',
+                ? 'var(--emrald-selected)'
+                : 'var(--emrald-surface)',
           }}
         >
           <ListItemIcon>

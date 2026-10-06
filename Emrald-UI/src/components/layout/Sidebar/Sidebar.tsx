@@ -49,7 +49,7 @@ export const Sidebar: React.FC = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: 'primary.main',
+          backgroundColor: 'var(--emrald-sidebar)',
           display: 'flex',
           flexDirection: 'column',
         },

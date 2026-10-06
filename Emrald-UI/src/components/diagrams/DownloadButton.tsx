@@ -39,7 +39,11 @@ export const DownloadButton: React.FC<DownloadButtonProps> = ({
     if (reactFlowViewport) {
       try {
         const dataUrl = await toPng(reactFlowViewport as HTMLElement, {
-          backgroundColor: '#ffffff',
+          // Match the active theme so dark-mode nodes stay legible in the export
+          backgroundColor:
+            getComputedStyle(document.documentElement)
+              .getPropertyValue('--emrald-surface')
+              .trim() || '#ffffff',
           width: imageWidth,
           height: imageHeight,
           style: {

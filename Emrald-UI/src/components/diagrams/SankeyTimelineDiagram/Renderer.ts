@@ -43,7 +43,7 @@ export class Renderer extends EventEmitter<{
         width: 3,
       },
     },
-    background: 'white',
+    background: 'var(--emrald-surface)',
     curve: {
       height: 50,
       width: 200,

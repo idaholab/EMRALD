@@ -209,7 +209,7 @@ export const ActionToStateTable: React.FC = () => {
                             htmlInput: {
                               style: {
                                 WebkitTextFillColor:
-                                  item.prob === -1 ? 'transparent' : 'black',
+                                  item.prob === -1 ? 'transparent' : 'currentColor',
                               },
                             },
                           }}

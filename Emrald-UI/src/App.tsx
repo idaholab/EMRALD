@@ -5,7 +5,7 @@ import { MainCanvas } from './components/layout/MainCanvas/MainCanvas';
 import { Sidebar } from './components/layout/Sidebar/Sidebar';
 import { EmraldContextWrapper } from './contexts/EmraldContextWrapper';
 import { useErrorBoundary } from './hooks/useErrorBoundary';
-import { theme } from './theme';
+import { MODE_STORAGE_KEY, theme } from './theme';
 import './scss/global.scss';
 
 function ErrorBoundary({ children }: PropsWithChildren) {
@@ -24,7 +24,14 @@ function ErrorBoundary({ children }: PropsWithChildren) {
 
 export const App: React.FC = () => (
   <ErrorBoundary>
-    <ThemeProvider theme={theme}>
+    {/* forceThemeRerender keeps theme.palette in styled() callbacks in sync with the active scheme */}
+    <ThemeProvider
+      theme={theme}
+      defaultMode="system"
+      modeStorageKey={MODE_STORAGE_KEY}
+      disableTransitionOnChange
+      forceThemeRerender
+    >
       <EmraldContextWrapper>
         <Box sx={{ display: 'flex', height: '100%' }}>
           <CssBaseline />

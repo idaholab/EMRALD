@@ -114,7 +114,7 @@ export const LogicNodeTreeDiagram: React.FC<LogicNodeTreeDiagramProps> = ({
             proOptions={{ hideAttribution: true }}
           >
             <Panel position="top-left">
-              <Box sx={{ background: '#fff', p: 1 }}>
+              <Box sx={{ background: 'var(--emrald-surface)', p: 1 }}>
                 <Typography variant="subtitle1" sx={{ ml: 2 }}>
                   Drag and Drop Gates
                 </Typography>

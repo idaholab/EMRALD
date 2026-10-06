@@ -45,7 +45,7 @@ export const WindowComponent: React.FC = () => {
             <Box
               className={`title-bar-${window.id}`}
               sx={{
-                backgroundColor: 'lightgrey',
+                backgroundColor: 'var(--emrald-titlebar)',
                 height: '35px',
                 padding: '0',
                 textAlign: 'end',
