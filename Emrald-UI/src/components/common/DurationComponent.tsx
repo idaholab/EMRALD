@@ -99,7 +99,7 @@ export const DurationComponent: React.FC<DurationComponentProps> = ({
       sx={{
         display: 'flex',
         alignItems: 'center',
-        border: '1px rgb(0, 0, 0, 0.4) solid',
+        border: '1px var(--emrald-input-border) solid',
         borderRadius: 1,
         boxSizing: 'content-box',
         padding: '12px',
@@ -110,7 +110,7 @@ export const DurationComponent: React.FC<DurationComponentProps> = ({
         style={{
           transformOrigin: 'top left',
           transform: 'translate(0px, -22px)',
-          background: 'white',
+          background: 'var(--emrald-surface)',
           position: 'relative',
         }}
       >

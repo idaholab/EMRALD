@@ -58,7 +58,9 @@ export const StateChange: React.FC<EventFormProps> = ({ eventData }) => {
       isOver: monitor.isOver(),
     }),
   });
-  const backgroundColor = isOver ? 'lightgreen' : 'white';
+  const backgroundColor = isOver
+    ? 'var(--emrald-drop-over)'
+    : 'var(--emrald-surface)';
   const removeTriggerState = (name: string) => {
     let newTriggerStates = triggerStates;
     if (newTriggerStates) {

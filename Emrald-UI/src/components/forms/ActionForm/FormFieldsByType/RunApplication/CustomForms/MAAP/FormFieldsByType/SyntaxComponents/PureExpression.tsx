@@ -49,14 +49,14 @@ export const PureExpression: React.FC<{
                       ...params.InputProps,
                       startAdornment: value.right.useVariable ? (
                         <InputAdornment position="start">
-                          <FaLink color="#008362" />
+                          <FaLink color="var(--emrald-link)" />
                         </InputAdornment>
                       ) : undefined,
                     },
                   }}
                   sx={{
                     input: {
-                      color: value.right.useVariable ? '#008362' : 'inherit',
+                      color: value.right.useVariable ? 'var(--emrald-link)' : 'inherit',
                     },
                   }}
                   onChange={e => {

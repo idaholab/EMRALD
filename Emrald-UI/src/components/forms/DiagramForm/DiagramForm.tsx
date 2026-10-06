@@ -408,8 +408,8 @@ export const DiagramForm: React.FC<DiagramFormProps> = ({ diagramData }) => {
                       sx={{
                         backgroundColor:
                           template.name === selectedTemplate?.name
-                            ? 'lightgreen'
-                            : 'white',
+                            ? 'var(--emrald-selected)'
+                            : 'var(--emrald-surface)',
                       }}
                       onClick={() => {
                         setSelectedTemplate(template);

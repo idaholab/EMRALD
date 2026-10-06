@@ -232,7 +232,7 @@ export const TemplateForm: React.FC<TemplateDiagramFormProps> = ({
                       content: '""',
                       position: 'absolute',
                       top: '50%',
-                      backgroundColor: '#000',
+                      backgroundColor: 'var(--emrald-strike)',
                       left: 0,
                       right: 0,
                       height: '1px',
@@ -248,7 +248,7 @@ export const TemplateForm: React.FC<TemplateDiagramFormProps> = ({
                 <TableCell align="center">
                   {row.locked ? (
                     <IconButton
-                      sx={{ color: '#1b8f55' }}
+                      sx={{ color: 'var(--emrald-status-ok)' }}
                       disabled={row.exclude}
                       onClick={() => {
                         handleLockChange(index, false);
@@ -258,7 +258,7 @@ export const TemplateForm: React.FC<TemplateDiagramFormProps> = ({
                     </IconButton>
                   ) : (
                     <IconButton
-                      sx={{ color: '#d32c38' }}
+                      sx={{ color: 'var(--emrald-status-bad)' }}
                       disabled={row.exclude}
                       onClick={() => {
                         handleLockChange(index, true);
@@ -342,7 +342,7 @@ export const TemplateForm: React.FC<TemplateDiagramFormProps> = ({
                           content: '""',
                           position: 'absolute',
                           top: '50%',
-                          backgroundColor: '#000',
+                          backgroundColor: 'var(--emrald-strike)',
                           left: 0,
                           right: 0,
                           height: '1px',

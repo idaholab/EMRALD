@@ -219,7 +219,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
         onClick={options ? handleMouseEnter : handleClick}
         // onMouseEnter={options && handleMouseEnter}
         sx={{
-          borderRight: '2px solid #bbb',
+          borderRight: '2px solid var(--emrald-separator)',
           borderRadius: 0,
           height: 30,
           p: 0,

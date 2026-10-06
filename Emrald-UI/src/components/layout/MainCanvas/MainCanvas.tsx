@@ -126,7 +126,7 @@ export const MainCanvas: React.FC = () => {
         position: 'relative',
         height: 'calc(100% - 65px)',
         top: '65px',
-        backgroundColor: '#eee',
+        backgroundColor: 'var(--emrald-canvas)',
       }}
     >
       <Box

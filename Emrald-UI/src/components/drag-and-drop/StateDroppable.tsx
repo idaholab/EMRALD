@@ -42,7 +42,9 @@ export const StateDropTarget: React.FC = () => {
     }),
   });
 
-  const backgroundColor = isOver ? 'lightgreen' : 'white';
+  const backgroundColor = isOver
+    ? 'var(--emrald-drop-over)'
+    : 'var(--emrald-surface)';
 
   return (
     <Box

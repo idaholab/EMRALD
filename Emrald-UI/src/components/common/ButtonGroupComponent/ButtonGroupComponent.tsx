@@ -1,18 +1,14 @@
 import type { PropsWithChildren } from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 
 const GroupButton = styled(Button, {
   shouldForwardProp: prop => prop !== 'itemSelected',
-})(({ itemSelected }: { itemSelected: boolean }) => {
-  const theme = useTheme();
-
-  return {
-    color: itemSelected ? theme.palette.primary.main : '#000',
-    fontWeight: itemSelected ? 'bold' : 'normal',
-  };
-});
+})<{ itemSelected: boolean }>(({ itemSelected, theme }) => ({
+  color: itemSelected ? theme.palette.primary.main : theme.palette.text.primary,
+  fontWeight: itemSelected ? 'bold' : 'normal',
+}));
 
 interface ButtonItemProps {
   value: string;
