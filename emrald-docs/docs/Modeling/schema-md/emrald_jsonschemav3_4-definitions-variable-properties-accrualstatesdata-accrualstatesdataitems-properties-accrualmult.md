@@ -1,4 +1,4 @@
-# Untitled number in EMRALD\_Model Schema
+# Untitled number in EMRALD_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualMult
@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties
 
 Optional. If type is ctMultiplier then this is the multiplier value for every time increment, specified by the multRate, spent in the state.
 
-| Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable            | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :---------------------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | Unknown identifiability | Forbidden         | Allowed               | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## accrualMult Type
 

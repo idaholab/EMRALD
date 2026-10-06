@@ -29,7 +29,8 @@
         "value": 100,
         "useVariable": false
       }
-    ]
+    ],
+    "persistent": false
   },
   "uses scientific notation": {
     "objType": "Event",
@@ -61,7 +62,8 @@
         "value": "1e4",
         "useVariable": false
       }
-    ]
+    ],
+    "persistent": false
   },
   "sets default time rate": {
     "objType": "Event",
@@ -93,7 +95,8 @@
         "value": 100,
         "useVariable": false
       }
-    ]
+    ],
+    "persistent": false
   },
   "sets individual time rates": {
     "objType": "Event",
@@ -127,7 +130,8 @@
         "value": 100,
         "useVariable": false
       }
-    ]
+    ],
+    "persistent": false
   },
   "clears time rate property": {
     "objType": "Event",
@@ -159,7 +163,8 @@
         "value": 100,
         "useVariable": false
       }
-    ]
+    ],
+    "persistent": false
   },
   "uses variables": {
     "objType": "Event",
@@ -193,7 +198,8 @@
         "useVariable": true,
         "variable": "Test Variable"
       }
-    ]
+    ],
+    "persistent": false
   },
   "changes distribution type": {
     "objType": "Event",
@@ -225,6 +231,7 @@
         "value": 100,
         "useVariable": false
       }
-    ]
+    ],
+    "persistent": false
   }
 }

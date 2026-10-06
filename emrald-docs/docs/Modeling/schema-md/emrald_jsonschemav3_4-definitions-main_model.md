@@ -1,4 +1,4 @@
-# Main\_Model Schema
+# Main_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/MainModel
@@ -6,37 +6,37 @@ EMRALD_Model#/definitions/MainModel
 
 EMRALD model schema version 3.4
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MainModel Type
 
-`object` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+`object` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 # MainModel Properties
 
-| Property                            | Type          | Required | Nullable       | Defined by                                                                                                                                                 |
-| :---------------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")                         |
-| [objType](#objtype)                 | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")               |
-| [name](#name)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")                     |
-| [desc](#desc)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")                     |
-| [emraldVersion](#emraldversion)     | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")   |
-| [version](#version)                 | `number`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")               |
-| [versionHistory](#versionhistory)   | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory") |
-| [filename](#filename)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")             |
-| [DiagramList](#diagramlist)         | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")       |
-| [ExtSimList](#extsimlist)           | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")         |
-| [StateList](#statelist)             | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")           |
-| [ActionList](#actionlist)           | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")         |
-| [EventList](#eventlist)             | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")           |
-| [LogicNodeList](#logicnodelist)     | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")   |
-| [VariableList](#variablelist)       | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")     |
-| [templates](#templates)             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")           |
-| [multiThreadInfo](#multithreadinfo) | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")                     |
-| [changeLog](#changelog)             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")                                 |
-| [group](#group)                     | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")                                         |
+| Property                            | Type          | Required | Nullable       | Defined by                                                                                                                                                |
+| :---------------------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id)                           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")                         |
+| [objType](#objtype)                 | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")               |
+| [name](#name)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")                     |
+| [desc](#desc)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")                     |
+| [emraldVersion](#emraldversion)     | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")   |
+| [version](#version)                 | `number`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")               |
+| [versionHistory](#versionhistory)   | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory") |
+| [filename](#filename)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")             |
+| [DiagramList](#diagramlist)         | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")       |
+| [ExtSimList](#extsimlist)           | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")         |
+| [StateList](#statelist)             | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")           |
+| [ActionList](#actionlist)           | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")         |
+| [EventList](#eventlist)             | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")           |
+| [LogicNodeList](#logicnodelist)     | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")   |
+| [VariableList](#variablelist)       | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")     |
+| [templates](#templates)             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")           |
+| [multiThreadInfo](#multithreadinfo) | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")                     |
+| [changeLog](#changelog)             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")                                 |
+| [group](#group)                     | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")                                         |
 
 ## id
 
@@ -50,7 +50,7 @@ Temporary, only used internally for some identification or uniqueness needs
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-id.md "EMRALD_Model#/definitions/MainModel/properties/id")
 
 ### id Type
 
@@ -68,7 +68,7 @@ Temporary, only used internally for some identification or uniqueness needs
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-objtype.md "EMRALD_Model#/definitions/MainModel/properties/objType")
 
 ### objType Type
 
@@ -94,7 +94,7 @@ Name of the EMRALD model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-name.md "EMRALD_Model#/definitions/MainModel/properties/name")
 
 ### name Type
 
@@ -112,7 +112,7 @@ description of the EMRALD model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-desc.md "EMRALD_Model#/definitions/MainModel/properties/desc")
 
 ### desc Type
 
@@ -130,7 +130,7 @@ Version of the EMRALD model schema
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-emraldversion.md "EMRALD_Model#/definitions/MainModel/properties/emraldVersion")
 
 ### emraldVersion Type
 
@@ -148,7 +148,7 @@ Version of the users model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-version.md "EMRALD_Model#/definitions/MainModel/properties/version")
 
 ### version Type
 
@@ -166,7 +166,7 @@ The user's model version history and change descriptions
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-versionhistory.md "EMRALD_Model#/definitions/MainModel/properties/versionHistory")
 
 ### versionHistory Type
 
@@ -184,7 +184,7 @@ Name of the original file that was opened to help distinguish between different 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-filename.md "EMRALD_Model#/definitions/MainModel/properties/filename")
 
 ### filename Type
 
@@ -202,7 +202,7 @@ All the diagrams for the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-diagramlist.md "EMRALD_Model#/definitions/MainModel/properties/DiagramList")
 
 ### DiagramList Type
 
@@ -220,7 +220,7 @@ All the external simulation links for the mdoel
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-extsimlist.md "EMRALD_Model#/definitions/MainModel/properties/ExtSimList")
 
 ### ExtSimList Type
 
@@ -238,7 +238,7 @@ All of the states for the different diagrams of the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-statelist.md "EMRALD_Model#/definitions/MainModel/properties/StateList")
 
 ### StateList Type
 
@@ -256,7 +256,7 @@ All the actions that can be used in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-actionlist.md "EMRALD_Model#/definitions/MainModel/properties/ActionList")
 
 ### ActionList Type
 
@@ -274,7 +274,7 @@ All the events that are used in the model.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-eventlist.md "EMRALD_Model#/definitions/MainModel/properties/EventList")
 
 ### EventList Type
 
@@ -292,7 +292,7 @@ All the logic nodes to make the logic trees in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-logicnodelist.md "EMRALD_Model#/definitions/MainModel/properties/LogicNodeList")
 
 ### LogicNodeList Type
 
@@ -310,7 +310,7 @@ All the variables used in the model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-variablelist.md "EMRALD_Model#/definitions/MainModel/properties/VariableList")
 
 ### VariableList Type
 
@@ -324,15 +324,15 @@ Templates available to make new diagrams in the model. These are basically small
 
 * is optional
 
-* Type: `object[]` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+* Type: `object[]` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-main_model-properties-templates.md "EMRALD_Model#/definitions/MainModel/properties/templates")
 
 ### templates Type
 
-`object[]` ([Main\_Model](emrald_jsonschemav3_4-definitions-main_model.md))
+`object[]` ([Main_Model](emrald_jsonschemav3_4-definitions-main_model.md))
 
 ## multiThreadInfo
 
@@ -346,7 +346,7 @@ Templates available to make new diagrams in the model. These are basically small
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-multithreadinfo.md "EMRALD_Model#/definitions/MainModel/properties/multiThreadInfo")
 
 ### multiThreadInfo Type
 
@@ -364,7 +364,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/MainModel/properties/changeLog")
 
 ### changeLog Type
 
@@ -382,7 +382,7 @@ What catagory grouping this item belongs to. Used to indicate a group for and EM
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-group.md "EMRALD_Model#/definitions/MainModel/properties/group")
 
 ### group Type
 

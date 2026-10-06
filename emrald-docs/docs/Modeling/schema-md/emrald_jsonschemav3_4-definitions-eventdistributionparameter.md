@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/EventDistributionParameter
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## EventDistributionParameter Type
 
@@ -16,13 +16,13 @@ EMRALD_Model#/definitions/EventDistributionParameter
 
 # EventDistributionParameter Properties
 
-| Property                    | Type      | Required | Nullable       | Defined by                                                                                                                                                                            |
-| :-------------------------- | :-------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [name](#name)               | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")               |
-| [value](#value)             | Merged    | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")             |
-| [timeRate](#timerate)       | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")       |
-| [useVariable](#usevariable) | `boolean` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable") |
-| [variable](#variable)       | `string`  | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")       |
+| Property                    | Type      | Required | Nullable       | Defined by                                                                                                                                                                           |
+| :-------------------------- | :-------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [name](#name)               | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")               |
+| [value](#value)             | Merged    | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")             |
+| [timeRate](#timerate)       | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")       |
+| [useVariable](#usevariable) | `boolean` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable") |
+| [variable](#variable)       | `string`  | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")       |
 
 ## name
 
@@ -36,7 +36,7 @@ For event type of etDistribution this is the name of the distribution parameter.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-name.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/name")
 
 ### name Type
 
@@ -71,7 +71,7 @@ Optional. The value of the parameter if the useVariable flag is false. Can be a 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-value.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/value")
 
 ### value Type
 
@@ -95,7 +95,7 @@ Optional, For events of type etTimer. This is a time unit if a variable is used 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-timerate.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/timeRate")
 
 ### timeRate Type
 
@@ -126,7 +126,7 @@ Flag to use the variable string vs the value item for the property
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-usevariable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/useVariable")
 
 ### useVariable Type
 
@@ -144,7 +144,7 @@ Optional. The reference name of the variable to use as the value of the paramete
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-eventdistributionparameter-properties-variable.md "EMRALD_Model#/definitions/EventDistributionParameter/properties/variable")
 
 ### variable Type
 

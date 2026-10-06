@@ -73,7 +73,7 @@ export default defineConfig({
           { text: 'Introduction', link: '/Modeling/schema-intro' },
           {
             text: 'Schema Definition',
-            link: '/Modeling/schema-md/emrald_jsonschemav3_0',
+            link: '/Modeling/schema-md/emrald_jsonschemav3_4',
           },
         ],
       },

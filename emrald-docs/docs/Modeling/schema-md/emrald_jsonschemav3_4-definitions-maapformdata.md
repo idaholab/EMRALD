@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MAAPFormData
 
 Form data used by the MAAP form
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MAAPFormData Type
 
@@ -16,21 +16,21 @@ Form data used by the MAAP form
 
 # MAAPFormData Properties
 
-| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                              |
-| :---------------------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [exePath](#exepath)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")                       |
-| [sourceElements](#sourceelements)         | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")         |
-| [parameters](#parameters)                 | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")                 |
-| [initiators](#initiators)                 | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")                 |
-| [inputBlocks](#inputblocks)               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")               |
-| [fileRefs](#filerefs)                     | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")                     |
-| [inputPath](#inputpath)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")                   |
-| [parameterPath](#parameterpath)           | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")           |
-| [possibleInitiators](#possibleinitiators) | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators") |
-| [docLinkVariable](#doclinkvariable)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")       |
-| [output](#output)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")                         |
-| [caType](#catype)                         | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")                                         |
-| [needsUpgrade](#needsupgrade)             | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")             |
+| Property                                  | Type          | Required | Nullable       | Defined by                                                                                                                                                             |
+| :---------------------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [exePath](#exepath)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")                       |
+| [sourceElements](#sourceelements)         | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")         |
+| [parameters](#parameters)                 | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")                 |
+| [initiators](#initiators)                 | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")                 |
+| [inputBlocks](#inputblocks)               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")               |
+| [fileRefs](#filerefs)                     | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")                     |
+| [inputPath](#inputpath)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")                   |
+| [parameterPath](#parameterpath)           | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")           |
+| [possibleInitiators](#possibleinitiators) | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators") |
+| [docLinkVariable](#doclinkvariable)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")       |
+| [output](#output)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")                         |
+| [caType](#catype)                         | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")                                         |
+| [needsUpgrade](#needsupgrade)             | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")             |
 
 ## exePath
 
@@ -44,7 +44,7 @@ The path to the MAAP executable on the user's machine
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-exepath.md "EMRALD_Model#/definitions/MAAPFormData/properties/exePath")
 
 ### exePath Type
 
@@ -58,15 +58,15 @@ The contents of original .inp file parsed into JSON
 
 * is optional
 
-* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements-items.md))
+* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements.md "EMRALD_Model#/definitions/MAAPFormData/properties/sourceElements")
 
 ### sourceElements Type
 
-an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapformdata-properties-sourceelements-items.md))
+an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 ## parameters
 
@@ -80,7 +80,7 @@ Source elements from the .inp file identified as parameters
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameters.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameters")
 
 ### parameters Type
 
@@ -94,15 +94,15 @@ Source elements from the .inp file identified as initiators
 
 * is optional
 
-* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators-items.md))
+* Type: an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/initiators")
 
 ### initiators Type
 
-an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapformdata-properties-initiators-items.md))
+an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsourceelement.md))
 
 ## inputBlocks
 
@@ -116,7 +116,7 @@ Source elements from the .inp file identified as input blocks (if blocks, when b
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputblocks.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputBlocks")
 
 ### inputBlocks Type
 
@@ -134,7 +134,7 @@ The paths to other files referenced by the .inp and .par files
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-filerefs.md "EMRALD_Model#/definitions/MAAPFormData/properties/fileRefs")
 
 ### fileRefs Type
 
@@ -152,7 +152,7 @@ The full path to the .inp file on the user's machine
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-inputpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/inputPath")
 
 ### inputPath Type
 
@@ -170,7 +170,7 @@ The full path to the .par file on the user's machine
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-parameterpath.md "EMRALD_Model#/definitions/MAAPFormData/properties/parameterPath")
 
 ### parameterPath Type
 
@@ -188,7 +188,7 @@ A list of possible initiators extracted from the .par file
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-possibleinitiators.md "EMRALD_Model#/definitions/MAAPFormData/properties/possibleInitiators")
 
 ### possibleInitiators Type
 
@@ -206,7 +206,7 @@ The doc link variable used to store the results
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-doclinkvariable.md "EMRALD_Model#/definitions/MAAPFormData/properties/docLinkVariable")
 
 ### docLinkVariable Type
 
@@ -224,7 +224,7 @@ The MAAP output variable to store in the doc link variable
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-output.md "EMRALD_Model#/definitions/MAAPFormData/properties/output")
 
 ### output Type
 
@@ -242,7 +242,7 @@ The MAAP output variable to store in the doc link variable
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-customformtype.md "EMRALD_Model#/definitions/MAAPFormData/properties/caType")
 
 ### caType Type
 
@@ -268,7 +268,7 @@ unknown ([CustomFormType](emrald_jsonschemav3_4-definitions-customformtype.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata-properties-needsupgrade.md "EMRALD_Model#/definitions/MAAPFormData/properties/needsUpgrade")
 
 ### needsUpgrade Type
 

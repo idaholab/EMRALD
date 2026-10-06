@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/ChangeLog/items
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## items Type
 
@@ -16,11 +16,11 @@ EMRALD_Model#/definitions/ChangeLog/items
 
 # items Properties
 
-| Property              | Type     | Required | Nullable       | Defined by                                                                                                                                                         |
-| :-------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [cngDesc](#cngdesc)   | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngdesc.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngDesc")   |
-| [dateTime](#datetime) | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-datetime.md "EMRALD_Model#/definitions/ChangeLog/items/properties/dateTime") |
-| [cngID](#cngid)       | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngid.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngID")       |
+| Property              | Type     | Required | Nullable       | Defined by                                                                                                                                                        |
+| :-------------------- | :------- | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [cngDesc](#cngdesc)   | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngdesc.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngDesc")   |
+| [dateTime](#datetime) | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-datetime.md "EMRALD_Model#/definitions/ChangeLog/items/properties/dateTime") |
+| [cngID](#cngid)       | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngid.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngID")       |
 
 ## cngDesc
 
@@ -34,7 +34,7 @@ Description of the change.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngdesc.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngDesc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngdesc.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngDesc")
 
 ### cngDesc Type
 
@@ -52,7 +52,7 @@ ISO 8601 date time format for the change
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-datetime.md "EMRALD_Model#/definitions/ChangeLog/items/properties/dateTime")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-datetime.md "EMRALD_Model#/definitions/ChangeLog/items/properties/dateTime")
 
 ### dateTime Type
 
@@ -70,7 +70,7 @@ ISO 8601 date time format for the change
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngid.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngID")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog-changelogitems-properties-cngid.md "EMRALD_Model#/definitions/ChangeLog/items/properties/cngID")
 
 ### cngID Type
 

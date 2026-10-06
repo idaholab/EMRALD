@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## items Type
 
@@ -16,13 +16,13 @@ EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items
 
 # items Properties
 
-| Property                      | Type     | Required | Nullable       | Defined by                                                                                                                                                                                                                                 |
-| :---------------------------- | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [stateName](#statename)       | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-statename.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/stateName")       |
-| [type](#type)                 | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-type.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/type")                 |
-| [accrualMult](#accrualmult)   | `number` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualmult.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualMult")   |
-| [multRate](#multrate)         | `string` | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-multrate.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/multRate")         |
-| [accrualTable](#accrualtable) | `array`  | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualtable.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualTable") |
+| Property                      | Type     | Required | Nullable       | Defined by                                                                                                                                                                                                                                |
+| :---------------------------- | :------- | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [stateName](#statename)       | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-statename.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/stateName")       |
+| [type](#type)                 | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-type.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/type")                 |
+| [accrualMult](#accrualmult)   | `number` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualmult.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualMult")   |
+| [multRate](#multrate)         | `string` | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-multrate.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/multRate")         |
+| [accrualTable](#accrualtable) | `array`  | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualtable.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualTable") |
 
 ## stateName
 
@@ -36,7 +36,7 @@ Reference name to the state contributiong to the accrual calculation.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-statename.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/stateName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-statename.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/stateName")
 
 ### stateName Type
 
@@ -54,7 +54,7 @@ Type of accrual for the specified state.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-type.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-type.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/type")
 
 ### type Type
 
@@ -81,7 +81,7 @@ Optional. If type is ctMultiplier then this is the multiplier value for every ti
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualmult.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualMult")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualmult.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualMult")
 
 ### accrualMult Type
 
@@ -99,7 +99,7 @@ This is the time rate for the accrualMult in calculating the value for the varia
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-multrate.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/multRate")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-multrate.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/multRate")
 
 ### multRate Type
 
@@ -117,7 +117,7 @@ Optional. If the type is ctTable then this is the array of values used in calcul
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualtable.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualTable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-variable-properties-accrualstatesdata-accrualstatesdataitems-properties-accrualtable.md "EMRALD_Model#/definitions/Variable/properties/accrualStatesData/items/properties/accrualTable")
 
 ### accrualTable Type
 

@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/ExtSim
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## ExtSim Type
 
@@ -16,13 +16,13 @@ EMRALD_Model#/definitions/ExtSim
 
 # ExtSim Properties
 
-| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                      |
-| :---------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")                     |
-| [objType](#objtype)           | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")           |
-| [name](#name)                 | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")                 |
-| [resourceName](#resourcename) | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName") |
-| [required](#required)         | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")         |
+| Property                      | Type          | Required | Nullable       | Defined by                                                                                                                                     |
+| :---------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id)                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")                     |
+| [objType](#objtype)           | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")           |
+| [name](#name)                 | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")                 |
+| [resourceName](#resourcename) | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName") |
+| [required](#required)         | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")         |
 
 ## id
 
@@ -36,7 +36,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-id.md "EMRALD_Model#/definitions/ExtSim/properties/id")
 
 ### id Type
 
@@ -54,7 +54,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-objtype.md "EMRALD_Model#/definitions/ExtSim/properties/objType")
 
 ### objType Type
 
@@ -80,7 +80,7 @@ referenace name in the model for the external simulation
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-name.md "EMRALD_Model#/definitions/ExtSim/properties/name")
 
 ### name Type
 
@@ -98,7 +98,7 @@ name of resource type to connect to in MsgServer, not unique if more than one si
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-resourcename.md "EMRALD_Model#/definitions/ExtSim/properties/resourceName")
 
 ### resourceName Type
 
@@ -116,7 +116,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-extsim-properties-required.md "EMRALD_Model#/definitions/ExtSim/properties/required")
 
 ### required Type
 

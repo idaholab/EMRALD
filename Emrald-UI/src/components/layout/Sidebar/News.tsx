@@ -20,24 +20,25 @@ export const News: React.FC = () => {
 
   useEffect(() => {
     const getLatestDiscussion = async () => {
-      const discussion = (
-        (await (
-          await fetch(
-            'https://api.github.com/repos/idaholab/emrald/discussions',
-          )
-        ).json()) as Discussion[]
-      )
-        .filter(d => d.category.name === 'Announcements')
-        .findLast(d => d.state === 'open');
-      if (discussion !== undefined && discussion.state === 'open') {
-        setTitle(discussion.title);
-        const body = discussion.body;
-        const mdLink = /\[([^\]]+)\]\(([^)]+)\)/;
-        if (mdLink.test(body)) {
-          setBody(body.replace(mdLink, '$1'));
-          setUrl(body.replace(mdLink, '$2'));
+      const tryDiscussion = await fetch(
+        'https://api.github.com/repos/idaholab/emrald/discussions',
+      );
+      if (tryDiscussion.status === 200) {
+        const discussion = ((await tryDiscussion.json()) as Discussion[])
+          .filter(d => d.category.name === 'Announcements')
+          .findLast(d => d.state === 'open');
+        if (discussion !== undefined && discussion.state === 'open') {
+          setTitle(discussion.title);
+          const body = discussion.body;
+          const mdLink = /\[([^\]]+)\]\(([^)]+)\)/;
+          if (mdLink.test(body)) {
+            setBody(body.replace(mdLink, '$1'));
+            setUrl(body.replace(mdLink, '$2'));
+          } else {
+            setBody(discussion.body);
+          }
         } else {
-          setBody(discussion.body);
+          setVisible(false);
         }
       } else {
         setVisible(false);

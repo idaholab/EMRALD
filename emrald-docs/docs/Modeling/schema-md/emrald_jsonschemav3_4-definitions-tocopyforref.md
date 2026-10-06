@@ -1,4 +1,4 @@
-# Untitled object in EMRALD\_Model Schema
+# Untitled object in EMRALD_Model Schema
 
 ```txt
 EMRALD_Model#/definitions/ToCopyForRef
@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## ToCopyForRef Type
 
@@ -16,14 +16,14 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 # ToCopyForRef Properties
 
-| Property                  | Type     | Required | Nullable       | Defined by                                                                                                                                              |
-| :------------------------ | :------- | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [ItemName](#itemname)     | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")     |
-| [ItemType](#itemtype)     | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")     |
-| [RefPath](#refpath)       | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")       |
-| [ToCopy](#tocopy)         | `array`  | Optional | can be null    | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")         |
-| [RelPath](#relpath)       | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")       |
-| [AdjRelRoot](#adjrelroot) | `string` | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot") |
+| Property                  | Type     | Required | Nullable       | Defined by                                                                                                                                             |
+| :------------------------ | :------- | :------- | :------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ItemName](#itemname)     | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")     |
+| [ItemType](#itemtype)     | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")     |
+| [RefPath](#refpath)       | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")       |
+| [ToCopy](#tocopy)         | `array`  | Optional | can be null    | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")         |
+| [RelPath](#relpath)       | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")       |
+| [AdjRelRoot](#adjrelroot) | `string` | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot") |
 
 ## ItemName
 
@@ -37,7 +37,7 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemname.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemName")
 
 ### ItemName Type
 
@@ -55,7 +55,7 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-itemtype.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ItemType")
 
 ### ItemType Type
 
@@ -89,7 +89,7 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-refpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RefPath")
 
 ### RefPath Type
 
@@ -107,7 +107,7 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 * can be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-tocopy.md "EMRALD_Model#/definitions/ToCopyForRef/properties/ToCopy")
 
 ### ToCopy Type
 
@@ -125,7 +125,7 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-relpath.md "EMRALD_Model#/definitions/ToCopyForRef/properties/RelPath")
 
 ### RelPath Type
 
@@ -143,7 +143,7 @@ EMRALD_Model#/definitions/ToCopyForRef
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-tocopyforref-properties-adjrelroot.md "EMRALD_Model#/definitions/ToCopyForRef/properties/AdjRelRoot")
 
 ### AdjRelRoot Type
 

@@ -6,55 +6,51 @@ EMRALD_Model#/definitions/Action
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## Action Type
 
 `object` ([Action](emrald_jsonschemav3_4-definitions-action.md))
 
-all of
-
-* [Untitled undefined type in EMRALD_Model](emrald_jsonschemav3_4-definitions-action-allof-0.md "check type definition")
-
 # Action Properties
 
-| Property                                              | Type          | Required | Nullable       | Defined by                                                                                                                                                              |
-| :---------------------------------------------------- | :------------ | :------- | :------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [id](#id)                                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")                                             |
-| [objType](#objtype)                                   | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")                                   |
-| [name](#name)                                         | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")                                         |
-| [desc](#desc)                                         | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")                                         |
-| [actType](#acttype)                                   | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")                                   |
-| [mainItem](#mainitem)                                 | `boolean`     | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")                                 |
-| [mutExcl](#mutexcl)                                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")                                   |
-| [newStates](#newstates)                               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")                               |
-| [scriptCode](#scriptcode)                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")                             |
-| [variableName](#variablename)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")                         |
-| [codeVariables](#codevariables)                       | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")                       |
-| [useDistribution](#usedistribution)                   | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")                   |
-| [distType](#disttype)                                 | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")                                 |
-| [parameters](#parameters)                             | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")                             |
-| [sim3DMessage](#sim3dmessage)                         | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")                         |
-| [extSim](#extsim)                                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")                                     |
-| [sim3DVariable](#sim3dvariable)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")                       |
-| [openSimVarParams](#opensimvarparams)                 | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")                 |
-| [sim3DModelRef](#sim3dmodelref)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")                       |
-| [sim3DConfigData](#sim3dconfigdata)                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")                   |
-| [simEndTime](#simendtime)                             | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")                             |
-| [makeInputFileCode](#makeinputfilecode)               | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")               |
-| [exePath](#exepath)                                   | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")                                   |
-| [ExeFromPreCode](#exefromprecode)                     | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")                     |
-| [useProjPathExeWorkingDir](#useprojpathexeworkingdir) | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir") |
-| [processOutputFileCode](#processoutputfilecode)       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")       |
-| [formData](#formdata)                                 | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-formdata.md "EMRALD_Model#/definitions/Action/properties/formData")                                 |
-| [template](#template)                                 | `object`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")                                 |
-| [returnProcess](#returnprocess)                       | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")                       |
-| [changeLog](#changelog)                               | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")                                                 |
-| [raType](#ratype)                                     | `string`      | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")                                     |
-| [updateVariables](#updatevariables)                   | `array`       | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")                   |
-| [required](#required)                                 | `boolean`     | Optional | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")                                 |
+| Property                                              | Type          | Required | Nullable       | Defined by                                                                                                                                                             |
+| :---------------------------------------------------- | :------------ | :------- | :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [id](#id)                                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")                                             |
+| [objType](#objtype)                                   | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")                                   |
+| [name](#name)                                         | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")                                         |
+| [desc](#desc)                                         | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")                                         |
+| [actType](#acttype)                                   | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")                                   |
+| [mainItem](#mainitem)                                 | `boolean`     | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")                                 |
+| [mutExcl](#mutexcl)                                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")                                   |
+| [newStates](#newstates)                               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")                               |
+| [scriptCode](#scriptcode)                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")                             |
+| [variableName](#variablename)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")                         |
+| [codeVariables](#codevariables)                       | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")                       |
+| [useDistribution](#usedistribution)                   | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")                   |
+| [distType](#disttype)                                 | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")                                 |
+| [parameters](#parameters)                             | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")                             |
+| [sim3DMessage](#sim3dmessage)                         | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")                         |
+| [extSim](#extsim)                                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")                                     |
+| [sim3DVariable](#sim3dvariable)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")                       |
+| [openSimVarParams](#opensimvarparams)                 | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")                 |
+| [sim3DModelRef](#sim3dmodelref)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")                       |
+| [sim3DConfigData](#sim3dconfigdata)                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")                   |
+| [simEndTime](#simendtime)                             | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")                             |
+| [makeInputFileCode](#makeinputfilecode)               | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")               |
+| [exePath](#exepath)                                   | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")                                   |
+| [ExeFromPreCode](#exefromprecode)                     | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")                     |
+| [useProjPathExeWorkingDir](#useprojpathexeworkingdir) | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir") |
+| [processOutputFileCode](#processoutputfilecode)       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")       |
+| [formData](#formdata)                                 | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata.md "EMRALD_Model#/definitions/Action/properties/formData")                                               |
+| [template](#template)                                 | `object`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")                                 |
+| [returnProcess](#returnprocess)                       | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")                       |
+| [changeLog](#changelog)                               | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")                                                 |
+| [raType](#ratype)                                     | `string`      | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")                                     |
+| [updateVariables](#updatevariables)                   | `array`       | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")                   |
+| [required](#required)                                 | `boolean`     | Optional | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")                                 |
 
 ## id
 
@@ -68,7 +64,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-id.md "EMRALD_Model#/definitions/Action/properties/id")
 
 ### id Type
 
@@ -86,7 +82,7 @@ Optional, internal use only.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-objtype.md "EMRALD_Model#/definitions/Action/properties/objType")
 
 ### objType Type
 
@@ -112,7 +108,7 @@ referenace name in the model for the action
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-name.md "EMRALD_Model#/definitions/Action/properties/name")
 
 ### name Type
 
@@ -130,7 +126,7 @@ User entered description of the action
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-desc.md "EMRALD_Model#/definitions/Action/properties/desc")
 
 ### desc Type
 
@@ -148,7 +144,7 @@ The type of action
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-acttype.md "EMRALD_Model#/definitions/Action/properties/actType")
 
 ### actType Type
 
@@ -177,7 +173,7 @@ Is this a global item to show up in the global list, If false it showes up in lo
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mainitem.md "EMRALD_Model#/definitions/Action/properties/mainItem")
 
 ### mainItem Type
 
@@ -195,7 +191,7 @@ Optional. Only one action may be taken so the probability determines if this act
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-mutexcl.md "EMRALD_Model#/definitions/Action/properties/mutExcl")
 
 ### mutExcl Type
 
@@ -213,7 +209,7 @@ Optional. If this is a transition action then these are the states that it could
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-newstates.md "EMRALD_Model#/definitions/Action/properties/newStates")
 
 ### newStates Type
 
@@ -231,7 +227,7 @@ Optionsl. Script code to be executed if the action type has a script
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-scriptcode.md "EMRALD_Model#/definitions/Action/properties/scriptCode")
 
 ### scriptCode Type
 
@@ -249,7 +245,7 @@ Optional. For change var value actions, the result of the script is assigned to 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-variablename.md "EMRALD_Model#/definitions/Action/properties/variableName")
 
 ### variableName Type
 
@@ -267,7 +263,7 @@ Optional. If action has a script, these are the variable name references for var
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-codevariables.md "EMRALD_Model#/definitions/Action/properties/codeVariables")
 
 ### codeVariables Type
 
@@ -285,7 +281,7 @@ Optional. For action type atCngVarVal. When true, the new value is sampled from 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-usedistribution.md "EMRALD_Model#/definitions/Action/properties/useDistribution")
 
 ### useDistribution Type
 
@@ -303,7 +299,7 @@ Optional. For event type of etDistribution this is the type of distribution the 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-disttype.md "EMRALD_Model#/definitions/Action/properties/distType")
 
 ### distType Type
 
@@ -337,7 +333,7 @@ Optional. For action type atCngVarVal when useDistribution is true, this is the 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-parameters.md "EMRALD_Model#/definitions/Action/properties/parameters")
 
 ### parameters Type
 
@@ -355,7 +351,7 @@ Optional. For action type at3DSimMsg, this is the message to be sent to the coup
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmessage.md "EMRALD_Model#/definitions/Action/properties/sim3DMessage")
 
 ### sim3DMessage Type
 
@@ -373,7 +369,7 @@ Optional. For action type at3DSimMsg, this is the name of the coupled external s
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-extsim.md "EMRALD_Model#/definitions/Action/properties/extSim")
 
 ### extSim Type
 
@@ -391,7 +387,7 @@ Optional. For action type at3DSimMsg and a sim3DMessage of atCompModify, this is
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dvariable.md "EMRALD_Model#/definitions/Action/properties/sim3DVariable")
 
 ### sim3DVariable Type
 
@@ -409,7 +405,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-opensimvarparams.md "EMRALD_Model#/definitions/Action/properties/openSimVarParams")
 
 ### openSimVarParams Type
 
@@ -427,7 +423,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dmodelref.md "EMRALD_Model#/definitions/Action/properties/sim3DModelRef")
 
 ### sim3DModelRef Type
 
@@ -445,7 +441,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-sim3dconfigdata.md "EMRALD_Model#/definitions/Action/properties/sim3DConfigData")
 
 ### sim3DConfigData Type
 
@@ -463,7 +459,7 @@ Optional. For action type at3DSimMsg with a sim3DMessage of type atOpenSim, this
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-simendtime.md "EMRALD_Model#/definitions/Action/properties/simEndTime")
 
 ### simEndTime Type
 
@@ -481,7 +477,7 @@ Optional. For action type atRunExtApp. It is the C# script to be executed and th
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-makeinputfilecode.md "EMRALD_Model#/definitions/Action/properties/makeInputFileCode")
 
 ### makeInputFileCode Type
 
@@ -499,7 +495,7 @@ Optional. For action type atRunExtApp. It is the path of the exe to be run. It c
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exepath.md "EMRALD_Model#/definitions/Action/properties/exePath")
 
 ### exePath Type
 
@@ -517,7 +513,7 @@ Optional. For action type atRunExtApp. When true, the preprocessor code return s
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-exefromprecode.md "EMRALD_Model#/definitions/Action/properties/ExeFromPreCode")
 
 ### ExeFromPreCode Type
 
@@ -543,7 +539,7 @@ Optional. For action type atRunExtApp. When true, the executable working directo
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-useprojpathexeworkingdir.md "EMRALD_Model#/definitions/Action/properties/useProjPathExeWorkingDir")
 
 ### useProjPathExeWorkingDir Type
 
@@ -569,7 +565,7 @@ Optional. For action type atRunExtApp. It is the C# script to be executed after 
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-processoutputfilecode.md "EMRALD_Model#/definitions/Action/properties/processOutputFileCode")
 
 ### processOutputFileCode Type
 
@@ -577,21 +573,21 @@ Optional. For action type atRunExtApp. It is the C# script to be executed after 
 
 ## formData
 
-Used for executing applications with custom form data. This can be anything needed by the custom form, but in the end only the standard atRunExtApp fields are used to do the action. TODO: This type definition is set up for only the MAAP form. If other forms are added in the future, this definition will need to be adjusted for their form data formats.
+Form data used by the MAAP form
 
 `formData`
 
 * is optional
 
-* Type: `object` ([Details](emrald_jsonschemav3_4-definitions-action-properties-formdata.md))
+* Type: `object` ([MAAPFormData](emrald_jsonschemav3_4-definitions-maapformdata.md))
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-formdata.md "EMRALD_Model#/definitions/Action/properties/formData")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapformdata.md "EMRALD_Model#/definitions/Action/properties/formData")
 
 ### formData Type
 
-`object` ([Details](emrald_jsonschemav3_4-definitions-action-properties-formdata.md))
+`object` ([MAAPFormData](emrald_jsonschemav3_4-definitions-maapformdata.md))
 
 ## template
 
@@ -605,7 +601,7 @@ Optional. For action type atRunExtApp. It is used for custom app form.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-template.md "EMRALD_Model#/definitions/Action/properties/template")
 
 ### template Type
 
@@ -623,7 +619,7 @@ Optional. For action type atRunExtApp. It is flag to indicate the type of return
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-returnprocess.md "EMRALD_Model#/definitions/Action/properties/returnProcess")
 
 ### returnProcess Type
 
@@ -641,7 +637,7 @@ Type of the diagram.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-changelog.md "EMRALD_Model#/definitions/Action/properties/changeLog")
 
 ### changeLog Type
 
@@ -659,7 +655,7 @@ String for the run application action, only for UI used. Options depend on the c
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-ratype.md "EMRALD_Model#/definitions/Action/properties/raType")
 
 ### raType Type
 
@@ -677,7 +673,7 @@ Used for custom form, variables used in the form.
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-updatevariables.md "EMRALD_Model#/definitions/Action/properties/updateVariables")
 
 ### updateVariables Type
 
@@ -695,7 +691,7 @@ If this is a template then it indicates the item must exist in the current model
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-action-properties-required.md "EMRALD_Model#/definitions/Action/properties/required")
 
 ### required Type
 

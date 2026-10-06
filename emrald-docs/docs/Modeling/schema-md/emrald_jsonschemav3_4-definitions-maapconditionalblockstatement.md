@@ -6,9 +6,9 @@ EMRALD_Model#/definitions/MAAPConditionalBlockStatement
 
 
 
-| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                       |
-| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :----------------------------------------------------------------------------------------------- |
-| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD\_JsonSchemaV3\_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
+| Abstract            | Extensible | Status         | Identifiable | Custom Properties | Additional Properties | Access Restrictions | Defined In                                                                                     |
+| :------------------ | :--------- | :------------- | :----------- | :---------------- | :-------------------- | :------------------ | :--------------------------------------------------------------------------------------------- |
+| Can be instantiated | No         | Unknown status | No           | Forbidden         | Forbidden             | none                | [EMRALD_JsonSchemaV3_4.json\*](../../../out/EMRALD_JsonSchemaV3_4.json "open original schema") |
 
 ## MAAPConditionalBlockStatement Type
 
@@ -16,13 +16,13 @@ EMRALD_Model#/definitions/MAAPConditionalBlockStatement
 
 # MAAPConditionalBlockStatement Properties
 
-| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                                              |
-| :---------------------- | :------------ | :------- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [blockType](#blocktype) | `string`      | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType") |
-| [test](#test)           | Merged        | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")           |
-| [type](#type)           | Not specified | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")           |
-| [value](#value)         | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")         |
-| [comments](#comments)   | `array`       | Required | cannot be null | [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")                                    |
+| Property                | Type          | Required | Nullable       | Defined by                                                                                                                                                                             |
+| :---------------------- | :------------ | :------- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [blockType](#blocktype) | `string`      | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType") |
+| [test](#test)           | Merged        | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")           |
+| [type](#type)           | Not specified | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")           |
+| [value](#value)         | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")         |
+| [comments](#comments)   | `array`       | Required | cannot be null | [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")                                    |
 
 ## blockType
 
@@ -36,7 +36,7 @@ EMRALD_Model#/definitions/MAAPConditionalBlockStatement
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-blocktype.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/blockType")
 
 ### blockType Type
 
@@ -63,7 +63,7 @@ EMRALD_Model#/definitions/MAAPConditionalBlockStatement
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-test.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/test")
 
 ### test Type
 
@@ -105,7 +105,7 @@ any of
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-type.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/type")
 
 ### type Type
 
@@ -131,7 +131,7 @@ unknown
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapconditionalblockstatement-properties-value.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/value")
 
 ### value Type
 
@@ -149,7 +149,7 @@ an array of merged types ([Details](emrald_jsonschemav3_4-definitions-maapsource
 
 * cannot be null
 
-* defined in: [EMRALD\_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")
+* defined in: [EMRALD_Model](emrald_jsonschemav3_4-definitions-maapcommentarray.md "EMRALD_Model#/definitions/MAAPConditionalBlockStatement/properties/comments")
 
 ### comments Type
 
