@@ -11,7 +11,7 @@ Files on a local machine or server can be referenced in the following model loca
 The other files that EMRALD references or creates are done in the simulation engine through the GUI or the command line (See [EMRALD Solver](solver.md) and the [Command Line Options](cmdLineOptions.md) for more details):
 - **UI "Basic Run Loc":** Specifies the location for the Basic Results file, which can also be passed in through the command line.
 - **UI "Path Results Loc":** Specifies the location for the JSON path results file, which can also be passed in through command line.
-- **UI "Debug" Option:** If the user specifies this option, then a debug.txt file is saved to the location where the EMRALD solve engine is executed from, overwriting any previous debug file.
+- **UI "Debug" Option:** If the user specifies this option, then a DebugLog.txt file is saved to the location where the EMRALD solve engine is executed from, overwriting any previous debug file.
 
 ## Dynamic Scripts
 

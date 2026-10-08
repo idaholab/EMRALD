@@ -57,6 +57,8 @@ export default defineConfig({
               { text: 'Multi-Thread Solving', link: '/Modeling/multiThread' },
             ],
           },
+          { text: 'Debugging & Troubleshooting', link: '/Modeling/debugging' },
+          { text: 'Model QA (V&V)', link: '/Modeling/modelQA' },
           {
             text: 'Coupling',
             link: '/Modeling/couplingProtocols',

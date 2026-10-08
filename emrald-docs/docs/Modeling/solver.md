@@ -18,7 +18,7 @@ This will open a File Explorer in which you can navigate to your model file. Sel
 ![Model 1](/images/Modeling/solver/Model1.png)<br/>
 The Model tab should be the window that is open upon opening the solver. After opening your file, the json script for your model should be displayed in the upper window.<br/>
 
-The lower window displays warning messages about errors in the model. After opening the model file, if there are errors, an error should populate this window immediately. It will only display one message at a time; so once it is fixed, the model will need to be validated repeatedly until all errors are addressed. <br/>
+The lower window is the Error panel, which displays messages about errors in the model. After opening the model file, if there are errors, an error should populate this window immediately. It will only display one message at a time; so once it is fixed, the model will need to be validated repeatedly until all errors are addressed. <br/>
 
 If it does not display an error, click the "Validate" button. If it still does not display an error, your model does not have any technical errors and can be run. See what an errorless model looks like below. 
 ![Model 2](/images/Modeling/solver/Model2.png)
@@ -181,7 +181,9 @@ The path results will display the paths taken to arrive at each key state reache
 ### Debug File
 This file is optionally generated. For more information on how to choose this to be generated, see the [Simulation Controls](#simulation-controls) section.
 
-Once generated, the file is saved in a subdirectory in your EMRALD directory at this location: \EMRALD\EMRALD_Sim\bin\Debug\netcoreapp3.1.
+Once generated, a file named `DebugLog.txt` is saved to the directory the EMRALD solve engine is executed from (see [Backend Information](./backendInfo.md#file-references)). Each new simulation overwrites the previous debug file, so rename or copy it before running again if you need to keep the output.
+
+For guidance on reading this file and using it to track down model errors, see [Debugging and Troubleshooting](./debugging.md).
 
 Depending on which selection was chosen, it can either be a basic or detailed debug file.
 
