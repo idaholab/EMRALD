@@ -110,6 +110,8 @@ namespace EMRALD_Sim
             _curSimOptions = JsonConvert.DeserializeObject<Options_cur>(File.ReadAllText(args[0])) ?? new Options_cur();
             _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
             _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
+            //A relative inpfile resolves against the run directory first, then the options JSON file's location.
+            _curSimOptions.inpfile = CommonFunctions.ResolveInputPath(_curSimOptions.inpfile, args[0]);
             model = _curSimOptions.inpfile;
             execute = true;
             _isCommandLineRun = true;
@@ -449,16 +451,16 @@ namespace EMRALD_Sim
 
       Task.Run(() =>
       {
-        OptionsRun(optionsJsonStr);
+        OptionsRun(optionsJsonStr, jsonPath);
         notificationForm.Invoke(new System.Action(() => notificationForm.Close()));
         Environment.Exit(0);
       });
     }
 
     // Execute a JSON-defined simulation from console workflow.
-    private async void OptionsRun(string optionsJsonStr)
+    private async void OptionsRun(string optionsJsonStr, string optionsFilePath = "")
     {
-      JSONRun simRun = new JSONRun(optionsJsonStr);
+      JSONRun simRun = new JSONRun(optionsJsonStr, "", null, optionsFilePath);
       if (simRun.error != "")
       {
         Console.Write(simRun.error);
