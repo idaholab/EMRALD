@@ -74,12 +74,8 @@ namespace EMRALD_Sim
       _curSimOptions.initVars = _curSimOptions.initVars ?? new List<VarInitValue>();
       _curSimOptions.variables = _curSimOptions.variables ?? new List<string>();
 
-#if DEBUG
-      // Don't allocate a private console when launched with CLI args — it would block AttachConsole below,
-      // and Console.WriteLine would write to a window that closes the instant Environment.Exit fires.
-      if (args.Length == 0)
-        ConsoleHelper.Show();
-#endif
+      // Console allocation (Debug build or -console flag) is handled in Program.Main
+      // so it runs before AttachConsole below.
 
       curDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
       LoadRecentFiles();
@@ -375,6 +371,11 @@ namespace EMRALD_Sim
             }
             break;
 
+          case "-console":
+          case "-showconsole":
+            // Handled in Program.Main before this constructor runs; consume the flag here.
+            break;
+
           case "-help":
           case "-h":
           case "-H":
@@ -406,25 +407,11 @@ namespace EMRALD_Sim
     {
       // Leading newline so output starts on a fresh line after the shell prompt that just returned.
       Console.WriteLine();
-      Console.WriteLine("Pass in a Options JSON file or use the following command line options.");
-      Console.WriteLine("-n \"run count\"");
-      Console.WriteLine("-i \"input model path\"");
-      Console.WriteLine("-r \"results output file\"");
-      Console.WriteLine("-o \"paths output file\"");
-      Console.WriteLine("-threads \"number of threads to use\"");
-      Console.WriteLine("-t \"max run time\"");
-      Console.WriteLine("-e \"execute\"");
-      Console.WriteLine("-m \"parameter to monitor, use []'s to do multiples, example - [x y z] \"");
-      Console.WriteLine("-s \"initial random number seed\"");
-      Console.WriteLine("-d \"debug level \"basic\" or \"detailed\", (optional) range [start end].");
-      Console.WriteLine("    Basic - state movement only. Detailed - state movement, actions and events.");
-      Console.WriteLine("    Example: -d basic [10 20]");
-      Console.WriteLine("-rIntrv \"how often to save the path results, every X number of runs. No value or <1 will result in saving only after all runs are complete.\"");
-      Console.WriteLine("-mergeResults \"merge two or more json path result files into one. The LAST path is the destination; all preceding paths are sources. Estimates the 5th and 95th.");
-      Console.WriteLine("    Example (2 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Combined.json");
-      Console.WriteLine("    Example (3 sources): -mergeResults c:/temp/Batch1.json c:/temp/Batch2.json c:/temp/Batch3.json c:/temp/Combined.json\"");
-      Console.WriteLine("Options JSON file - ");
-      Console.WriteLine(Options_cur.CmdJSON_OptionsExample);
+      CmdLineHelp.PrintIntro();
+      CmdLineHelp.PrintCommonOptions();
+      CmdLineHelp.PrintConsoleFlag();
+      CmdLineHelp.PrintMergeResults();
+      CmdLineHelp.PrintJsonExample();
       Console.Out.Flush();
       Environment.Exit(0);
     }

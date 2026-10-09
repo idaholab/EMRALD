@@ -7,6 +7,8 @@ EMRALD supports two transports for two-way coupling where events in an external 
 
 Both transports carry the same action/event payloads defined in `MessageProtocol.json` (`MessageDefLib`). Choose the option that best fits your network and deployment needs. A reference WebSocket host is provided in the `CouplingWebSocket` and `WebSocketTestServer` projects.
 
+> **Recommendation:** Use **WebSocket** for new coupled simulations. The XMPP transport is planned to be deprecated in a future release; it is retained for backward compatibility with existing models but will not receive new features.
+
 Notice - These coupling features are still in active development and subject to change.
 
 ## XMPP Protocol
