@@ -24,6 +24,32 @@ namespace EMRALD_Sim
     [STAThread]
     static void Main(string[] args)
     {
+      // Allocate a console window when running a Debug build, or when the user
+      // passes -console / -showConsole on the command line. Must happen before
+      // FormMain attaches to the parent process console.
+      bool showConsole = false;
+#if DEBUG
+      // Don't allocate a private console when launched with CLI args — it would block AttachConsole,
+      // and Console.WriteLine would write to a window that closes the instant Environment.Exit fires.
+      showConsole = args.Length == 0;
+#endif
+      if (!showConsole)
+      {
+        foreach (var arg in args)
+        {
+          if (arg.Equals("-console", StringComparison.OrdinalIgnoreCase) ||
+              arg.Equals("-showConsole", StringComparison.OrdinalIgnoreCase))
+          {
+            showConsole = true;
+            break;
+          }
+        }
+      }
+      if (showConsole)
+      {
+        ConsoleHelper.Show();
+      }
+
       // Set up log file path
       _logFilePath = CommonFunctions.NormalizeCombine(Application.StartupPath, "EMRALD_ErrorLog.txt");
 
