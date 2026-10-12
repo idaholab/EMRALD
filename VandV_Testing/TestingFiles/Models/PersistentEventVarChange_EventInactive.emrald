@@ -392,7 +392,7 @@
           "useVariable": false
         }
       ],
-      "onVarChange": "ocResample"
+      "onVarChange": "ocAdjust"
     },
     {
       "id": "cf74155f-a2b4-468b-aae0-781c75adb2a7",

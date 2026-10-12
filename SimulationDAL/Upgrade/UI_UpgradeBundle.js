@@ -1,6 +1,6 @@
 'use strict';
 
-const EMRALD_SchemaVersion = 3.3;
+const EMRALD_SchemaVersion = 3.4;
 
 function UpgradeV1_x(modelTxt) {
     const newModel = JSON.parse(modelTxt);
@@ -615,6 +615,42 @@ function UpgradeV3_3_Recursive(oldModel) {
     };
 }
 
+function UpgradeV3_4(modelTxt) {
+    return {
+        newModel: JSON.stringify(UpgradeV3_4_Recursive(JSON.parse(modelTxt))),
+        errors: [],
+    };
+}
+function UpgradeV3_4_Recursive(oldModel) {
+    const upgradeModel = (oldModel) => ({
+        ...oldModel,
+        emraldVersion: 3.4,
+        ActionList: oldModel.ActionList.map(action => {
+            const oldFormData = action.formData;
+            // Some older models still floating around need to have these properties explicitly deleted
+            delete oldFormData?.sections;
+            delete oldFormData?.varLinks;
+            if (oldFormData
+                && typeof oldFormData.possibleInitiators?.[0] === 'string') {
+                oldFormData.possibleInitiators = oldFormData.possibleInitiators.map(i => ({
+                    type: 'parameter',
+                    value: {
+                        type: 'parameter_name',
+                        value: i,
+                    },
+                }));
+            }
+            const newAction = {
+                ...action,
+                formData: oldFormData,
+            };
+            return newAction;
+        }),
+        templates: oldModel.templates?.map(template => upgradeModel(template)),
+    });
+    return upgradeModel(oldModel);
+}
+
 class Upgrade {
     constructor(modelTxt) {
         this._emraldVersion = 0;
@@ -655,6 +691,7 @@ class Upgrade {
             { emraldVersion: 3.1, upgradeFunction: UpgradeV3_1 },
             { emraldVersion: 3.2, upgradeFunction: UpgradeV3_2 },
             { emraldVersion: 3.3, upgradeFunction: UpgradeV3_3 },
+            { emraldVersion: 3.4, upgradeFunction: UpgradeV3_4 },
         ];
         // Apply upgrades
         for (const upgrade of upgrades) {
