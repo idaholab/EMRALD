@@ -303,7 +303,7 @@ namespace Testing
     protected async Task<bool> TestRunSim(JSONRun runParams)
     {
       var logger = NLog.LogManager.GetLogger(debugLogger);
-      string res = await runParams.RunSim();  // Add await here
+      string res = await runParams.RunSim();
       if (res != "")
       {
         var st = new StackTrace();

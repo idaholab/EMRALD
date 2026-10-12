@@ -486,12 +486,12 @@ namespace SysAndRegressionTesting
       Compare(dir, testName, optionsJ);
     }
     [Fact]
-    [Description("Test persistent events with variables being resampled when the variable changes while the event is NOT in an active state.")]
+    [Description("Test that a persistent event set to adjust on variable change gives an error when the variable changes while the event is NOT in an active state.")]
     public async Task PersistentEventVarChange_EventInactive()
     {
       string testName = GetCurrentMethodName(); //function name must match the name of the test model and saved in the models folder.
 
-      //Setup directory for unit test 
+      //Setup directory for unit test
       string dir = SetupTestDir(testName);
       //initial options, and optional results to save/test
       JObject optionsJ = SetupJSON(dir, testName, true);
@@ -500,11 +500,11 @@ namespace SysAndRegressionTesting
       //Change the default settings as needed for the test seed default set to 0 for testing.
       options.inpfile = MainTestDir() + ModelFolder() + testName + ".emrald";
       options.runct = 1;
-      //options.variables = new List<string>() { "Int_Cnt" };
-      //optionsJ["variables"] = JsonConvert.SerializeObject(args);
       JSONRun testRun = new JSONRun(options);
-      Assert.False(await TestRunSim(testRun));
+      string runErr = await testRun.RunSim();
 
+      //check for the specific error so the test can't pass on some other failure
+      Assert.Contains("Tried to adjust Persistent Event [Distribution]", runErr);
     }
     [Fact]
     [Description("Test persistent events with variables being resampled when the variable changes while the event is in an active state.")]

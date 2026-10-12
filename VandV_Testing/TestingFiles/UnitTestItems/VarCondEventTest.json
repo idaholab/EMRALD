@@ -6,6 +6,6 @@
     "mainItem": true,
     "evType": "etVarCond",
     "varNames": [],
-    "code": ""
+    "code": "using System;"
   }
 }

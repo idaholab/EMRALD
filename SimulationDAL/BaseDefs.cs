@@ -510,7 +510,10 @@ namespace SimulationDAL
   {
     // Use AsyncLocal so the same RNG instance flows across async/await continuations,
     // avoiding resets when continuations resume on different threads (e.g., ReceiveLoop).
-    private static AsyncLocal<Random>? _asyncLocalRandom;
+    // One container for the process life, a Reset only replaces the current context's RNG. Replacing the
+    // container would drop the RNG every other sim thread had already seeded, and they would reseed from
+    // whichever thread reset last.
+    private static readonly AsyncLocal<Random?> _asyncLocalRandom = new();
     private static int _seedBase;
     private static int _seedOffset;
 
@@ -523,11 +526,8 @@ namespace SimulationDAL
     {
       get
       {
-        if (_asyncLocalRandom == null)
-          Reset();
-
         // Create a per-execution-context RNG the first time it's needed.
-        if (_asyncLocalRandom!.Value == null)
+        if (_asyncLocalRandom.Value == null)
         {
           int seed = _seedBase + Interlocked.Increment(ref _seedOffset);
           _asyncLocalRandom.Value = new Random(seed);
@@ -542,9 +542,7 @@ namespace SimulationDAL
       _seedBase = seedOverride ?? ConfigData.seed ?? Environment.TickCount;
       _seedOffset = 0;
 
-      // Start with a clean AsyncLocal container and seed the current context immediately
-      // so behaviour matches the previous implementation for the primary thread.
-      _asyncLocalRandom = new AsyncLocal<Random>();
+      // Seed the current context immediately, other contexts keep their own RNG.
       _asyncLocalRandom.Value = new Random(_seedBase);
     }
   }
