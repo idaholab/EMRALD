@@ -1,8 +1,10 @@
 import type { EMRALD_Model } from '@/types/EMRALD_Model';
 import { v4 as uuid } from 'uuid';
 import { describe, expect, test } from 'vitest';
+import { appData } from '@/hooks/useAppData';
 import {
   allMainItemTypes,
+  GetModelItemsReferencedBy,
   GetModelItemsReferencing,
 } from '@/utils/ModelReferences';
 
@@ -84,6 +86,22 @@ const model: EMRALD_Model = {
       mainItem: false,
       id: uuid(),
       codeVariables: ['Var1'],
+    },
+    {
+      // atCngVarVal using a distribution where one parameter is a variable
+      objType: 'Action',
+      name: 'Action4',
+      desc: '',
+      actType: 'atCngVarVal',
+      mainItem: false,
+      id: uuid(),
+      variableName: 'Var3',
+      useDistribution: true,
+      distType: 'dtUniform',
+      parameters: [
+        { name: 'Minimum', useVariable: false, value: 0 },
+        { name: 'Maximum', useVariable: true, variable: 'Var2', value: '' },
+      ],
     },
   ],
   EventList: [
@@ -176,6 +194,24 @@ const model: EMRALD_Model = {
       ],
       extSim: 'ExtSim1',
     },
+    {
+      objType: 'Variable',
+      name: 'Var2',
+      desc: '',
+      varScope: 'gtGlobal',
+      value: 0,
+      type: 'double',
+      id: uuid(),
+    },
+    {
+      objType: 'Variable',
+      name: 'Var3',
+      desc: '',
+      varScope: 'gtGlobal',
+      value: 0,
+      type: 'double',
+      id: uuid(),
+    },
   ],
 };
 
@@ -261,6 +297,45 @@ describe('Model References', () => {
     expect(refs.EventList[0]?.name).toBe('Event1');
     expect(refs.EventList[1]?.name).toBe('Event2');
     expect(refs.EventList[2]?.name).toBe('Event3');
+  });
+
+  test('get actions using a variable as a distribution parameter', () => {
+    const refs = GetModelItemsReferencing(
+      'Var2',
+      'Variable',
+      1,
+      undefined,
+      allMainItemTypes,
+      model,
+    );
+    expect(refs.ActionList.map(a => a.name)).toEqual(['Action4']);
+  });
+
+  test('distribution parameter not using a variable is not a reference', () => {
+    const noVarModel = structuredClone(model);
+    const action = noVarModel.ActionList.find(a => a.name === 'Action4');
+    action!.parameters![1]!.useVariable = false;
+    const refs = GetModelItemsReferencing(
+      'Var2',
+      'Variable',
+      1,
+      undefined,
+      allMainItemTypes,
+      noVarModel,
+    );
+    expect(refs.ActionList.length).toBe(0);
+  });
+
+  test('get variables used by an action distribution parameter', () => {
+    // GetModelItemsReferencedBy looks items up in appData.
+    const prevModel = appData.value;
+    appData.value = model;
+    try {
+      const refs = GetModelItemsReferencedBy('Action4', 'Action', 1);
+      expect(refs.VariableList.map(v => v.name).sort()).toEqual(['Var2', 'Var3']);
+    } finally {
+      appData.value = prevModel;
+    }
   });
 
   test('get items referencing ext sim', () => {

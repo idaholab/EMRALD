@@ -86,6 +86,12 @@ const RefsToVariableItem: ItemReferencesArray = [
   ],
   ['$.ActionList[?(@.variableName == \'nameRef\')].variableName', 'Action', null],
   ['$.ActionList[*].codeVariables[?(@ == \'nameRef\')]', 'Action', null],
+  // atCngVarVal action using a distribution with a variable as a parameter value.
+  [
+    '$.ActionList[*].parameters[?(@.useVariable == true && @.variable == \'nameRef\')].variable',
+    'Action',
+    null,
+  ],
   ['$.EventList[*].varNames[?(@ == \'nameRef\')]', 'Event', null],
   ['$.EventList[?(@.variable == \'nameRef\')].variable', 'Event', null],
   [
@@ -177,6 +183,12 @@ const InActionRefs: ItemReferencesArray = [
   ['$.ActionList[?(@.name == \'nameRef\')].newStates.toState', 'State', null],
   ['$.ActionList[?(@.name == \'nameRef\')].variableName', 'Variable', null],
   ['$.ActionList[?(@.name == \'nameRef\')].codeVariables', 'Variable', null],
+  // atCngVarVal action using a distribution with a variable as a parameter value.
+  [
+    '$.ActionList[?(@.name == \'nameRef\')].parameters[?(@.useVariable == true)].variable',
+    'Variable',
+    null,
+  ],
   ['$.ActionList[?(@.name == \'nameRef\')].extSim', 'ExtSim', null],
 ];
 
